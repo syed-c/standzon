@@ -1,70 +1,83 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Shield, Mail, AlertTriangle, CheckCircle, Send, Code, Copy } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Shield,
+  Mail,
+  AlertTriangle,
+  CheckCircle,
+  Send,
+  Code,
+  Copy,
+} from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('admin@exhibitbay.com'); // Updated to match .env.local
-  const [otp, setOtp] = useState('');
-  const [step, setStep] = useState<'email' | 'verify'>('email');
+  const [email, setEmail] = useState("admin@exhibitbay.com"); // Updated to match .env.local
+  const [otp, setOtp] = useState("");
+  const [step, setStep] = useState<"email" | "verify">("email");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [demoOTP, setDemoOTP] = useState(''); // Store demo OTP for development
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [demoOTP, setDemoOTP] = useState(""); // Store demo OTP for development
 
   const handleSendOTP = async () => {
     if (!email) {
-      setError('Email is required');
+      setError("Email is required");
       return;
     }
 
     setIsLoading(true);
-    setError('');
-    setSuccess('');
-    setDemoOTP(''); // Clear previous demo OTP
+    setError("");
+    setSuccess("");
+    setDemoOTP(""); // Clear previous demo OTP
 
     try {
-      console.log('🔐 Requesting OTP for admin:', email);
-      
-      const response = await fetch('/api/auth/otp', {
-        method: 'POST',
+      console.log("🔐 Requesting OTP for admin:", email);
+
+      const response = await fetch("/api/auth/otp", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          action: 'generate',
+          action: "generate",
           email: email,
-          userType: 'admin'
+          userType: "admin",
         }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        console.log('✅ OTP sent successfully');
-        setStep('verify');
-        
+        console.log("✅ OTP sent successfully");
+        setStep("verify");
+
         // Show demo OTP in development
-        if (data.data.demoOTP && process.env.NODE_ENV === 'development') {
+        if (data.data.demoOTP) {
           setDemoOTP(data.data.demoOTP);
-          setSuccess(`OTP generated! Development Mode - Use the code below:`);
+          setSuccess(`OTP generated! Demo Mode - Use the code below:`);
         } else {
           setSuccess(`OTP sent to ${email}. Please check your email.`);
         }
       } else {
-        setError(data.error || 'Failed to send OTP. Please try again.');
+        setError(data.error || "Failed to send OTP. Please try again.");
       }
-      
     } catch (error) {
-      console.error('❌ OTP request failed:', error);
-      setError('Network error. Please check your connection and try again.');
+      console.error("❌ OTP request failed:", error);
+      setError("Network error. Please check your connection and try again.");
     } finally {
       setIsLoading(false);
     }
@@ -79,50 +92,52 @@ export default function AdminLoginPage() {
 
   const handleVerifyOTP = async () => {
     if (!otp || otp.length !== 6) {
-      setError('Please enter a valid 6-digit OTP');
+      setError("Please enter a valid 6-digit OTP");
       return;
     }
 
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      console.log('🔐 Verifying OTP for admin:', email);
-      
-      const response = await fetch('/api/auth/otp', {
-        method: 'POST',
+      console.log("🔐 Verifying OTP for admin:", email);
+
+      const response = await fetch("/api/auth/otp", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          action: 'verify',
+          action: "verify",
           email: email,
           otp: otp,
-          userType: 'admin'
+          userType: "admin",
         }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        console.log('✅ Admin OTP verification successful:', data.data.user);
-        
+        console.log("✅ Admin OTP verification successful:", data.data.user);
+
         // Store admin session
-        localStorage.setItem('currentUser', JSON.stringify({
-          ...data.data.user,
-          isLoggedIn: true,
-          loginMethod: 'otp'
-        }));
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify({
+            ...data.data.user,
+            isLoggedIn: true,
+            loginMethod: "otp",
+          })
+        );
 
         // Redirect to admin dashboard
-        router.push('/admin/dashboard');
+        router.push("/admin/dashboard");
       } else {
-        setError(data.error || 'Invalid OTP. Please try again.');
+        setError(data.error || "Invalid OTP. Please try again.");
       }
-      
     } catch (error) {
-      console.error('❌ Admin OTP verification failed:', error);
-      setError('Network error. Please check your connection and try again.');
+      console.error("❌ Admin OTP verification failed:", error);
+      setError("Network error. Please check your connection and try again.");
     } finally {
       setIsLoading(false);
     }
@@ -140,7 +155,9 @@ export default function AdminLoginPage() {
             <Shield className="w-5 h-5 text-red-600" />
             <span className="font-medium text-red-600">Super Admin Portal</span>
           </div>
-          <p className="text-gray-600 mt-2">Secure access to platform management</p>
+          <p className="text-gray-600 mt-2">
+            Secure access to platform management
+          </p>
         </div>
       </div>
 
@@ -148,18 +165,17 @@ export default function AdminLoginPage() {
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-xl font-semibold text-gray-900">
-              {step === 'email' ? 'Admin Login' : 'Enter OTP Code'}
+              {step === "email" ? "Admin Login" : "Enter OTP Code"}
             </CardTitle>
             <CardDescription>
-              {step === 'email' 
-                ? 'Enter your admin email to receive a secure OTP' 
-                : `We sent a 6-digit code to ${email}`
-              }
+              {step === "email"
+                ? "Enter your admin email to receive a secure OTP"
+                : `We sent a 6-digit code to ${email}`}
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-6">
-            {step === 'email' ? (
+            {step === "email" ? (
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="admin-email">Admin Email</Label>
@@ -195,19 +211,19 @@ export default function AdminLoginPage() {
                   </Alert>
                 )}
 
-                <Button 
+                <Button
                   onClick={handleSendOTP}
                   disabled={isLoading}
                   className="w-full bg-red-600 hover:bg-red-700"
                 >
-                  {isLoading ? 'Sending OTP...' : 'Send OTP'}
+                  {isLoading ? "Sending OTP..." : "Send OTP"}
                   {!isLoading && <Send className="w-4 h-4 ml-2" />}
                 </Button>
               </div>
             ) : (
               <div className="space-y-4">
-                {/* Development Mode OTP Display */}
-                {demoOTP && process.env.NODE_ENV === 'development' && (
+                {/* Demo Mode OTP Display */}
+                {demoOTP && (
                   <Alert className="border-blue-200 bg-blue-50">
                     <Code className="h-4 w-4" />
                     <AlertDescription className="text-blue-800">
@@ -241,7 +257,9 @@ export default function AdminLoginPage() {
                     id="otp-code"
                     type="text"
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    onChange={(e) =>
+                      setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                    }
                     placeholder="000000"
                     className="text-center text-2xl tracking-widest"
                     disabled={isLoading}
@@ -262,29 +280,29 @@ export default function AdminLoginPage() {
                 )}
 
                 <div className="grid grid-cols-2 gap-3">
-                  <Button 
+                  <Button
                     variant="outline"
                     onClick={() => {
-                      setStep('email');
-                      setOtp('');
-                      setError('');
-                      setDemoOTP(''); // Clear demo OTP when going back
+                      setStep("email");
+                      setOtp("");
+                      setError("");
+                      setDemoOTP(""); // Clear demo OTP when going back
                     }}
                     disabled={isLoading}
                   >
                     Back
                   </Button>
-                  <Button 
+                  <Button
                     onClick={handleVerifyOTP}
                     disabled={isLoading || otp.length !== 6}
                     className="bg-red-600 hover:bg-red-700"
                   >
-                    {isLoading ? 'Verifying...' : 'Login'}
+                    {isLoading ? "Verifying..." : "Login"}
                   </Button>
                 </div>
 
-                <Button 
-                  variant="link" 
+                <Button
+                  variant="link"
                   className="w-full text-sm"
                   onClick={handleSendOTP}
                   disabled={isLoading}
@@ -298,10 +316,13 @@ export default function AdminLoginPage() {
             <div className="pt-4 border-t">
               <div className="flex items-center justify-center space-x-2 mb-2">
                 <Shield className="w-4 h-4 text-green-600" />
-                <span className="text-sm font-medium text-gray-900">Secure Access</span>
+                <span className="text-sm font-medium text-gray-900">
+                  Secure Access
+                </span>
               </div>
               <p className="text-xs text-gray-600 text-center">
-                This is a secure admin portal. All access attempts are logged and monitored.
+                This is a secure admin portal. All access attempts are logged
+                and monitored.
               </p>
             </div>
           </CardContent>
@@ -310,11 +331,17 @@ export default function AdminLoginPage() {
         {/* Quick Access Info */}
         <div className="mt-6 text-center">
           <div className="bg-white rounded-lg p-4 shadow-sm border">
-            <h3 className="font-medium text-gray-900 mb-2">Quick Access Credentials</h3>
+            <h3 className="font-medium text-gray-900 mb-2">
+              Quick Access Credentials
+            </h3>
             <div className="text-sm text-gray-600 space-y-1">
-              <p><strong>Email:</strong> admin@exhibitbay.com</p>
-              <p><strong>Method:</strong> OTP via Email</p>
-              {process.env.NODE_ENV === 'development' && (
+              <p>
+                <strong>Email:</strong> admin@exhibitbay.com
+              </p>
+              <p>
+                <strong>Method:</strong> OTP via Email
+              </p>
+              {process.env.NODE_ENV === "development" && (
                 <div className="mt-3 p-2 bg-blue-50 rounded border border-blue-200">
                   <p className="text-xs text-blue-700 font-medium">
                     🔧 Development Mode Active
@@ -334,4 +361,3 @@ export default function AdminLoginPage() {
     </div>
   );
 }
-

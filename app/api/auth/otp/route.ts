@@ -49,7 +49,8 @@ export async function POST(request: NextRequest) {
       // ✅ DEMO MODE: Return OTP in response for testing
       const isDemoMode =
         process.env.NODE_ENV === "development" ||
-        process.env.DEMO_MODE === "true";
+        process.env.DEMO_MODE === "true" ||
+        !process.env.SMTP_HOST; // No SMTP configured = demo mode
 
       // Send OTP via email
       try {
@@ -67,17 +68,23 @@ export async function POST(request: NextRequest) {
         console.log("✅ OTP sent successfully to:", email);
       } catch (emailError) {
         console.error("❌ Failed to send OTP email:", emailError);
-        // Continue anyway for development - but log the error details
-        if (process.env.NODE_ENV === "development") {
+
+        // Check if we're in demo mode or production without email config
+        const isDemoMode =
+          process.env.NODE_ENV === "development" ||
+          process.env.DEMO_MODE === "true" ||
+          !process.env.SMTP_HOST; // No SMTP configured = demo mode
+
+        if (isDemoMode) {
           console.log(
-            "📧 [DEV] Email sending failed, but continuing in development mode"
+            "📧 [DEMO] Email sending failed, but continuing in demo mode"
           );
           console.log(
-            "📧 [DEV] Error details:",
+            "📧 [DEMO] Error details:",
             emailError instanceof Error ? emailError.message : emailError
           );
         } else {
-          // In production, we should fail if email can't be sent
+          // In production with email configured, we should fail if email can't be sent
           return NextResponse.json(
             {
               success: false,

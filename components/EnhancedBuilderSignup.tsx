@@ -284,7 +284,15 @@ export default function EnhancedBuilderSignup() {
 
       if (result.success) {
         setOtpSent(true);
-        toast.success("Verification code sent to your email");
+        setOtpResponse(result.data);
+
+        // Show demo OTP if available
+        if (result.data.demoOTP) {
+          toast.success(`OTP sent! Demo OTP: ${result.data.demoOTP}`);
+        } else {
+          toast.success("Verification code sent to your email");
+        }
+
         console.log("✅ OTP sent successfully");
       } else {
         console.error("❌ Failed to send OTP:", result.error);
