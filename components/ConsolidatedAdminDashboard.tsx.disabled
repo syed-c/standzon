@@ -1,0 +1,1839 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Progress } from '@/components/ui/progress';
+import { Switch } from '@/components/ui/switch';
+import { adminAPI } from '@/lib/api/admin';
+import { ExhibitionBuilder } from '@/lib/data/exhibitionBuilders';
+import { simpleStorageAPI as storageAPI } from '@/lib/data/simpleStorage';
+import { tradeShows } from '@/lib/data/tradeShows';
+// Import new components
+import WebsiteCustomization from '@/components/WebsiteCustomization';
+import LeadManagement from '@/components/LeadManagement';
+import BuilderLeadFlow from '@/components/BuilderLeadFlow';
+// Countries will be loaded from AdminAPI
+import {
+  LayoutDashboard,
+  Building,
+  Users,
+  Calendar,
+  MessageSquare,
+  Search,
+  Filter,
+  Edit,
+  Trash2,
+  Eye,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  Globe,
+  Star,
+  Download,
+  RefreshCw,
+  BarChart3,
+  Shield,
+  MapPin,
+  DollarSign,
+  TrendingUp,
+  Activity,
+  Mail,
+  Bell,
+  Brain,
+  Zap,
+  Target,
+  Award,
+  ChevronDown,
+  ChevronRight,
+  ExternalLink,
+  Plus,
+  Upload,
+  Copy,
+  Palette,
+  CreditCard,
+  Wifi,
+  FileText,
+  Settings,
+  Save,
+  Crown,
+  Database
+} from 'lucide-react';
+
+interface ConsolidatedAdminDashboardProps {
+  adminId: string;
+  permissions: string[];
+}
+
+interface ListingType {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+}
+
+interface QuoteRequest {
+  id: string;
+  clientName: string;
+  clientEmail: string;
+  eventName: string;
+  city: string;
+  country: string;
+  standSize: string;
+  budget: string;
+  requirements: string;
+  status: 'new' | 'assigned' | 'in_progress' | 'completed' | 'cancelled';
+  submittedAt: string;
+  assignedTo?: string;
+}
+
+interface SubscriptionPlan {
+  id: string;
+  name: string;
+  price: number;
+  currency: string;
+  interval: 'monthly' | 'yearly';
+  features: string[];
+  isActive: boolean;
+  builderCount: number;
+}
+
+const listingTypes: ListingType[] = [
+  { id: 'modular', name: 'Modular Stand Builder', description: 'Flexible, reusable modular exhibition systems', icon: '🔧' },
+  { id: 'custom', name: 'Custom Stand Builder', description: 'Bespoke exhibition stands tailored to brand', icon: '🎨' },
+  { id: 'portable', name: 'Portable Stands', description: 'Lightweight, easy-to-transport display solutions', icon: '📦' },
+  { id: 'double-deck', name: 'Double Deck Booth', description: 'Two-story exhibition structures and displays', icon: '🏢' },
+  { id: 'country-pavilion', name: 'Country Pavilion', description: 'Large-scale national and regional pavilions', icon: '🏛️' },
+  { id: 'design-only', name: 'Design & Fabrication Only', description: 'Design services and manufacturing only', icon: '📐' }
+];
+
+export default function ConsolidatedAdminDashboard({ adminId, permissions }: ConsolidatedAdminDashboardProps) {
+  const [activeTab, setActiveTab] = useState('dashboard-home');
+  const [loading, setLoading] = useState(true);
+  const [builders, setBuilders] = useState<ExhibitionBuilder[]>([]);
+  const [quotes, setQuotes] = useState<QuoteRequest[]>([]);
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+  const [stats, setStats] = useState<any>({});
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedBuilder, setSelectedBuilder] = useState<ExhibitionBuilder | null>(null);
+  const [selectedQuote, setSelectedQuote] = useState<QuoteRequest | null>(null);
+  const [isAddingBuilder, setIsAddingBuilder] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Load dashboard data
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  // Subscribe to real-time updates
+  useEffect(() => {
+    const unsubscribe = adminAPI.subscribe((event: string, data: any) => {
+      console.log('Real-time dashboard update:', event, data);
+      
+      switch (event) {
+        case 'builder_created':
+        case 'builder_updated':
+          loadBuilders();
+          loadStats();
+          break;
+        case 'builder_deleted':
+          setBuilders(prev => prev.filter(b => b.id !== data.id));
+          loadStats();
+          break;
+        case 'quote_received':
+          loadQuotes();
+          break;
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([loadBuilders(), loadStats(), loadQuotes(), loadPlans()]);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadBuilders = async () => {
+    console.log('Loading builders from storage API...');
+    const allBuilders = storageAPI.getBuilders();
+    setBuilders(allBuilders);
+    console.log('Loaded builders:', allBuilders.length);
+  };
+
+  const loadQuotes = async () => {
+    // Mock quote data - in production this would come from API
+    const mockQuotes: QuoteRequest[] = [
+      {
+        id: 'Q001',
+        clientName: 'Sarah Johnson',
+        clientEmail: 'sarah@techcorp.com',
+        eventName: 'CES 2025',
+        city: 'Las Vegas',
+        country: 'United States',
+        standSize: '400 sqm',
+        budget: '$40,000 - $50,000',
+        requirements: 'Custom tech display with LED walls and interactive demos',
+        status: 'new',
+        submittedAt: '2024-12-19T10:30:00Z'
+      },
+      {
+        id: 'Q002',
+        clientName: 'Klaus Mueller',
+        clientEmail: 'klaus@automative.de',
+        eventName: 'Hannover Messe 2025',
+        city: 'Hannover',
+        country: 'Germany',
+        standSize: '300 sqm',
+        budget: '$30,000 - $40,000',
+        requirements: 'Industrial machinery showcase with meeting areas',
+        status: 'assigned',
+        submittedAt: '2024-12-18T14:15:00Z',
+        assignedTo: 'Expo Design Germany'
+      },
+      {
+        id: 'Q003',
+        clientName: 'Maria Rodriguez',
+        clientEmail: 'maria@fashion.es',
+        eventName: 'Paris Fashion Week',
+        city: 'Paris',
+        country: 'France',
+        standSize: '200 sqm',
+        budget: '$25,000 - $35,000',
+        requirements: 'Elegant fashion showcase with runway area',
+        status: 'in_progress',
+        submittedAt: '2024-12-17T09:45:00Z',
+        assignedTo: 'Premium Exhibits France'
+      }
+    ];
+    setQuotes(mockQuotes);
+  };
+
+  const loadPlans = async () => {
+    // Mock subscription plans data
+    const mockPlans: SubscriptionPlan[] = [
+      {
+        id: 'free',
+        name: 'Free',
+        price: 0,
+        currency: 'USD',
+        interval: 'monthly',
+        features: ['Basic listing', 'Up to 5 photos', 'Email support'],
+        isActive: true,
+        builderCount: 156
+      },
+      {
+        id: 'professional',
+        name: 'Professional',
+        price: 149,
+        currency: 'USD',
+        interval: 'monthly',
+        features: ['Featured listing', 'Unlimited photos', 'Priority support', 'Analytics', 'Lead notifications'],
+        isActive: true,
+        builderCount: 89
+      },
+      {
+        id: 'enterprise',
+        name: 'Enterprise',
+        price: 299,
+        currency: 'USD',
+        interval: 'monthly',
+        features: ['Premium placement', 'Custom branding', 'Dedicated account manager', 'Advanced analytics', 'API access'],
+        isActive: true,
+        builderCount: 23
+      }
+    ];
+    setPlans(mockPlans);
+  };
+
+  const loadStats = async () => {
+    console.log('Loading stats from storage API...');
+    const platformStats = storageAPI.getStats();
+    setStats(platformStats);
+    console.log('Loaded stats:', platformStats);
+  };
+
+  const downloadBuilderCSVTemplate = () => {
+    const csvContent = `Company Name,Email,Phone,Contact Person,City,Country,Services,Description,Listing Type,Website,Image URLs
+Expo Design Germany,info@expodesign.de,+49 30 123456,Klaus Mueller,Berlin,Germany,"Custom Design, Modular Systems",Leading exhibition stand builder,custom,https://expodesign.de,"https://example.com/image1.jpg,https://example.com/image2.jpg"
+Premier Exhibits USA,info@premierexhibits.com,+1 702 555 0123,Jennifer Martinez,Las Vegas,United States,"Trade Show Displays, Technology",Professional trade show displays,modular,https://premierexhibits.com,https://example.com/image3.jpg
+Milano Stands Italy,contact@milanostands.it,+39 02 123456,Marco Rossi,Milan,Italy,"Custom Stands, Design Only",Creative exhibition solutions,design-only,https://milanostands.it,
+Dubai Expo Builders,info@dubaiexpo.ae,+971 4 123456,Ahmed Hassan,Dubai,UAE,"Double Deck, Country Pavilion",Large-scale exhibition construction,double-deck,https://dubaiexpo.ae,
+Portable Displays UK,sales@portableuk.com,+44 20 123456,Sarah Johnson,London,United Kingdom,"Portable Stands, Rental",Lightweight display solutions,portable,https://portableuk.com,`;
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'builders-template.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const downloadTradeShowCSVTemplate = () => {
+    const csvContent = `Event Name,City,Country,Venue,Start Date,End Date,Industry,Description,Website,Expected Exhibitors,Expected Visitors
+CES 2025,Las Vegas,United States,Las Vegas Convention Center,2025-01-07,2025-01-10,Technology,Consumer Electronics Show,https://ces.tech,4000,180000
+Hannover Messe 2025,Hannover,Germany,Hannover Exhibition Grounds,2025-04-07,2025-04-11,Industrial Technology,Industrial technology trade fair,https://hannovermesse.de,6500,200000
+SIAL Paris 2024,Paris,France,Paris Expo Porte de Versailles,2024-10-19,2024-10-23,Food & Beverage,International food innovation exhibition,https://sialparis.com,7500,160000
+Arab Health 2025,Dubai,UAE,Dubai World Trade Centre,2025-01-27,2025-01-30,Healthcare,Healthcare exhibition,https://arabhealthonline.com,4000,84000
+Auto Shanghai 2025,Shanghai,China,National Exhibition Center,2025-04-21,2025-04-28,Automotive,International automobile industry exhibition,https://autoshanghai.org,1000,890000`;
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'trade-shows-template.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleAssignQuote = async (quoteId: string, builderId: string) => {
+    console.log(`Assigning quote ${quoteId} to builder ${builderId}`);
+    setQuotes(prev => prev.map(q => 
+      q.id === quoteId ? { ...q, status: 'assigned' as const, assignedTo: builderId } : q
+    ));
+  };
+
+  const filteredBuilders = builders.filter(builder =>
+    builder.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    builder.companyDescription.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredQuotes = quotes.filter(quote =>
+    quote.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    quote.eventName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-500">Loading consolidated dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Enhanced Sidebar Navigation */}
+      <div className="w-72 bg-white shadow-xl border-r border-gray-200 flex-shrink-0">
+        <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-blue-600 to-purple-600">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+              <Shield className="h-6 w-6 text-blue-600" />
+            </div>
+            <div className="text-white">
+              <h1 className="text-xl font-bold">Super Admin</h1>
+              <p className="text-blue-100 text-sm">Platform Control Center</p>
+            </div>
+          </div>
+        </div>
+        
+        <nav className="mt-6 px-4 h-full overflow-y-auto pb-6">
+          <div className="space-y-2">
+            {/* Dashboard Home */}
+            <button
+              onClick={() => setActiveTab('dashboard-home')}
+              className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                activeTab === 'dashboard-home' 
+                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <LayoutDashboard className="h-5 w-5 mr-3" />
+              <span className="font-medium">Dashboard Home</span>
+            </button>
+            
+            {/* Builder Management Section */}
+            <div className="pt-4">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-4 mb-2">Builder Management</p>
+              
+              <button
+                onClick={() => setActiveTab('manage-builders')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'manage-builders' 
+                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Building className="h-5 w-5 mr-3" />
+                <span className="font-medium">Manage Builders</span>
+                <Badge className="ml-auto bg-green-100 text-green-800">{builders.length}</Badge>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('add-builder')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'add-builder' 
+                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Plus className="h-5 w-5 mr-3" />
+                <span className="font-medium">Add New Builder</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('bulk-upload-builders')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'bulk-upload-builders' 
+                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Upload className="h-5 w-5 mr-3" />
+                <span className="font-medium">Bulk Upload Builders</span>
+              </button>
+            </div>
+            
+            {/* Trade Show Management Section */}
+            <div className="pt-4">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-4 mb-2">Trade Shows</p>
+              
+              <button
+                onClick={() => setActiveTab('manage-tradeshows')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'manage-tradeshows' 
+                    ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Calendar className="h-5 w-5 mr-3" />
+                <span className="font-medium">Manage Trade Shows</span>
+                <Badge className="ml-auto bg-indigo-100 text-indigo-800">{tradeShows.length}</Badge>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('bulk-upload-tradeshows')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'bulk-upload-tradeshows' 
+                    ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Upload className="h-5 w-5 mr-3" />
+                <span className="font-medium">Bulk Upload Shows</span>
+              </button>
+            </div>
+            
+            {/* Platform Management Section */}
+            <div className="pt-4">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-4 mb-2">Platform Management</p>
+              
+              <button
+                onClick={() => setActiveTab('website-customization')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'website-customization' 
+                    ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Palette className="h-5 w-5 mr-3" />
+                <span className="font-medium">Website Customization</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('lead-management')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'lead-management' 
+                    ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Target className="h-5 w-5 mr-3" />
+                <span className="font-medium">Lead Management</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('builder-lead-flow')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'builder-lead-flow' 
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Mail className="h-5 w-5 mr-3" />
+                <span className="font-medium">Builder Lead Flow</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('quote-requests')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'quote-requests' 
+                    ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <MessageSquare className="h-5 w-5 mr-3" />
+                <span className="font-medium">Quote Requests</span>
+                <Badge className="ml-auto bg-yellow-100 text-yellow-800">{quotes.length}</Badge>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('content-manager')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'content-manager' 
+                    ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <FileText className="h-5 w-5 mr-3" />
+                <span className="font-medium">Content Manager</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('seo-manager')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'seo-manager' 
+                    ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Search className="h-5 w-5 mr-3" />
+                <span className="font-medium">SEO Manager</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('payments-plans')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'payments-plans' 
+                    ? 'bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <CreditCard className="h-5 w-5 mr-3" />
+                <span className="font-medium">Payments & Plans</span>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-xl transition-all duration-200 ${
+                  activeTab === 'settings' 
+                    ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-lg' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Settings className="h-5 w-5 mr-3" />
+                <span className="font-medium">Settings</span>
+              </button>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-8">
+          
+          {/* Dashboard Home */}
+          {activeTab === 'dashboard-home' && (
+            <div className="space-y-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-4xl font-bold text-gray-900 mb-2">Dashboard Overview</h2>
+                  <p className="text-gray-600 text-lg">Real-time platform statistics and activity</p>
+                </div>
+                <div className="flex space-x-3">
+                  <Button onClick={loadDashboardData} className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Refresh Data
+                  </Button>
+                  <Button variant="outline" className="border-gray-300">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export Report
+                  </Button>
+                </div>
+              </div>
+
+              {/* Enhanced KPI Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-xl">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-blue-100 text-sm font-medium">Total Builders</p>
+                        <p className="text-3xl font-bold mt-1">{stats.totalBuilders || 0}</p>
+                        <p className="text-blue-100 text-xs mt-1">+12% from last month</p>
+                      </div>
+                      <div className="bg-white/20 p-3 rounded-xl">
+                        <Building className="h-8 w-8" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0 shadow-xl">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-green-100 text-sm font-medium">Active Quotes</p>
+                        <p className="text-3xl font-bold mt-1">{quotes.length}</p>
+                        <p className="text-green-100 text-xs mt-1">+8% from last week</p>
+                      </div>
+                      <div className="bg-white/20 p-3 rounded-xl">
+                        <MessageSquare className="h-8 w-8" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 shadow-xl">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-purple-100 text-sm font-medium">Countries</p>
+                        <p className="text-3xl font-bold mt-1">{stats.totalCountries || 0}</p>
+                        <p className="text-purple-100 text-xs mt-1">Global coverage</p>
+                      </div>
+                      <div className="bg-white/20 p-3 rounded-xl">
+                        <Globe className="h-8 w-8" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white border-0 shadow-xl">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-orange-100 text-sm font-medium">Monthly Revenue</p>
+                        <p className="text-3xl font-bold mt-1">$42.3K</p>
+                        <p className="text-orange-100 text-xs mt-1">+15% growth</p>
+                      </div>
+                      <div className="bg-white/20 p-3 rounded-xl">
+                        <DollarSign className="h-8 w-8" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Activity and Quick Actions Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Recent Activity */}
+                <Card className="shadow-lg border-0">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-xl flex items-center">
+                      <Activity className="h-5 w-5 mr-2 text-blue-600" />
+                      Recent Activity
+                    </CardTitle>
+                    <CardDescription>Latest platform activities and updates</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-4 p-4 bg-green-50 rounded-xl">
+                        <div className="bg-green-100 p-2 rounded-lg">
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">New builder verified</p>
+                          <p className="text-xs text-gray-500">Expo Design Germany - 2 minutes ago</p>
+                        </div>
+                        <Badge className="bg-green-100 text-green-800">Verified</Badge>
+                      </div>
+                      
+                      <div className="flex items-center space-x-4 p-4 bg-blue-50 rounded-xl">
+                        <div className="bg-blue-100 p-2 rounded-lg">
+                          <Plus className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">Builder registered</p>
+                          <p className="text-xs text-gray-500">Premier Exhibits USA - 1 hour ago</p>
+                        </div>
+                        <Badge className="bg-blue-100 text-blue-800">New</Badge>
+                      </div>
+                      
+                      <div className="flex items-center space-x-4 p-4 bg-orange-50 rounded-xl">
+                        <div className="bg-orange-100 p-2 rounded-lg">
+                          <MessageSquare className="h-5 w-5 text-orange-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">New quote request</p>
+                          <p className="text-xs text-gray-500">CES 2025 Las Vegas - 3 hours ago</p>
+                        </div>
+                        <Badge className="bg-orange-100 text-orange-800">Pending</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Quick Actions */}
+                <Card className="shadow-lg border-0">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-xl flex items-center">
+                      <Zap className="h-5 w-5 mr-2 text-purple-600" />
+                      Quick Actions
+                    </CardTitle>
+                    <CardDescription>Common administrative tasks</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Button 
+                      className="w-full justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0" 
+                      onClick={() => setActiveTab('add-builder')}
+                    >
+                      <Plus className="h-4 w-4 mr-3" />
+                      Add New Builder
+                    </Button>
+                    <Button 
+                      className="w-full justify-start bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white border-0"
+                      onClick={() => setActiveTab('bulk-upload-builders')}
+                    >
+                      <Upload className="h-4 w-4 mr-3" />
+                      Bulk Import Data
+                    </Button>
+                    <Button 
+                      className="w-full justify-start bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0"
+                      onClick={() => setActiveTab('quote-requests')}
+                    >
+                      <MessageSquare className="h-4 w-4 mr-3" />
+                      Review Quotes
+                    </Button>
+                    <Button 
+                      className="w-full justify-start bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border-0"
+                      onClick={() => setActiveTab('settings')}
+                    >
+                      <Settings className="h-4 w-4 mr-3" />
+                      Platform Settings
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {/* Manage Trade Shows */}
+          {activeTab === 'manage-tradeshows' && (
+            <TradeShowsManager />
+          )}
+
+          {/* Website Customization */}
+          {activeTab === 'website-customization' && (
+            <WebsiteCustomization 
+              onSave={async (sections) => {
+                console.log('Saving website sections:', sections);
+                // Implement save logic here
+              }}
+            />
+          )}
+
+          {/* Lead Management */}
+          {activeTab === 'lead-management' && (
+            <LeadManagement 
+              onSendNotification={async (leadId, builderIds) => {
+                console.log('Sending lead notification:', { leadId, builderIds });
+                // Implement notification logic here
+              }}
+              onUpdateLeadStatus={async (leadId, status) => {
+                console.log('Updating lead status:', { leadId, status });
+                // Implement status update logic here
+              }}
+            />
+          )}
+
+          {/* Builder Lead Flow */}
+          {activeTab === 'builder-lead-flow' && (
+            <BuilderLeadFlow 
+              onSendEmail={async (builderId, leadId, templateId) => {
+                console.log('Sending email:', { builderId, leadId, templateId });
+                // Implement email sending logic here
+              }}
+              onUpdateLeadAccess={async (leadId, builderId, hasAccess) => {
+                console.log('Updating lead access:', { leadId, builderId, hasAccess });
+                // Implement access control logic here
+              }}
+            />
+          )}
+
+          {/* Quote Requests */}
+          {activeTab === 'quote-requests' && (
+            <QuoteRequestsManager 
+              quotes={filteredQuotes}
+              builders={builders}
+              onAssignQuote={handleAssignQuote}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+            />
+          )}
+
+          {/* Content Manager */}
+          {activeTab === 'content-manager' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900">Content Management System</h2>
+                  <p className="text-gray-600">This feature is now available on a dedicated page for better experience</p>
+                </div>
+                <a 
+                  href="/admin/content-management" 
+                  target="_blank"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <FileText className="h-5 w-5 mr-2" />
+                  Open Content Management
+                  <svg className="h-4 w-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
+                  <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
+                    <FileText className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-blue-900 mb-2">Page Content</h3>
+                  <p className="text-blue-700 text-sm">Edit page titles, descriptions, hero sections, and content blocks</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
+                  <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
+                    <Globe className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-green-900 mb-2">Navigation</h3>
+                  <p className="text-green-700 text-sm">Manage navigation menus, links, and submenu structures</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl">
+                  <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4">
+                    <Settings className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-purple-900 mb-2">Global Settings</h3>
+                  <p className="text-purple-700 text-sm">Configure site-wide settings, social media, and SEO defaults</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SEO Manager */}
+          {activeTab === 'seo-manager' && (
+            <SEOManager />
+          )}
+
+          {/* Payments & Plans */}
+          {activeTab === 'payments-plans' && (
+            <PaymentsPlansManager plans={plans} setPlans={setPlans} />
+          )}
+
+          {/* Settings */}
+          {activeTab === 'settings' && (
+            <PlatformSettings />
+          )}
+
+          {/* Other existing tabs... */}
+          {(activeTab === 'manage-builders' || activeTab === 'add-builder' || activeTab === 'bulk-upload-builders' || activeTab === 'bulk-upload-tradeshows') && (
+            <div>
+              {/* Keep existing functionality for these tabs */}
+              {activeTab === 'manage-builders' && <BuildersManager builders={filteredBuilders} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />}
+              {activeTab === 'add-builder' && <BuilderForm />}
+              {activeTab === 'bulk-upload-builders' && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-3xl font-bold text-gray-900">Bulk Upload Builders</h2>
+                      <p className="text-gray-600">This feature is now available on a dedicated page for better experience</p>
+                    </div>
+                    <a 
+                      href="/admin/builders/bulk-import" 
+                      target="_blank"
+                      className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                    >
+                      <Upload className="h-5 w-5 mr-2" />
+                      Open Bulk Upload Page
+                      <svg className="h-4 w-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
+                      <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-4">
+                        <Download className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-blue-900 mb-2">Download Template</h3>
+                      <p className="text-blue-700 text-sm">Get CSV template with sample data and all required fields</p>
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
+                      <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4">
+                        <Upload className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-green-900 mb-2">Upload & Validate</h3>
+                      <p className="text-green-700 text-sm">Drag & drop upload with real-time validation and error checking</p>
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl">
+                      <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4">
+                        <Zap className="h-6 w-6 text-white" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-purple-900 mb-2">Real-time Sync</h3>
+                      <p className="text-purple-700 text-sm">Instantly sync across website, admin panel and city pages</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {activeTab === 'bulk-upload-tradeshows' && <BulkUploadTradeShows onTemplateDownload={downloadTradeShowCSVTemplate} />}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Trade Shows Manager Component
+function TradeShowsManager() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedShow, setSelectedShow] = useState<any>(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const filteredShows = tradeShows.filter(show =>
+    show.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    show.city.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900">Manage Trade Shows</h2>
+          <p className="text-gray-600">View, edit, and manage all exhibition events</p>
+        </div>
+        <div className="flex space-x-3">
+          <Button variant="outline">
+            <Upload className="h-4 w-4 mr-2" />
+            Bulk Upload
+          </Button>
+          <Button className="bg-gradient-to-r from-blue-500 to-blue-600">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Trade Show
+          </Button>
+        </div>
+      </div>
+
+      {/* Search */}
+      <Card className="shadow-lg border-0">
+        <CardContent className="pt-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search trade shows..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Trade Shows List */}
+      <Card className="shadow-lg border-0">
+        <CardHeader>
+          <CardTitle>Trade Shows ({filteredShows.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {filteredShows.map((show) => (
+              <div key={show.id} className="flex items-center justify-between p-6 border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center">
+                    <Calendar className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 text-lg">{show.name}</h4>
+                    <p className="text-gray-600 flex items-center">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {show.city}, {show.country}
+                    </p>
+                    <div className="flex items-center space-x-4 mt-2">
+                      <Badge className="bg-blue-100 text-blue-800">
+                        {show.startDate} - {show.endDate}
+                      </Badge>
+                      <Badge variant="outline">{show.industries?.[0]?.name || 'General'}</Badge>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button variant="outline" size="sm">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm" className="text-red-600">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Quote Requests Manager Component
+function QuoteRequestsManager({ 
+  quotes, 
+  builders, 
+  onAssignQuote, 
+  searchTerm, 
+  setSearchTerm 
+}: {
+  quotes: QuoteRequest[];
+  builders: ExhibitionBuilder[];
+  onAssignQuote: (quoteId: string, builderId: string) => void;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+}) {
+  const [selectedQuote, setSelectedQuote] = useState<QuoteRequest | null>(null);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'new': return 'bg-green-100 text-green-800';
+      case 'assigned': return 'bg-blue-100 text-blue-800';
+      case 'in_progress': return 'bg-yellow-100 text-yellow-800';
+      case 'completed': return 'bg-purple-100 text-purple-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900">Quote Requests</h2>
+          <p className="text-gray-600">Manage client quote requests and assignments</p>
+        </div>
+        <div className="flex space-x-3">
+          <Button variant="outline">
+            <Download className="h-4 w-4 mr-2" />
+            Export Quotes
+          </Button>
+          <Button className="bg-gradient-to-r from-green-500 to-green-600">
+            <Bell className="h-4 w-4 mr-2" />
+            Send Notifications
+          </Button>
+        </div>
+      </div>
+
+      {/* Search */}
+      <Card className="shadow-lg border-0">
+        <CardContent className="pt-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search quotes by client name or event..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quotes List */}
+      <Card className="shadow-lg border-0">
+        <CardHeader>
+          <CardTitle>Quote Requests ({quotes.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {quotes.map((quote) => (
+              <div key={quote.id} className="p-6 border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <h4 className="font-semibold text-gray-900 text-lg">{quote.clientName}</h4>
+                      <Badge className={getStatusColor(quote.status)}>
+                        {quote.status.replace('_', ' ').toUpperCase()}
+                      </Badge>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-500">Event</p>
+                        <p className="font-medium">{quote.eventName}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Location</p>
+                        <p className="font-medium">{quote.city}, {quote.country}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Stand Size</p>
+                        <p className="font-medium">{quote.standSize}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Budget</p>
+                        <p className="font-medium">{quote.budget}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-3">
+                      <p className="text-gray-500 text-sm">Requirements</p>
+                      <p className="text-sm">{quote.requirements}</p>
+                    </div>
+                    
+                    {quote.assignedTo && (
+                      <div className="mt-3">
+                        <p className="text-green-600 text-sm">Assigned to: {quote.assignedTo}</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center space-x-2 ml-4">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setSelectedQuote(quote)}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    {quote.status === 'new' && (
+                      <Select onValueChange={(builderId) => onAssignQuote(quote.id, builderId)}>
+                        <SelectTrigger className="w-40">
+                          <SelectValue placeholder="Assign to..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {builders.map((builder) => (
+                            <SelectItem key={builder.id} value={builder.companyName}>
+                              {builder.companyName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Content Manager Component
+function ContentManager() {
+  const [selectedPage, setSelectedPage] = useState('');
+  const [content, setContent] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const pages = [
+    { id: 'homepage', name: 'Homepage', path: '/' },
+    { id: 'about', name: 'About Page', path: '/about' },
+    { id: 'contact', name: 'Contact Page', path: '/contact' },
+    { id: 'privacy', name: 'Privacy Policy', path: '/privacy' },
+    { id: 'terms', name: 'Terms of Service', path: '/terms' }
+  ];
+
+  const handleSaveContent = async () => {
+    setIsSaving(true);
+    console.log('Saving content for page:', selectedPage, content);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setIsSaving(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900">Content Manager</h2>
+          <p className="text-gray-600">Edit and manage all website content</p>
+        </div>
+        <div className="flex space-x-3">
+          <Button variant="outline">
+            <Copy className="h-4 w-4 mr-2" />
+            Duplicate Page
+          </Button>
+          <Button className="bg-gradient-to-r from-blue-500 to-blue-600">
+            <Plus className="h-4 w-4 mr-2" />
+            New Page
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Page Selector */}
+        <Card className="shadow-lg border-0">
+          <CardHeader>
+            <CardTitle>Pages</CardTitle>
+            <CardDescription>Select a page to edit</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {pages.map((page) => (
+                <button
+                  key={page.id}
+                  onClick={() => setSelectedPage(page.id)}
+                  className={`w-full p-3 text-left rounded-lg transition-colors ${
+                    selectedPage === page.id 
+                      ? 'bg-blue-100 text-blue-900 border border-blue-200' 
+                      : 'hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="font-medium">{page.name}</div>
+                  <div className="text-sm text-gray-500">{page.path}</div>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Content Editor */}
+        <Card className="lg:col-span-2 shadow-lg border-0">
+          <CardHeader>
+            <CardTitle>Content Editor</CardTitle>
+            <CardDescription>
+              {selectedPage ? `Editing: ${pages.find(p => p.id === selectedPage)?.name}` : 'Select a page to edit'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {selectedPage ? (
+              <>
+                <div>
+                  <Label>Page Content</Label>
+                  <Textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder="Enter page content..."
+                    rows={12}
+                    className="mt-1"
+                  />
+                </div>
+                <div className="flex justify-between">
+                  <Button variant="outline">
+                    <Eye className="h-4 w-4 mr-2" />
+                    Preview
+                  </Button>
+                  <Button 
+                    onClick={handleSaveContent}
+                    disabled={isSaving}
+                    className="bg-gradient-to-r from-green-500 to-green-600"
+                  >
+                    {isSaving ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Content
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-12 text-gray-500">
+                <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <p>Select a page from the sidebar to start editing</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// SEO Manager Component
+function SEOManager() {
+  const [selectedPage, setSelectedPage] = useState('');
+  const [seoData, setSeoData] = useState({
+    title: '',
+    description: '',
+    slug: '',
+    keywords: ''
+  });
+
+  const pages = [
+    { id: 'homepage', name: 'Homepage', currentSlug: '/' },
+    { id: 'builders', name: 'Builders Page', currentSlug: '/builders' },
+    { id: 'tradeshows', name: 'Trade Shows', currentSlug: '/trade-shows' },
+    { id: 'about', name: 'About Page', currentSlug: '/about' }
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900">SEO Manager</h2>
+          <p className="text-gray-600">Manage meta titles, descriptions, and SEO settings</p>
+        </div>
+        <div className="flex space-x-3">
+          <Button variant="outline">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            SEO Analytics
+          </Button>
+          <Button className="bg-gradient-to-r from-green-500 to-green-600">
+            <Search className="h-4 w-4 mr-2" />
+            Check SEO Score
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Page Selector */}
+        <Card className="shadow-lg border-0">
+          <CardHeader>
+            <CardTitle>Pages</CardTitle>
+            <CardDescription>Select a page to optimize</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {pages.map((page) => (
+                <button
+                  key={page.id}
+                  onClick={() => setSelectedPage(page.id)}
+                  className={`w-full p-3 text-left rounded-lg transition-colors ${
+                    selectedPage === page.id 
+                      ? 'bg-green-100 text-green-900 border border-green-200' 
+                      : 'hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="font-medium">{page.name}</div>
+                  <div className="text-sm text-gray-500">{page.currentSlug}</div>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* SEO Editor */}
+        <Card className="lg:col-span-2 shadow-lg border-0">
+          <CardHeader>
+            <CardTitle>SEO Settings</CardTitle>
+            <CardDescription>
+              {selectedPage ? `Optimizing: ${pages.find(p => p.id === selectedPage)?.name}` : 'Select a page to optimize'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {selectedPage ? (
+              <>
+                <div>
+                  <Label>Meta Title</Label>
+                  <Input
+                    value={seoData.title}
+                    onChange={(e) => setSeoData({ ...seoData, title: e.target.value })}
+                    placeholder="Enter meta title (50-60 characters)"
+                    className="mt-1"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">{seoData.title.length}/60 characters</p>
+                </div>
+
+                <div>
+                  <Label>Meta Description</Label>
+                  <Textarea
+                    value={seoData.description}
+                    onChange={(e) => setSeoData({ ...seoData, description: e.target.value })}
+                    placeholder="Enter meta description (150-160 characters)"
+                    rows={3}
+                    className="mt-1"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">{seoData.description.length}/160 characters</p>
+                </div>
+
+                <div>
+                  <Label>URL Slug</Label>
+                  <Input
+                    value={seoData.slug}
+                    onChange={(e) => setSeoData({ ...seoData, slug: e.target.value })}
+                    placeholder="url-friendly-slug"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label>Keywords</Label>
+                  <Input
+                    value={seoData.keywords}
+                    onChange={(e) => setSeoData({ ...seoData, keywords: e.target.value })}
+                    placeholder="keyword1, keyword2, keyword3"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div className="flex justify-between pt-4">
+                  <Button variant="outline">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Preview in Google
+                  </Button>
+                  <Button className="bg-gradient-to-r from-green-500 to-green-600">
+                    <Save className="h-4 w-4 mr-2" />
+                    Save SEO Settings
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-12 text-gray-500">
+                <Search className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <p>Select a page from the sidebar to optimize SEO</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// Payments & Plans Manager Component
+function PaymentsPlansManager({ 
+  plans, 
+  setPlans 
+}: { 
+  plans: SubscriptionPlan[]; 
+  setPlans: (plans: SubscriptionPlan[]) => void; 
+}) {
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const togglePlanStatus = (planId: string) => {
+    setPlans(plans.map(plan => 
+      plan.id === planId ? { ...plan, isActive: !plan.isActive } : plan
+    ));
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900">Payments & Plans</h2>
+          <p className="text-gray-600">Manage subscription plans and billing settings</p>
+        </div>
+        <div className="flex space-x-3">
+          <Button variant="outline">
+            <Download className="h-4 w-4 mr-2" />
+            Export Revenue
+          </Button>
+          <Button className="bg-gradient-to-r from-blue-500 to-blue-600">
+            <Plus className="h-4 w-4 mr-2" />
+            New Plan
+          </Button>
+        </div>
+      </div>
+
+      {/* Revenue Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0 shadow-xl">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-green-100 text-sm font-medium">Total Revenue</p>
+                <p className="text-3xl font-bold mt-1">$42,350</p>
+                <p className="text-green-100 text-xs mt-1">+15% from last month</p>
+              </div>
+              <DollarSign className="h-8 w-8 text-green-200" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-xl">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-blue-100 text-sm font-medium">Active Subscriptions</p>
+                <p className="text-3xl font-bold mt-1">{plans.reduce((acc, plan) => acc + plan.builderCount, 0)}</p>
+                <p className="text-blue-100 text-xs mt-1">Across all plans</p>
+              </div>
+              <Users className="h-8 w-8 text-blue-200" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 shadow-xl">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-purple-100 text-sm font-medium">Conversion Rate</p>
+                <p className="text-3xl font-bold mt-1">24.5%</p>
+                <p className="text-purple-100 text-xs mt-1">Free to paid</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-purple-200" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Subscription Plans */}
+      <Card className="shadow-lg border-0">
+        <CardHeader>
+          <CardTitle>Subscription Plans</CardTitle>
+          <CardDescription>Manage pricing and features for each plan</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {plans.map((plan) => (
+              <Card key={plan.id} className={`border-2 ${plan.id === 'enterprise' ? 'border-purple-200 bg-purple-50' : 'border-gray-200'}`}>
+                <CardHeader className="text-center">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className={`text-xl ${plan.id === 'enterprise' ? 'text-purple-700' : ''}`}>
+                      {plan.name}
+                      {plan.id === 'enterprise' && <Crown className="h-5 w-5 ml-1 text-purple-600" />}
+                    </CardTitle>
+                    <Switch
+                      checked={plan.isActive}
+                      onCheckedChange={() => togglePlanStatus(plan.id)}
+                    />
+                  </div>
+                  <div className="text-3xl font-bold">
+                    ${plan.price}
+                    <span className="text-sm font-normal text-gray-500">/{plan.interval}</span>
+                  </div>
+                  <Badge className="bg-blue-100 text-blue-800">
+                    {plan.builderCount} builders
+                  </Badge>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 mb-4">
+                    {plan.features.map((feature, index) => (
+                      <div key={index} className="flex items-center text-sm">
+                        <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                        {feature}
+                      </div>
+                    ))}
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => {
+                      setSelectedPlan(plan);
+                      setIsEditing(true);
+                    }}
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Plan
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Platform Settings Component
+function PlatformSettings() {
+  const [settings, setSettings] = useState({
+    siteName: 'ExhibitBay',
+    adminEmail: 'admin@exhibitbay.com',
+    timezone: 'UTC',
+    currency: 'USD',
+    registrationEnabled: true,
+    emailVerificationRequired: true,
+    builderApprovalRequired: true,
+    maintenanceMode: false
+  });
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900">Platform Settings</h2>
+          <p className="text-gray-600">Configure global platform settings and preferences</p>
+        </div>
+        <Button className="bg-gradient-to-r from-green-500 to-green-600">
+          <Save className="h-4 w-4 mr-2" />
+          Save All Settings
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* General Settings */}
+        <Card className="shadow-lg border-0">
+          <CardHeader>
+            <CardTitle>General Settings</CardTitle>
+            <CardDescription>Basic platform configuration</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label>Site Name</Label>
+              <Input
+                value={settings.siteName}
+                onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label>Admin Email</Label>
+              <Input
+                type="email"
+                value={settings.adminEmail}
+                onChange={(e) => setSettings({ ...settings, adminEmail: e.target.value })}
+                className="mt-1"
+              />
+            </div>
+            
+            <div>
+              <Label>Timezone</Label>
+              <Select value={settings.timezone} onValueChange={(value) => setSettings({ ...settings, timezone: value })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UTC">UTC</SelectItem>
+                  <SelectItem value="EST">Eastern Time</SelectItem>
+                  <SelectItem value="PST">Pacific Time</SelectItem>
+                  <SelectItem value="CET">Central European Time</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label>Currency</Label>
+              <Select value={settings.currency} onValueChange={(value) => setSettings({ ...settings, currency: value })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                  <SelectItem value="EUR">Euro (EUR)</SelectItem>
+                  <SelectItem value="GBP">British Pound (GBP)</SelectItem>
+                  <SelectItem value="JPY">Japanese Yen (JPY)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Security & Access */}
+        <Card className="shadow-lg border-0">
+          <CardHeader>
+            <CardTitle>Security & Access</CardTitle>
+            <CardDescription>User registration and security settings</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">User Registration</p>
+                <p className="text-sm text-gray-500">Allow new user registration</p>
+              </div>
+              <Switch
+                checked={settings.registrationEnabled}
+                onCheckedChange={(checked) => setSettings({ ...settings, registrationEnabled: checked })}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Email Verification</p>
+                <p className="text-sm text-gray-500">Require email verification for new accounts</p>
+              </div>
+              <Switch
+                checked={settings.emailVerificationRequired}
+                onCheckedChange={(checked) => setSettings({ ...settings, emailVerificationRequired: checked })}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Builder Approval</p>
+                <p className="text-sm text-gray-500">Require admin approval for new builders</p>
+              </div>
+              <Switch
+                checked={settings.builderApprovalRequired}
+                onCheckedChange={(checked) => setSettings({ ...settings, builderApprovalRequired: checked })}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Maintenance Mode</p>
+                <p className="text-sm text-gray-500">Put the platform in maintenance mode</p>
+              </div>
+              <Switch
+                checked={settings.maintenanceMode}
+                onCheckedChange={(checked) => setSettings({ ...settings, maintenanceMode: checked })}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* System Information */}
+        <Card className="shadow-lg border-0">
+          <CardHeader>
+            <CardTitle>System Information</CardTitle>
+            <CardDescription>Platform status and technical details</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+              <div className="flex items-center">
+                <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+                <span className="font-medium">Database Status</span>
+              </div>
+              <Badge className="bg-green-100 text-green-800">Online</Badge>
+            </div>
+            
+            <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+              <div className="flex items-center">
+                <Wifi className="h-5 w-5 text-blue-600 mr-2" />
+                <span className="font-medium">API Status</span>
+              </div>
+              <Badge className="bg-blue-100 text-blue-800">Operational</Badge>
+            </div>
+            
+            <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+              <div className="flex items-center">
+                <Database className="h-5 w-5 text-purple-600 mr-2" />
+                <span className="font-medium">Storage Used</span>
+              </div>
+              <Badge className="bg-purple-100 text-purple-800">2.4 GB</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Integration Settings */}
+        <Card className="shadow-lg border-0">
+          <CardHeader>
+            <CardTitle>Integrations</CardTitle>
+            <CardDescription>Third-party service configurations</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-4 border border-gray-200 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium">Stripe Payment Gateway</span>
+                <Badge className="bg-green-100 text-green-800">Connected</Badge>
+              </div>
+              <p className="text-sm text-gray-500">Payment processing for subscriptions</p>
+            </div>
+            
+            <div className="p-4 border border-gray-200 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium">Email Service (SendGrid)</span>
+                <Badge className="bg-green-100 text-green-800">Connected</Badge>
+              </div>
+              <p className="text-sm text-gray-500">Transactional and marketing emails</p>
+            </div>
+            
+            <div className="p-4 border border-gray-200 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium">Google Analytics</span>
+                <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>
+              </div>
+              <p className="text-sm text-gray-500">Website analytics and tracking</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// Keep existing components (BuildersManager, BuilderForm, BulkUploadBuilders, BulkUploadTradeShows) as they are...
+function BuildersManager({ builders, searchTerm, setSearchTerm }: any) {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900">Manage Builders</h2>
+          <p className="text-gray-600">View, edit, and manage all exhibition stand builders</p>
+        </div>
+        <div className="flex space-x-3">
+          <Button variant="outline">
+            <Upload className="h-4 w-4 mr-2" />
+            Bulk Upload
+          </Button>
+          <Button className="bg-gradient-to-r from-blue-500 to-blue-600">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Builder
+          </Button>
+        </div>
+      </div>
+
+      {/* Search */}
+      <Card className="shadow-lg border-0">
+        <CardContent className="pt-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search builders..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Builders List */}
+      <Card className="shadow-lg border-0">
+        <CardHeader>
+          <CardTitle>Builders ({builders.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {builders.map((builder: any) => (
+              <div key={builder.id} className="flex items-center justify-between p-6 border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center">
+                    <Building className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 text-lg">{builder.companyName}</h4>
+                    <p className="text-gray-600 flex items-center">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {builder.headquarters.city}, {builder.headquarters.country}
+                    </p>
+                    <div className="flex items-center space-x-2 mt-2">
+                      <Badge variant={builder.verified ? 'default' : 'secondary'}>
+                        {builder.verified ? 'Verified' : 'Pending'}
+                      </Badge>
+                      <Badge variant="outline">
+                        <Star className="h-3 w-3 mr-1" />
+                        {builder.rating} ({builder.reviewCount})
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button variant="outline" size="sm">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm" className="text-red-600">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Keep other existing components as they are...
+function BuilderForm() { return <div>Builder Form Component</div>; }
+function BulkUploadBuilders(props: any) { return <div>Bulk Upload Builders Component</div>; }
+function BulkUploadTradeShows(props: any) { return <div>Bulk Upload Trade Shows Component</div>; }
+
+

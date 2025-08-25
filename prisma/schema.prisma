@@ -1,0 +1,569 @@
+// Database Schema for ExhibitBay Marketplace
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  phone         String?
+  emailVerified DateTime?
+  image         String?
+  role          UserRole @default(CLIENT)
+  status        UserStatus @default(ACTIVE)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lastLoginAt   DateTime?
+
+  // Authentication
+  accounts      Account[]
+  sessions      Session[]
+
+  // Relations
+  builderProfile BuilderProfile?
+  leads         Lead[]
+  quotes        Quote[]
+  subscriptions Subscription[]
+  notifications Notification[]
+  reviews       Review[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  BUILDER
+  CLIENT
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING
+  SUSPENDED
+  BANNED
+}
+
+// Builder Profile Management
+model BuilderProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Company Information
+  companyName       String
+  businessDescription String
+  website           String?
+  linkedinUrl       String?
+  foundedYear       Int?
+  teamSize          Int?
+  
+  // Contact Information
+  primaryEmail      String
+  primaryPhone      String
+  contactPerson     String?
+  contactPosition   String?
+  
+  // Business Details
+  registrationNumber String?
+  vatNumber         String?
+  logo              String?
+  coverImage        String?
+  
+  // Performance Metrics
+  rating            Float    @default(0)
+  reviewCount       Int      @default(0)
+  projectsCompleted Int      @default(0)
+  responseTime      String   @default("Within 24 hours")
+  
+  // Status & Verification
+  verified          Boolean  @default(false)
+  featured          Boolean  @default(false)
+  subscriptionPlan  SubscriptionPlan @default(FREE)
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  locations         BuilderLocation[]
+  services          BuilderService[]
+  portfolio         PortfolioItem[]
+  leads             LeadAssignment[]
+  quotes            Quote[]
+  reviews           Review[]
+  
+  @@map("builder_profiles")
+}
+
+enum SubscriptionPlan {
+  FREE
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+// Geographic Coverage
+model BuilderLocation {
+  id          String @id @default(cuid())
+  builderId   String
+  builder     BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  country     String
+  city        String
+  state       String?
+  region      String?
+  isHeadquarters Boolean @default(false)
+  
+  createdAt   DateTime @default(now())
+  
+  @@map("builder_locations")
+}
+
+// Services Offered
+model BuilderService {
+  id          String @id @default(cuid())
+  builderId   String
+  builder     BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  name        String
+  description String?
+  category    ServiceCategory
+  
+  @@map("builder_services")
+}
+
+enum ServiceCategory {
+  CUSTOM_DESIGN
+  MODULAR_SYSTEMS
+  PORTABLE_DISPLAYS
+  INSTALLATION
+  TRANSPORTATION
+  STORAGE
+  GRAPHICS
+  LIGHTING
+  FURNITURE
+  AV_EQUIPMENT
+}
+
+// Portfolio Management
+model PortfolioItem {
+  id          String @id @default(cuid())
+  builderId   String
+  builder     BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  title       String
+  description String?
+  imageUrl    String
+  projectYear Int?
+  client      String?
+  tradeShow   String?
+  standSize   Int?
+  category    String?
+  
+  createdAt   DateTime @default(now())
+  
+  @@map("portfolio_items")
+}
+
+// Lead Management System
+model Lead {
+  id              String   @id @default(cuid())
+  
+  // Client Information
+  clientId        String?
+  client          User?    @relation(fields: [clientId], references: [id])
+  
+  // Contact Details (for non-registered users)
+  companyName     String
+  contactName     String
+  contactEmail    String
+  contactPhone    String
+  
+  // Event Information
+  tradeShowName   String
+  eventDate       DateTime?
+  venue           String?
+  city            String
+  country         String
+  
+  // Stand Requirements
+  standSize       Int
+  budget          String
+  timeline        String
+  standType       String
+  
+  // Additional Requirements
+  specialRequests String?
+  needsInstallation Boolean @default(true)
+  needsTransportation Boolean @default(false)
+  needsStorage    Boolean @default(false)
+  needsAVEquipment Boolean @default(false)
+  needsLighting   Boolean @default(false)
+  needsFurniture  Boolean @default(false)
+  needsGraphics   Boolean @default(false)
+  
+  // Lead Scoring & Status
+  leadScore       Int      @default(50)
+  estimatedValue  Int?
+  status          LeadStatus @default(NEW)
+  priority        LeadPriority @default(MEDIUM)
+  
+  // Source Tracking
+  source          String   @default("website")
+  sourceDetails   String?
+  referrer        String?
+  utmCampaign     String?
+  utmSource       String?
+  utmMedium       String?
+  
+  // File Attachments
+  attachments     String // URLs to uploaded files
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  convertedAt     DateTime?
+  
+  // Relations
+  assignments     LeadAssignment[]
+  quotes          Quote[]
+  notes           LeadNote[]
+  
+  @@map("leads")
+}
+
+enum LeadStatus {
+  NEW
+  ASSIGNED
+  CONTACTED
+  QUOTED
+  CONVERTED
+  LOST
+  CANCELLED
+}
+
+enum LeadPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Lead Assignment to Builders
+model LeadAssignment {
+  id          String   @id @default(cuid())
+  
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  builderId   String
+  builder     BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  // Assignment Details
+  assignedAt  DateTime @default(now())
+  status      AssignmentStatus @default(PENDING)
+  
+  // Builder Actions
+  viewedAt    DateTime?
+  contactedAt DateTime?
+  quotedAt    DateTime?
+  declinedAt  DateTime?
+  declineReason String?
+  
+  // Lead Access Control
+  accessGranted Boolean @default(false)
+  accessPrice   Int?    // Price paid to access full lead details
+  
+  @@unique([leadId, builderId])
+  @@map("lead_assignments")
+}
+
+enum AssignmentStatus {
+  PENDING
+  VIEWED
+  CONTACTED
+  QUOTED
+  DECLINED
+  EXPIRED
+}
+
+// Quote Management
+model Quote {
+  id          String   @id @default(cuid())
+  
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  builderId   String
+  builder     BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  clientId    String?
+  client      User?    @relation(fields: [clientId], references: [id])
+  
+  // Quote Details
+  title       String
+  description String
+  totalPrice  Int      // In cents
+  currency    String   @default("USD")
+  validUntil  DateTime
+  
+  // Quote Items/Line Items
+  items       QuoteItem[]
+  
+  // Status & Timeline
+  status      QuoteStatus @default(DRAFT)
+  sentAt      DateTime?
+  viewedAt    DateTime?
+  acceptedAt  DateTime?
+  rejectedAt  DateTime?
+  
+  // Files & Documents
+  proposalDocument String?
+  technicalDrawings String
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("quotes")
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+// Quote Line Items
+model QuoteItem {
+  id          String @id @default(cuid())
+  quoteId     String
+  quote       Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  
+  name        String
+  description String?
+  quantity    Int    @default(1)
+  unitPrice   Int    // In cents
+  totalPrice  Int    // In cents
+  category    String?
+  
+  @@map("quote_items")
+}
+
+// Lead Notes & Communication
+model LeadNote {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  authorId  String
+  
+  content   String
+  type      NoteType @default(GENERAL)
+  isInternal Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  
+  @@map("lead_notes")
+}
+
+enum NoteType {
+  GENERAL
+  PHONE_CALL
+  EMAIL
+  MEETING
+  FOLLOW_UP
+  IMPORTANT
+}
+
+// Subscription & Billing
+model Subscription {
+  id              String   @id @default(cuid())
+  
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  plan            SubscriptionPlan
+  status          SubscriptionStatus @default(ACTIVE)
+  
+  // Billing Details
+  priceId         String   // Stripe price ID
+  customerId      String?  // Stripe customer ID
+  subscriptionId  String?  // Stripe subscription ID
+  
+  // Plan Limits
+  leadCredits     Int      @default(0)
+  featuredListings Int     @default(0)
+  portfolioItems  Int      @default(10)
+  
+  // Billing Cycle
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  cancelledAt     DateTime?
+  
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  PAST_DUE
+  UNPAID
+}
+
+// Reviews & Ratings
+model Review {
+  id          String @id @default(cuid())
+  
+  builderId   String
+  builder     BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  clientId    String
+  client      User   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  
+  // Review Content
+  rating      Int    // 1-5 stars
+  title       String?
+  content     String
+  
+  // Review Categories
+  qualityRating      Int @default(5)
+  communicationRating Int @default(5)
+  timelineRating     Int @default(5)
+  valueRating        Int @default(5)
+  
+  // Status
+  verified    Boolean @default(false)
+  published   Boolean @default(true)
+  
+  // Project Details
+  projectType String?
+  projectValue Int?
+  tradeShow   String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([builderId, clientId]) // One review per client-builder pair
+  @@map("reviews")
+}
+
+// Notification System
+model Notification {
+  id        String   @id @default(cuid())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type      NotificationType
+  title     String
+  message   String
+  
+  // Notification Data
+  data      String?    // Additional structured data
+  
+  // Status
+  read      Boolean  @default(false)
+  readAt    DateTime?
+  
+  // Action URL
+  actionUrl String?
+  
+  createdAt DateTime @default(now())
+  
+  @@map("notifications")
+}
+
+enum NotificationType {
+  LEAD_RECEIVED
+  QUOTE_REQUEST
+  PAYMENT_RECEIVED
+  SUBSCRIPTION_EXPIRING
+  PROFILE_APPROVED
+  REVIEW_RECEIVED
+  SYSTEM_ANNOUNCEMENT
+}
+
+// Trade Shows & Events (Static Data)
+model TradeShow {
+  id          String @id @default(cuid())
+  
+  name        String
+  slug        String @unique
+  description String?
+  
+  // Location
+  city        String
+  country     String
+  venue       String?
+  
+  // Dates
+  startDate   DateTime
+  endDate     DateTime
+  year        Int
+  
+  // Details
+  industry    String
+  website     String?
+  exhibitors  Int?
+  visitors    Int?
+  
+  // Status
+  active      Boolean @default(true)
+  featured    Boolean @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("trade_shows")
+}
+
+// NextAuth.js required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

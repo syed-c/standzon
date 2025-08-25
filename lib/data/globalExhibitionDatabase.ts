@@ -1,0 +1,1155 @@
+
+
+
+
+
+// COMPREHENSIVE GLOBAL EXHIBITION DATABASE
+// Complete coverage of all major exhibition markets worldwide
+// This database ensures every country and city page shows "Coming Soon" instead of 404
+
+export interface GlobalCity {
+  id: string;
+  name: string;
+  country: string;
+  countryCode: string;
+  continent: string;
+  region: string;
+  population: string;
+  annualEvents: number;
+  keyIndustries: string[];
+  majorVenues: string[];
+  isCapital?: boolean;
+  builderCount: number;
+  averageStandCost: number;
+  slug: string;
+  countrySlug: string;
+}
+
+export interface GlobalCountry {
+  id: string;
+  name: string;
+  code: string;
+  continent: string;
+  region: string;
+  capital: string;
+  currency: string;
+  totalCities: number;
+  totalVenues: number;
+  annualEvents: number;
+  keyIndustries: string[];
+  exhibitionRanking: number;
+  builderCount: number;
+  marketSize: number;
+  slug: string;
+}
+
+// COMPREHENSIVE GLOBAL COUNTRIES DATABASE
+export const GLOBAL_COUNTRIES: GlobalCountry[] = [
+  // TIER 1 - Major Exhibition Markets
+  {
+    id: 'germany',
+    name: 'Germany',
+    code: 'DE',
+    continent: 'Europe',
+    region: 'Central Europe',
+    capital: 'Berlin',
+    currency: 'EUR',
+    totalCities: 15,
+    totalVenues: 45,
+    annualEvents: 2800,
+    keyIndustries: ['Automotive', 'Manufacturing', 'Technology', 'Healthcare', 'Green Energy'],
+    exhibitionRanking: 1,
+    builderCount: 450,
+    marketSize: 15000,
+    slug: 'germany'
+  },
+  {
+    id: 'united-states',
+    name: 'United States',
+    code: 'US',
+    continent: 'North America',
+    region: 'North America',
+    capital: 'Washington D.C.',
+    currency: 'USD',
+    totalCities: 25,
+    totalVenues: 80,
+    annualEvents: 3500,
+    keyIndustries: ['Technology', 'Healthcare', 'Finance', 'Aerospace', 'Entertainment'],
+    exhibitionRanking: 1,
+    builderCount: 650,
+    marketSize: 18000,
+    slug: 'united-states'
+  },
+  {
+    id: 'china',
+    name: 'China',
+    code: 'CN',
+    continent: 'Asia',
+    region: 'East Asia',
+    capital: 'Beijing',
+    currency: 'CNY',
+    totalCities: 30,
+    totalVenues: 120,
+    annualEvents: 4200,
+    keyIndustries: ['Manufacturing', 'Technology', 'Electronics', 'Automotive', 'Textiles'],
+    exhibitionRanking: 1,
+    builderCount: 800,
+    marketSize: 20000,
+    slug: 'china'
+  },
+  {
+    id: 'united-kingdom',
+    name: 'United Kingdom',
+    code: 'GB',
+    continent: 'Europe',
+    region: 'Western Europe',
+    capital: 'London',
+    currency: 'GBP',
+    totalCities: 12,
+    totalVenues: 35,
+    annualEvents: 1800,
+    keyIndustries: ['Finance', 'Technology', 'Creative Industries', 'Healthcare', 'Education'],
+    exhibitionRanking: 1,
+    builderCount: 380,
+    marketSize: 12000,
+    slug: 'united-kingdom'
+  },
+  {
+    id: 'france',
+    name: 'France',
+    code: 'FR',
+    continent: 'Europe',
+    region: 'Western Europe',
+    capital: 'Paris',
+    currency: 'EUR',
+    totalCities: 10,
+    totalVenues: 28,
+    annualEvents: 1600,
+    keyIndustries: ['Luxury Goods', 'Fashion', 'Technology', 'Aerospace', 'Tourism'],
+    exhibitionRanking: 1,
+    builderCount: 320,
+    marketSize: 10000,
+    slug: 'france'
+  },
+  {
+    id: 'italy',
+    name: 'Italy',
+    code: 'IT',
+    continent: 'Europe',
+    region: 'Southern Europe',
+    capital: 'Rome',
+    currency: 'EUR',
+    totalCities: 8,
+    totalVenues: 22,
+    annualEvents: 1200,
+    keyIndustries: ['Fashion', 'Design', 'Manufacturing', 'Tourism', 'Food & Beverage'],
+    exhibitionRanking: 2,
+    builderCount: 280,
+    marketSize: 8000,
+    slug: 'italy'
+  },
+  {
+    id: 'japan',
+    name: 'Japan',
+    code: 'JP',
+    continent: 'Asia',
+    region: 'East Asia',
+    capital: 'Tokyo',
+    currency: 'JPY',
+    totalCities: 12,
+    totalVenues: 35,
+    annualEvents: 2200,
+    keyIndustries: ['Technology', 'Automotive', 'Electronics', 'Robotics', 'Pharmaceuticals'],
+    exhibitionRanking: 1,
+    builderCount: 420,
+    marketSize: 14000,
+    slug: 'japan'
+  },
+  {
+    id: 'united-arab-emirates',
+    name: 'United Arab Emirates',
+    code: 'AE',
+    continent: 'Asia',
+    region: 'Middle East',
+    capital: 'Abu Dhabi',
+    currency: 'AED',
+    totalCities: 4,
+    totalVenues: 12,
+    annualEvents: 800,
+    keyIndustries: ['Oil & Gas', 'Technology', 'Healthcare', 'Finance', 'Tourism'],
+    exhibitionRanking: 2,
+    builderCount: 180,
+    marketSize: 6000,
+    slug: 'united-arab-emirates'
+  },
+  {
+    id: 'singapore',
+    name: 'Singapore',
+    code: 'SG',
+    continent: 'Asia',
+    region: 'Southeast Asia',
+    capital: 'Singapore',
+    currency: 'SGD',
+    totalCities: 1,
+    totalVenues: 8,
+    annualEvents: 600,
+    keyIndustries: ['Finance', 'Technology', 'Shipping', 'Petrochemicals', 'Electronics'],
+    exhibitionRanking: 2,
+    builderCount: 120,
+    marketSize: 4500,
+    slug: 'singapore'
+  },
+  {
+    id: 'spain',
+    name: 'Spain',
+    code: 'ES',
+    continent: 'Europe',
+    region: 'Southern Europe',
+    capital: 'Madrid',
+    currency: 'EUR',
+    totalCities: 6,
+    totalVenues: 18,
+    annualEvents: 1000,
+    keyIndustries: ['Tourism', 'Automotive', 'Renewable Energy', 'Agriculture', 'Textiles'],
+    exhibitionRanking: 2,
+    builderCount: 220,
+    marketSize: 6500,
+    slug: 'spain'
+  },
+  {
+    id: 'netherlands',
+    name: 'Netherlands',
+    code: 'NL',
+    continent: 'Europe',
+    region: 'Western Europe',
+    capital: 'Amsterdam',
+    currency: 'EUR',
+    totalCities: 4,
+    totalVenues: 12,
+    annualEvents: 800,
+    keyIndustries: ['Technology', 'Agriculture', 'Logistics', 'Energy', 'Chemicals'],
+    exhibitionRanking: 2,
+    builderCount: 180,
+    marketSize: 5500,
+    slug: 'netherlands'
+  },
+  {
+    id: 'australia',
+    name: 'Australia',
+    code: 'AU',
+    continent: 'Oceania',
+    region: 'Oceania',
+    capital: 'Canberra',
+    currency: 'AUD',
+    totalCities: 8,
+    totalVenues: 20,
+    annualEvents: 1200,
+    keyIndustries: ['Mining', 'Agriculture', 'Technology', 'Tourism', 'Education'],
+    exhibitionRanking: 2,
+    builderCount: 250,
+    marketSize: 7000,
+    slug: 'australia'
+  },
+  {
+    id: 'canada',
+    name: 'Canada',
+    code: 'CA',
+    continent: 'North America',
+    region: 'North America',
+    capital: 'Ottawa',
+    currency: 'CAD',
+    totalCities: 10,
+    totalVenues: 25,
+    annualEvents: 1400,
+    keyIndustries: ['Natural Resources', 'Technology', 'Healthcare', 'Aerospace', 'Agriculture'],
+    exhibitionRanking: 2,
+    builderCount: 280,
+    marketSize: 8000,
+    slug: 'canada'
+  },
+  {
+    id: 'south-korea',
+    name: 'South Korea',
+    code: 'KR',
+    continent: 'Asia',
+    region: 'East Asia',
+    capital: 'Seoul',
+    currency: 'KRW',
+    totalCities: 6,
+    totalVenues: 15,
+    annualEvents: 1000,
+    keyIndustries: ['Technology', 'Automotive', 'Shipbuilding', 'Electronics', 'Steel'],
+    exhibitionRanking: 2,
+    builderCount: 200,
+    marketSize: 6000,
+    slug: 'south-korea'
+  },
+  {
+    id: 'india',
+    name: 'India',
+    code: 'IN',
+    continent: 'Asia',
+    region: 'South Asia',
+    capital: 'New Delhi',
+    currency: 'INR',
+    totalCities: 20,
+    totalVenues: 45,
+    annualEvents: 2500,
+    keyIndustries: ['Technology', 'Pharmaceuticals', 'Textiles', 'Automotive', 'Chemicals'],
+    exhibitionRanking: 2,
+    builderCount: 400,
+    marketSize: 9000,
+    slug: 'india'
+  },
+  {
+    id: 'brazil',
+    name: 'Brazil',
+    code: 'BR',
+    continent: 'South America',
+    region: 'South America',
+    capital: 'Brasília',
+    currency: 'BRL',
+    totalCities: 12,
+    totalVenues: 28,
+    annualEvents: 1600,
+    keyIndustries: ['Agriculture', 'Mining', 'Manufacturing', 'Oil & Gas', 'Technology'],
+    exhibitionRanking: 2,
+    builderCount: 300,
+    marketSize: 7500,
+    slug: 'brazil'
+  },
+  {
+    id: 'mexico',
+    name: 'Mexico',
+    code: 'MX',
+    continent: 'North America',
+    region: 'North America',
+    capital: 'Mexico City',
+    currency: 'MXN',
+    totalCities: 8,
+    totalVenues: 18,
+    annualEvents: 1200,
+    keyIndustries: ['Automotive', 'Electronics', 'Aerospace', 'Agriculture', 'Tourism'],
+    exhibitionRanking: 3,
+    builderCount: 220,
+    marketSize: 5000,
+    slug: 'mexico'
+  },
+  {
+    id: 'south-africa',
+    name: 'South Africa',
+    code: 'ZA',
+    continent: 'Africa',
+    region: 'Southern Africa',
+    capital: 'Cape Town',
+    currency: 'ZAR',
+    totalCities: 6,
+    totalVenues: 12,
+    annualEvents: 800,
+    keyIndustries: ['Mining', 'Agriculture', 'Manufacturing', 'Finance', 'Tourism'],
+    exhibitionRanking: 3,
+    builderCount: 150,
+    marketSize: 3500,
+    slug: 'south-africa'
+  },
+  {
+    id: 'thailand',
+    name: 'Thailand',
+    code: 'TH',
+    continent: 'Asia',
+    region: 'Southeast Asia',
+    capital: 'Bangkok',
+    currency: 'THB',
+    totalCities: 4,
+    totalVenues: 10,
+    annualEvents: 600,
+    keyIndustries: ['Tourism', 'Food & Beverage', 'Automotive', 'Electronics', 'Textiles'],
+    exhibitionRanking: 3,
+    builderCount: 120,
+    marketSize: 3000,
+    slug: 'thailand'
+  },
+  {
+    id: 'malaysia',
+    name: 'Malaysia',
+    code: 'MY',
+    continent: 'Asia',
+    region: 'Southeast Asia',
+    capital: 'Kuala Lumpur',
+    currency: 'MYR',
+    totalCities: 4,
+    totalVenues: 8,
+    annualEvents: 500,
+    keyIndustries: ['Technology', 'Palm Oil', 'Tourism', 'Electronics', 'Manufacturing'],
+    exhibitionRanking: 3,
+    builderCount: 100,
+    marketSize: 2500,
+    slug: 'malaysia'
+  },
+  {
+    id: 'saudi-arabia',
+    name: 'Saudi Arabia',
+    code: 'SA',
+    continent: 'Asia',
+    region: 'Middle East',
+    capital: 'Riyadh',
+    currency: 'SAR',
+    totalCities: 6,
+    totalVenues: 15,
+    annualEvents: 450,
+    keyIndustries: ['Oil & Gas', 'Petrochemicals', 'Construction', 'Healthcare', 'Technology'],
+    exhibitionRanking: 2,
+    builderCount: 150,
+    marketSize: 4500,
+    slug: 'saudi-arabia'
+  },
+  {
+    id: 'qatar',
+    name: 'Qatar',
+    code: 'QA',
+    continent: 'Asia',
+    region: 'Middle East',
+    capital: 'Doha',
+    currency: 'QAR',
+    totalCities: 2,
+    totalVenues: 6,
+    annualEvents: 180,
+    keyIndustries: ['Oil & Gas', 'Finance', 'Construction', 'Sports', 'Tourism'],
+    exhibitionRanking: 3,
+    builderCount: 80,
+    marketSize: 2200,
+    slug: 'qatar'
+  },
+  {
+    id: 'oman',
+    name: 'Oman',
+    code: 'OM',
+    continent: 'Asia',
+    region: 'Middle East',
+    capital: 'Muscat',
+    currency: 'OMR',
+    totalCities: 3,
+    totalVenues: 8,
+    annualEvents: 120,
+    keyIndustries: ['Oil & Gas', 'Tourism', 'Logistics', 'Mining', 'Agriculture'],
+    exhibitionRanking: 3,
+    builderCount: 60,
+    marketSize: 1800,
+    slug: 'oman'
+  },
+  {
+    id: 'bahrain',
+    name: 'Bahrain',
+    code: 'BH',
+    continent: 'Asia',
+    region: 'Middle East',
+    capital: 'Manama',
+    currency: 'BHD',
+    totalCities: 2,
+    totalVenues: 4,
+    annualEvents: 100,
+    keyIndustries: ['Finance', 'Oil & Gas', 'Tourism', 'Manufacturing', 'Technology'],
+    exhibitionRanking: 3,
+    builderCount: 45,
+    marketSize: 1200,
+    slug: 'bahrain'
+  },
+  {
+    id: 'kuwait',
+    name: 'Kuwait',
+    code: 'KW',
+    continent: 'Asia',
+    region: 'Middle East',
+    capital: 'Kuwait City',
+    currency: 'KWD',
+    totalCities: 2,
+    totalVenues: 5,
+    annualEvents: 150,
+    keyIndustries: ['Oil & Gas', 'Finance', 'Construction', 'Healthcare', 'Technology'],
+    exhibitionRanking: 3,
+    builderCount: 65,
+    marketSize: 1800,
+    slug: 'kuwait'
+  },
+  {
+    id: 'egypt',
+    name: 'Egypt',
+    code: 'EG',
+    continent: 'Africa',
+    region: 'North Africa',
+    capital: 'Cairo',
+    currency: 'EGP',
+    totalCities: 4,
+    totalVenues: 10,
+    annualEvents: 280,
+    keyIndustries: ['Tourism', 'Textiles', 'Oil & Gas', 'Agriculture', 'Construction'],
+    exhibitionRanking: 3,
+    builderCount: 120,
+    marketSize: 2800,
+    slug: 'egypt'
+  },
+  {
+    id: 'nigeria',
+    name: 'Nigeria',
+    code: 'NG',
+    continent: 'Africa',
+    region: 'West Africa',
+    capital: 'Abuja',
+    currency: 'NGN',
+    totalCities: 6,
+    totalVenues: 12,
+    annualEvents: 320,
+    keyIndustries: ['Oil & Gas', 'Agriculture', 'Technology', 'Manufacturing', 'Finance'],
+    exhibitionRanking: 3,
+    builderCount: 140,
+    marketSize: 3200,
+    slug: 'nigeria'
+  },
+  {
+    id: 'kenya',
+    name: 'Kenya',
+    code: 'KE',
+    continent: 'Africa',
+    region: 'East Africa',
+    capital: 'Nairobi',
+    currency: 'KES',
+    totalCities: 3,
+    totalVenues: 8,
+    annualEvents: 180,
+    keyIndustries: ['Agriculture', 'Tourism', 'Technology', 'Manufacturing', 'Finance'],
+    exhibitionRanking: 3,
+    builderCount: 85,
+    marketSize: 2000,
+    slug: 'kenya'
+  },
+  {
+    id: 'indonesia',
+    name: 'Indonesia',
+    code: 'ID',
+    continent: 'Asia',
+    region: 'Southeast Asia',
+    capital: 'Jakarta',
+    currency: 'IDR',
+    totalCities: 8,
+    totalVenues: 18,
+    annualEvents: 650,
+    keyIndustries: ['Manufacturing', 'Agriculture', 'Mining', 'Tourism', 'Technology'],
+    exhibitionRanking: 2,
+    builderCount: 180,
+    marketSize: 4200,
+    slug: 'indonesia'
+  },
+  {
+    id: 'philippines',
+    name: 'Philippines',
+    code: 'PH',
+    continent: 'Asia',
+    region: 'Southeast Asia',
+    capital: 'Manila',
+    currency: 'PHP',
+    totalCities: 5,
+    totalVenues: 12,
+    annualEvents: 380,
+    keyIndustries: ['Electronics', 'Agriculture', 'Tourism', 'Manufacturing', 'Technology'],
+    exhibitionRanking: 3,
+    builderCount: 120,
+    marketSize: 2800,
+    slug: 'philippines'
+  },
+  {
+    id: 'vietnam',
+    name: 'Vietnam',
+    code: 'VN',
+    continent: 'Asia',
+    region: 'Southeast Asia',
+    capital: 'Hanoi',
+    currency: 'VND',
+    totalCities: 4,
+    totalVenues: 10,
+    annualEvents: 320,
+    keyIndustries: ['Manufacturing', 'Agriculture', 'Tourism', 'Electronics', 'Textiles'],
+    exhibitionRanking: 3,
+    builderCount: 100,
+    marketSize: 2400,
+    slug: 'vietnam'
+  },
+  {
+    id: 'bangladesh',
+    name: 'Bangladesh',
+    code: 'BD',
+    continent: 'Asia',
+    region: 'South Asia',
+    capital: 'Dhaka',
+    currency: 'BDT',
+    totalCities: 4,
+    totalVenues: 8,
+    annualEvents: 280,
+    keyIndustries: ['Textiles', 'Agriculture', 'Pharmaceuticals', 'Leather', 'Technology'],
+    exhibitionRanking: 3,
+    builderCount: 95,
+    marketSize: 2200,
+    slug: 'bangladesh'
+  },
+  {
+    id: 'pakistan',
+    name: 'Pakistan',
+    code: 'PK',
+    continent: 'Asia',
+    region: 'South Asia',
+    capital: 'Islamabad',
+    currency: 'PKR',
+    totalCities: 6,
+    totalVenues: 12,
+    annualEvents: 350,
+    keyIndustries: ['Textiles', 'Agriculture', 'Chemicals', 'Sports Goods', 'Technology'],
+    exhibitionRanking: 3,
+    builderCount: 110,
+    marketSize: 2600,
+    slug: 'pakistan'
+  },
+  {
+    id: 'poland',
+    name: 'Poland',
+    code: 'PL',
+    continent: 'Europe',
+    region: 'Central Europe',
+    capital: 'Warsaw',
+    currency: 'PLN',
+    totalCities: 6,
+    totalVenues: 15,
+    annualEvents: 480,
+    keyIndustries: ['Manufacturing', 'Technology', 'Automotive', 'Agriculture', 'Energy'],
+    exhibitionRanking: 2,
+    builderCount: 140,
+    marketSize: 3800,
+    slug: 'poland'
+  },
+  {
+    id: 'turkey',
+    name: 'Turkey',
+    code: 'TR',
+    continent: 'Europe',
+    region: 'Western Asia',
+    capital: 'Ankara',
+    currency: 'TRY',
+    totalCities: 8,
+    totalVenues: 20,
+    annualEvents: 650,
+    keyIndustries: ['Manufacturing', 'Textiles', 'Automotive', 'Tourism', 'Construction'],
+    exhibitionRanking: 2,
+    builderCount: 200,
+    marketSize: 4500,
+    slug: 'turkey'
+  },
+  {
+    id: 'russia',
+    name: 'Russia',
+    code: 'RU',
+    continent: 'Europe',
+    region: 'Eastern Europe',
+    capital: 'Moscow',
+    currency: 'RUB',
+    totalCities: 12,
+    totalVenues: 30,
+    annualEvents: 850,
+    keyIndustries: ['Oil & Gas', 'Mining', 'Technology', 'Aerospace', 'Defense'],
+    exhibitionRanking: 2,
+    builderCount: 280,
+    marketSize: 6500,
+    slug: 'russia'
+  },
+  {
+    id: 'sweden',
+    name: 'Sweden',
+    code: 'SE',
+    continent: 'Europe',
+    region: 'Northern Europe',
+    capital: 'Stockholm',
+    currency: 'SEK',
+    totalCities: 4,
+    totalVenues: 10,
+    annualEvents: 320,
+    keyIndustries: ['Technology', 'Automotive', 'Forestry', 'Mining', 'Healthcare'],
+    exhibitionRanking: 2,
+    builderCount: 95,
+    marketSize: 3200,
+    slug: 'sweden'
+  },
+  {
+    id: 'norway',
+    name: 'Norway',
+    code: 'NO',
+    continent: 'Europe',
+    region: 'Northern Europe',
+    capital: 'Oslo',
+    currency: 'NOK',
+    totalCities: 3,
+    totalVenues: 8,
+    annualEvents: 220,
+    keyIndustries: ['Oil & Gas', 'Maritime', 'Technology', 'Fisheries', 'Tourism'],
+    exhibitionRanking: 3,
+    builderCount: 75,
+    marketSize: 2800,
+    slug: 'norway'
+  },
+  {
+    id: 'denmark',
+    name: 'Denmark',
+    code: 'DK',
+    continent: 'Europe',
+    region: 'Northern Europe',
+    capital: 'Copenhagen',
+    currency: 'DKK',
+    totalCities: 3,
+    totalVenues: 8,
+    annualEvents: 280,
+    keyIndustries: ['Technology', 'Pharmaceuticals', 'Agriculture', 'Renewable Energy', 'Design'],
+    exhibitionRanking: 2,
+    builderCount: 85,
+    marketSize: 3000,
+    slug: 'denmark'
+  },
+  {
+    id: 'finland',
+    name: 'Finland',
+    code: 'FI',
+    continent: 'Europe',
+    region: 'Northern Europe',
+    capital: 'Helsinki',
+    currency: 'EUR',
+    totalCities: 3,
+    totalVenues: 6,
+    annualEvents: 200,
+    keyIndustries: ['Technology', 'Forestry', 'Mining', 'Gaming', 'Clean Technology'],
+    exhibitionRanking: 3,
+    builderCount: 65,
+    marketSize: 2400,
+    slug: 'finland'
+  },
+  {
+    id: 'belgium',
+    name: 'Belgium',
+    code: 'BE',
+    continent: 'Europe',
+    region: 'Western Europe',
+    capital: 'Brussels',
+    currency: 'EUR',
+    totalCities: 4,
+    totalVenues: 10,
+    annualEvents: 350,
+    keyIndustries: ['Chemicals', 'Pharmaceuticals', 'Technology', 'Logistics', 'Food Processing'],
+    exhibitionRanking: 8,
+    builderCount: 90,
+    marketSize: 3200,
+    slug: 'belgium'
+  },
+  {
+    id: 'austria',
+    name: 'Austria',
+    code: 'AT',
+    continent: 'Europe',
+    region: 'Central Europe',
+    capital: 'Vienna',
+    currency: 'EUR',
+    totalCities: 4,
+    totalVenues: 8,
+    annualEvents: 280,
+    keyIndustries: ['Technology', 'Tourism', 'Manufacturing', 'Energy', 'Forestry'],
+    exhibitionRanking: 2,
+    builderCount: 80,
+    marketSize: 2800,
+    slug: 'austria'
+  },
+  {
+    id: 'switzerland',
+    name: 'Switzerland',
+    code: 'CH',
+    continent: 'Europe',
+    region: 'Central Europe',
+    capital: 'Bern',
+    currency: 'CHF',
+    totalCities: 4,
+    totalVenues: 8,
+    annualEvents: 320,
+    keyIndustries: ['Finance', 'Pharmaceuticals', 'Technology', 'Precision Manufacturing', 'Tourism'],
+    exhibitionRanking: 2,
+    builderCount: 85,
+    marketSize: 3500,
+    slug: 'switzerland'
+  },
+  // SOUTH AMERICA EXPANSION
+  {
+    id: 'argentina',
+    name: 'Argentina',
+    code: 'AR',
+    continent: 'South America',
+    region: 'South America',
+    capital: 'Buenos Aires',
+    currency: 'ARS',
+    totalCities: 6,
+    totalVenues: 12,
+    annualEvents: 420,
+    keyIndustries: ['Agriculture', 'Manufacturing', 'Mining', 'Technology', 'Wine'],
+    exhibitionRanking: 3,
+    builderCount: 120,
+    marketSize: 3200,
+    slug: 'argentina'
+  },
+  {
+    id: 'chile',
+    name: 'Chile',
+    code: 'CL',
+    continent: 'South America',
+    region: 'South America',
+    capital: 'Santiago',
+    currency: 'CLP',
+    totalCities: 4,
+    totalVenues: 8,
+    annualEvents: 280,
+    keyIndustries: ['Mining', 'Agriculture', 'Wine', 'Technology', 'Forestry'],
+    exhibitionRanking: 3,
+    builderCount: 85,
+    marketSize: 2400,
+    slug: 'chile'
+  },
+  {
+    id: 'colombia',
+    name: 'Colombia',
+    code: 'CO',
+    continent: 'South America',
+    region: 'South America',
+    capital: 'Bogotá',
+    currency: 'COP',
+    totalCities: 5,
+    totalVenues: 10,
+    annualEvents: 350,
+    keyIndustries: ['Oil & Gas', 'Agriculture', 'Manufacturing', 'Technology', 'Tourism'],
+    exhibitionRanking: 3,
+    builderCount: 100,
+    marketSize: 2800,
+    slug: 'colombia'
+  },
+  {
+    id: 'peru',
+    name: 'Peru',
+    code: 'PE',
+    continent: 'South America',
+    region: 'South America',
+    capital: 'Lima',
+    currency: 'PEN',
+    totalCities: 3,
+    totalVenues: 6,
+    annualEvents: 220,
+    keyIndustries: ['Mining', 'Agriculture', 'Textiles', 'Tourism', 'Fisheries'],
+    exhibitionRanking: 3,
+    builderCount: 70,
+    marketSize: 2000,
+    slug: 'peru'
+  }
+];
+
+// COMPREHENSIVE GLOBAL CITIES DATABASE
+export const GLOBAL_CITIES: GlobalCity[] = [
+  // GERMANY
+  { id: 'berlin-de', name: 'Berlin', country: 'Germany', countryCode: 'DE', continent: 'Europe', region: 'Central Europe', population: '3.7M', annualEvents: 450, keyIndustries: ['Technology', 'Government', 'Media'], majorVenues: ['Messe Berlin', 'CityCube Berlin'], isCapital: true, builderCount: 85, averageStandCost: 520, slug: 'berlin', countrySlug: 'germany' },
+  { id: 'munich-de', name: 'Munich', country: 'Germany', countryCode: 'DE', continent: 'Europe', region: 'Central Europe', population: '1.5M', annualEvents: 380, keyIndustries: ['Automotive', 'Technology', 'Aerospace'], majorVenues: ['Messe München'], builderCount: 75, averageStandCost: 540, slug: 'munich', countrySlug: 'germany' },
+  { id: 'frankfurt-de', name: 'Frankfurt', country: 'Germany', countryCode: 'DE', continent: 'Europe', region: 'Central Europe', population: '750K', annualEvents: 420, keyIndustries: ['Finance', 'Aviation', 'Trade'], majorVenues: ['Messe Frankfurt'], builderCount: 95, averageStandCost: 580, slug: 'frankfurt', countrySlug: 'germany' },
+  { id: 'cologne-de', name: 'Cologne', country: 'Germany', countryCode: 'DE', continent: 'Europe', region: 'Central Europe', population: '1.1M', annualEvents: 320, keyIndustries: ['Media', 'Automotive', 'Chemicals'], majorVenues: ['Koelnmesse'], builderCount: 65, averageStandCost: 500, slug: 'cologne', countrySlug: 'germany' },
+  { id: 'dusseldorf-de', name: 'Düsseldorf', country: 'Germany', countryCode: 'DE', continent: 'Europe', region: 'Central Europe', population: '650K', annualEvents: 280, keyIndustries: ['Fashion', 'Art', 'Technology'], majorVenues: ['Messe Düsseldorf'], builderCount: 55, averageStandCost: 520, slug: 'dusseldorf', countrySlug: 'germany' },
+  { id: 'hamburg-de', name: 'Hamburg', country: 'Germany', countryCode: 'DE', continent: 'Europe', region: 'Central Europe', population: '1.9M', annualEvents: 250, keyIndustries: ['Maritime', 'Media', 'Aviation'], majorVenues: ['Hamburg Messe'], builderCount: 45, averageStandCost: 480, slug: 'hamburg', countrySlug: 'germany' },
+  { id: 'hannover-de', name: 'Hannover', country: 'Germany', countryCode: 'DE', continent: 'Europe', region: 'Central Europe', population: '540K', annualEvents: 200, keyIndustries: ['Manufacturing', 'Technology', 'Automotive'], majorVenues: ['Deutsche Messe'], builderCount: 40, averageStandCost: 460, slug: 'hannover', countrySlug: 'germany' },
+
+  // UNITED STATES
+  { id: 'las-vegas-us', name: 'Las Vegas', country: 'United States', countryCode: 'US', continent: 'North America', region: 'North America', population: '2.3M', annualEvents: 650, keyIndustries: ['Technology', 'Entertainment', 'Gaming'], majorVenues: ['Las Vegas Convention Center', 'Mandalay Bay'], builderCount: 120, averageStandCost: 650, slug: 'las-vegas', countrySlug: 'united-states' },
+  { id: 'chicago-us', name: 'Chicago', country: 'United States', countryCode: 'US', continent: 'North America', region: 'North America', population: '9.5M', annualEvents: 580, keyIndustries: ['Manufacturing', 'Finance', 'Technology'], majorVenues: ['McCormick Place'], builderCount: 110, averageStandCost: 620, slug: 'chicago', countrySlug: 'united-states' },
+  { id: 'orlando-us', name: 'Orlando', country: 'United States', countryCode: 'US', continent: 'North America', region: 'North America', population: '2.6M', annualEvents: 480, keyIndustries: ['Tourism', 'Technology', 'Aerospace'], majorVenues: ['Orange County Convention Center'], builderCount: 85, averageStandCost: 580, slug: 'orlando', countrySlug: 'united-states' },
+  { id: 'new-york-us', name: 'New York', country: 'United States', countryCode: 'US', continent: 'North America', region: 'North America', population: '20.3M', annualEvents: 520, keyIndustries: ['Finance', 'Technology', 'Fashion'], majorVenues: ['Javits Center'], builderCount: 95, averageStandCost: 750, slug: 'new-york', countrySlug: 'united-states' },
+  { id: 'atlanta-us', name: 'Atlanta', country: 'United States', countryCode: 'US', continent: 'North America', region: 'North America', population: '6.1M', annualEvents: 420, keyIndustries: ['Technology', 'Logistics', 'Healthcare'], majorVenues: ['Georgia World Congress Center'], builderCount: 75, averageStandCost: 560, slug: 'atlanta', countrySlug: 'united-states' },
+  { id: 'los-angeles-us', name: 'Los Angeles', country: 'United States', countryCode: 'US', continent: 'North America', region: 'North America', population: '13.2M', annualEvents: 380, keyIndustries: ['Entertainment', 'Technology', 'Aerospace'], majorVenues: ['Los Angeles Convention Center'], builderCount: 85, averageStandCost: 680, slug: 'los-angeles', countrySlug: 'united-states' },
+
+  // CHINA
+  { id: 'shanghai-cn', name: 'Shanghai', country: 'China', countryCode: 'CN', continent: 'Asia', region: 'East Asia', population: '28.5M', annualEvents: 850, keyIndustries: ['Finance', 'Manufacturing', 'Technology'], majorVenues: ['National Exhibition and Convention Center'], builderCount: 180, averageStandCost: 420, slug: 'shanghai', countrySlug: 'china' },
+  { id: 'beijing-cn', name: 'Beijing', country: 'China', countryCode: 'CN', continent: 'Asia', region: 'East Asia', population: '22.2M', annualEvents: 720, keyIndustries: ['Government', 'Technology', 'Education'], majorVenues: ['China National Convention Center'], isCapital: true, builderCount: 160, averageStandCost: 450, slug: 'beijing', countrySlug: 'china' },
+  { id: 'guangzhou-cn', name: 'Guangzhou', country: 'China', countryCode: 'CN', continent: 'Asia', region: 'East Asia', population: '15.3M', annualEvents: 620, keyIndustries: ['Manufacturing', 'Trade', 'Electronics'], majorVenues: ['China Import and Export Fair Complex'], builderCount: 140, averageStandCost: 380, slug: 'guangzhou', countrySlug: 'china' },
+  { id: 'shenzhen-cn', name: 'Shenzhen', country: 'China', countryCode: 'CN', continent: 'Asia', region: 'East Asia', population: '17.6M', annualEvents: 480, keyIndustries: ['Technology', 'Electronics', 'Manufacturing'], majorVenues: ['Shenzhen Convention and Exhibition Center'], builderCount: 120, averageStandCost: 400, slug: 'shenzhen', countrySlug: 'china' },
+
+  // UNITED KINGDOM
+  { id: 'london-gb', name: 'London', country: 'United Kingdom', countryCode: 'GB', continent: 'Europe', region: 'Western Europe', population: '9.5M', annualEvents: 680, keyIndustries: ['Finance', 'Technology', 'Creative Industries'], majorVenues: ['ExCeL London', 'Olympia London'], isCapital: true, builderCount: 150, averageStandCost: 650, slug: 'london', countrySlug: 'united-kingdom' },
+  { id: 'birmingham-gb', name: 'Birmingham', country: 'United Kingdom', countryCode: 'GB', continent: 'Europe', region: 'Western Europe', population: '2.9M', annualEvents: 320, keyIndustries: ['Manufacturing', 'Technology', 'Automotive'], majorVenues: ['NEC Birmingham'], builderCount: 85, averageStandCost: 520, slug: 'birmingham', countrySlug: 'united-kingdom' },
+  { id: 'manchester-gb', name: 'Manchester', country: 'United Kingdom', countryCode: 'GB', continent: 'Europe', region: 'Western Europe', population: '2.7M', annualEvents: 280, keyIndustries: ['Technology', 'Media', 'Healthcare'], majorVenues: ['Manchester Central'], builderCount: 65, averageStandCost: 480, slug: 'manchester', countrySlug: 'united-kingdom' },
+
+  // FRANCE
+  { id: 'paris-fr', name: 'Paris', country: 'France', countryCode: 'FR', continent: 'Europe', region: 'Western Europe', population: '12.4M', annualEvents: 580, keyIndustries: ['Luxury Goods', 'Fashion', 'Technology'], majorVenues: ['Paris Expo Porte de Versailles'], isCapital: true, builderCount: 120, averageStandCost: 620, slug: 'paris', countrySlug: 'france' },
+  { id: 'lyon-fr', name: 'Lyon', country: 'France', countryCode: 'FR', continent: 'Europe', region: 'Western Europe', population: '2.3M', annualEvents: 280, keyIndustries: ['Pharmaceuticals', 'Technology', 'Textiles'], majorVenues: ['Eurexpo Lyon'], builderCount: 65, averageStandCost: 520, slug: 'lyon', countrySlug: 'france' },
+  { id: 'cannes-fr', name: 'Cannes', country: 'France', countryCode: 'FR', continent: 'Europe', region: 'Western Europe', population: '75K', annualEvents: 180, keyIndustries: ['Entertainment', 'Luxury', 'Tourism'], majorVenues: ['Palais des Festivals'], builderCount: 45, averageStandCost: 680, slug: 'cannes', countrySlug: 'france' },
+
+  // ITALY
+  { id: 'milan-it', name: 'Milan', country: 'Italy', countryCode: 'IT', continent: 'Europe', region: 'Southern Europe', population: '3.3M', annualEvents: 420, keyIndustries: ['Fashion', 'Design', 'Finance'], majorVenues: ['Fiera Milano'], builderCount: 95, averageStandCost: 580, slug: 'milan', countrySlug: 'italy' },
+  { id: 'bologna-it', name: 'Bologna', country: 'Italy', countryCode: 'IT', continent: 'Europe', region: 'Southern Europe', population: '1.0M', annualEvents: 280, keyIndustries: ['Manufacturing', 'Food', 'Automotive'], majorVenues: ['BolognaFiere'], builderCount: 65, averageStandCost: 480, slug: 'bologna', countrySlug: 'italy' },
+  { id: 'rome-it', name: 'Rome', country: 'Italy', countryCode: 'IT', continent: 'Europe', region: 'Southern Europe', population: '4.3M', annualEvents: 220, keyIndustries: ['Tourism', 'Government', 'Culture'], majorVenues: ['Fiera di Roma'], isCapital: true, builderCount: 55, averageStandCost: 520, slug: 'rome', countrySlug: 'italy' },
+
+  // JAPAN
+  { id: 'tokyo-jp', name: 'Tokyo', country: 'Japan', countryCode: 'JP', continent: 'Asia', region: 'East Asia', population: '37.4M', annualEvents: 680, keyIndustries: ['Technology', 'Finance', 'Automotive'], majorVenues: ['Tokyo Big Sight'], isCapital: true, builderCount: 150, averageStandCost: 650, slug: 'tokyo', countrySlug: 'japan' },
+  { id: 'osaka-jp', name: 'Osaka', country: 'Japan', countryCode: 'JP', continent: 'Asia', region: 'East Asia', population: '19.2M', annualEvents: 420, keyIndustries: ['Manufacturing', 'Electronics', 'Pharmaceuticals'], majorVenues: ['Intex Osaka'], builderCount: 95, averageStandCost: 580, slug: 'osaka', countrySlug: 'japan' },
+  { id: 'nagoya-jp', name: 'Nagoya', country: 'Japan', countryCode: 'JP', continent: 'Asia', region: 'East Asia', population: '9.6M', annualEvents: 280, keyIndustries: ['Automotive', 'Aerospace', 'Ceramics'], majorVenues: ['Port Messe Nagoya'], builderCount: 65, averageStandCost: 520, slug: 'nagoya', countrySlug: 'japan' },
+
+  // UNITED ARAB EMIRATES
+  { id: 'dubai-ae', name: 'Dubai', country: 'United Arab Emirates', countryCode: 'AE', continent: 'Asia', region: 'Middle East', population: '3.5M', annualEvents: 480, keyIndustries: ['Oil & Gas', 'Technology', 'Healthcare'], majorVenues: ['Dubai World Trade Centre'], builderCount: 120, averageStandCost: 520, slug: 'dubai', countrySlug: 'united-arab-emirates' },
+  { id: 'abu-dhabi-ae', name: 'Abu Dhabi', country: 'United Arab Emirates', countryCode: 'AE', continent: 'Asia', region: 'Middle East', population: '1.5M', annualEvents: 220, keyIndustries: ['Oil & Gas', 'Finance', 'Tourism'], majorVenues: ['ADNEC Abu Dhabi'], isCapital: true, builderCount: 45, averageStandCost: 480, slug: 'abu-dhabi', countrySlug: 'united-arab-emirates' },
+
+  // SINGAPORE
+  { id: 'singapore-sg', name: 'Singapore', country: 'Singapore', countryCode: 'SG', continent: 'Asia', region: 'Southeast Asia', population: '5.9M', annualEvents: 600, keyIndustries: ['Finance', 'Technology', 'Shipping'], majorVenues: ['Singapore Expo'], isCapital: true, builderCount: 120, averageStandCost: 580, slug: 'singapore', countrySlug: 'singapore' },
+
+  // SPAIN
+  { id: 'barcelona-es', name: 'Barcelona', country: 'Spain', countryCode: 'ES', continent: 'Europe', region: 'Southern Europe', population: '5.6M', annualEvents: 380, keyIndustries: ['Tourism', 'Technology', 'Design'], majorVenues: ['Fira Barcelona'], builderCount: 85, averageStandCost: 480, slug: 'barcelona', countrySlug: 'spain' },
+  { id: 'madrid-es', name: 'Madrid', country: 'Spain', countryCode: 'ES', continent: 'Europe', region: 'Southern Europe', population: '6.8M', annualEvents: 320, keyIndustries: ['Government', 'Finance', 'Technology'], majorVenues: ['IFEMA'], isCapital: true, builderCount: 75, averageStandCost: 460, slug: 'madrid', countrySlug: 'spain' },
+
+  // NETHERLANDS
+  { id: 'amsterdam-nl', name: 'Amsterdam', country: 'Netherlands', countryCode: 'NL', continent: 'Europe', region: 'Western Europe', population: '2.4M', annualEvents: 420, keyIndustries: ['Technology', 'Finance', 'Agriculture'], majorVenues: ['RAI Amsterdam'], isCapital: true, builderCount: 95, averageStandCost: 550, slug: 'amsterdam', countrySlug: 'netherlands' },
+  { id: 'utrecht-nl', name: 'Utrecht', country: 'Netherlands', countryCode: 'NL', continent: 'Europe', region: 'Western Europe', population: '1.4M', annualEvents: 180, keyIndustries: ['Technology', 'Healthcare', 'Education'], majorVenues: ['Jaarbeurs Utrecht'], builderCount: 45, averageStandCost: 480, slug: 'utrecht', countrySlug: 'netherlands' },
+
+  // AUSTRALIA
+  { id: 'sydney-au', name: 'Sydney', country: 'Australia', countryCode: 'AU', continent: 'Oceania', region: 'Oceania', population: '5.4M', annualEvents: 380, keyIndustries: ['Finance', 'Technology', 'Tourism'], majorVenues: ['ICC Sydney'], builderCount: 85, averageStandCost: 520, slug: 'sydney', countrySlug: 'australia' },
+  { id: 'melbourne-au', name: 'Melbourne', country: 'Australia', countryCode: 'AU', continent: 'Oceania', region: 'Oceania', population: '5.2M', annualEvents: 350, keyIndustries: ['Manufacturing', 'Arts', 'Technology'], majorVenues: ['Melbourne Convention Centre'], builderCount: 75, averageStandCost: 480, slug: 'melbourne', countrySlug: 'australia' },
+  { id: 'brisbane-au', name: 'Brisbane', country: 'Australia', countryCode: 'AU', continent: 'Oceania', region: 'Oceania', population: '2.6M', annualEvents: 220, keyIndustries: ['Mining', 'Agriculture', 'Technology'], majorVenues: ['Brisbane Convention Centre'], builderCount: 45, averageStandCost: 450, slug: 'brisbane', countrySlug: 'australia' },
+  { id: 'perth-au', name: 'Perth', country: 'Australia', countryCode: 'AU', continent: 'Oceania', region: 'Oceania', population: '2.1M', annualEvents: 180, keyIndustries: ['Mining', 'Oil & Gas', 'Agriculture'], majorVenues: ['Perth Convention Centre'], builderCount: 35, averageStandCost: 420, slug: 'perth', countrySlug: 'australia' },
+
+  // CANADA
+  { id: 'toronto-ca', name: 'Toronto', country: 'Canada', countryCode: 'CA', continent: 'North America', region: 'North America', population: '6.4M', annualEvents: 420, keyIndustries: ['Finance', 'Technology', 'Healthcare'], majorVenues: ['Metro Toronto Convention Centre'], builderCount: 85, averageStandCost: 520, slug: 'toronto', countrySlug: 'canada' },
+  { id: 'vancouver-ca', name: 'Vancouver', country: 'Canada', countryCode: 'CA', continent: 'North America', region: 'North America', population: '2.6M', annualEvents: 280, keyIndustries: ['Technology', 'Natural Resources', 'Film'], majorVenues: ['Vancouver Convention Centre'], builderCount: 55, averageStandCost: 480, slug: 'vancouver', countrySlug: 'canada' },
+  { id: 'montreal-ca', name: 'Montreal', country: 'Canada', countryCode: 'CA', continent: 'North America', region: 'North America', population: '4.3M', annualEvents: 320, keyIndustries: ['Aerospace', 'Technology', 'Pharmaceuticals'], majorVenues: ['Palais des congrès de Montréal'], builderCount: 65, averageStandCost: 460, slug: 'montreal', countrySlug: 'canada' },
+
+  // SOUTH KOREA
+  { id: 'seoul-kr', name: 'Seoul', country: 'South Korea', countryCode: 'KR', continent: 'Asia', region: 'East Asia', population: '25.7M', annualEvents: 580, keyIndustries: ['Technology', 'Automotive', 'Entertainment'], majorVenues: ['COEX'], isCapital: true, builderCount: 120, averageStandCost: 450, slug: 'seoul', countrySlug: 'south-korea' },
+  { id: 'busan-kr', name: 'Busan', country: 'South Korea', countryCode: 'KR', continent: 'Asia', region: 'East Asia', population: '3.4M', annualEvents: 220, keyIndustries: ['Shipbuilding', 'Port', 'Tourism'], majorVenues: ['BEXCO'], builderCount: 45, averageStandCost: 380, slug: 'busan', countrySlug: 'south-korea' },
+
+  // INDIA
+  { id: 'mumbai-in', name: 'Mumbai', country: 'India', countryCode: 'IN', continent: 'Asia', region: 'South Asia', population: '20.4M', annualEvents: 520, keyIndustries: ['Finance', 'Entertainment', 'Textiles'], majorVenues: ['Bombay Exhibition Centre'], builderCount: 95, averageStandCost: 280, slug: 'mumbai', countrySlug: 'india' },
+  { id: 'delhi-in', name: 'Delhi', country: 'India', countryCode: 'IN', continent: 'Asia', region: 'South Asia', population: '32.9M', annualEvents: 480, keyIndustries: ['Government', 'Technology', 'Healthcare'], majorVenues: ['Pragati Maidan'], isCapital: true, builderCount: 85, averageStandCost: 260, slug: 'delhi', countrySlug: 'india' },
+  { id: 'bangalore-in', name: 'Bangalore', country: 'India', countryCode: 'IN', continent: 'Asia', region: 'South Asia', population: '13.2M', annualEvents: 380, keyIndustries: ['Technology', 'Aerospace', 'Biotechnology'], majorVenues: ['Bangalore International Exhibition Centre'], builderCount: 75, averageStandCost: 240, slug: 'bangalore', countrySlug: 'india' },
+
+  // BRAZIL
+  { id: 'sao-paulo-br', name: 'São Paulo', country: 'Brazil', countryCode: 'BR', continent: 'South America', region: 'South America', population: '22.4M', annualEvents: 580, keyIndustries: ['Manufacturing', 'Finance', 'Technology'], majorVenues: ['Expo Center Norte'], builderCount: 120, averageStandCost: 320, slug: 'sao-paulo', countrySlug: 'brazil' },
+  { id: 'rio-de-janeiro-br', name: 'Rio de Janeiro', country: 'Brazil', countryCode: 'BR', continent: 'South America', region: 'South America', population: '13.7M', annualEvents: 280, keyIndustries: ['Oil & Gas', 'Tourism', 'Entertainment'], majorVenues: ['Riocentro'], builderCount: 65, averageStandCost: 300, slug: 'rio-de-janeiro', countrySlug: 'brazil' },
+
+  // MEXICO
+  { id: 'mexico-city-mx', name: 'Mexico City', country: 'Mexico', countryCode: 'MX', continent: 'North America', region: 'North America', population: '22.5M', annualEvents: 420, keyIndustries: ['Government', 'Finance', 'Manufacturing'], majorVenues: ['Centro Citibanamex'], isCapital: true, builderCount: 85, averageStandCost: 280, slug: 'mexico-city', countrySlug: 'mexico' },
+  { id: 'guadalajara-mx', name: 'Guadalajara', country: 'Mexico', countryCode: 'MX', continent: 'North America', region: 'North America', population: '5.3M', annualEvents: 220, keyIndustries: ['Technology', 'Electronics', 'Automotive'], majorVenues: ['Expo Guadalajara'], builderCount: 45, averageStandCost: 260, slug: 'guadalajara', countrySlug: 'mexico' },
+
+  // SOUTH AFRICA
+  { id: 'johannesburg-za', name: 'Johannesburg', country: 'South Africa', countryCode: 'ZA', continent: 'Africa', region: 'Southern Africa', population: '5.6M', annualEvents: 320, keyIndustries: ['Mining', 'Finance', 'Manufacturing'], majorVenues: ['Johannesburg Expo Centre'], builderCount: 65, averageStandCost: 220, slug: 'johannesburg', countrySlug: 'south-africa' },
+  { id: 'cape-town-za', name: 'Cape Town', country: 'South Africa', countryCode: 'ZA', continent: 'Africa', region: 'Southern Africa', population: '4.7M', annualEvents: 280, keyIndustries: ['Tourism', 'Agriculture', 'Technology'], majorVenues: ['Cape Town International Convention Centre'], isCapital: true, builderCount: 55, averageStandCost: 200, slug: 'cape-town', countrySlug: 'south-africa' },
+
+  // THAILAND
+  { id: 'bangkok-th', name: 'Bangkok', country: 'Thailand', countryCode: 'TH', continent: 'Asia', region: 'Southeast Asia', population: '10.5M', annualEvents: 420, keyIndustries: ['Tourism', 'Food & Beverage', 'Automotive'], majorVenues: ['BITEC'], isCapital: true, builderCount: 85, averageStandCost: 240, slug: 'bangkok', countrySlug: 'thailand' },
+
+  // MALAYSIA
+  { id: 'kuala-lumpur-my', name: 'Kuala Lumpur', country: 'Malaysia', countryCode: 'MY', continent: 'Asia', region: 'Southeast Asia', population: '8.4M', annualEvents: 380, keyIndustries: ['Technology', 'Palm Oil', 'Tourism'], majorVenues: ['Kuala Lumpur Convention Centre'], isCapital: true, builderCount: 75, averageStandCost: 280, slug: 'kuala-lumpur', countrySlug: 'malaysia' },
+  
+  // SAUDI ARABIA
+  { id: 'riyadh-sa', name: 'Riyadh', country: 'Saudi Arabia', countryCode: 'SA', continent: 'Asia', region: 'Middle East', population: '7.6M', annualEvents: 280, keyIndustries: ['Oil & Gas', 'Government', 'Finance'], majorVenues: ['Riyadh International Convention & Exhibition Center'], isCapital: true, builderCount: 85, averageStandCost: 420, slug: 'riyadh', countrySlug: 'saudi-arabia' },
+  { id: 'jeddah-sa', name: 'Jeddah', country: 'Saudi Arabia', countryCode: 'SA', continent: 'Asia', region: 'Middle East', population: '4.7M', annualEvents: 120, keyIndustries: ['Trade', 'Tourism', 'Logistics'], majorVenues: ['Jeddah Centre for Forums & Events'], builderCount: 45, averageStandCost: 380, slug: 'jeddah', countrySlug: 'saudi-arabia' },
+  { id: 'dammam-sa', name: 'Dammam', country: 'Saudi Arabia', countryCode: 'SA', continent: 'Asia', region: 'Middle East', population: '1.5M', annualEvents: 50, keyIndustries: ['Oil & Gas', 'Petrochemicals', 'Manufacturing'], majorVenues: ['Dammam Exhibition Center'], builderCount: 20, averageStandCost: 350, slug: 'dammam', countrySlug: 'saudi-arabia' },
+
+  // QATAR
+  { id: 'doha-qa', name: 'Doha', country: 'Qatar', countryCode: 'QA', continent: 'Asia', region: 'Middle East', population: '2.4M', annualEvents: 150, keyIndustries: ['Oil & Gas', 'Finance', 'Sports'], majorVenues: ['Qatar National Convention Centre'], isCapital: true, builderCount: 65, averageStandCost: 480, slug: 'doha', countrySlug: 'qatar' },
+  { id: 'al-rayyan-qa', name: 'Al Rayyan', country: 'Qatar', countryCode: 'QA', continent: 'Asia', region: 'Middle East', population: '650K', annualEvents: 30, keyIndustries: ['Sports', 'Tourism', 'Construction'], majorVenues: ['Al Rayyan Exhibition Center'], builderCount: 15, averageStandCost: 420, slug: 'al-rayyan', countrySlug: 'qatar' },
+
+  // OMAN
+  { id: 'muscat-om', name: 'Muscat', country: 'Oman', countryCode: 'OM', continent: 'Asia', region: 'Middle East', population: '1.6M', annualEvents: 80, keyIndustries: ['Oil & Gas', 'Tourism', 'Logistics'], majorVenues: ['Oman Convention & Exhibition Centre'], isCapital: true, builderCount: 40, averageStandCost: 360, slug: 'muscat', countrySlug: 'oman' },
+  { id: 'salalah-om', name: 'Salalah', country: 'Oman', countryCode: 'OM', continent: 'Asia', region: 'Middle East', population: '330K', annualEvents: 25, keyIndustries: ['Tourism', 'Agriculture', 'Logistics'], majorVenues: ['Salalah Exhibition Center'], builderCount: 15, averageStandCost: 320, slug: 'salalah', countrySlug: 'oman' },
+  { id: 'sohar-om', name: 'Sohar', country: 'Oman', countryCode: 'OM', continent: 'Asia', region: 'Middle East', population: '200K', annualEvents: 15, keyIndustries: ['Manufacturing', 'Logistics', 'Mining'], majorVenues: ['Sohar Exhibition Hall'], builderCount: 5, averageStandCost: 300, slug: 'sohar', countrySlug: 'oman' },
+
+  // BAHRAIN
+  { id: 'manama-bh', name: 'Manama', country: 'Bahrain', countryCode: 'BH', continent: 'Asia', region: 'Middle East', population: '650K', annualEvents: 80, keyIndustries: ['Finance', 'Oil & Gas', 'Tourism'], majorVenues: ['Bahrain International Exhibition & Convention Centre'], isCapital: true, builderCount: 35, averageStandCost: 380, slug: 'manama', countrySlug: 'bahrain' },
+  { id: 'muharraq-bh', name: 'Muharraq', country: 'Bahrain', countryCode: 'BH', continent: 'Asia', region: 'Middle East', population: '180K', annualEvents: 20, keyIndustries: ['Aviation', 'Tourism', 'Manufacturing'], majorVenues: ['Muharraq Exhibition Hall'], builderCount: 10, averageStandCost: 340, slug: 'muharraq', countrySlug: 'bahrain' },
+
+  // KUWAIT
+  { id: 'kuwait-city-kw', name: 'Kuwait City', country: 'Kuwait', countryCode: 'KW', continent: 'Asia', region: 'Middle East', population: '4.1M', annualEvents: 120, keyIndustries: ['Oil & Gas', 'Finance', 'Construction'], majorVenues: ['Kuwait International Fair'], isCapital: true, builderCount: 50, averageStandCost: 400, slug: 'kuwait-city', countrySlug: 'kuwait' },
+  { id: 'hawalli-kw', name: 'Hawalli', country: 'Kuwait', countryCode: 'KW', continent: 'Asia', region: 'Middle East', population: '165K', annualEvents: 30, keyIndustries: ['Healthcare', 'Technology', 'Education'], majorVenues: ['Hawalli Exhibition Center'], builderCount: 15, averageStandCost: 360, slug: 'hawalli', countrySlug: 'kuwait' },
+
+  // EGYPT
+  { id: 'cairo-eg', name: 'Cairo', country: 'Egypt', countryCode: 'EG', continent: 'Africa', region: 'North Africa', population: '20.9M', annualEvents: 180, keyIndustries: ['Tourism', 'Textiles', 'Government'], majorVenues: ['Cairo International Convention Centre'], isCapital: true, builderCount: 75, averageStandCost: 220, slug: 'cairo', countrySlug: 'egypt' },
+  { id: 'alexandria-eg', name: 'Alexandria', country: 'Egypt', countryCode: 'EG', continent: 'Africa', region: 'North Africa', population: '5.2M', annualEvents: 60, keyIndustries: ['Tourism', 'Shipping', 'Manufacturing'], majorVenues: ['Alexandria Exhibition Center'], builderCount: 30, averageStandCost: 200, slug: 'alexandria', countrySlug: 'egypt' },
+  { id: 'sharm-el-sheikh-eg', name: 'Sharm El Sheikh', country: 'Egypt', countryCode: 'EG', continent: 'Africa', region: 'North Africa', population: '73K', annualEvents: 25, keyIndustries: ['Tourism', 'Hospitality', 'Diving'], majorVenues: ['Sharm El Sheikh International Convention Centre'], builderCount: 10, averageStandCost: 250, slug: 'sharm-el-sheikh', countrySlug: 'egypt' },
+  { id: 'hurghada-eg', name: 'Hurghada', country: 'Egypt', countryCode: 'EG', continent: 'Africa', region: 'North Africa', population: '250K', annualEvents: 15, keyIndustries: ['Tourism', 'Hospitality', 'Water Sports'], majorVenues: ['Hurghada Exhibition Hall'], builderCount: 5, averageStandCost: 230, slug: 'hurghada', countrySlug: 'egypt' },
+
+  // NIGERIA
+  { id: 'lagos-ng', name: 'Lagos', country: 'Nigeria', countryCode: 'NG', continent: 'Africa', region: 'West Africa', population: '15.4M', annualEvents: 180, keyIndustries: ['Finance', 'Technology', 'Oil & Gas'], majorVenues: ['Landmark Centre'], builderCount: 85, averageStandCost: 180, slug: 'lagos', countrySlug: 'nigeria' },
+  { id: 'abuja-ng', name: 'Abuja', country: 'Nigeria', countryCode: 'NG', continent: 'Africa', region: 'West Africa', population: '3.8M', annualEvents: 100, keyIndustries: ['Government', 'Technology', 'Agriculture'], majorVenues: ['Abuja International Conference Centre'], isCapital: true, builderCount: 40, averageStandCost: 160, slug: 'abuja', countrySlug: 'nigeria' },
+  { id: 'port-harcourt-ng', name: 'Port Harcourt', country: 'Nigeria', countryCode: 'NG', continent: 'Africa', region: 'West Africa', population: '3.2M', annualEvents: 40, keyIndustries: ['Oil & Gas', 'Manufacturing', 'Agriculture'], majorVenues: ['Port Harcourt Exhibition Center'], builderCount: 15, averageStandCost: 140, slug: 'port-harcourt', countrySlug: 'nigeria' },
+
+  // KENYA
+  { id: 'nairobi-ke', name: 'Nairobi', country: 'Kenya', countryCode: 'KE', continent: 'Africa', region: 'East Africa', population: '4.9M', annualEvents: 120, keyIndustries: ['Technology', 'Finance', 'Agriculture'], majorVenues: ['Kenyatta International Convention Centre'], isCapital: true, builderCount: 60, averageStandCost: 160, slug: 'nairobi', countrySlug: 'kenya' },
+  { id: 'mombasa-ke', name: 'Mombasa', country: 'Kenya', countryCode: 'KE', continent: 'Africa', region: 'East Africa', population: '1.2M', annualEvents: 40, keyIndustries: ['Tourism', 'Shipping', 'Manufacturing'], majorVenues: ['Mombasa Exhibition Center'], builderCount: 20, averageStandCost: 140, slug: 'mombasa', countrySlug: 'kenya' },
+  { id: 'kisumu-ke', name: 'Kisumu', country: 'Kenya', countryCode: 'KE', continent: 'Africa', region: 'East Africa', population: '610K', annualEvents: 20, keyIndustries: ['Agriculture', 'Fishing', 'Tourism'], majorVenues: ['Kisumu Exhibition Hall'], builderCount: 5, averageStandCost: 120, slug: 'kisumu', countrySlug: 'kenya' },
+
+  // INDONESIA
+  { id: 'jakarta-id', name: 'Jakarta', country: 'Indonesia', countryCode: 'ID', continent: 'Asia', region: 'Southeast Asia', population: '10.6M', annualEvents: 350, keyIndustries: ['Government', 'Finance', 'Manufacturing'], majorVenues: ['Jakarta Convention Center'], isCapital: true, builderCount: 95, averageStandCost: 240, slug: 'jakarta', countrySlug: 'indonesia' },
+  { id: 'surabaya-id', name: 'Surabaya', country: 'Indonesia', countryCode: 'ID', continent: 'Asia', region: 'Southeast Asia', population: '2.9M', annualEvents: 120, keyIndustries: ['Manufacturing', 'Shipping', 'Agriculture'], majorVenues: ['Grand City Convention Center'], builderCount: 40, averageStandCost: 200, slug: 'surabaya', countrySlug: 'indonesia' },
+  { id: 'bandung-id', name: 'Bandung', country: 'Indonesia', countryCode: 'ID', continent: 'Asia', region: 'Southeast Asia', population: '2.5M', annualEvents: 80, keyIndustries: ['Textiles', 'Technology', 'Education'], majorVenues: ['Bandung Convention Center'], builderCount: 25, averageStandCost: 180, slug: 'bandung', countrySlug: 'indonesia' },
+  { id: 'medan-id', name: 'Medan', country: 'Indonesia', countryCode: 'ID', continent: 'Asia', region: 'Southeast Asia', population: '2.4M', annualEvents: 60, keyIndustries: ['Agriculture', 'Palm Oil', 'Manufacturing'], majorVenues: ['Medan Convention Center'], builderCount: 15, averageStandCost: 160, slug: 'medan', countrySlug: 'indonesia' },
+  { id: 'bali-id', name: 'Bali', country: 'Indonesia', countryCode: 'ID', continent: 'Asia', region: 'Southeast Asia', population: '4.3M', annualEvents: 35, keyIndustries: ['Tourism', 'Hospitality', 'Arts'], majorVenues: ['Bali International Convention Centre'], builderCount: 5, averageStandCost: 280, slug: 'bali', countrySlug: 'indonesia' },
+
+  // INDIA (Adding more cities)
+  { id: 'chennai-in', name: 'Chennai', country: 'India', countryCode: 'IN', continent: 'Asia', region: 'South Asia', population: '11.5M', annualEvents: 320, keyIndustries: ['Automotive', 'Healthcare', 'IT'], majorVenues: ['Chennai Trade Centre'], builderCount: 65, averageStandCost: 220, slug: 'chennai', countrySlug: 'india' },
+  { id: 'hyderabad-in', name: 'Hyderabad', country: 'India', countryCode: 'IN', continent: 'Asia', region: 'South Asia', population: '10.0M', annualEvents: 280, keyIndustries: ['Technology', 'Pharmaceuticals', 'Biotechnology'], majorVenues: ['Hitex Exhibition Centre'], builderCount: 55, averageStandCost: 200, slug: 'hyderabad', countrySlug: 'india' },
+  { id: 'pune-in', name: 'Pune', country: 'India', countryCode: 'IN', continent: 'Asia', region: 'South Asia', population: '7.4M', annualEvents: 220, keyIndustries: ['Automotive', 'IT', 'Manufacturing'], majorVenues: ['Pune Exhibition Centre'], builderCount: 45, averageStandCost: 190, slug: 'pune', countrySlug: 'india' },
+  { id: 'kolkata-in', name: 'Kolkata', country: 'India', countryCode: 'IN', continent: 'Asia', region: 'South Asia', population: '14.9M', annualEvents: 200, keyIndustries: ['Textiles', 'Jute', 'Steel'], majorVenues: ['Milan Mela'], builderCount: 40, averageStandCost: 180, slug: 'kolkata', countrySlug: 'india' },
+  { id: 'ahmedabad-in', name: 'Ahmedabad', country: 'India', countryCode: 'IN', continent: 'Asia', region: 'South Asia', population: '8.4M', annualEvents: 180, keyIndustries: ['Textiles', 'Chemicals', 'Pharmaceuticals'], majorVenues: ['Gujarat Exhibition Centre'], builderCount: 35, averageStandCost: 170, slug: 'ahmedabad', countrySlug: 'india' },
+
+  // PHILIPPINES
+  { id: 'manila-ph', name: 'Manila', country: 'Philippines', countryCode: 'PH', continent: 'Asia', region: 'Southeast Asia', population: '13.9M', annualEvents: 250, keyIndustries: ['Government', 'Finance', 'Tourism'], majorVenues: ['SMX Convention Center Manila'], isCapital: true, builderCount: 75, averageStandCost: 200, slug: 'manila', countrySlug: 'philippines' },
+  { id: 'cebu-ph', name: 'Cebu', country: 'Philippines', countryCode: 'PH', continent: 'Asia', region: 'Southeast Asia', population: '2.9M', annualEvents: 80, keyIndustries: ['Tourism', 'Manufacturing', 'IT'], majorVenues: ['SMX Convention Center Cebu'], builderCount: 30, averageStandCost: 180, slug: 'cebu', countrySlug: 'philippines' },
+  { id: 'davao-ph', name: 'Davao', country: 'Philippines', countryCode: 'PH', continent: 'Asia', region: 'Southeast Asia', population: '1.8M', annualEvents: 50, keyIndustries: ['Agriculture', 'Tourism', 'Mining'], majorVenues: ['SMX Convention Center Davao'], builderCount: 15, averageStandCost: 160, slug: 'davao', countrySlug: 'philippines' },
+
+  // VIETNAM
+  { id: 'ho-chi-minh-city-vn', name: 'Ho Chi Minh City', country: 'Vietnam', countryCode: 'VN', continent: 'Asia', region: 'Southeast Asia', population: '9.3M', annualEvents: 200, keyIndustries: ['Manufacturing', 'Technology', 'Tourism'], majorVenues: ['Saigon Exhibition and Convention Center'], builderCount: 60, averageStandCost: 180, slug: 'ho-chi-minh-city', countrySlug: 'vietnam' },
+  { id: 'hanoi-vn', name: 'Hanoi', country: 'Vietnam', countryCode: 'VN', continent: 'Asia', region: 'Southeast Asia', population: '8.1M', annualEvents: 80, keyIndustries: ['Government', 'Education', 'Manufacturing'], majorVenues: ['Hanoi International Center for Exhibition'], isCapital: true, builderCount: 25, averageStandCost: 160, slug: 'hanoi', countrySlug: 'vietnam' },
+  { id: 'da-nang-vn', name: 'Da Nang', country: 'Vietnam', countryCode: 'VN', continent: 'Asia', region: 'Southeast Asia', population: '1.2M', annualEvents: 40, keyIndustries: ['Tourism', 'Manufacturing', 'IT'], majorVenues: ['Da Nang Exhibition Center'], builderCount: 15, averageStandCost: 140, slug: 'da-nang', countrySlug: 'vietnam' },
+
+  // BANGLADESH
+  { id: 'dhaka-bd', name: 'Dhaka', country: 'Bangladesh', countryCode: 'BD', continent: 'Asia', region: 'South Asia', population: '22.5M', annualEvents: 200, keyIndustries: ['Textiles', 'Government', 'Pharmaceuticals'], majorVenues: ['Bangabandhu International Conference Center'], isCapital: true, builderCount: 70, averageStandCost: 140, slug: 'dhaka', countrySlug: 'bangladesh' },
+  { id: 'chittagong-bd', name: 'Chittagong', country: 'Bangladesh', countryCode: 'BD', continent: 'Asia', region: 'South Asia', population: '5.2M', annualEvents: 60, keyIndustries: ['Shipping', 'Textiles', 'Steel'], majorVenues: ['Chittagong Exhibition Center'], builderCount: 20, averageStandCost: 120, slug: 'chittagong', countrySlug: 'bangladesh' },
+  { id: 'sylhet-bd', name: 'Sylhet', country: 'Bangladesh', countryCode: 'BD', continent: 'Asia', region: 'South Asia', population: '680K', annualEvents: 20, keyIndustries: ['Tea', 'Natural Gas', 'Tourism'], majorVenues: ['Sylhet Exhibition Hall'], builderCount: 5, averageStandCost: 100, slug: 'sylhet', countrySlug: 'bangladesh' },
+
+  // PAKISTAN
+  { id: 'karachi-pk', name: 'Karachi', country: 'Pakistan', countryCode: 'PK', continent: 'Asia', region: 'South Asia', population: '16.1M', annualEvents: 180, keyIndustries: ['Textiles', 'Finance', 'Shipping'], majorVenues: ['Karachi Expo Centre'], builderCount: 65, averageStandCost: 160, slug: 'karachi', countrySlug: 'pakistan' },
+  { id: 'lahore-pk', name: 'Lahore', country: 'Pakistan', countryCode: 'PK', continent: 'Asia', region: 'South Asia', population: '13.1M', annualEvents: 120, keyIndustries: ['Textiles', 'Sports Goods', 'Agriculture'], majorVenues: ['Lahore Expo Centre'], builderCount: 35, averageStandCost: 140, slug: 'lahore', countrySlug: 'pakistan' },
+  { id: 'islamabad-pk', name: 'Islamabad', country: 'Pakistan', countryCode: 'PK', continent: 'Asia', region: 'South Asia', population: '2.0M', annualEvents: 50, keyIndustries: ['Government', 'Technology', 'Education'], majorVenues: ['Pakistan-China Friendship Centre'], isCapital: true, builderCount: 10, averageStandCost: 150, slug: 'islamabad', countrySlug: 'pakistan' },
+
+  // POLAND
+  { id: 'warsaw-pl', name: 'Warsaw', country: 'Poland', countryCode: 'PL', continent: 'Europe', region: 'Central Europe', population: '3.1M', annualEvents: 280, keyIndustries: ['Finance', 'Technology', 'Government'], majorVenues: ['PTAK Warsaw Expo'], isCapital: true, builderCount: 85, averageStandCost: 380, slug: 'warsaw', countrySlug: 'poland' },
+  { id: 'krakow-pl', name: 'Krakow', country: 'Poland', countryCode: 'PL', continent: 'Europe', region: 'Central Europe', population: '1.8M', annualEvents: 120, keyIndustries: ['Tourism', 'Technology', 'Manufacturing'], majorVenues: ['EXPO Krakow'], builderCount: 35, averageStandCost: 340, slug: 'krakow', countrySlug: 'poland' },
+  { id: 'gdansk-pl', name: 'Gdansk', country: 'Poland', countryCode: 'PL', continent: 'Europe', region: 'Central Europe', population: '1.1M', annualEvents: 80, keyIndustries: ['Shipping', 'Tourism', 'Manufacturing'], majorVenues: ['AmberExpo'], builderCount: 20, averageStandCost: 320, slug: 'gdansk', countrySlug: 'poland' },
+
+  // TURKEY
+  { id: 'istanbul-tr', name: 'Istanbul', country: 'Turkey', countryCode: 'TR', continent: 'Europe', region: 'Western Asia', population: '15.8M', annualEvents: 450, keyIndustries: ['Tourism', 'Textiles', 'Manufacturing'], majorVenues: ['Istanbul Expo Center'], builderCount: 120, averageStandCost: 320, slug: 'istanbul', countrySlug: 'turkey' },
+  { id: 'ankara-tr', name: 'Ankara', country: 'Turkey', countryCode: 'TR', continent: 'Europe', region: 'Western Asia', population: '5.7M', annualEvents: 120, keyIndustries: ['Government', 'Defense', 'Technology'], majorVenues: ['ATO Congresium'], isCapital: true, builderCount: 50, averageStandCost: 280, slug: 'ankara', countrySlug: 'turkey' },
+  { id: 'izmir-tr', name: 'Izmir', country: 'Turkey', countryCode: 'TR', continent: 'Europe', region: 'Western Asia', population: '4.4M', annualEvents: 80, keyIndustries: ['Agriculture', 'Tourism', 'Manufacturing'], majorVenues: ['Izmir International Fair'], builderCount: 30, averageStandCost: 260, slug: 'izmir', countrySlug: 'turkey' },
+
+  // RUSSIA
+  { id: 'moscow-ru', name: 'Moscow', country: 'Russia', countryCode: 'RU', continent: 'Europe', region: 'Eastern Europe', population: '12.5M', annualEvents: 480, keyIndustries: ['Government', 'Finance', 'Oil & Gas'], majorVenues: ['Expocentr'], isCapital: true, builderCount: 150, averageStandCost: 420, slug: 'moscow', countrySlug: 'russia' },
+  { id: 'st-petersburg-ru', name: 'St. Petersburg', country: 'Russia', countryCode: 'RU', continent: 'Europe', region: 'Eastern Europe', population: '5.4M', annualEvents: 220, keyIndustries: ['Tourism', 'Manufacturing', 'Shipping'], majorVenues: ['Lenexpo'], builderCount: 80, averageStandCost: 380, slug: 'st-petersburg', countrySlug: 'russia' },
+  { id: 'novosibirsk-ru', name: 'Novosibirsk', country: 'Russia', countryCode: 'RU', continent: 'Europe', region: 'Eastern Europe', population: '1.6M', annualEvents: 80, keyIndustries: ['Technology', 'Manufacturing', 'Mining'], majorVenues: ['Novosibirsk Expocentre'], builderCount: 30, averageStandCost: 320, slug: 'novosibirsk', countrySlug: 'russia' },
+  { id: 'yekaterinburg-ru', name: 'Yekaterinburg', country: 'Russia', countryCode: 'RU', continent: 'Europe', region: 'Eastern Europe', population: '1.5M', annualEvents: 70, keyIndustries: ['Mining', 'Manufacturing', 'Defense'], majorVenues: ['Yekaterinburg-EXPO'], builderCount: 20, averageStandCost: 300, slug: 'yekaterinburg', countrySlug: 'russia' },
+
+  // SWEDEN
+  { id: 'stockholm-se', name: 'Stockholm', country: 'Sweden', countryCode: 'SE', continent: 'Europe', region: 'Northern Europe', population: '2.4M', annualEvents: 200, keyIndustries: ['Technology', 'Finance', 'Government'], majorVenues: ['Stockholm International Fairs'], isCapital: true, builderCount: 60, averageStandCost: 520, slug: 'stockholm', countrySlug: 'sweden' },
+  { id: 'gothenburg-se', name: 'Gothenburg', country: 'Sweden', countryCode: 'SE', continent: 'Europe', region: 'Northern Europe', population: '1.0M', annualEvents: 80, keyIndustries: ['Automotive', 'Shipping', 'Technology'], majorVenues: ['Svenska Mässan'], builderCount: 25, averageStandCost: 480, slug: 'gothenburg', countrySlug: 'sweden' },
+  { id: 'malmo-se', name: 'Malmö', country: 'Sweden', countryCode: 'SE', continent: 'Europe', region: 'Northern Europe', population: '350K', annualEvents: 40, keyIndustries: ['Technology', 'Biotech', 'Design'], majorVenues: ['Malmö Mässan'], builderCount: 10, averageStandCost: 460, slug: 'malmo', countrySlug: 'sweden' },
+
+  // NORWAY
+  { id: 'oslo-no', name: 'Oslo', country: 'Norway', countryCode: 'NO', continent: 'Europe', region: 'Northern Europe', population: '1.5M', annualEvents: 150, keyIndustries: ['Oil & Gas', 'Maritime', 'Government'], majorVenues: ['Oslo Spektrum'], isCapital: true, builderCount: 50, averageStandCost: 580, slug: 'oslo', countrySlug: 'norway' },
+  { id: 'bergen-no', name: 'Bergen', country: 'Norway', countryCode: 'NO', continent: 'Europe', region: 'Northern Europe', population: '285K', annualEvents: 50, keyIndustries: ['Oil & Gas', 'Maritime', 'Tourism'], majorVenues: ['Bergen Exhibition Center'], builderCount: 20, averageStandCost: 520, slug: 'bergen', countrySlug: 'norway' },
+  { id: 'stavanger-no', name: 'Stavanger', country: 'Norway', countryCode: 'NO', continent: 'Europe', region: 'Northern Europe', population: '230K', annualEvents: 20, keyIndustries: ['Oil & Gas', 'Technology', 'Tourism'], majorVenues: ['Stavanger Forum'], builderCount: 5, averageStandCost: 500, slug: 'stavanger', countrySlug: 'norway' },
+
+  // DENMARK
+  { id: 'copenhagen-dk', name: 'Copenhagen', country: 'Denmark', countryCode: 'DK', continent: 'Europe', region: 'Northern Europe', population: '2.1M', annualEvents: 200, keyIndustries: ['Technology', 'Pharmaceuticals', 'Design'], majorVenues: ['Bella Center Copenhagen'], isCapital: true, builderCount: 65, averageStandCost: 520, slug: 'copenhagen', countrySlug: 'denmark' },
+  { id: 'aarhus-dk', name: 'Aarhus', country: 'Denmark', countryCode: 'DK', continent: 'Europe', region: 'Northern Europe', population: '350K', annualEvents: 60, keyIndustries: ['Technology', 'Agriculture', 'Education'], majorVenues: ['MCH Messecenter Herning'], builderCount: 15, averageStandCost: 480, slug: 'aarhus', countrySlug: 'denmark' },
+  { id: 'odense-dk', name: 'Odense', country: 'Denmark', countryCode: 'DK', continent: 'Europe', region: 'Northern Europe', population: '180K', annualEvents: 20, keyIndustries: ['Technology', 'Healthcare', 'Robotics'], majorVenues: ['Odense Congress Center'], builderCount: 5, averageStandCost: 460, slug: 'odense', countrySlug: 'denmark' },
+
+  // FINLAND
+  { id: 'helsinki-fi', name: 'Helsinki', country: 'Finland', countryCode: 'FI', continent: 'Europe', region: 'Northern Europe', population: '1.5M', annualEvents: 150, keyIndustries: ['Technology', 'Gaming', 'Government'], majorVenues: ['Helsinki Expo and Convention Centre'], isCapital: true, builderCount: 50, averageStandCost: 480, slug: 'helsinki', countrySlug: 'finland' },
+  { id: 'tampere-fi', name: 'Tampere', country: 'Finland', countryCode: 'FI', continent: 'Europe', region: 'Northern Europe', population: '240K', annualEvents: 35, keyIndustries: ['Technology', 'Manufacturing', 'Education'], majorVenues: ['Tampere Exhibition and Sports Centre'], builderCount: 12, averageStandCost: 440, slug: 'tampere', countrySlug: 'finland' },
+  { id: 'turku-fi', name: 'Turku', country: 'Finland', countryCode: 'FI', continent: 'Europe', region: 'Northern Europe', population: '195K', annualEvents: 15, keyIndustries: ['Maritime', 'Biotechnology', 'Tourism'], majorVenues: ['Turku Fair Centre'], builderCount: 3, averageStandCost: 420, slug: 'turku', countrySlug: 'finland' },
+
+  // BELGIUM
+  { id: 'brussels-be', name: 'Brussels', country: 'Belgium', countryCode: 'BE', continent: 'Europe', region: 'Western Europe', population: '1.2M', annualEvents: 250, keyIndustries: ['Government', 'EU Institutions', 'Technology'], majorVenues: ['Brussels Expo'], isCapital: true, builderCount: 65, averageStandCost: 480, slug: 'brussels', countrySlug: 'belgium' },
+  { id: 'antwerp-be', name: 'Antwerp', country: 'Belgium', countryCode: 'BE', continent: 'Europe', region: 'Western Europe', population: '530K', annualEvents: 70, keyIndustries: ['Shipping', 'Diamonds', 'Chemicals'], majorVenues: ['Antwerp Expo'], builderCount: 20, averageStandCost: 440, slug: 'antwerp', countrySlug: 'belgium' },
+  { id: 'ghent-be', name: 'Ghent', country: 'Belgium', countryCode: 'BE', continent: 'Europe', region: 'Western Europe', population: '265K', annualEvents: 30, keyIndustries: ['Technology', 'Biotechnology', 'Textiles'], majorVenues: ['Flanders Expo'], builderCount: 5, averageStandCost: 420, slug: 'ghent', countrySlug: 'belgium' },
+
+  // AUSTRIA
+  { id: 'vienna-at', name: 'Vienna', country: 'Austria', countryCode: 'AT', continent: 'Europe', region: 'Central Europe', population: '1.9M', annualEvents: 200, keyIndustries: ['Government', 'Tourism', 'Technology'], majorVenues: ['Austria Center Vienna'], isCapital: true, builderCount: 60, averageStandCost: 460, slug: 'vienna', countrySlug: 'austria' },
+  { id: 'salzburg-at', name: 'Salzburg', country: 'Austria', countryCode: 'AT', continent: 'Europe', region: 'Central Europe', population: '155K', annualEvents: 50, keyIndustries: ['Tourism', 'Culture', 'Technology'], majorVenues: ['Salzburg Congress'], builderCount: 15, averageStandCost: 420, slug: 'salzburg', countrySlug: 'austria' },
+  { id: 'innsbruck-at', name: 'Innsbruck', country: 'Austria', countryCode: 'AT', continent: 'Europe', region: 'Central Europe', population: '132K', annualEvents: 30, keyIndustries: ['Tourism', 'Sports', 'Technology'], majorVenues: ['Congress Innsbruck'], builderCount: 5, averageStandCost: 400, slug: 'innsbruck', countrySlug: 'austria' },
+
+  // SWITZERLAND
+  { id: 'zurich-ch', name: 'Zurich', country: 'Switzerland', countryCode: 'CH', continent: 'Europe', region: 'Central Europe', population: '1.4M', annualEvents: 180, keyIndustries: ['Finance', 'Technology', 'Pharmaceuticals'], majorVenues: ['Messe Zurich'], builderCount: 50, averageStandCost: 620, slug: 'zurich', countrySlug: 'switzerland' },
+  { id: 'geneva-ch', name: 'Geneva', country: 'Switzerland', countryCode: 'CH', continent: 'Europe', region: 'Central Europe', population: '500K', annualEvents: 100, keyIndustries: ['International Organizations', 'Finance', 'Luxury'], majorVenues: ['Palexpo'], builderCount: 25, averageStandCost: 680, slug: 'geneva', countrySlug: 'switzerland' },
+  { id: 'basel-ch', name: 'Basel', country: 'Switzerland', countryCode: 'CH', continent: 'Europe', region: 'Central Europe', population: '175K', annualEvents: 40, keyIndustries: ['Pharmaceuticals', 'Chemicals', 'Art'], majorVenues: ['Messe Basel'], builderCount: 10, averageStandCost: 580, slug: 'basel', countrySlug: 'switzerland' },
+
+  // ARGENTINA
+  { id: 'buenos-aires-ar', name: 'Buenos Aires', country: 'Argentina', countryCode: 'AR', continent: 'South America', region: 'South America', population: '15.2M', annualEvents: 280, keyIndustries: ['Agriculture', 'Finance', 'Manufacturing'], majorVenues: ['La Rural'], isCapital: true, builderCount: 85, averageStandCost: 220, slug: 'buenos-aires', countrySlug: 'argentina' },
+  { id: 'cordoba-ar', name: 'Córdoba', country: 'Argentina', countryCode: 'AR', continent: 'South America', region: 'South America', population: '1.8M', annualEvents: 80, keyIndustries: ['Automotive', 'Agriculture', 'Technology'], majorVenues: ['Córdoba Exhibition Center'], builderCount: 25, averageStandCost: 180, slug: 'cordoba', countrySlug: 'argentina' },
+  { id: 'rosario-ar', name: 'Rosario', country: 'Argentina', countryCode: 'AR', continent: 'South America', region: 'South America', population: '1.4M', annualEvents: 60, keyIndustries: ['Agriculture', 'Manufacturing', 'Shipping'], majorVenues: ['Rosario Exhibition Center'], builderCount: 10, averageStandCost: 160, slug: 'rosario', countrySlug: 'argentina' },
+
+  // CHILE
+  { id: 'santiago-cl', name: 'Santiago', country: 'Chile', countryCode: 'CL', continent: 'South America', region: 'South America', population: '7.1M', annualEvents: 200, keyIndustries: ['Mining', 'Wine', 'Government'], majorVenues: ['CasaPiedra'], isCapital: true, builderCount: 65, averageStandCost: 240, slug: 'santiago', countrySlug: 'chile' },
+  { id: 'valparaiso-cl', name: 'Valparaíso', country: 'Chile', countryCode: 'CL', continent: 'South America', region: 'South America', population: '950K', annualEvents: 50, keyIndustries: ['Shipping', 'Tourism', 'Wine'], majorVenues: ['Valparaíso Convention Center'], builderCount: 15, averageStandCost: 200, slug: 'valparaiso', countrySlug: 'chile' },
+  { id: 'concepcion-cl', name: 'Concepción', country: 'Chile', countryCode: 'CL', continent: 'South America', region: 'South America', population: '1.0M', annualEvents: 30, keyIndustries: ['Forestry', 'Education', 'Manufacturing'], majorVenues: ['Concepción Exhibition Hall'], builderCount: 5, averageStandCost: 180, slug: 'concepcion', countrySlug: 'chile' },
+
+  // COLOMBIA
+  { id: 'bogota-co', name: 'Bogotá', country: 'Colombia', countryCode: 'CO', continent: 'South America', region: 'South America', population: '11.3M', annualEvents: 220, keyIndustries: ['Government', 'Finance', 'Technology'], majorVenues: ['Corferias'], isCapital: true, builderCount: 65, averageStandCost: 200, slug: 'bogota', countrySlug: 'colombia' },
+  { id: 'medellin-co', name: 'Medellín', country: 'Colombia', countryCode: 'CO', continent: 'South America', region: 'South America', population: '2.6M', annualEvents: 80, keyIndustries: ['Textiles', 'Technology', 'Manufacturing'], majorVenues: ['Plaza Mayor Medellín'], builderCount: 25, averageStandCost: 180, slug: 'medellin', countrySlug: 'colombia' },
+  { id: 'cali-co', name: 'Cali', country: 'Colombia', countryCode: 'CO', continent: 'South America', region: 'South America', population: '2.2M', annualEvents: 50, keyIndustries: ['Agriculture', 'Manufacturing', 'Healthcare'], majorVenues: ['Centro de Eventos Valle del Pacífico'], builderCount: 10, averageStandCost: 160, slug: 'cali', countrySlug: 'colombia' },
+
+  // PERU
+  { id: 'lima-pe', name: 'Lima', country: 'Peru', countryCode: 'PE', continent: 'South America', region: 'South America', population: '10.9M', annualEvents: 180, keyIndustries: ['Mining', 'Government', 'Tourism'], majorVenues: ['Centro de Convenciones de Lima'], isCapital: true, builderCount: 55, averageStandCost: 180, slug: 'lima', countrySlug: 'peru' },
+  { id: 'arequipa-pe', name: 'Arequipa', country: 'Peru', countryCode: 'PE', continent: 'South America', region: 'South America', population: '1.1M', annualEvents: 30, keyIndustries: ['Mining', 'Agriculture', 'Tourism'], majorVenues: ['Arequipa Convention Center'], builderCount: 12, averageStandCost: 160, slug: 'arequipa', countrySlug: 'peru' },
+  { id: 'cusco-pe', name: 'Cusco', country: 'Peru', countryCode: 'PE', continent: 'South America', region: 'South America', population: '430K', annualEvents: 10, keyIndustries: ['Tourism', 'Agriculture', 'Textiles'], majorVenues: ['Cusco Convention Center'], builderCount: 3, averageStandCost: 200, slug: 'cusco', countrySlug: 'peru' }
+];
+
+// UTILITY FUNCTIONS
+export const getAllCountries = (): GlobalCountry[] => GLOBAL_COUNTRIES;
+export const getAllCities = (): GlobalCity[] => GLOBAL_CITIES;
+
+export const getCountryBySlug = (slug: string): GlobalCountry | undefined => 
+  GLOBAL_COUNTRIES.find(country => country.slug === slug);
+
+export const getCityBySlug = (countrySlug: string, citySlug: string): GlobalCity | undefined => 
+  GLOBAL_CITIES.find(city => city.countrySlug === countrySlug && city.slug === citySlug);
+
+export const getCitiesByCountry = (countrySlug: string): GlobalCity[] => 
+  GLOBAL_CITIES.filter(city => city.countrySlug === countrySlug);
+
+export const getCitiesByContinent = (continent: string): GlobalCity[] => 
+  GLOBAL_CITIES.filter(city => city.continent === continent);
+
+export const getCountriesByContinent = (continent: string): GlobalCountry[] => 
+  GLOBAL_COUNTRIES.filter(country => country.continent === continent);
+
+// SEARCH FUNCTIONS
+export const searchCountries = (query: string): GlobalCountry[] => {
+  const searchTerm = query.toLowerCase();
+  return GLOBAL_COUNTRIES.filter(country => 
+    country.name.toLowerCase().includes(searchTerm) ||
+    country.keyIndustries.some(industry => industry.toLowerCase().includes(searchTerm))
+  );
+};
+
+export const searchCities = (query: string): GlobalCity[] => {
+  const searchTerm = query.toLowerCase();
+  return GLOBAL_CITIES.filter(city => 
+    city.name.toLowerCase().includes(searchTerm) ||
+    city.country.toLowerCase().includes(searchTerm) ||
+    city.keyIndustries.some(industry => industry.toLowerCase().includes(searchTerm))
+  );
+};
+
+// STATISTICS
+export const GLOBAL_STATS = {
+  totalCountries: GLOBAL_COUNTRIES.length,
+  totalCities: GLOBAL_CITIES.length,
+  totalEvents: GLOBAL_CITIES.reduce((sum, city) => sum + city.annualEvents, 0),
+  totalBuilders: GLOBAL_CITIES.reduce((sum, city) => sum + city.builderCount, 0),
+  totalMarketSize: GLOBAL_COUNTRIES.reduce((sum, country) => sum + country.marketSize, 0),
+  continents: ['Europe', 'Asia', 'North America', 'South America', 'Africa', 'Oceania'],
+  coverageByContinent: {
+    'Europe': getCitiesByContinent('Europe').length,
+    'Asia': getCitiesByContinent('Asia').length,
+    'North America': getCitiesByContinent('North America').length,
+    'South America': getCitiesByContinent('South America').length,
+    'Africa': getCitiesByContinent('Africa').length,
+    'Oceania': getCitiesByContinent('Oceania').length
+  }
+};
+
+console.log('🌍 COMPREHENSIVE GLOBAL EXHIBITION DATABASE LOADED');
+console.log(`📊 Coverage: ${GLOBAL_STATS.totalCountries} countries, ${GLOBAL_STATS.totalCities} cities`);
+console.log(`🏗️ ${GLOBAL_STATS.totalBuilders} builders, ${GLOBAL_STATS.totalEvents} annual events`);
+console.log(`💰 $${GLOBAL_STATS.totalMarketSize}M global market covered`);
+
+
+
+
