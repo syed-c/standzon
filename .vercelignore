@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+.DS_Store
+server.log
+*.log
+scripts/
+backup-index.html 
