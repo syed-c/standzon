@@ -1,32 +1,35 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { useRealTimeSync } from '@/lib/utils/realTimeSync';
-import { 
-  Wifi, 
-  WifiOff, 
-  RefreshCw, 
-  CheckCircle, 
+import React from "react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { useRealTimeSync } from "@/lib/utils/realTimeSync";
+import {
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  CheckCircle,
   Clock,
   Database,
-  Zap
-} from 'lucide-react';
+  Zap,
+} from "lucide-react";
 
 export default function SyncStatusIndicator() {
   const { syncStatus } = useRealTimeSync();
-  const [lastUpdate, setLastUpdate] = React.useState<string>(new Date().toLocaleTimeString());
+  const [lastUpdate, setLastUpdate] = React.useState<string>(
+    new Date().toLocaleTimeString()
+  );
 
   React.useEffect(() => {
     const interval = setInterval(() => {
       setLastUpdate(new Date().toLocaleTimeString());
-    }, 1000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const isConnected = syncStatus.isInitialized && syncStatus.activeListeners > 0;
+  const isConnected =
+    syncStatus.isInitialized && syncStatus.activeListeners > 0;
 
   return (
     <Card className="bg-theme-50 border-theme-200">
@@ -39,28 +42,28 @@ export default function SyncStatusIndicator() {
               ) : (
                 <WifiOff className="h-4 w-4 text-red-600" />
               )}
-              <Badge 
+              <Badge
                 className={
-                  isConnected 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-red-100 text-red-800'
+                  isConnected
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
                 }
               >
-                {isConnected ? 'Live Sync Active' : 'Disconnected'}
+                {isConnected ? "Live Sync Active" : "Disconnected"}
               </Badge>
             </div>
-            
+
             <div className="flex items-center space-x-2 text-xs text-gray-600">
               <Database className="h-3 w-3" />
               <span>{syncStatus.activeListeners} listeners</span>
             </div>
-            
+
             <div className="flex items-center space-x-2 text-xs text-gray-600">
               <Clock className="h-3 w-3" />
               <span>Updated: {lastUpdate}</span>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <Badge variant="outline" className="text-xs">
               <Zap className="h-3 w-3 mr-1" />

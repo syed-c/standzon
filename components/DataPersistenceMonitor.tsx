@@ -1,22 +1,28 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Shield, 
-  Database, 
-  Clock, 
-  HardDrive, 
-  Activity, 
-  RefreshCw, 
-  Download, 
-  AlertTriangle, 
-  CheckCircle, 
-  Server, 
-  FileText, 
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Shield,
+  Database,
+  Clock,
+  HardDrive,
+  Activity,
+  RefreshCw,
+  Download,
+  AlertTriangle,
+  CheckCircle,
+  Server,
+  FileText,
   BarChart3,
   Zap,
   Settings,
@@ -25,9 +31,9 @@ import {
   Heart,
   Archive,
   Cpu,
-  MemoryStick
-} from 'lucide-react';
-import { toast } from 'sonner';
+  MemoryStick,
+} from "lucide-react";
+import { toast } from "sonner";
 
 interface PersistenceStatus {
   timestamp: string;
@@ -65,52 +71,62 @@ export default function DataPersistenceMonitor() {
   const [status, setStatus] = useState<PersistenceStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [operationLoading, setOperationLoading] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadPersistenceStatus();
-    
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(loadPersistenceStatus, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  const visibilityRef = useRef(true);
 
   const loadPersistenceStatus = async () => {
+    if (!visibilityRef.current) return;
     try {
-      const response = await fetch('/api/admin/data-persistence');
+      const response = await fetch("/api/admin/data-persistence");
       const result = await response.json();
-      
       if (result.success) {
         setStatus(result.data);
       } else {
-        toast.error('Failed to load persistence status');
+        toast.error("Failed to load persistence status");
       }
     } catch (error) {
-      console.error('Error loading persistence status:', error);
-      toast.error('Failed to load persistence status');
+      console.error("Error loading persistence status:", error);
+      toast.error("Failed to load persistence status");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    const handleVisibility = () => {
+      visibilityRef.current = !document.hidden;
+      if (visibilityRef.current) {
+        loadPersistenceStatus();
+      }
+    };
+
+    loadPersistenceStatus();
+    document.addEventListener("visibilitychange", handleVisibility);
+    const interval = setInterval(loadPersistenceStatus, 60000);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      clearInterval(interval);
+    };
+  }, []);
+
   const performOperation = async (action: string, message: string) => {
     setOperationLoading(action);
-    
+
     try {
       toast.info(`${message}...`);
-      
-      const response = await fetch('/api/admin/data-persistence', {
-        method: 'POST',
+
+      const response = await fetch("/api/admin/data-persistence", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ action })
+        body: JSON.stringify({ action }),
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         toast.success(result.message || `${message} completed successfully`);
-        await loadPersistenceStatus(); // Refresh status
+        await loadPersistenceStatus();
       } else {
         toast.error(result.error || `${message} failed`);
       }
@@ -130,7 +146,7 @@ export default function DataPersistenceMonitor() {
   };
 
   const formatMemory = (bytes: number): string => {
-    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+    return (bytes / 1024 / 1024).toFixed(1) + " MB";
   };
 
   if (loading) {
@@ -149,9 +165,17 @@ export default function DataPersistenceMonitor() {
       <Card>
         <CardContent className="p-8 text-center">
           <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Unable to Load Status</h3>
-          <p className="text-gray-600 mb-4">Failed to retrieve data persistence status</p>
-          <Button onClick={loadPersistenceStatus} variant="outline" className="text-gray-900">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Unable to Load Status
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Failed to retrieve data persistence status
+          </p>
+          <Button
+            onClick={loadPersistenceStatus}
+            variant="outline"
+            className="text-gray-900"
+          >
             <RefreshCw className="w-4 h-4 mr-2" />
             Retry
           </Button>
@@ -173,16 +197,29 @@ export default function DataPersistenceMonitor() {
                 </div>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900" data-macaly="persistence-title">
+                <h1
+                  className="text-2xl font-bold text-gray-900"
+                  data-macaly="persistence-title"
+                >
                   🛡️ Data Persistence & Recovery Monitor
                 </h1>
-                <p className="text-gray-600" data-macaly="persistence-description">
-                  Monitor system health, manage backups, and ensure data integrity with hourly automated backups and instant recovery.
+                <p
+                  className="text-gray-600"
+                  data-macaly="persistence-description"
+                >
+                  Monitor system health, manage backups, and ensure data
+                  integrity with hourly automated backups and instant recovery.
                 </p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge className={status.health.healthy ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+              <Badge
+                className={
+                  status.health.healthy
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
+                }
+              >
                 {status.health.healthy ? "Healthy" : "Issues Detected"}
               </Badge>
               <Badge className="bg-blue-100 text-blue-800">
@@ -200,7 +237,9 @@ export default function DataPersistenceMonitor() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Builders</p>
-                <p className="text-2xl font-bold text-gray-900">{status.data.builders.totalBuilders}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {status.data.builders.totalBuilders}
+                </p>
               </div>
               <Database className="w-8 h-8 text-blue-500" />
             </div>
@@ -212,7 +251,9 @@ export default function DataPersistenceMonitor() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Backups</p>
-                <p className="text-2xl font-bold text-gray-900">{status.backup.totalBackups}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {status.backup.totalBackups}
+                </p>
               </div>
               <Archive className="w-8 h-8 text-green-500" />
             </div>
@@ -224,7 +265,9 @@ export default function DataPersistenceMonitor() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">System Uptime</p>
-                <p className="text-2xl font-bold text-gray-900">{formatUptime(status.system.uptime)}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {formatUptime(status.system.uptime)}
+                </p>
               </div>
               <Clock className="w-8 h-8 text-purple-500" />
             </div>
@@ -236,7 +279,9 @@ export default function DataPersistenceMonitor() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Backup Size</p>
-                <p className="text-2xl font-bold text-gray-900">{status.backup.backupSize}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {status.backup.backupSize}
+                </p>
               </div>
               <HardDrive className="w-8 h-8 text-orange-500" />
             </div>
@@ -285,21 +330,27 @@ export default function DataPersistenceMonitor() {
                     ) : (
                       <AlertTriangle className="w-4 h-4 text-red-500" />
                     )}
-                    <span className={`text-sm font-medium ${status.health.healthy ? 'text-green-600' : 'text-red-600'}`}>
-                      {status.health.healthy ? 'Healthy' : 'Issues Detected'}
+                    <span
+                      className={`text-sm font-medium ${status.health.healthy ? "text-green-600" : "text-red-600"}`}
+                    >
+                      {status.health.healthy ? "Healthy" : "Issues Detected"}
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Last Health Check</span>
+                  <span className="text-sm text-gray-600">
+                    Last Health Check
+                  </span>
                   <span className="text-sm text-gray-900">
                     {new Date(status.health.lastCheck).toLocaleString()}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Data Persistence</span>
+                  <span className="text-sm text-gray-600">
+                    Data Persistence
+                  </span>
                   <Badge className="bg-green-100 text-green-800">Active</Badge>
                 </div>
               </CardContent>
@@ -316,22 +367,32 @@ export default function DataPersistenceMonitor() {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Total Builders</span>
-                  <span className="text-sm font-medium text-gray-900">{status.data.builders.totalBuilders}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {status.data.builders.totalBuilders}
+                  </span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Verified Builders</span>
-                  <span className="text-sm font-medium text-gray-900">{status.data.builders.verifiedBuilders}</span>
+                  <span className="text-sm text-gray-600">
+                    Verified Builders
+                  </span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {status.data.builders.verifiedBuilders}
+                  </span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">GMB Imported</span>
-                  <span className="text-sm font-medium text-gray-900">{status.data.builders.gmbImported}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {status.data.builders.gmbImported}
+                  </span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Total Leads</span>
-                  <span className="text-sm font-medium text-gray-900">{status.data.leads}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {status.data.leads}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -349,14 +410,18 @@ export default function DataPersistenceMonitor() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600">Platform</p>
-                  <p className="font-medium text-gray-900">{status.system.platform}</p>
+                  <p className="font-medium text-gray-900">
+                    {status.system.platform}
+                  </p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600">Node.js Version</p>
-                  <p className="font-medium text-gray-900">{status.system.nodeVersion}</p>
+                  <p className="font-medium text-gray-900">
+                    {status.system.nodeVersion}
+                  </p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600">Memory Usage</p>
                   <div className="space-y-1">
@@ -384,13 +449,16 @@ export default function DataPersistenceMonitor() {
                 System Health Monitoring
               </CardTitle>
               <CardDescription>
-                Real-time monitoring of data integrity, backup status, and system performance
+                Real-time monitoring of data integrity, backup status, and
+                system performance
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {status.health.storage && (
                 <div className="border rounded-lg p-4">
-                  <h4 className="font-medium text-gray-900 mb-2">Storage Health</h4>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    Storage Health
+                  </h4>
                   {status.health.storage.healthy ? (
                     <div className="flex items-center gap-2 text-green-600">
                       <CheckCircle className="w-4 h-4" />
@@ -404,9 +472,11 @@ export default function DataPersistenceMonitor() {
                       </div>
                       {status.health.storage.issues && (
                         <ul className="list-disc list-inside text-sm text-red-600 ml-6">
-                          {status.health.storage.issues.map((issue: string, index: number) => (
-                            <li key={index}>{issue}</li>
-                          ))}
+                          {status.health.storage.issues.map(
+                            (issue: string, index: number) => (
+                              <li key={index}>{issue}</li>
+                            )
+                          )}
                         </ul>
                       )}
                     </div>
@@ -416,12 +486,14 @@ export default function DataPersistenceMonitor() {
 
               <div className="flex gap-3">
                 <Button
-                  onClick={() => performOperation('health-check', 'Running health check')}
-                  disabled={operationLoading === 'health-check'}
+                  onClick={() =>
+                    performOperation("health-check", "Running health check")
+                  }
+                  disabled={operationLoading === "health-check"}
                   variant="outline"
                   className="text-gray-900"
                 >
-                  {operationLoading === 'health-check' ? (
+                  {operationLoading === "health-check" ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   ) : (
                     <Activity className="w-4 h-4 mr-2" />
@@ -430,12 +502,17 @@ export default function DataPersistenceMonitor() {
                 </Button>
 
                 <Button
-                  onClick={() => performOperation('verify-integrity', 'Verifying data integrity')}
-                  disabled={operationLoading === 'verify-integrity'}
+                  onClick={() =>
+                    performOperation(
+                      "verify-integrity",
+                      "Verifying data integrity"
+                    )
+                  }
+                  disabled={operationLoading === "verify-integrity"}
                   variant="outline"
                   className="text-gray-900"
                 >
-                  {operationLoading === 'verify-integrity' ? (
+                  {operationLoading === "verify-integrity" ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   ) : (
                     <Eye className="w-4 h-4 mr-2" />
@@ -462,36 +539,55 @@ export default function DataPersistenceMonitor() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="border rounded-lg p-4">
-                  <h4 className="font-medium text-gray-900 mb-2">Backup Status</h4>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    Backup Status
+                  </h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Total Backups:</span>
-                      <span className="font-medium">{status.backup.totalBackups}</span>
+                      <span className="font-medium">
+                        {status.backup.totalBackups}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Latest Backup:</span>
                       <span className="font-medium">
-                        {status.backup.latestBackup ? 
-                          new Date(status.backup.latestBackup.replace(/backup_/, '').replace(/-/g, ':')).toLocaleString() : 
-                          'None'
-                        }
+                        {status.backup.latestBackup
+                          ? new Date(
+                              status.backup.latestBackup
+                                .replace(/backup_/, "")
+                                .replace(/-/g, ":")
+                            ).toLocaleString()
+                          : "None"}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Total Size:</span>
-                      <span className="font-medium">{status.backup.backupSize}</span>
+                      <span className="font-medium">
+                        {status.backup.backupSize}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Auto-Backup:</span>
-                      <Badge className={status.backup.autoBackupEnabled ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
-                        {status.backup.autoBackupEnabled ? "Enabled" : "Disabled"}
+                      <Badge
+                        className={
+                          status.backup.autoBackupEnabled
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }
+                      >
+                        {status.backup.autoBackupEnabled
+                          ? "Enabled"
+                          : "Disabled"}
                       </Badge>
                     </div>
                   </div>
                 </div>
 
                 <div className="border rounded-lg p-4">
-                  <h4 className="font-medium text-gray-900 mb-2">Backup Schedule</h4>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    Backup Schedule
+                  </h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2 text-green-600">
                       <CheckCircle className="w-4 h-4" />
@@ -515,11 +611,13 @@ export default function DataPersistenceMonitor() {
 
               <div className="flex gap-3">
                 <Button
-                  onClick={() => performOperation('force-backup', 'Creating manual backup')}
-                  disabled={operationLoading === 'force-backup'}
+                  onClick={() =>
+                    performOperation("force-backup", "Creating manual backup")
+                  }
+                  disabled={operationLoading === "force-backup"}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  {operationLoading === 'force-backup' ? (
+                  {operationLoading === "force-backup" ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   ) : (
                     <Download className="w-4 h-4 mr-2" />
@@ -540,7 +638,8 @@ export default function DataPersistenceMonitor() {
                 System Operations
               </CardTitle>
               <CardDescription>
-                Advanced operations for data recovery, system maintenance, and troubleshooting
+                Advanced operations for data recovery, system maintenance, and
+                troubleshooting
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -553,26 +652,33 @@ export default function DataPersistenceMonitor() {
                   </h4>
                   <div className="space-y-3">
                     <Button
-                      onClick={() => performOperation('system-recovery', 'Performing system recovery')}
-                      disabled={operationLoading === 'system-recovery'}
+                      onClick={() =>
+                        performOperation(
+                          "system-recovery",
+                          "Performing system recovery"
+                        )
+                      }
+                      disabled={operationLoading === "system-recovery"}
                       variant="outline"
                       className="w-full text-gray-900"
                     >
-                      {operationLoading === 'system-recovery' ? (
+                      {operationLoading === "system-recovery" ? (
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       ) : (
                         <RefreshCw className="w-4 h-4 mr-2" />
                       )}
                       Full System Recovery
                     </Button>
-                    
+
                     <Button
-                      onClick={() => performOperation('reload-data', 'Reloading data')}
-                      disabled={operationLoading === 'reload-data'}
+                      onClick={() =>
+                        performOperation("reload-data", "Reloading data")
+                      }
+                      disabled={operationLoading === "reload-data"}
                       variant="outline"
                       className="w-full text-gray-900"
                     >
-                      {operationLoading === 'reload-data' ? (
+                      {operationLoading === "reload-data" ? (
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       ) : (
                         <Database className="w-4 h-4 mr-2" />
@@ -606,9 +712,13 @@ export default function DataPersistenceMonitor() {
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-medium text-yellow-800">Important Notice</h4>
+                    <h4 className="text-sm font-medium text-yellow-800">
+                      Important Notice
+                    </h4>
                     <p className="text-xs text-yellow-700 mt-1">
-                      Recovery operations may temporarily affect system performance. System recovery will restore data from the latest backup and reload all data structures.
+                      Recovery operations may temporarily affect system
+                      performance. System recovery will restore data from the
+                      latest backup and reload all data structures.
                     </p>
                   </div>
                 </div>

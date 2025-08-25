@@ -15,6 +15,9 @@ import {
 } from "@/lib/database/persistenceAPI";
 import { gmbProtection } from "@/lib/database/gmbDataProtection";
 
+const isVerbose =
+  process.env.VERBOSE_LOGS === "true" || process.env.NODE_ENV !== "production";
+
 // Helper function to get continent from country name
 function getContinent(country: string): string {
   const continentMap: Record<string, string> = {
@@ -48,8 +51,10 @@ function getContinent(country: string): string {
 
 export async function GET(request: Request) {
   try {
-    // CRITICAL: Protect GMB data before any operations
-    await gmbProtection.createEmergencyBackup();
+    // Only run emergency backup when explicitly enabled
+    if (process.env.ENABLE_BACKUPS === "true") {
+      await gmbProtection.createEmergencyBackup();
+    }
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -59,25 +64,29 @@ export async function GET(request: Request) {
     const action = searchParams.get("action") || "";
     const prioritizeReal = searchParams.get("prioritize_real") === "true";
 
-    console.log("📊 Admin builders request:", {
-      page,
-      limit,
-      search,
-      filter,
-      action,
-      prioritizeReal,
-    });
+    if (isVerbose) {
+      console.log("📊 Admin builders request:", {
+        page,
+        limit,
+        search,
+        filter,
+        action,
+        prioritizeReal,
+      });
+    }
 
     // Handle reload action
     if (action === "reload") {
-      console.log("🔄 Reloading builder data from files...");
+      if (isVerbose) console.log("🔄 Reloading builder data from files...");
 
       try {
         // Load all builders from persistent storage first
         const persistentBuilders = await builderAPI.getAllBuilders();
-        console.log(
-          `📊 Found ${persistentBuilders.length} builders in persistent storage`
-        );
+        if (isVerbose) {
+          console.log(
+            `📊 Found ${persistentBuilders.length} builders in persistent storage`
+          );
+        }
 
         let buildersToReturn = [...persistentBuilders];
 
@@ -90,23 +99,29 @@ export async function GET(request: Request) {
               builder.importedFromGMB ||
               (builder.id && builder.id.startsWith("gmb_"))
           );
-          console.log(
-            `🧹 Filtered to ${buildersToReturn.length} real builders (removed mock data)`
-          );
+          if (isVerbose) {
+            console.log(
+              `🧹 Filtered to ${buildersToReturn.length} real builders (removed mock data)`
+            );
+          }
         }
 
         // Only add static builders if no real builders exist
         if (buildersToReturn.length === 0) {
           const staticBuilders = getExhibitionBuilders();
           buildersToReturn.push(...staticBuilders);
-          console.log(
-            `📂 No real data found, using ${staticBuilders.length} static builders as fallback`
-          );
+          if (isVerbose) {
+            console.log(
+              `📂 No real data found, using ${staticBuilders.length} static builders as fallback`
+            );
+          }
         }
 
-        console.log(
-          `✅ Successfully reloaded ${buildersToReturn.length} builders`
-        );
+        if (isVerbose) {
+          console.log(
+            `✅ Successfully reloaded ${buildersToReturn.length} builders`
+          );
+        }
 
         return NextResponse.json({
           success: true,
@@ -134,7 +149,7 @@ export async function GET(request: Request) {
 
     // Handle delete all action
     if (action === "delete-all") {
-      console.log("🗑️ Deleting all builders...");
+      if (isVerbose) console.log("🗑️ Deleting all builders...");
       const result = await builderAPI.deleteAllBuilders();
 
       return NextResponse.json({
@@ -151,9 +166,11 @@ export async function GET(request: Request) {
 
     // Default: Load all builders from persistent storage
     const allBuilders = await builderAPI.getAllBuilders();
-    console.log(
-      `📊 Retrieved ${allBuilders.length} builders from persistent storage`
-    );
+    if (isVerbose) {
+      console.log(
+        `📊 Retrieved ${allBuilders.length} builders from persistent storage`
+      );
+    }
 
     // Apply filters
     let filteredBuilders = [...allBuilders];
@@ -226,38 +243,31 @@ export async function GET(request: Request) {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("📝 Admin builders API - POST request received");
+    if (isVerbose) console.log("📝 Admin builders API - POST request received");
 
     const builderData = await request.json();
-    console.log("📊 Adding builder:", builderData);
+    if (isVerbose) console.log("📊 Adding builder:", builderData);
 
     // Add builder using unified platform API
     const result = unifiedPlatformAPI.addBuilder(builderData, "admin");
 
     if (result.success) {
-      console.log("✅ Builder added successfully");
+      if (isVerbose) console.log("✅ Builder added successfully");
       return NextResponse.json({
         success: true,
         message: "Builder added successfully",
         data: result.data,
       });
     } else {
-      console.error("❌ Failed to add builder:", result.error);
       return NextResponse.json(
-        {
-          success: false,
-          error: result.error || "Failed to add builder",
-        },
-        { status: 500 }
+        { success: false, error: "Failed to add builder" },
+        { status: 400 }
       );
     }
   } catch (error) {
     console.error("❌ POST Error in admin builders API:", error);
     return NextResponse.json(
-      {
-        success: false,
-        error: "Internal server error",
-      },
+      { success: false, error: "Internal server error" },
       { status: 500 }
     );
   }
