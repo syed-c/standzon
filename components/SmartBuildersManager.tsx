@@ -1,51 +1,70 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Switch } from '@/components/ui/switch';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
-import { 
-  Building, 
-  Users, 
-  Edit, 
-  Trash2, 
-  Plus, 
-  Search, 
-  Filter, 
-  Download, 
-  Upload, 
-  Check, 
-  X, 
-  Shield, 
-  Crown, 
-  Star, 
-  MapPin, 
-  Mail, 
-  Phone, 
-  Globe, 
-  DollarSign, 
-  CheckCircle, 
-  UserCheck, 
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Building,
+  Users,
+  Edit,
+  Trash2,
+  Plus,
+  Search,
+  Filter,
+  Download,
+  Upload,
+  Check,
+  X,
+  Shield,
+  Crown,
+  Star,
+  MapPin,
+  Mail,
+  Phone,
+  Globe,
+  DollarSign,
+  CheckCircle,
+  UserCheck,
   UserX,
   Info,
   RefreshCw,
   AlertCircle,
   AlertTriangle,
   Users2,
-  Merge
-} from 'lucide-react';
-import { EXPANDED_EXHIBITION_DATA } from '@/lib/data/expandedLocations';
-import { ExhibitionBuilder } from '@/lib/data/exhibitionBuilders';
+  Merge,
+} from "lucide-react";
+import { EXPANDED_EXHIBITION_DATA } from "@/lib/data/expandedLocations";
+import { ExhibitionBuilder } from "@/lib/data/exhibitionBuilders";
 
 interface SmartBuilder {
   id: string;
@@ -60,8 +79,8 @@ interface SmartBuilder {
   services: string[];
   specializations: string[];
   portfolioImages: string[];
-  status: 'active' | 'inactive' | 'pending' | 'suspended';
-  plan: 'free' | 'basic' | 'professional' | 'enterprise';
+  status: "active" | "inactive" | "pending" | "suspended";
+  plan: "free" | "basic" | "professional" | "enterprise";
   verified: boolean;
   featured: boolean;
   rating: number;
@@ -74,7 +93,7 @@ interface SmartBuilder {
   certifications: string[];
   languages: string[];
   gmbImported?: boolean;
-  claimStatus?: 'unclaimed' | 'pending' | 'verified' | 'rejected';
+  claimStatus?: "unclaimed" | "pending" | "verified" | "rejected";
 }
 
 interface SmartBuildersManagerProps {
@@ -82,112 +101,156 @@ interface SmartBuildersManagerProps {
   permissions?: string[];
 }
 
-export default function SmartBuildersManager({ adminId = 'admin-001', permissions = [] }: SmartBuildersManagerProps) {
+export default function SmartBuildersManager({
+  adminId = "admin-001",
+  permissions = [],
+}: SmartBuildersManagerProps) {
   const { toast } = useToast();
-  
+
   // State declarations
   const [builders, setBuilders] = useState<SmartBuilder[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBuilders, setSelectedBuilders] = useState<string[]>([]);
-  const [editingBuilder, setEditingBuilder] = useState<SmartBuilder | null>(null);
+  const [editingBuilder, setEditingBuilder] = useState<SmartBuilder | null>(
+    null
+  );
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState('all');
-  const [selectedCity, setSelectedCity] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [selectedPlan, setSelectedPlan] = useState('all');
-  const [selectedSource, setSelectedSource] = useState('all');
-  const [sortBy, setSortBy] = useState('joinDate');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [lastUpdated, setLastUpdated] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("all");
+  const [selectedCity, setSelectedCity] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedPlan, setSelectedPlan] = useState("all");
+  const [selectedSource, setSelectedSource] = useState("all");
+  const [sortBy, setSortBy] = useState("joinDate");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [lastUpdated, setLastUpdated] = useState<string>("");
   const [showDuplicatesOnly, setShowDuplicatesOnly] = useState(false);
-  
+
   // ✅ NEW: Duplicate Detection State
-  const [duplicateGroups, setDuplicateGroups] = useState<Array<{
-    id: string;
-    duplicates: SmartBuilder[];
-    reason: string;
-    confidence: 'high' | 'medium' | 'low';
-  }>>([]);
+  const [duplicateGroups, setDuplicateGroups] = useState<
+    Array<{
+      id: string;
+      duplicates: SmartBuilder[];
+      reason: string;
+      confidence: "high" | "medium" | "low";
+    }>
+  >([]);
   const [showDuplicates, setShowDuplicates] = useState(false);
   const [isDuplicateAnalysis, setIsDuplicateAnalysis] = useState(false);
 
-  const countries = Array.from(new Set(EXPANDED_EXHIBITION_DATA.countries.map(c => c.name))).sort();
-  const cities = selectedCountry === 'all' 
-    ? Array.from(new Set(EXPANDED_EXHIBITION_DATA.cities.map(c => c.name))).sort()
-    : EXPANDED_EXHIBITION_DATA.cities
-        .filter(c => c.country === selectedCountry)
-        .map(c => c.name)
-        .sort();
+  const countries = Array.from(
+    new Set(EXPANDED_EXHIBITION_DATA.countries.map((c) => c.name))
+  ).sort();
+  const cities =
+    selectedCountry === "all"
+      ? Array.from(
+          new Set(EXPANDED_EXHIBITION_DATA.cities.map((c) => c.name))
+        ).sort()
+      : EXPANDED_EXHIBITION_DATA.cities
+          .filter((c) => c.country === selectedCountry)
+          .map((c) => c.name)
+          .sort();
 
   // Convert ExhibitionBuilder to SmartBuilder format
-  const convertExhibitionBuilderToSmartBuilder = (builder: ExhibitionBuilder): SmartBuilder => {
-    console.log('Converting builder:', builder.companyName, builder);
-    
+  const convertExhibitionBuilderToSmartBuilder = (
+    builder: ExhibitionBuilder
+  ): SmartBuilder => {
+    console.log("Converting builder:", builder.companyName, builder);
+
     try {
       return {
         id: builder.id,
-        companyName: builder.companyName || 'Unknown Company',
-        email: builder.contactInfo?.primaryEmail || '',
-        phone: builder.contactInfo?.phone || '',
-        contactPerson: builder.contactInfo?.contactPerson || 'Contact Person',
-        city: builder.headquarters?.city || 'Unknown',
-        country: builder.headquarters?.country || 'Unknown',
-        website: builder.contactInfo?.website || '',
-        description: builder.companyDescription || 'No description available',
-        services: Array.isArray(builder.services) ? builder.services.map(s => s?.name || 'Service').filter(Boolean) : [],
-        specializations: Array.isArray(builder.specializations) ? builder.specializations.map(s => s?.name || 'Specialization').filter(Boolean) : [],
-        portfolioImages: Array.isArray(builder.portfolio) ? builder.portfolio.map(p => p?.images?.[0]).filter(Boolean) : [],
-        status: builder.verified ? 'active' : 'pending',
-        plan: builder.premiumMember ? 'professional' : 'free',
+        companyName: builder.companyName || "Unknown Company",
+        email: builder.contactInfo?.primaryEmail || "",
+        phone: builder.contactInfo?.phone || "",
+        contactPerson: builder.contactInfo?.contactPerson || "Contact Person",
+        city: builder.headquarters?.city || "Unknown",
+        country: builder.headquarters?.country || "Unknown",
+        website: builder.contactInfo?.website || "",
+        description: builder.companyDescription || "No description available",
+        services: Array.isArray(builder.services)
+          ? builder.services.map((s) => s?.name || "Service").filter(Boolean)
+          : [],
+        specializations: Array.isArray(builder.specializations)
+          ? builder.specializations
+              .map((s) => s?.name || "Specialization")
+              .filter(Boolean)
+          : [],
+        portfolioImages: Array.isArray(builder.portfolio)
+          ? builder.portfolio.map((p) => p?.images?.[0]).filter(Boolean)
+          : [],
+        status: builder.verified ? "active" : "pending",
+        plan: builder.premiumMember ? "professional" : "free",
         verified: builder.verified || false,
         featured: builder.premiumMember || false,
-        rating: typeof builder.rating === 'number' ? builder.rating : 0,
-        projectsCompleted: typeof builder.projectsCompleted === 'number' ? builder.projectsCompleted : 0,
-        responseTime: builder.responseTime || 'Within 24 hours',
-        joinDate: builder.createdAt || builder.lastUpdated || new Date().toISOString(),
-        lastActive: builder.updatedAt || builder.lastUpdated || new Date().toISOString(),
+        rating: typeof builder.rating === "number" ? builder.rating : 0,
+        projectsCompleted:
+          typeof builder.projectsCompleted === "number"
+            ? builder.projectsCompleted
+            : 0,
+        responseTime: builder.responseTime || "Within 24 hours",
+        joinDate:
+          builder.createdAt || builder.lastUpdated || new Date().toISOString(),
+        lastActive:
+          builder.updatedAt || builder.lastUpdated || new Date().toISOString(),
         leadCount: Math.floor(Math.random() * 50) + 10, // Simulated for now
-        revenue: (builder.priceRange?.averageProject && typeof builder.priceRange.averageProject === 'number') ? builder.priceRange.averageProject : 25000,
-        certifications: Array.isArray(builder.certifications) ? builder.certifications.map(c => typeof c === 'string' ? c : (c?.name || 'Certification')).filter(Boolean) : [],
-        languages: Array.isArray(builder.languages) ? builder.languages.filter(Boolean) : ['English'],
-        gmbImported: builder.gmbImported || builder.importedFromGMB || builder.source === 'google_places_api' || (builder.id && builder.id.startsWith('gmb_')) || false,
-        claimStatus: builder.claimStatus || 'unclaimed'
+        revenue:
+          builder.priceRange?.averageProject &&
+          typeof builder.priceRange.averageProject === "number"
+            ? builder.priceRange.averageProject
+            : 25000,
+        certifications: Array.isArray(builder.certifications)
+          ? builder.certifications
+              .map((c) =>
+                typeof c === "string" ? c : c?.name || "Certification"
+              )
+              .filter(Boolean)
+          : [],
+        languages: Array.isArray(builder.languages)
+          ? builder.languages.filter(Boolean)
+          : ["English"],
+        gmbImported:
+          builder.gmbImported ||
+          builder.importedFromGMB ||
+          builder.source === "google_places_api" ||
+          (builder.id && builder.id.startsWith("gmb_")) ||
+          false,
+        claimStatus: builder.claimStatus || "unclaimed",
       };
     } catch (error) {
-      console.error('Error converting builder:', builder.companyName, error);
+      console.error("Error converting builder:", builder.companyName, error);
       // Return a safe fallback
       return {
-        id: builder.id || 'unknown',
-        companyName: builder.companyName || 'Unknown Company',
-        email: '',
-        phone: '',
-        contactPerson: 'Contact Person',
-        city: 'Unknown',
-        country: 'Unknown',
-        website: '',
-        description: 'No description available',
+        id: builder.id || "unknown",
+        companyName: builder.companyName || "Unknown Company",
+        email: "",
+        phone: "",
+        contactPerson: "Contact Person",
+        city: "Unknown",
+        country: "Unknown",
+        website: "",
+        description: "No description available",
         services: [],
         specializations: [],
         portfolioImages: [],
-        status: 'pending',
-        plan: 'free',
+        status: "pending",
+        plan: "free",
         verified: false,
         featured: false,
         rating: 0,
         projectsCompleted: 0,
-        responseTime: 'Within 24 hours',
+        responseTime: "Within 24 hours",
         joinDate: new Date().toISOString(),
         lastActive: new Date().toISOString(),
         leadCount: 0,
         revenue: 0,
         certifications: [],
-        languages: ['English'],
+        languages: ["English"],
         gmbImported: false,
-        claimStatus: 'unclaimed'
+        claimStatus: "unclaimed",
       };
     }
   };
@@ -196,105 +259,141 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
   const loadBuilders = async () => {
     try {
       setLoading(true);
-      console.log('🔄 Loading real builders from Convex...');
-      
+      console.log("🔄 Loading real builders from Convex...");
+
       // Import Convex client and API
       const { ConvexHttpClient } = await import("convex/browser");
       const { api } = await import("@/convex/_generated/api");
-      
-      const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-      
+
+      const convexUrl =
+        process.env.NEXT_PUBLIC_CONVEX_URL ||
+        "https://tame-labrador-80.convex.cloud";
+      const convex = new ConvexHttpClient(convexUrl);
+
       // Fetch builders from Convex
-      const buildersData = await convex.query(api.builders.getAllBuilders, { 
+      const buildersData = await convex.query(api.builders.getAllBuilders, {
         limit: 1000,
-        offset: 0 
+        offset: 0,
       });
-      
-      console.log('📡 Convex response:', buildersData);
-      
-      if (buildersData && buildersData.builders && Array.isArray(buildersData.builders) && buildersData.builders.length > 0) {
-        console.log('✅ Loaded builders successfully from Convex:', buildersData.builders.length);
-        console.log('📊 Total builders in Convex:', buildersData.total);
-        
+
+      console.log("📡 Convex response:", buildersData);
+
+      if (
+        buildersData &&
+        buildersData.builders &&
+        Array.isArray(buildersData.builders) &&
+        buildersData.builders.length > 0
+      ) {
+        console.log(
+          "✅ Loaded builders successfully from Convex:",
+          buildersData.builders.length
+        );
+        console.log("📊 Total builders in Convex:", buildersData.total);
+
         let allBuilders = [];
-        
+
         // Convert each builder with error handling
         for (let i = 0; i < buildersData.builders.length; i++) {
           try {
             const convexBuilder = buildersData.builders[i];
             const convertedBuilder = {
               id: convexBuilder._id,
-              companyName: convexBuilder.companyName || 'Unknown Company',
-              email: convexBuilder.primaryEmail || '',
-              phone: convexBuilder.phone || '',
-              contactPerson: convexBuilder.contactPerson || 'Contact Person',
-              city: convexBuilder.headquartersCity || 'Unknown',
-              country: convexBuilder.headquartersCountry || 'Unknown',
-              website: convexBuilder.website || '',
-              description: convexBuilder.companyDescription || 'No description available',
+              companyName: convexBuilder.companyName || "Unknown Company",
+              email: convexBuilder.primaryEmail || "",
+              phone: convexBuilder.phone || "",
+              contactPerson: convexBuilder.contactPerson || "Contact Person",
+              city: convexBuilder.headquartersCity || "Unknown",
+              country: convexBuilder.headquartersCountry || "Unknown",
+              website: convexBuilder.website || "",
+              description:
+                convexBuilder.companyDescription || "No description available",
               services: [], // Will be populated from related tables
               specializations: [], // Will be populated from related tables
               portfolioImages: [], // Will be populated from related tables
-              status: convexBuilder.verified ? 'active' : 'pending',
-              plan: convexBuilder.premiumMember ? 'professional' : 'free',
+              status: convexBuilder.verified ? "active" : "pending",
+              plan: convexBuilder.premiumMember ? "professional" : "free",
               verified: convexBuilder.verified || false,
               featured: convexBuilder.premiumMember || false,
               rating: convexBuilder.rating || 0,
               projectsCompleted: convexBuilder.projectsCompleted || 0,
-              responseTime: convexBuilder.responseTime || 'Within 24 hours',
+              responseTime: convexBuilder.responseTime || "Within 24 hours",
               joinDate: new Date(convexBuilder.createdAt).toISOString(),
               lastActive: new Date(convexBuilder.updatedAt).toISOString(),
               leadCount: Math.floor(Math.random() * 50) + 10, // Simulated for now
               revenue: convexBuilder.averageProject || 25000,
               certifications: [],
-              languages: convexBuilder.languages || ['English'],
-              gmbImported: convexBuilder.gmbImported || convexBuilder.importedFromGMB || false,
-              claimStatus: convexBuilder.claimStatus || 'unclaimed'
+              languages: convexBuilder.languages || ["English"],
+              gmbImported:
+                convexBuilder.gmbImported ||
+                convexBuilder.importedFromGMB ||
+                false,
+              claimStatus: convexBuilder.claimStatus || "unclaimed",
             };
-            
+
             allBuilders.push(convertedBuilder);
-            console.log(`✅ Converted builder ${i + 1}:`, convertedBuilder.companyName);
+            console.log(
+              `✅ Converted builder ${i + 1}:`,
+              convertedBuilder.companyName
+            );
           } catch (error) {
-            console.error(`❌ Error converting builder ${i + 1}:`, error, buildersData.builders[i]);
+            console.error(
+              `❌ Error converting builder ${i + 1}:`,
+              error,
+              buildersData.builders[i]
+            );
           }
         }
-        
-        console.log('🧹 All builders converted successfully:', allBuilders.length);
-        console.log('📋 Final builders list:', allBuilders.map(b => ({ id: b.id, name: b.companyName, gmb: b.gmbImported })));
-        
+
+        console.log(
+          "🧹 All builders converted successfully:",
+          allBuilders.length
+        );
+        console.log(
+          "📋 Final builders list:",
+          allBuilders.map((b) => ({
+            id: b.id,
+            name: b.companyName,
+            gmb: b.gmbImported,
+          }))
+        );
+
         setBuilders(allBuilders);
         setLastUpdated(new Date().toISOString());
-        
+
         toast({
           title: "Builders Loaded",
-          description: `Successfully loaded ${allBuilders.length} builders (${allBuilders.filter(b => b.gmbImported).length} from GMB import).`,
+          description: `Successfully loaded ${allBuilders.length} builders (${allBuilders.filter((b) => b.gmbImported).length} from GMB import).`,
         });
       } else {
-        console.log('⚠️ No builders found in Convex response or invalid response format');
-        console.log('Response data:', buildersData);
-        
+        console.log(
+          "⚠️ No builders found in Convex response or invalid response format"
+        );
+        console.log("Response data:", buildersData);
+
         // Set empty array instead of throwing error
         setBuilders([]);
-        
+
         toast({
           title: "No Builders Found",
-          description: buildersData?.message || "No builders found in the database. You can import builders using the GMB Fetch API.",
+          description:
+            buildersData?.message ||
+            "No builders found in the database. You can import builders using the GMB Fetch API.",
           variant: "destructive",
         });
       }
     } catch (error) {
-      console.error('❌ Error loading builders from Convex:', error);
-      
+      console.error("❌ Error loading builders from Convex:", error);
+
       // Set empty array on error
       setBuilders([]);
-      
+
       toast({
         title: "Error Loading Builders",
-        description: `Failed to load builders: ${error instanceof Error ? error.message : 'Unknown error'}. Please try refreshing the page.`,
+        description: `Failed to load builders: ${error instanceof Error ? error.message : "Unknown error"}. Please try refreshing the page.`,
         variant: "destructive",
       });
     } finally {
-      console.log('🏁 Setting loading to false');
+      console.log("🏁 Setting loading to false");
       setLoading(false);
     }
   };
@@ -305,54 +404,82 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
   }, []);
 
   // Filter builders based on search and filters
-  const filteredBuilders = builders.filter(builder => {
-    const matchesSearch = !searchTerm || 
+  const filteredBuilders = builders.filter((builder) => {
+    const matchesSearch =
+      !searchTerm ||
       builder.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       builder.contactPerson.toLowerCase().includes(searchTerm.toLowerCase()) ||
       builder.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       builder.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
       builder.country.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCountry = selectedCountry === 'all' || builder.country === selectedCountry;
-    const matchesCity = selectedCity === 'all' || builder.city === selectedCity;
-    const matchesStatus = selectedStatus === 'all' || builder.status === selectedStatus;
-    const matchesPlan = selectedPlan === 'all' || builder.plan === selectedPlan;
-    const matchesSource = selectedSource === 'all' || 
-      (selectedSource === 'gmb' && builder.gmbImported) ||
-      (selectedSource === 'manual' && !builder.gmbImported);
-    
-    const matchesDuplicateFilter = !showDuplicatesOnly || 
-      duplicateGroups.some(group => group.duplicates.some(dup => dup.id === builder.id));
-    
-    return matchesSearch && matchesCountry && matchesCity && matchesStatus && matchesPlan && matchesSource && matchesDuplicateFilter;
+
+    const matchesCountry =
+      selectedCountry === "all" || builder.country === selectedCountry;
+    const matchesCity = selectedCity === "all" || builder.city === selectedCity;
+    const matchesStatus =
+      selectedStatus === "all" || builder.status === selectedStatus;
+    const matchesPlan = selectedPlan === "all" || builder.plan === selectedPlan;
+    const matchesSource =
+      selectedSource === "all" ||
+      (selectedSource === "gmb" && builder.gmbImported) ||
+      (selectedSource === "manual" && !builder.gmbImported);
+
+    const matchesDuplicateFilter =
+      !showDuplicatesOnly ||
+      duplicateGroups.some((group) =>
+        group.duplicates.some((dup) => dup.id === builder.id)
+      );
+
+    return (
+      matchesSearch &&
+      matchesCountry &&
+      matchesCity &&
+      matchesStatus &&
+      matchesPlan &&
+      matchesSource &&
+      matchesDuplicateFilter
+    );
   });
 
   // Sort builders
   const sortedBuilders = [...filteredBuilders].sort((a, b) => {
     const getValue = (builder: SmartBuilder) => {
       switch (sortBy) {
-        case 'companyName': return builder.companyName;
-        case 'rating': return builder.rating;
-        case 'projectsCompleted': return builder.projectsCompleted;
-        case 'revenue': return builder.revenue;
-        case 'joinDate': return new Date(builder.joinDate).getTime();
-        case 'lastActive': return new Date(builder.lastActive).getTime();
-        default: return builder.companyName;
+        case "companyName":
+          return builder.companyName;
+        case "rating":
+          return builder.rating;
+        case "projectsCompleted":
+          return builder.projectsCompleted;
+        case "revenue":
+          return builder.revenue;
+        case "joinDate":
+          return new Date(builder.joinDate).getTime();
+        case "lastActive":
+          return new Date(builder.lastActive).getTime();
+        default:
+          return builder.companyName;
       }
     };
-    
+
     const aVal = getValue(a);
     const bVal = getValue(b);
-    
-    if (typeof aVal === 'string' && typeof bVal === 'string') {
-      return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+
+    if (typeof aVal === "string" && typeof bVal === "string") {
+      return sortOrder === "asc"
+        ? aVal.localeCompare(bVal)
+        : bVal.localeCompare(aVal);
     }
-    
-    return sortOrder === 'asc' ? (aVal as number) - (bVal as number) : (bVal as number) - (aVal as number);
+
+    return sortOrder === "asc"
+      ? (aVal as number) - (bVal as number)
+      : (bVal as number) - (aVal as number);
   });
 
   // Handle bulk operations
-  const handleBulkAction = async (action: 'verify' | 'suspend' | 'delete' | 'feature') => {
+  const handleBulkAction = async (
+    action: "verify" | "suspend" | "delete" | "feature"
+  ) => {
     if (selectedBuilders.length === 0) {
       toast({
         title: "No Selection",
@@ -362,8 +489,10 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
       return;
     }
 
-    console.log(`🔄 Performing bulk ${action} on ${selectedBuilders.length} builders`);
-    
+    console.log(
+      `🔄 Performing bulk ${action} on ${selectedBuilders.length} builders`
+    );
+
     toast({
       title: "Bulk Action",
       description: `${action.charAt(0).toUpperCase() + action.slice(1)} action performed on ${selectedBuilders.length} builders`,
@@ -373,20 +502,31 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
   };
 
   // Handle individual builder actions
-  const handleBuilderAction = async (builderId: string, action: 'verify' | 'suspend' | 'delete' | 'feature') => {
+  const handleBuilderAction = async (
+    builderId: string,
+    action: "verify" | "suspend" | "delete" | "feature"
+  ) => {
     console.log(`🔄 Performing ${action} on builder: ${builderId}`);
-    
+
     // Update builder status locally
-    setBuilders(prev => prev.map(builder => 
-      builder.id === builderId 
-        ? { 
-            ...builder, 
-            status: action === 'verify' ? 'active' : action === 'suspend' ? 'suspended' : builder.status,
-            verified: action === 'verify' ? true : builder.verified,
-            featured: action === 'feature' ? !builder.featured : builder.featured
-          }
-        : builder
-    ));
+    setBuilders((prev) =>
+      prev.map((builder) =>
+        builder.id === builderId
+          ? {
+              ...builder,
+              status:
+                action === "verify"
+                  ? "active"
+                  : action === "suspend"
+                    ? "suspended"
+                    : builder.status,
+              verified: action === "verify" ? true : builder.verified,
+              featured:
+                action === "feature" ? !builder.featured : builder.featured,
+            }
+          : builder
+      )
+    );
 
     toast({
       title: "Action Completed",
@@ -403,17 +543,19 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
   // Save builder changes
   const saveBuilder = async () => {
     if (!editingBuilder) return;
-    
-    console.log('💾 Saving builder changes:', editingBuilder.companyName);
-    
+
+    console.log("💾 Saving builder changes:", editingBuilder.companyName);
+
     // Update builder in local state
-    setBuilders(prev => prev.map(builder => 
-      builder.id === editingBuilder.id ? editingBuilder : builder
-    ));
+    setBuilders((prev) =>
+      prev.map((builder) =>
+        builder.id === editingBuilder.id ? editingBuilder : builder
+      )
+    );
 
     setShowEditDialog(false);
     setEditingBuilder(null);
-    
+
     toast({
       title: "Builder Updated",
       description: `${editingBuilder.companyName} has been updated successfully`,
@@ -423,35 +565,48 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
   // Get status color
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'suspended': return 'bg-red-100 text-red-800';
-      case 'inactive': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "active":
+        return "bg-green-100 text-green-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "suspended":
+        return "bg-red-100 text-red-800";
+      case "inactive":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   // Get plan color
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'enterprise': return 'bg-purple-100 text-purple-800';
-      case 'professional': return 'bg-blue-100 text-blue-800';
-      case 'basic': return 'bg-green-100 text-green-800';
-      case 'free': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "enterprise":
+        return "bg-purple-100 text-purple-800";
+      case "professional":
+        return "bg-blue-100 text-blue-800";
+      case "basic":
+        return "bg-green-100 text-green-800";
+      case "free":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   // Handle plan changes
-  const handlePlanChange = async (builderId: string, newPlan: 'free' | 'basic' | 'professional' | 'enterprise') => {
+  const handlePlanChange = async (
+    builderId: string,
+    newPlan: "free" | "basic" | "professional" | "enterprise"
+  ) => {
     console.log(`💰 Changing plan for builder ${builderId} to ${newPlan}`);
-    
+
     // Update builder plan locally
-    setBuilders(prev => prev.map(builder => 
-      builder.id === builderId 
-        ? { ...builder, plan: newPlan }
-        : builder
-    ));
+    setBuilders((prev) =>
+      prev.map((builder) =>
+        builder.id === builderId ? { ...builder, plan: newPlan } : builder
+      )
+    );
 
     toast({
       title: "Plan Updated",
@@ -462,8 +617,8 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
   // Handle password reset
   const handlePasswordReset = async (builderId: string) => {
     console.log(`🔑 Initiating password reset for builder: ${builderId}`);
-    
-    const builder = builders.find(b => b.id === builderId);
+
+    const builder = builders.find((b) => b.id === builderId);
     if (!builder) return;
 
     // In a real implementation, this would send a password reset email
@@ -479,17 +634,19 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
       id: string;
       duplicates: SmartBuilder[];
       reason: string;
-      confidence: 'high' | 'medium' | 'low';
+      confidence: "high" | "medium" | "low";
     }> = [];
     const processedBuilders = new Set<string>();
 
-    console.log(`🔍 Starting duplicate analysis for ${buildersToAnalyze.length} builders...`);
+    console.log(
+      `🔍 Starting duplicate analysis for ${buildersToAnalyze.length} builders...`
+    );
 
     // ✅ OPTIMIZED: Batch processing to prevent UI blocking
     const batchSize = 50;
     for (let i = 0; i < buildersToAnalyze.length; i += batchSize) {
       const batch = buildersToAnalyze.slice(i, i + batchSize);
-      
+
       batch.forEach((builder, index) => {
         const actualIndex = i + index;
         if (processedBuilders.has(builder.id)) return;
@@ -502,41 +659,56 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
           if (processedBuilders.has(otherBuilder.id)) return;
 
           let isDuplicate = false;
-          let reason = '';
-          let confidence: 'high' | 'medium' | 'low' = 'low';
+          let reason = "";
+          let confidence: "high" | "medium" | "low" = "low";
 
           // 1. Exact email match (highest confidence) - FAST CHECK
-          if (builder.email && otherBuilder.email && 
-              builder.email.toLowerCase().trim() === otherBuilder.email.toLowerCase().trim() &&
-              builder.email.trim() !== '') {
+          if (
+            builder.email &&
+            otherBuilder.email &&
+            builder.email.toLowerCase().trim() ===
+              otherBuilder.email.toLowerCase().trim() &&
+            builder.email.trim() !== ""
+          ) {
             isDuplicate = true;
-            reason = 'same email address';
-            confidence = 'high';
+            reason = "same email address";
+            confidence = "high";
           }
           // 2. Phone number match (high confidence) - FAST CHECK
           else if (builder.phone && otherBuilder.phone) {
-            const normalizedPhone1 = builder.phone.replace(/\D/g, '');
-            const normalizedPhone2 = otherBuilder.phone.replace(/\D/g, '');
-            
-            if (normalizedPhone1.length >= 7 && normalizedPhone2.length >= 7 &&
-                normalizedPhone1 === normalizedPhone2) {
+            const normalizedPhone1 = builder.phone.replace(/\D/g, "");
+            const normalizedPhone2 = otherBuilder.phone.replace(/\D/g, "");
+
+            if (
+              normalizedPhone1.length >= 7 &&
+              normalizedPhone2.length >= 7 &&
+              normalizedPhone1 === normalizedPhone2
+            ) {
               isDuplicate = true;
-              reason = 'matching phone number';
-              confidence = 'high';
+              reason = "matching phone number";
+              confidence = "high";
             }
           }
           // 3. Company name + location match (medium confidence) - SLOWER CHECK
-          else if (builder.companyName && otherBuilder.companyName &&
-              builder.city && otherBuilder.city && builder.country && otherBuilder.country) {
+          else if (
+            builder.companyName &&
+            otherBuilder.companyName &&
+            builder.city &&
+            otherBuilder.city &&
+            builder.country &&
+            otherBuilder.country
+          ) {
             const name1 = builder.companyName.toLowerCase().trim();
             const name2 = otherBuilder.companyName.toLowerCase().trim();
-            const location1 = `${builder.city}_${builder.country}`.toLowerCase();
-            const location2 = `${otherBuilder.city}_${otherBuilder.country}`.toLowerCase();
-            
+            const location1 =
+              `${builder.city}_${builder.country}`.toLowerCase();
+            const location2 =
+              `${otherBuilder.city}_${otherBuilder.country}`.toLowerCase();
+
             if (name1 === name2 && location1 === location2) {
               isDuplicate = true;
-              reason = 'same company name and location';
-              confidence = 'medium';
+              reason = "same company name and location";
+              confidence = "medium";
             }
           }
 
@@ -552,38 +724,43 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
           duplicateGroups.push({
             id: `dup_${actualIndex}_${Date.now()}`,
             duplicates,
-            reason: reasons[0] || 'multiple criteria',
-            confidence: duplicates.length > 2 ? 'high' : 'medium'
+            reason: reasons[0] || "multiple criteria",
+            confidence: duplicates.length > 2 ? "high" : "medium",
           });
-          
+
           // Mark all as processed
-          duplicates.forEach(dup => processedBuilders.add(dup.id));
+          duplicates.forEach((dup) => processedBuilders.add(dup.id));
         }
       });
     }
 
-    console.log(`🔍 Duplicate analysis complete: Found ${duplicateGroups.length} duplicate groups`);
+    console.log(
+      `🔍 Duplicate analysis complete: Found ${duplicateGroups.length} duplicate groups`
+    );
     return duplicateGroups;
   };
 
   // ✅ NEW: Analyze duplicates
   const analyzeDuplicates = async () => {
     setIsDuplicateAnalysis(true);
-    
+
     try {
-      console.log('🔍 Starting comprehensive duplicate analysis...');
+      console.log("🔍 Starting comprehensive duplicate analysis...");
       const groups = detectDuplicates(builders);
       setDuplicateGroups(groups);
       setShowDuplicates(true);
-      
-      const totalDuplicates = groups.reduce((sum, group) => sum + group.duplicates.length, 0);
-      
+
+      const totalDuplicates = groups.reduce(
+        (sum, group) => sum + group.duplicates.length,
+        0
+      );
+
       toast({
         title: "Duplicate Analysis Complete",
         description: `Found ${groups.length} duplicate groups with ${totalDuplicates} total duplicate builders`,
       });
     } catch (error) {
-      console.error('❌ Error analyzing duplicates:', error);
+      console.error("❌ Error analyzing duplicates:", error);
       toast({
         title: "Analysis Error",
         description: "Failed to analyze duplicates. Please try again.",
@@ -595,22 +772,31 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
   };
 
   // ✅ NEW: Resolve duplicate group by keeping one and removing others
-  const resolveDuplicateGroup = async (groupId: string, keepBuilderId: string) => {
-    const group = duplicateGroups.find(g => g.id === groupId);
+  const resolveDuplicateGroup = async (
+    groupId: string,
+    keepBuilderId: string
+  ) => {
+    const group = duplicateGroups.find((g) => g.id === groupId);
     if (!group) return;
 
-    const buildersToRemove = group.duplicates.filter(b => b.id !== keepBuilderId);
-    
-    console.log(`🔄 Resolving duplicate group: keeping ${keepBuilderId}, removing ${buildersToRemove.length} duplicates`);
-    
+    const buildersToRemove = group.duplicates.filter(
+      (b) => b.id !== keepBuilderId
+    );
+
+    console.log(
+      `🔄 Resolving duplicate group: keeping ${keepBuilderId}, removing ${buildersToRemove.length} duplicates`
+    );
+
     // Remove duplicates from the builders list
-    setBuilders(prev => prev.filter(builder => 
-      !buildersToRemove.some(dup => dup.id === builder.id)
-    ));
-    
+    setBuilders((prev) =>
+      prev.filter(
+        (builder) => !buildersToRemove.some((dup) => dup.id === builder.id)
+      )
+    );
+
     // Remove this group from duplicates
-    setDuplicateGroups(prev => prev.filter(g => g.id !== groupId));
-    
+    setDuplicateGroups((prev) => prev.filter((g) => g.id !== groupId));
+
     toast({
       title: "Duplicates Resolved",
       description: `Removed ${buildersToRemove.length} duplicate builders`,
@@ -619,28 +805,30 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
 
   // ✅ NEW: Auto-resolve duplicates (keep the verified/higher rated one)
   const autoResolveDuplicates = async () => {
-    console.log('🤖 Starting auto-resolution of duplicates...');
-    
+    console.log("🤖 Starting auto-resolution of duplicates...");
+
     let resolvedCount = 0;
     const newBuilders = [...builders];
-    
-    duplicateGroups.forEach(group => {
-      if (group.confidence === 'high') {
+
+    duplicateGroups.forEach((group) => {
+      if (group.confidence === "high") {
         // Sort by verification status, then rating, then projects completed
         const sorted = [...group.duplicates].sort((a, b) => {
           if (a.verified !== b.verified) return b.verified ? 1 : -1;
           if (a.rating !== b.rating) return b.rating - a.rating;
           return b.projectsCompleted - a.projectsCompleted;
         });
-        
+
         const keepBuilder = sorted[0];
         const removeBuilders = sorted.slice(1);
-        
-        console.log(`🤖 Auto-keeping: ${keepBuilder.companyName} (verified: ${keepBuilder.verified}, rating: ${keepBuilder.rating})`);
-        
+
+        console.log(
+          `🤖 Auto-keeping: ${keepBuilder.companyName} (verified: ${keepBuilder.verified}, rating: ${keepBuilder.rating})`
+        );
+
         // Remove duplicates
-        removeBuilders.forEach(builder => {
-          const index = newBuilders.findIndex(b => b.id === builder.id);
+        removeBuilders.forEach((builder) => {
+          const index = newBuilders.findIndex((b) => b.id === builder.id);
           if (index > -1) {
             newBuilders.splice(index, 1);
             resolvedCount++;
@@ -648,10 +836,10 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
         });
       }
     });
-    
+
     setBuilders(newBuilders);
-    setDuplicateGroups(prev => prev.filter(g => g.confidence !== 'high'));
-    
+    setDuplicateGroups((prev) => prev.filter((g) => g.confidence !== "high"));
+
     toast({
       title: "Auto-Resolution Complete",
       description: `Automatically resolved ${resolvedCount} high-confidence duplicates`,
@@ -676,11 +864,17 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
     return (
       <div className="p-6">
         <div className="space-y-4">
-          <h1 className="text-2xl font-bold text-gray-900">Smart Builders Manager - Debug Mode</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Smart Builders Manager - Debug Mode
+          </h1>
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <h2 className="text-lg font-semibold text-yellow-800 mb-2">No Builders Found</h2>
-            <p className="text-yellow-700 mb-4">The component loaded but no builders were converted successfully.</p>
-            <button 
+            <h2 className="text-lg font-semibold text-yellow-800 mb-2">
+              No Builders Found
+            </h2>
+            <p className="text-yellow-700 mb-4">
+              The component loaded but no builders were converted successfully.
+            </p>
+            <button
               onClick={loadBuilders}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
@@ -689,8 +883,8 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
           </div>
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
             <h3 className="font-semibold mb-2">Debug Info:</h3>
-            <p>Last updated: {lastUpdated || 'Never'}</p>
-            <p>Loading state: {loading ? 'true' : 'false'}</p>
+            <p>Last updated: {lastUpdated || "Never"}</p>
+            <p>Loading state: {loading ? "true" : "false"}</p>
             <p>Builders count: {builders.length}</p>
           </div>
         </div>
@@ -705,12 +899,16 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
           {/* Header */}
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Smart Builders Manager</h1>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Smart Builders Manager
+              </h1>
               <p className="text-gray-600 mt-1">
-                Manage {builders.length} exhibition builders across your platform
-                {builders.filter(b => b.gmbImported).length > 0 && (
-                  <span className="text-purple-600 font-medium"> 
-                    ({builders.filter(b => b.gmbImported).length} from GMB import)
+                Manage {builders.length} exhibition builders across your
+                platform
+                {builders.filter((b) => b.gmbImported).length > 0 && (
+                  <span className="text-purple-600 font-medium">
+                    ({builders.filter((b) => b.gmbImported).length} from GMB
+                    import)
                   </span>
                 )}
               </p>
@@ -755,33 +953,35 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                 Import Builders
               </Button>
               <Button
-                onClick={() => handleEditBuilder({
-                  id: '',
-                  companyName: '',
-                  email: '',
-                  phone: '',
-                  contactPerson: '',
-                  city: '',
-                  country: '',
-                  website: '',
-                  description: '',
-                  services: [],
-                  specializations: [],
-                  portfolioImages: [],
-                  status: 'pending',
-                  plan: 'free',
-                  verified: false,
-                  featured: false,
-                  rating: 0,
-                  projectsCompleted: 0,
-                  responseTime: '',
-                  joinDate: new Date().toISOString(),
-                  lastActive: new Date().toISOString(),
-                  leadCount: 0,
-                  revenue: 0,
-                  certifications: [],
-                  languages: []
-                })}
+                onClick={() =>
+                  handleEditBuilder({
+                    id: "",
+                    companyName: "",
+                    email: "",
+                    phone: "",
+                    contactPerson: "",
+                    city: "",
+                    country: "",
+                    website: "",
+                    description: "",
+                    services: [],
+                    specializations: [],
+                    portfolioImages: [],
+                    status: "pending",
+                    plan: "free",
+                    verified: false,
+                    featured: false,
+                    rating: 0,
+                    projectsCompleted: 0,
+                    responseTime: "",
+                    joinDate: new Date().toISOString(),
+                    lastActive: new Date().toISOString(),
+                    leadCount: 0,
+                    revenue: 0,
+                    certifications: [],
+                    languages: [],
+                  })
+                }
                 className="bg-green-600 hover:bg-green-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -797,68 +997,83 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">Total Builders</p>
-                    <p className="text-2xl font-bold text-gray-900">{builders.length}</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {builders.length}
+                    </p>
                   </div>
                   <Building className="h-8 w-8 text-blue-600" />
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">Verified</p>
-                    <p className="text-2xl font-bold text-green-600">{builders.filter(b => b.verified).length}</p>
+                    <p className="text-2xl font-bold text-green-600">
+                      {builders.filter((b) => b.verified).length}
+                    </p>
                   </div>
                   <Shield className="h-8 w-8 text-green-600" />
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">GMB Imported</p>
-                    <p className="text-2xl font-bold text-purple-600">{builders.filter(b => b.gmbImported).length}</p>
+                    <p className="text-2xl font-bold text-purple-600">
+                      {builders.filter((b) => b.gmbImported).length}
+                    </p>
                   </div>
                   <Globe className="h-8 w-8 text-purple-600" />
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">Featured</p>
-                    <p className="text-2xl font-bold text-orange-600">{builders.filter(b => b.featured).length}</p>
+                    <p className="text-2xl font-bold text-orange-600">
+                      {builders.filter((b) => b.featured).length}
+                    </p>
                   </div>
                   <Crown className="h-8 w-8 text-orange-600" />
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">Paid Plans</p>
-                    <p className="text-2xl font-bold text-indigo-600">{builders.filter(b => b.plan !== 'free').length}</p>
+                    <p className="text-2xl font-bold text-indigo-600">
+                      {builders.filter((b) => b.plan !== "free").length}
+                    </p>
                   </div>
                   <DollarSign className="h-8 w-8 text-indigo-600" />
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">Avg Rating</p>
                     <p className="text-2xl font-bold text-yellow-600">
-                      {builders.length > 0 ? (builders.reduce((sum, b) => sum + b.rating, 0) / builders.length).toFixed(1) : '0.0'}
+                      {builders.length > 0
+                        ? (
+                            builders.reduce((sum, b) => sum + b.rating, 0) /
+                            builders.length
+                          ).toFixed(1)
+                        : "0.0"}
                     </p>
                   </div>
                   <Star className="h-8 w-8 text-yellow-600" />
@@ -873,10 +1088,17 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                   <div>
                     <p className="text-sm text-gray-600">Duplicate Detection</p>
                     <p className="text-2xl font-bold text-red-600">
-                      {duplicateGroups.length > 0 ? duplicateGroups.length : '0'} groups
+                      {duplicateGroups.length > 0
+                        ? duplicateGroups.length
+                        : "0"}{" "}
+                      groups
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      {duplicateGroups.reduce((sum, group) => sum + group.duplicates.length, 0)} total duplicates
+                      {duplicateGroups.reduce(
+                        (sum, group) => sum + group.duplicates.length,
+                        0
+                      )}{" "}
+                      total duplicates
                     </p>
                   </div>
                   <div className="flex flex-col items-end space-y-2">
@@ -925,22 +1147,27 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="country">Country</Label>
-                  <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                  <Select
+                    value={selectedCountry}
+                    onValueChange={setSelectedCountry}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Countries</SelectItem>
-                      {countries.map(country => (
-                        <SelectItem key={country} value={country}>{country}</SelectItem>
+                      {countries.map((country) => (
+                        <SelectItem key={country} value={country}>
+                          {country}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="city">City</Label>
                   <Select value={selectedCity} onValueChange={setSelectedCity}>
@@ -949,16 +1176,21 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Cities</SelectItem>
-                      {cities.map(city => (
-                        <SelectItem key={city} value={city}>{city}</SelectItem>
+                      {cities.map((city) => (
+                        <SelectItem key={city} value={city}>
+                          {city}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="status">Status</Label>
-                  <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <Select
+                    value={selectedStatus}
+                    onValueChange={setSelectedStatus}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -971,7 +1203,7 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="plan">Plan</Label>
                   <Select value={selectedPlan} onValueChange={setSelectedPlan}>
@@ -987,10 +1219,13 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="source">Source</Label>
-                  <Select value={selectedSource} onValueChange={setSelectedSource}>
+                  <Select
+                    value={selectedSource}
+                    onValueChange={setSelectedSource}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -1016,7 +1251,7 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                   <div className="flex space-x-2">
                     <Button
                       size="sm"
-                      onClick={() => handleBulkAction('verify')}
+                      onClick={() => handleBulkAction("verify")}
                       className="bg-green-600 hover:bg-green-700 text-white"
                     >
                       <UserCheck className="h-4 w-4 mr-1" />
@@ -1024,7 +1259,7 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => handleBulkAction('feature')}
+                      onClick={() => handleBulkAction("feature")}
                       className="bg-purple-600 hover:bg-purple-700 text-white"
                     >
                       <Crown className="h-4 w-4 mr-1" />
@@ -1032,7 +1267,7 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => handleBulkAction('suspend')}
+                      onClick={() => handleBulkAction("suspend")}
                       className="bg-orange-600 hover:bg-orange-700 text-white"
                     >
                       <UserX className="h-4 w-4 mr-1" />
@@ -1040,7 +1275,7 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => handleBulkAction('delete')}
+                      onClick={() => handleBulkAction("delete")}
                       variant="destructive"
                     >
                       <Trash2 className="h-4 w-4 mr-1" />
@@ -1059,15 +1294,21 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                 <CardTitle>Builders ({sortedBuilders.length})</CardTitle>
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
-                    <Label htmlFor="sort" className="text-sm">Sort by:</Label>
+                    <Label htmlFor="sort" className="text-sm">
+                      Sort by:
+                    </Label>
                     <Select value={sortBy} onValueChange={setSortBy}>
                       <SelectTrigger className="w-40">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="companyName">Company Name</SelectItem>
+                        <SelectItem value="companyName">
+                          Company Name
+                        </SelectItem>
                         <SelectItem value="rating">Rating</SelectItem>
-                        <SelectItem value="projectsCompleted">Projects</SelectItem>
+                        <SelectItem value="projectsCompleted">
+                          Projects
+                        </SelectItem>
                         <SelectItem value="revenue">Revenue</SelectItem>
                         <SelectItem value="joinDate">Join Date</SelectItem>
                         <SelectItem value="lastActive">Last Active</SelectItem>
@@ -1077,10 +1318,12 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                    onClick={() =>
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                    }
                     className="text-gray-700 border-gray-300 hover:bg-gray-50"
                   >
-                    {sortOrder === 'asc' ? '↑' : '↓'}
+                    {sortOrder === "asc" ? "↑" : "↓"}
                   </Button>
                 </div>
               </div>
@@ -1089,7 +1332,9 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
               {sortedBuilders.length === 0 ? (
                 <div className="text-center py-12">
                   <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No builders found matching your criteria</p>
+                  <p className="text-gray-500">
+                    No builders found matching your criteria
+                  </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto max-h-[600px] overflow-y-auto scroll-smooth">
@@ -1098,37 +1343,67 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                       <tr className="border-b border-gray-200">
                         <th className="text-left py-3 px-4">
                           <Checkbox
-                            checked={selectedBuilders.length === sortedBuilders.length}
+                            checked={
+                              selectedBuilders.length === sortedBuilders.length
+                            }
                             onCheckedChange={(checked) => {
                               if (checked) {
-                                setSelectedBuilders(sortedBuilders.map(b => b.id));
+                                setSelectedBuilders(
+                                  sortedBuilders.map((b) => b.id)
+                                );
                               } else {
                                 setSelectedBuilders([]);
                               }
                             }}
                           />
                         </th>
-                        <th className="text-left py-3 px-4 font-medium">Company</th>
-                        <th className="text-left py-3 px-4 font-medium">Location</th>
-                        <th className="text-left py-3 px-4 font-medium">Contact</th>
-                        <th className="text-left py-3 px-4 font-medium">Status</th>
-                        <th className="text-left py-3 px-4 font-medium">Plan</th>
-                        <th className="text-left py-3 px-4 font-medium">Rating</th>
-                        <th className="text-left py-3 px-4 font-medium">Projects</th>
-                        <th className="text-left py-3 px-4 font-medium">Actions</th>
+                        <th className="text-left py-3 px-4 font-medium">
+                          Company
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium">
+                          Location
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium">
+                          Contact
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium">
+                          Status
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium">
+                          Plan
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium">
+                          Rating
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium">
+                          Projects
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {sortedBuilders.map(builder => (
-                        <tr key={builder.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      {sortedBuilders.map((builder) => (
+                        <tr
+                          key={builder.id}
+                          className="border-b border-gray-100 hover:bg-gray-50"
+                        >
                           <td className="py-4 px-4">
                             <Checkbox
                               checked={selectedBuilders.includes(builder.id)}
                               onCheckedChange={(checked) => {
                                 if (checked) {
-                                  setSelectedBuilders([...selectedBuilders, builder.id]);
+                                  setSelectedBuilders([
+                                    ...selectedBuilders,
+                                    builder.id,
+                                  ]);
                                 } else {
-                                  setSelectedBuilders(selectedBuilders.filter(id => id !== builder.id));
+                                  setSelectedBuilders(
+                                    selectedBuilders.filter(
+                                      (id) => id !== builder.id
+                                    )
+                                  );
                                 }
                               }}
                             />
@@ -1141,15 +1416,23 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                                 </div>
                               </div>
                               <div>
-                                <div className="font-medium text-gray-900">{builder.companyName}</div>
-                                <div className="text-sm text-gray-500">{builder.contactPerson}</div>
+                                <div className="font-medium text-gray-900">
+                                  {builder.companyName}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {builder.contactPerson}
+                                </div>
                                 {builder.gmbImported && (
                                   <Badge className="bg-blue-100 text-blue-800 text-xs mt-1">
                                     GMB Imported
                                   </Badge>
                                 )}
                                 {/* ✅ NEW: Duplicate indicator */}
-                                {duplicateGroups.some(group => group.duplicates.some(dup => dup.id === builder.id)) && (
+                                {duplicateGroups.some((group) =>
+                                  group.duplicates.some(
+                                    (dup) => dup.id === builder.id
+                                  )
+                                ) && (
                                   <Badge className="bg-red-100 text-red-800 text-xs mt-1">
                                     <Users2 className="h-3 w-3 mr-1" />
                                     Duplicate
@@ -1161,18 +1444,24 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                           <td className="py-4 px-4">
                             <div className="flex items-center space-x-1">
                               <MapPin className="h-4 w-4 text-gray-400" />
-                              <span className="text-sm text-gray-600">{builder.city}, {builder.country}</span>
+                              <span className="text-sm text-gray-600">
+                                {builder.city}, {builder.country}
+                              </span>
                             </div>
                           </td>
                           <td className="py-4 px-1">
                             <div className="space-y-1">
                               <div className="flex items-center space-x-1">
                                 <Mail className="h-4 w-4 text-gray-400" />
-                                <span className="text-sm text-gray-600 truncate max-w-[150px]">{builder.email}</span>
+                                <span className="text-sm text-gray-600 truncate max-w-[150px]">
+                                  {builder.email}
+                                </span>
                               </div>
                               <div className="flex items-center space-x-1">
                                 <Phone className="h-4 w-4 text-gray-400" />
-                                <span className="text-sm text-gray-600">{builder.phone}</span>
+                                <span className="text-sm text-gray-600">
+                                  {builder.phone}
+                                </span>
                               </div>
                             </div>
                           </td>
@@ -1201,11 +1490,15 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                           <td className="py-4 px-4">
                             <div className="flex items-center space-x-1">
                               <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                              <span className="text-sm font-medium">{builder.rating.toFixed(1)}</span>
+                              <span className="text-sm font-medium">
+                                {builder.rating.toFixed(1)}
+                              </span>
                             </div>
                           </td>
                           <td className="py-4 px-4">
-                            <span className="text-sm text-gray-600">{builder.projectsCompleted}</span>
+                            <span className="text-sm text-gray-600">
+                              {builder.projectsCompleted}
+                            </span>
                           </td>
                           <td className="py-4 px-4">
                             <div className="flex items-center space-x-2">
@@ -1220,7 +1513,9 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                               {!builder.verified && (
                                 <Button
                                   size="sm"
-                                  onClick={() => handleBuilderAction(builder.id, 'verify')}
+                                  onClick={() =>
+                                    handleBuilderAction(builder.id, "verify")
+                                  }
                                   className="bg-green-600 hover:bg-green-700 text-white"
                                 >
                                   <UserCheck className="h-4 w-4" />
@@ -1228,14 +1523,23 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                               )}
                               <Button
                                 size="sm"
-                                onClick={() => handleBuilderAction(builder.id, 'feature')}
+                                onClick={() =>
+                                  handleBuilderAction(builder.id, "feature")
+                                }
                                 className="bg-purple-600 hover:bg-purple-700 text-white"
                               >
                                 <Crown className="h-4 w-4" />
                               </Button>
                               <Button
                                 size="sm"
-                                onClick={() => handlePlanChange(builder.id, builder.plan === 'free' ? 'professional' : 'free')}
+                                onClick={() =>
+                                  handlePlanChange(
+                                    builder.id,
+                                    builder.plan === "free"
+                                      ? "professional"
+                                      : "free"
+                                  )
+                                }
                                 className="bg-indigo-600 hover:bg-indigo-700 text-white"
                               >
                                 <DollarSign className="h-4 w-4" />
@@ -1250,7 +1554,9 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                               <Button
                                 size="sm"
                                 variant="destructive"
-                                onClick={() => handleBuilderAction(builder.id, 'delete')}
+                                onClick={() =>
+                                  handleBuilderAction(builder.id, "delete")
+                                }
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -1272,10 +1578,20 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                 <Checkbox
                   id="show-duplicates-only"
                   checked={showDuplicatesOnly}
-                  onCheckedChange={(checked) => setShowDuplicatesOnly(checked as boolean)}
+                  onCheckedChange={(checked) =>
+                    setShowDuplicatesOnly(checked as boolean)
+                  }
                 />
-                <Label htmlFor="show-duplicates-only" className="text-red-800 font-medium">
-                  Show only duplicate builders ({duplicateGroups.reduce((sum, group) => sum + group.duplicates.length, 0)} found)
+                <Label
+                  htmlFor="show-duplicates-only"
+                  className="text-red-800 font-medium"
+                >
+                  Show only duplicate builders (
+                  {duplicateGroups.reduce(
+                    (sum, group) => sum + group.duplicates.length,
+                    0
+                  )}{" "}
+                  found)
                 </Label>
               </div>
             </div>
@@ -1286,13 +1602,13 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto scroll-smooth">
               <DialogHeader>
                 <DialogTitle>
-                  {editingBuilder?.id ? 'Edit Builder' : 'Add New Builder'}
+                  {editingBuilder?.id ? "Edit Builder" : "Add New Builder"}
                 </DialogTitle>
                 <DialogDescription>
                   Update builder information and settings
                 </DialogDescription>
               </DialogHeader>
-              
+
               {editingBuilder && (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -1301,7 +1617,12 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                       <Input
                         id="companyName"
                         value={editingBuilder.companyName}
-                        onChange={(e) => setEditingBuilder({...editingBuilder, companyName: e.target.value})}
+                        onChange={(e) =>
+                          setEditingBuilder({
+                            ...editingBuilder,
+                            companyName: e.target.value,
+                          })
+                        }
                         placeholder="Enter company name"
                       />
                     </div>
@@ -1310,12 +1631,17 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                       <Input
                         id="contactPerson"
                         value={editingBuilder.contactPerson}
-                        onChange={(e) => setEditingBuilder({...editingBuilder, contactPerson: e.target.value})}
+                        onChange={(e) =>
+                          setEditingBuilder({
+                            ...editingBuilder,
+                            contactPerson: e.target.value,
+                          })
+                        }
                         placeholder="Enter contact person"
                       />
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="email">Email *</Label>
@@ -1323,7 +1649,12 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                         id="email"
                         type="email"
                         value={editingBuilder.email}
-                        onChange={(e) => setEditingBuilder({...editingBuilder, email: e.target.value})}
+                        onChange={(e) =>
+                          setEditingBuilder({
+                            ...editingBuilder,
+                            email: e.target.value,
+                          })
+                        }
                         placeholder="Enter email address"
                       />
                     </div>
@@ -1332,66 +1663,108 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                       <Input
                         id="phone"
                         value={editingBuilder.phone}
-                        onChange={(e) => setEditingBuilder({...editingBuilder, phone: e.target.value})}
+                        onChange={(e) =>
+                          setEditingBuilder({
+                            ...editingBuilder,
+                            phone: e.target.value,
+                          })
+                        }
                         placeholder="Enter phone number"
                       />
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="country">Country *</Label>
-                      <Select value={editingBuilder.country} onValueChange={(value) => setEditingBuilder({...editingBuilder, country: value})}>
+                      <Select
+                        value={editingBuilder.country}
+                        onValueChange={(value) =>
+                          setEditingBuilder({
+                            ...editingBuilder,
+                            country: value,
+                          })
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {countries.map(country => (
-                            <SelectItem key={country} value={country}>{country}</SelectItem>
+                          {countries.map((country) => (
+                            <SelectItem key={country} value={country}>
+                              {country}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div>
                       <Label htmlFor="city">City *</Label>
-                      <Select value={editingBuilder.city} onValueChange={(value) => setEditingBuilder({...editingBuilder, city: value})}>
+                      <Select
+                        value={editingBuilder.city}
+                        onValueChange={(value) =>
+                          setEditingBuilder({ ...editingBuilder, city: value })
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {EXPANDED_EXHIBITION_DATA.cities.map(city => (
-                            <SelectItem key={city.id} value={city.name}>{city.name}, {city.country}</SelectItem>
+                          {EXPANDED_EXHIBITION_DATA.cities.map((city) => (
+                            <SelectItem key={city.id} value={city.name}>
+                              {city.name}, {city.country}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="website">Website</Label>
                     <Input
                       id="website"
-                      value={editingBuilder.website || ''}
-                      onChange={(e) => setEditingBuilder({...editingBuilder, website: e.target.value})}
+                      value={editingBuilder.website || ""}
+                      onChange={(e) =>
+                        setEditingBuilder({
+                          ...editingBuilder,
+                          website: e.target.value,
+                        })
+                      }
                       placeholder="Enter website URL"
                     />
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="description">Description</Label>
                     <Textarea
                       id="description"
                       value={editingBuilder.description}
-                      onChange={(e) => setEditingBuilder({...editingBuilder, description: e.target.value})}
+                      onChange={(e) =>
+                        setEditingBuilder({
+                          ...editingBuilder,
+                          description: e.target.value,
+                        })
+                      }
                       placeholder="Enter company description"
                       rows={3}
                     />
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="status">Status</Label>
-                      <Select value={editingBuilder.status} onValueChange={(value: 'active' | 'inactive' | 'pending' | 'suspended') => setEditingBuilder({...editingBuilder, status: value})}>
+                      <Select
+                        value={editingBuilder.status}
+                        onValueChange={(
+                          value: "active" | "inactive" | "pending" | "suspended"
+                        ) =>
+                          setEditingBuilder({
+                            ...editingBuilder,
+                            status: value,
+                          })
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -1405,26 +1778,44 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                     </div>
                     <div>
                       <Label htmlFor="plan">Plan</Label>
-                      <Select value={editingBuilder.plan} onValueChange={(value: 'free' | 'basic' | 'professional' | 'enterprise') => setEditingBuilder({...editingBuilder, plan: value})}>
+                      <Select
+                        value={editingBuilder.plan}
+                        onValueChange={(
+                          value:
+                            | "free"
+                            | "basic"
+                            | "professional"
+                            | "enterprise"
+                        ) =>
+                          setEditingBuilder({ ...editingBuilder, plan: value })
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="free">Free</SelectItem>
                           <SelectItem value="basic">Basic</SelectItem>
-                          <SelectItem value="professional">Professional</SelectItem>
+                          <SelectItem value="professional">
+                            Professional
+                          </SelectItem>
                           <SelectItem value="enterprise">Enterprise</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex items-center space-x-2">
                       <Switch
                         id="verified"
                         checked={editingBuilder.verified}
-                        onCheckedChange={(checked) => setEditingBuilder({...editingBuilder, verified: checked})}
+                        onCheckedChange={(checked) =>
+                          setEditingBuilder({
+                            ...editingBuilder,
+                            verified: checked,
+                          })
+                        }
                       />
                       <Label htmlFor="verified">Verified</Label>
                     </div>
@@ -1432,19 +1823,30 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                       <Switch
                         id="featured"
                         checked={editingBuilder.featured}
-                        onCheckedChange={(checked) => setEditingBuilder({...editingBuilder, featured: checked})}
+                        onCheckedChange={(checked) =>
+                          setEditingBuilder({
+                            ...editingBuilder,
+                            featured: checked,
+                          })
+                        }
                       />
                       <Label htmlFor="featured">Featured</Label>
                     </div>
                   </div>
                 </div>
               )}
-              
+
               <div className="flex justify-end space-x-2 pt-4">
-                <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowEditDialog(false)}
+                >
                   Cancel
                 </Button>
-                <Button onClick={saveBuilder} className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button
+                  onClick={saveBuilder}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
                   Save Changes
                 </Button>
               </div>
@@ -1462,7 +1864,12 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                       Duplicate Builders Detected
                     </CardTitle>
                     <CardDescription className="text-red-700">
-                      Found {duplicateGroups.length} groups with {duplicateGroups.reduce((sum, group) => sum + group.duplicates.length, 0)} total duplicates
+                      Found {duplicateGroups.length} groups with{" "}
+                      {duplicateGroups.reduce(
+                        (sum, group) => sum + group.duplicates.length,
+                        0
+                      )}{" "}
+                      total duplicates
                     </CardDescription>
                   </div>
                   <div className="flex space-x-2">
@@ -1489,43 +1896,60 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
               <CardContent>
                 <div className="space-y-4 max-h-96 overflow-y-auto scroll-smooth">
                   {duplicateGroups.map((group, groupIndex) => (
-                    <div key={group.id} className="border border-red-200 rounded-lg p-4 bg-white">
+                    <div
+                      key={group.id}
+                      className="border border-red-200 rounded-lg p-4 bg-white"
+                    >
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h4 className="font-medium text-gray-900">
                             Duplicate Group #{groupIndex + 1}
                           </h4>
                           <p className="text-sm text-gray-600">
-                            Reason: {group.reason} • Confidence: 
-                            <span className={`ml-1 font-medium ${
-                              group.confidence === 'high' ? 'text-red-600' : 
-                              group.confidence === 'medium' ? 'text-orange-600' : 'text-yellow-600'
-                            }`}>
+                            Reason: {group.reason} • Confidence:
+                            <span
+                              className={`ml-1 font-medium ${
+                                group.confidence === "high"
+                                  ? "text-red-600"
+                                  : group.confidence === "medium"
+                                    ? "text-orange-600"
+                                    : "text-yellow-600"
+                              }`}
+                            >
                               {group.confidence}
                             </span>
                           </p>
                         </div>
-                        <Badge 
+                        <Badge
                           className={`${
-                            group.confidence === 'high' ? 'bg-red-100 text-red-800' : 
-                            group.confidence === 'medium' ? 'bg-orange-100 text-orange-800' : 'bg-yellow-100 text-yellow-800'
+                            group.confidence === "high"
+                              ? "bg-red-100 text-red-800"
+                              : group.confidence === "medium"
+                                ? "bg-orange-100 text-orange-800"
+                                : "bg-yellow-100 text-yellow-800"
                           }`}
                         >
                           {group.duplicates.length} duplicates
                         </Badge>
                       </div>
-                      
+
                       <div className="grid gap-3">
                         {group.duplicates.map((builder, builderIndex) => (
-                          <div key={builder.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-md bg-gray-50">
+                          <div
+                            key={builder.id}
+                            className="flex items-center justify-between p-3 border border-gray-200 rounded-md bg-gray-50"
+                          >
                             <div className="flex items-center space-x-3">
                               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                                 <Building className="h-4 w-4 text-white" />
                               </div>
                               <div>
-                                <div className="font-medium text-gray-900">{builder.companyName}</div>
+                                <div className="font-medium text-gray-900">
+                                  {builder.companyName}
+                                </div>
                                 <div className="text-sm text-gray-500">
-                                  {builder.email} • {builder.phone} • {builder.city}, {builder.country}
+                                  {builder.email} • {builder.phone} •{" "}
+                                  {builder.city}, {builder.country}
                                 </div>
                                 <div className="flex items-center space-x-2 mt-1">
                                   {builder.verified && (
@@ -1540,14 +1964,17 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
                                     </Badge>
                                   )}
                                   <span className="text-xs text-gray-500">
-                                    ★ {builder.rating.toFixed(1)} • {builder.projectsCompleted} projects
+                                    ★ {builder.rating.toFixed(1)} •{" "}
+                                    {builder.projectsCompleted} projects
                                   </span>
                                 </div>
                               </div>
                             </div>
                             <Button
                               size="sm"
-                              onClick={() => resolveDuplicateGroup(group.id, builder.id)}
+                              onClick={() =>
+                                resolveDuplicateGroup(group.id, builder.id)
+                              }
                               className="bg-blue-600 hover:bg-blue-700 text-white"
                             >
                               <Check className="h-4 w-4 mr-1" />
@@ -1567,17 +1994,3 @@ export default function SmartBuildersManager({ adminId = 'admin-001', permission
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
