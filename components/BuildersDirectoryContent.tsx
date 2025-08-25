@@ -60,9 +60,10 @@ export default function BuildersDirectoryContent() {
         const { ConvexHttpClient } = await import("convex/browser");
         const { api } = await import("@/convex/_generated/api");
 
-        const convex = new ConvexHttpClient(
-          process.env.NEXT_PUBLIC_CONVEX_URL!
-        );
+        const convexUrl =
+          process.env.NEXT_PUBLIC_CONVEX_URL ||
+          "https://tame-labrador-80.convex.cloud";
+        const convex = new ConvexHttpClient(convexUrl);
 
         // Fetch builders from Convex
         const buildersData = await convex.query(api.builders.getAllBuilders, {

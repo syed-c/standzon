@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 
@@ -13,19 +13,24 @@ export default function TestConvexPage() {
   const testConvexConnection = async () => {
     setLoading(true);
     try {
-      const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-      
-      console.log('Testing Convex connection...');
-      const buildersData = await convex.query(api.builders.getAllBuilders, { 
+      const convexUrl =
+        process.env.NEXT_PUBLIC_CONVEX_URL ||
+        "https://tame-labrador-80.convex.cloud";
+      const convex = new ConvexHttpClient(convexUrl);
+
+      console.log("Testing Convex connection...");
+      const buildersData = await convex.query(api.builders.getAllBuilders, {
         limit: 10,
-        offset: 0 
+        offset: 0,
       });
-      
-      console.log('Convex response:', buildersData);
+
+      console.log("Convex response:", buildersData);
       setResult(buildersData);
     } catch (error) {
-      console.error('Convex error:', error);
-      setResult({ error: error instanceof Error ? error.message : 'Unknown error' });
+      console.error("Convex error:", error);
+      setResult({
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     } finally {
       setLoading(false);
     }
@@ -34,8 +39,11 @@ export default function TestConvexPage() {
   const testImportBuilder = async () => {
     setLoading(true);
     try {
-      const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-      
+      const convexUrl =
+        process.env.NEXT_PUBLIC_CONVEX_URL ||
+        "https://tame-labrador-80.convex.cloud";
+      const convex = new ConvexHttpClient(convexUrl);
+
       const testBuilder = {
         builderData: {
           companyName: "Test Dubai Builder",
@@ -61,34 +69,43 @@ export default function TestConvexPage() {
           importedAt: Date.now(),
           lastUpdated: Date.now(),
         },
-        serviceLocations: [{
-          city: "Dubai",
-          country: "United Arab Emirates",
-          countryCode: "AE",
-          address: "Test Address, Dubai, UAE",
-          latitude: 25.2048,
-          longitude: 55.2708,
-          isHeadquarters: true,
-        }],
-        services: [{
-          name: "Exhibition Stand Builder",
-          description: "Test service",
-          category: "General",
-          currency: "AED",
-          unit: "per project",
-          popular: false,
-          turnoverTime: "Contact for details",
-        }],
+        serviceLocations: [
+          {
+            city: "Dubai",
+            country: "United Arab Emirates",
+            countryCode: "AE",
+            address: "Test Address, Dubai, UAE",
+            latitude: 25.2048,
+            longitude: 55.2708,
+            isHeadquarters: true,
+          },
+        ],
+        services: [
+          {
+            name: "Exhibition Stand Builder",
+            description: "Test service",
+            category: "General",
+            currency: "AED",
+            unit: "per project",
+            popular: false,
+            turnoverTime: "Contact for details",
+          },
+        ],
       };
 
-      console.log('Importing test builder...');
-      const importResult = await convex.mutation(api.builders.importGMBBuilder, testBuilder);
-      
-      console.log('Import result:', importResult);
-      setResult({ importResult, message: 'Builder imported successfully' });
+      console.log("Importing test builder...");
+      const importResult = await convex.mutation(
+        api.builders.importGMBBuilder,
+        testBuilder
+      );
+
+      console.log("Import result:", importResult);
+      setResult({ importResult, message: "Builder imported successfully" });
     } catch (error) {
-      console.error('Import error:', error);
-      setResult({ error: error instanceof Error ? error.message : 'Unknown error' });
+      console.error("Import error:", error);
+      setResult({
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     } finally {
       setLoading(false);
     }
@@ -103,20 +120,20 @@ export default function TestConvexPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex gap-4">
-              <Button 
+              <Button
                 onClick={testConvexConnection}
                 disabled={loading}
                 className="bg-blue-600 hover:bg-blue-700"
               >
-                {loading ? 'Testing...' : 'Test Connection & Query Builders'}
+                {loading ? "Testing..." : "Test Connection & Query Builders"}
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={testImportBuilder}
                 disabled={loading}
                 className="bg-green-600 hover:bg-green-700"
               >
-                {loading ? 'Importing...' : 'Import Test Builder'}
+                {loading ? "Importing..." : "Import Test Builder"}
               </Button>
             </div>
 
