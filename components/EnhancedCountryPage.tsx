@@ -325,5 +325,3 @@ export default function EnhancedCountryPage({
     </div>
   );
 }
-
-export { default as EnhancedCountryPage };
