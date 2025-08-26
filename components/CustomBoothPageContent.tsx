@@ -22,6 +22,7 @@ import {
 import Link from 'next/link';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import TradeStyleBanner from '@/components/TradeStyleBanner';
 
 const features = [
   {
@@ -74,32 +75,20 @@ export default function CustomBoothPageContent() {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white py-20 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Custom Exhibition Booths
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto">
-              Bespoke trade show stands designed to capture attention, engage visitors, 
-              and drive results for your business.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/quote">
-                <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
-                  Get Custom Quote
-                </Button>
-              </Link>
-              <Link href="/builders">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-purple-600">
-                  Browse Designers
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Trade Shows style banner */}
+      <TradeStyleBanner
+        badgeText="Professional Trade Show Database"
+        mainHeading="Custom Exhibition Booths"
+        highlightHeading="& Bespoke Stand Design"
+        description="Bespoke trade show stands designed to capture attention, engage visitors, and drive results for your business."
+        stats={[
+          { icon: 'calendar', value: '15+', label: 'Design Services', color: '#2ec4b6' },
+          { icon: 'map-pin', value: 'Global', label: 'Coverage', color: '#3dd598' },
+          { icon: 'users', value: '4.8/5', label: 'Avg Rating', color: '#f4a261' },
+          { icon: 'chart-line', value: '5000+', label: 'Projects', color: '#a06cd5' }
+        ]}
+        showSearch={false}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Features Section */}

@@ -5,6 +5,7 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import SlidingHeroSection from '@/components/SlidingHeroSection';
+import TradeStyleBanner from '@/components/TradeStyleBanner';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -145,14 +146,19 @@ export default function AboutPageContent() {
     <div className="font-inter min-h-screen">
       <Navigation />
       
-      {/* Hero Section */}
-      <SlidingHeroSection 
-        headings={aboutHeroHeadings}
-        subtitle="Exhibition Excellence"
+      {/* Trade Shows style banner */}
+      <TradeStyleBanner
+        badgeText="Professional Trade Show Database"
+        mainHeading="About StandsZone"
+        highlightHeading="& Our Mission"
         description="We're revolutionizing how businesses connect with exhibition stand builders worldwide. Our mission is to make exceptional exhibition experiences accessible to everyone, everywhere."
-        stats={aboutStats}
-        buttons={aboutButtons}
-        backgroundGradient="linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)"
+        stats={[
+          { icon: 'calendar', value: '5,000+', label: 'Successful Projects' },
+          { icon: 'map-pin', value: '40+', label: 'Countries' },
+          { icon: 'users', value: '4.8/5', label: 'Avg Rating' },
+          { icon: 'chart-line', value: '500+', label: 'Verified Contractors' }
+        ]}
+        showSearch={false}
       />
 
       {/* Stats Section */}

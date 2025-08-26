@@ -35,14 +35,33 @@ class EnhancedFileBasedStorage {
     
     // ✅ ENHANCED: Only initialize on server-side
     if (typeof window === 'undefined' && fs && path) {
+      const enablePersistence = process.env.ENABLE_PERSISTENCE === 'true';
       this.dataDir = path.join(process.cwd(), 'data');
       this.backupDir = path.join(process.cwd(), 'data', 'backups');
-      this.ensureDataDirectories();
-      // Start auto-backups ONLY when explicitly enabled
-      if (process.env.ENABLE_BACKUPS === 'true') {
-        this.startAutoBackupSystem();
+      if (enablePersistence) {
+        try {
+          this.ensureDataDirectories();
+        } catch (e) {
+          if (process.env.VERBOSE_LOGS === 'true') {
+            console.warn('⚠️ Failed to ensure data directories, disabling persistence:', e);
+          }
+        }
+        // Start auto-backups ONLY when explicitly enabled
+        if (process.env.ENABLE_BACKUPS === 'true') {
+          this.startAutoBackupSystem();
+        }
+        try {
+          this.performStartupRecovery();
+        } catch (e) {
+          if (process.env.VERBOSE_LOGS === 'true') {
+            console.warn('⚠️ Startup recovery failed:', e);
+          }
+        }
+      } else {
+        if (process.env.VERBOSE_LOGS === 'true') {
+          console.log('🔒 Persistence disabled (ENABLE_PERSISTENCE!=true)');
+        }
       }
-      this.performStartupRecovery();
     } else {
       if (process.env.VERBOSE_LOGS === 'true') {
         console.log('🔍 Client-side detected - persistence features disabled');

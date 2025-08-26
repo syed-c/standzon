@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
+import TradeStyleBanner from '@/components/TradeStyleBanner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -553,41 +554,20 @@ export default function QuoteRequestContent() {
     <div className="font-inter min-h-screen bg-gray-50">
       <Navigation />
       
-      {/* Header */}
-      <section className="pt-20 pb-8 bg-gradient-to-br from-blue-primary to-blue-dark text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Request Exhibition Stand Quote
-            </h1>
-            <p className="text-lg text-blue-light mb-6">
-              Get matched with verified builders who specialize in your trade show and industry
-            </p>
-            
-            {/* Progress Indicator */}
-            <div className="flex items-center justify-center space-x-4 mb-8">
-              {[1, 2, 3, 4].map((step) => (
-                <div key={step} className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    step <= currentStep ? 'bg-white text-blue-primary' : 'bg-blue-dark text-blue-light'
-                  }`}>
-                    {step}
-                  </div>
-                  {step < 4 && (
-                    <div className={`w-12 h-0.5 ${
-                      step < currentStep ? 'bg-white' : 'bg-blue-dark'
-                    }`} />
-                  )}
-                </div>
-              ))}
-            </div>
-            
-            <div className="text-center">
-              <span className="text-blue-light">Step {currentStep} of 4</span>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Trade Shows style banner */}
+      <TradeStyleBanner
+        badgeText="Professional Trade Show Database"
+        mainHeading="Request Exhibition Stand Quote"
+        highlightHeading="& Get Matched Fast"
+        description="Get matched with verified builders who specialize in your trade show and industry."
+        stats={[
+          { icon: 'calendar', value: '24-48h', label: 'Response Time' },
+          { icon: 'map-pin', value: '40+', label: 'Countries' },
+          { icon: 'users', value: '3-5', label: 'Proposals' },
+          { icon: 'chart-line', value: '100%', label: 'Free Quotes' }
+        ]}
+        showSearch={false}
+      />
 
       {/* Form Content */}
       <section className="py-16">

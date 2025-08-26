@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
+import TradeStyleBanner from '@/components/TradeStyleBanner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -167,49 +168,21 @@ export default function ExhibitionStandsContent() {
     <div className="font-inter min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Navigation />
       
-      {/* Enhanced Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-8">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mr-6 backdrop-blur-sm">
-                <Globe className="h-10 w-10 text-blue-200" />
-              </div>
-              <div>
-                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent leading-tight">
-                  Global Exhibition Directory
-                </h1>
-                <p className="text-lg md:text-xl lg:text-2xl text-blue-100 mt-4">
-                  Professional builders across {totalCountries} countries and {totalCities}+ cities worldwide
-                </p>
-                <p className="text-md text-blue-200 mt-2">
-                  ${totalMarketSize}B+ global exhibition market coverage
-                </p>
-              </div>
-            </div>
-            
-            {/* Global Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mt-12">
-              <div className="text-center bg-white/15 backdrop-blur-sm rounded-xl p-4">
-                <div className="text-2xl lg:text-4xl font-bold text-white">{totalBuilders.toLocaleString()}</div>
-                <div className="text-blue-200 text-sm lg:text-base">Expert Builders</div>
-              </div>
-              <div className="text-center bg-white/15 backdrop-blur-sm rounded-xl p-4">
-                <div className="text-2xl lg:text-4xl font-bold text-white">{totalCountries}</div>
-                <div className="text-blue-200 text-sm lg:text-base">Countries</div>
-              </div>
-              <div className="text-center bg-white/15 backdrop-blur-sm rounded-xl p-4">
-                <div className="text-2xl lg:text-4xl font-bold text-white">{totalCities}</div>
-                <div className="text-blue-200 text-sm lg:text-base">Major Cities</div>
-              </div>
-              <div className="text-center bg-white/15 backdrop-blur-sm rounded-xl p-4">
-                <div className="text-2xl lg:text-4xl font-bold text-white">{activeCountries}</div>
-                <div className="text-blue-200 text-sm lg:text-base">Active Markets</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Trade Shows style banner */}
+      <TradeStyleBanner
+        badgeText="Professional Trade Show Database"
+        mainHeading="Global Exhibition Directory"
+        highlightHeading="& Builders by Location"
+        description={`Professional builders across ${totalCountries} countries and ${totalCities}+ cities worldwide. $${totalMarketSize}B+ market coverage.`}
+        stats={[
+          { icon: 'calendar', value: totalBuilders.toLocaleString(), label: 'Expert Builders', color: '#2ec4b6' },
+          { icon: 'map-pin', value: String(totalCountries), label: 'Countries', color: '#3dd598' },
+          { icon: 'users', value: String(totalCities), label: 'Major Cities', color: '#f4a261' },
+          { icon: 'chart-line', value: String(activeCountries), label: 'Active Markets', color: '#a06cd5' }
+        ]}
+        showSearch={true}
+        searchPlaceholder="Search countries or cities..."
+      />
 
       {/* Search and Filter Section */}
       <section className="py-8 bg-white shadow-sm">

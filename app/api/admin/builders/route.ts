@@ -164,17 +164,23 @@ export async function GET(request: Request) {
       });
     }
 
-    // Default: Load all builders from persistent storage
-    const allBuilders = await builderAPI.getAllBuilders();
-    if (isVerbose) {
-      console.log(
-        `📊 Retrieved ${allBuilders.length} builders from persistent storage`
-      );
+    // Default: Load all builders from persistent storage (safe fallback on error)
+    let allBuilders: any[] = [];
+    try {
+      allBuilders = await builderAPI.getAllBuilders();
+      if (isVerbose) {
+        console.log(`📊 Retrieved ${allBuilders.length} builders from persistent storage`);
+      }
+    } catch (err) {
+      if (isVerbose) {
+        console.error('⚠️ Failed to read persistent builders, falling back to static set:', err);
+      }
+      allBuilders = [];
     }
 
-    // Fallback: if none in persistent storage, serve static builders automatically
-    const buildersSource = allBuilders.length === 0 ? getExhibitionBuilders() : allBuilders;
-    if (allBuilders.length === 0 && isVerbose) {
+    // Fallback: if none or error, serve static builders automatically
+    const buildersSource = (allBuilders && allBuilders.length > 0) ? allBuilders : getExhibitionBuilders();
+    if ((!allBuilders || allBuilders.length === 0) && isVerbose) {
       console.log(`📂 Using ${buildersSource.length} static builders as fallback (auto)`);
     }
 

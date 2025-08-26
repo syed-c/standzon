@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import SlidingHeroSection from "@/components/SlidingHeroSection";
+import TradeStyleBanner from "@/components/TradeStyleBanner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -493,14 +494,20 @@ export default function BuildersDirectoryContent() {
     <div className="font-inter min-h-screen bg-gray-50">
       <Navigation />
 
-      {/* Hero Section */}
-      <SlidingHeroSection
-        headings={buildersHeroHeadings}
-        subtitle="Builders Directory"
-        description={`Connect with ${realTimeStats.totalBuilders}+ verified exhibition stand builders worldwide. Find experienced contractors who specialize in your industry and location.`}
-        stats={buildersStats}
-        buttons={buildersButtons}
-        backgroundGradient="linear-gradient(135deg, #7c2d92 0%, #8b5cf6 50%, #3b82f6 100%)"
+      {/* Trade Shows style banner */}
+      <TradeStyleBanner
+        badgeText="Professional Trade Show Database"
+        mainHeading="Global Builders"
+        highlightHeading="& Contractors Directory"
+        description={`Access ${realTimeStats.totalBuilders}+ verified builders across ${realTimeStats.totalCountries} countries. Connect with specialists for your industry and venue.`}
+        stats={[
+          { icon: 'calendar', value: '500+', label: 'Projects', color: '#2ec4b6' },
+          { icon: 'map-pin', value: String(realTimeStats.totalCountries || 0), label: 'Countries', color: '#3dd598' },
+          { icon: 'users', value: (realTimeStats.averageRating || builderStats.averageRating).toFixed(1), label: 'Avg Rating', color: '#f4a261' },
+          { icon: 'chart-line', value: String(realTimeStats.verifiedBuilders || builderStats.verifiedBuilders), label: 'Verified', color: '#a06cd5' }
+        ]}
+        showSearch={true}
+        searchPlaceholder="Search builders, cities, or services..."
       />
 
       {/* Search Bar Section */}
