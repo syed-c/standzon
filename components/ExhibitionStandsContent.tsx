@@ -28,6 +28,7 @@ interface CountryData {
 }
 
 export default function ExhibitionStandsContent() {
+  const [saved, setSaved] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedContinent, setSelectedContinent] = useState('all');
   const [expandedCountries, setExpandedCountries] = useState<Set<string>>(new Set());
@@ -38,6 +39,13 @@ export default function ExhibitionStandsContent() {
 
   useEffect(() => {
     loadGlobalCountriesData();
+    (async () => {
+      try {
+        const res = await fetch('/api/admin/pages-editor?action=get-content&path=%2Fexhibition-stands', { cache: 'no-store' });
+        const data = await res.json();
+        if (data?.success && data?.data) setSaved(data.data);
+      } catch {}
+    })();
   }, []);
 
   const loadGlobalCountriesData = async () => {
@@ -183,6 +191,15 @@ export default function ExhibitionStandsContent() {
         showSearch={true}
         searchPlaceholder="Search countries or cities..."
       />
+
+      {/* Render saved raw HTML if available */}
+      {saved?.content?.extra?.rawHtml && (
+        <section className="py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: saved.content.extra.rawHtml }} />
+          </div>
+        </section>
+      )}
 
       {/* Search and Filter Section */}
       <section className="py-8 bg-white shadow-sm">

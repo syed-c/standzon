@@ -119,6 +119,7 @@ export default function Navigation() {
         case 'admin':
           baseItems.push({ label: '🔧 Admin Dashboard', href: '/admin/dashboard', isGreeting: false });
           baseItems.push({ label: '⚙️ Admin Settings', href: '/admin/settings', isGreeting: false });
+          // Note: Global Pages Manager removed intentionally
           break;
         case 'builder':
           baseItems.push({ label: '🏗️ Builder Dashboard', href: '/builder/dashboard', isGreeting: false });

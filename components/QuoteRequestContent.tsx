@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -62,6 +62,16 @@ interface QuoteFormData {
 
 export default function QuoteRequestContent() {
   console.log("Quote Request: Page loaded");
+  const [saved, setSaved] = useState<any>(null);
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/admin/pages-editor?action=get-content&path=%2Fquote', { cache: 'no-store' });
+        const data = await res.json();
+        if (data?.success && data?.data) setSaved(data.data);
+      } catch {}
+    })();
+  }, []);
 
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);

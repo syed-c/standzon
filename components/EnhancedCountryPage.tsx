@@ -101,7 +101,7 @@ export default function EnhancedCountryPage({
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button
                 size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100"
+                className="bg-transparent text-blue-600 hover:bg-gray-100"
               >
                 Get Quotes from {countryData.countryName} Builders
               </Button>

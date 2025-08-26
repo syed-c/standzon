@@ -45,6 +45,18 @@ export default function BuildersDirectoryContent() {
     "🚀 Builders Directory: Page loaded, initializing with database connection"
   );
 
+  // Load saved content for /builders
+  const [saved, setSaved] = useState<any>(null);
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/admin/pages-editor?action=get-content&path=%2Fbuilders', { cache: 'no-store' });
+        const data = await res.json();
+        if (data?.success && data?.data) setSaved(data.data);
+      } catch {}
+    })();
+  }, []);
+
   // Get real-time data from unified platform
   const [realTimeBuilders, setRealTimeBuilders] = useState<any[]>([]);
   const [realTimeStats, setRealTimeStats] = useState(builderStats);
@@ -493,6 +505,15 @@ export default function BuildersDirectoryContent() {
   return (
     <div className="font-inter min-h-screen bg-gray-50">
       <Navigation />
+
+      {/* Render saved raw HTML if available */}
+      {saved?.content?.extra?.rawHtml && (
+        <section className="py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: saved.content.extra.rawHtml }} />
+          </div>
+        </section>
+      )}
 
       {/* Trade Shows style banner */}
       <TradeStyleBanner

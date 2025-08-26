@@ -243,7 +243,7 @@ export function CountryCityPage({
                 placeholder="Enter your email" 
                 className="bg-white/10 border-white/20 text-white placeholder:text-white/70"
               />
-              <Button className="bg-white text-purple-600 hover:bg-gray-100 font-semibold">
+              <Button className="bg-transparent text-purple-600 hover:bg-gray-100 font-semibold">
                 Notify Me
               </Button>
             </div>
@@ -727,8 +727,8 @@ export function CountryCityPage({
         }}
       />
 
-      {/* Personalized Section (renders saved HTML) */}
-      {savedPageContent?.content?.extra?.personalizedHtml && (
+      {/* Personalized/Raw Content Section (renders saved HTML) */}
+      {(savedPageContent?.content?.extra?.personalizedHtml || savedPageContent?.content?.extra?.rawHtml || savedPageContent?.content?.introduction) && (
         <section className="py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {savedPageContent?.content?.extra?.sectionHeading && (
@@ -736,7 +736,10 @@ export function CountryCityPage({
                 {savedPageContent.content.extra.sectionHeading}
               </h2>
             )}
-            <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: savedPageContent.content.extra.personalizedHtml }} />
+            <div
+              className="prose max-w-none"
+              dangerouslySetInnerHTML={{ __html: savedPageContent.content.extra?.personalizedHtml || savedPageContent.content.extra?.rawHtml || savedPageContent.content.introduction }}
+            />
           </div>
         </section>
       )}

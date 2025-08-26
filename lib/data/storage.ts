@@ -34,7 +34,17 @@ export interface PageContent {
     extra?: {
       sectionHeading?: string;
       personalizedHtml?: string;
+      rawHtml?: string;
+      structured?: any;
     };
+  };
+  // Section-aware structured content for precise editing
+  sections?: {
+    hero?: { heading?: string; description?: string; buttonText?: string };
+    mission?: { heading?: string; paragraph?: string };
+    team?: { heading?: string; paragraph?: string };
+    cta?: { heading?: string; buttonText?: string };
+    [key: string]: any;
   };
   design: {
     primaryColor: string;

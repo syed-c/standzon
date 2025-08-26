@@ -185,6 +185,21 @@ button[class*="bg-primary"] {
   color: white !important;
 }
 
+/* ✅ Global rule: remove white backgrounds from ALL buttons */
+button[class*="bg-white"] {
+  background-color: transparent !important;
+}
+button[class*="hover:bg-white"]:hover {
+  background-color: transparent !important;
+}
+/* Also cover semi-transparent white backgrounds on buttons */
+button[class*="bg-white/"] {
+  background-color: transparent !important;
+}
+button[class*="hover:bg-white/"]:hover {
+  background-color: transparent !important;
+}
+
 /* ✅ FIXED: Ensure hover states preserve text color */
 button[class*="text-white"]:hover,
 button[class*="text-white"]:hover span,
