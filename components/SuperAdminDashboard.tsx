@@ -292,9 +292,9 @@ export default function SuperAdminDashboard({
   }
 
   return (
-    <div className="flex bg-gray-50 h-screen w-screen">
+    <div className="flex bg-[#f9fafb] h-screen w-screen">
       {/* Left Sidebar */}
-      <div className="w-72 bg-gradient-to-b from-slate-900 to-slate-800 shadow-2xl border-r border-slate-700 flex flex-col">
+      <div className="w-[260px] bg-[#0c111d] shadow-2xl border-r border-[#0c111d] flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-slate-700">
           <div className="flex items-center space-x-3 mb-2">
@@ -315,7 +315,7 @@ export default function SuperAdminDashboard({
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 p-4 space-y-4 bg-slate-900 overflow-y-auto scroll-smooth">
+        <nav className="flex-1 p-4 space-y-4 bg-[#0c111d] overflow-y-auto scroll-smooth">
           {/* Dashboard Overview */}
           <div className="space-y-2">
             <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 mb-3">
@@ -325,8 +325,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("overview")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-all duration-200 ${
                 activeTab === "overview"
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white shadow-lg"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -349,8 +349,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("users")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === "users"
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -366,8 +366,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("analytics")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === "analytics"
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -381,8 +381,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("claims-management")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === "claims-management"
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -398,8 +398,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("leads-management")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === "leads-management"
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -413,7 +413,7 @@ export default function SuperAdminDashboard({
           </div>
 
           {/* Platform Intelligence Section */}
-          <div className="space-y-1 bg-slate-900 p-2 rounded-lg">
+          <div className="space-y-1 bg-[#0c111d] p-2 rounded-lg">
             <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 mb-3 bg-slate-900">
               PLATFORM INTELLIGENCE
             </h3>
@@ -422,8 +422,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("global-pages")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === "global-pages"
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -439,8 +439,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("settings")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === "settings"
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -451,7 +451,7 @@ export default function SuperAdminDashboard({
           </div>
 
           {/* Data Management & Import Section */}
-          <div className="space-y-1 bg-slate-900 p-2 rounded-lg">
+          <div className="space-y-1 bg-[#0c111d] p-2 rounded-lg">
             <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 mb-3 bg-slate-900">
               DATA MANAGEMENT & IMPORT
             </h3>
@@ -460,8 +460,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("bulk-upload")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === "bulk-upload"
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -477,8 +477,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("bulk-import")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === "bulk-import"
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -494,8 +494,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("data-audit")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === "data-audit"
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -508,8 +508,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("data-completeness")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === "data-completeness"
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -522,8 +522,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("data-persistence")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === "data-persistence"
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -536,8 +536,8 @@ export default function SuperAdminDashboard({
               onClick={() => setActiveTab("final-audit")}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === "final-audit"
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700 hover:text-white"
+                  ? "bg-[#5b5bf1] text-white"
+                  : "text-slate-300 hover:bg-[#1a1f2e] hover:text-white"
               }`}
             >
               <div className="flex items-center space-x-3">
