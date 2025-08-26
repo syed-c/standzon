@@ -31,6 +31,10 @@ export interface PageContent {
     venueInformation: string;
     builderAdvantages: string;
     conclusion: string;
+    extra?: {
+      sectionHeading?: string;
+      personalizedHtml?: string;
+    };
   };
   design: {
     primaryColor: string;

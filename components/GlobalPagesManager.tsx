@@ -86,6 +86,8 @@ interface PageConfig {
     heroDescription: string;
     mainContent: string;
     features: string[];
+    sectionHeading?: string;
+    personalizedHtml?: string;
     metaTitle: string;
     metaDescription: string;
     metaKeywords: string[];
@@ -113,6 +115,9 @@ function PageEditor({ page, onSave, onClose }: PageEditorProps) {
         "On-site installation support",
         "Post-show maintenance",
       ],
+      sectionHeading: `Ready to Find Your Perfect Builder in ${page.location.name}?`,
+      personalizedHtml:
+        '<p>Add your personalized content here. You can make text <strong>bold</strong>, add headings, and <a href="#">links</a>.</p>',
       metaTitle:
         page.seoData.title ||
         `Exhibition Stands ${page.location.name} | Professional Builders`,
@@ -132,6 +137,11 @@ function PageEditor({ page, onSave, onClose }: PageEditorProps) {
   const [slug, setSlug] = useState(page.location.slug);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+  const exec = (command: string, value?: string) => {
+    try {
+      document.execCommand(command, false, value);
+    } catch {}
+  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -209,15 +219,33 @@ function PageEditor({ page, onSave, onClose }: PageEditorProps) {
               </div>
 
               <div>
-                <Label>Main Content</Label>
-                <Textarea
-                  value={content.mainContent}
+                <Label>Section Heading</Label>
+                <Input
+                  value={content.sectionHeading}
                   onChange={(e) =>
-                    setContent({ ...content, mainContent: e.target.value })
+                    setContent({ ...content, sectionHeading: e.target.value })
                   }
-                  placeholder="Enter main content"
-                  rows={5}
+                  placeholder="Ready to Find Your Perfect Builder in …?"
                 />
+              </div>
+
+              <div>
+                <Label>Personalized Section Content</Label>
+                <div className="flex items-center gap-2 mb-2 text-sm">
+                  <Button type="button" variant="outline" size="sm" onClick={() => exec('bold')}>Bold</Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => exec('formatBlock', 'H2')}>H2</Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => exec('formatBlock', 'H3')}>H3</Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => exec('formatBlock', 'H4')}>H4</Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => { const url = prompt('Enter URL'); if (url) exec('createLink', url); }}>Link</Button>
+                </div>
+                <div
+                  contentEditable
+                  suppressContentEditableWarning
+                  className="min-h-[160px] border rounded-md p-3 prose max-w-none"
+                  onInput={(e) => setContent({ ...content, personalizedHtml: (e.target as HTMLElement).innerHTML || '' })}
+                  dangerouslySetInnerHTML={{ __html: content.personalizedHtml || '' as unknown as string }}
+                />
+                <p className="text-xs text-gray-500 mt-1">Basic formatting supported. This content will render on the country page.</p>
               </div>
 
               <div>

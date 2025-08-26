@@ -206,6 +206,11 @@ export async function PUT(request: NextRequest) {
               venueInformation: content.content?.venueInformation || '',
               builderAdvantages: content.content?.builderAdvantages || '',
               conclusion: content.content?.conclusion || '',
+              // New personalized content fields (nested under content.extra)
+              extra: {
+                sectionHeading: content.content?.extra?.sectionHeading || content.sectionHeading || '',
+                personalizedHtml: content.content?.extra?.personalizedHtml || content.personalizedHtml || '',
+              }
             },
             design: {
               primaryColor: content.design?.primaryColor || '#ec4899',

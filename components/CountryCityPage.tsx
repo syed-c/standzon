@@ -19,7 +19,7 @@ import {
   Eye, Globe, FileText, Settings, Star, Award, Calendar, Tag, Building
 } from 'lucide-react';
 import { unifiedPlatformAPI } from '@/lib/data/unifiedPlatformData';
-import { storageAPI, PageContent } from '@/lib/data/storage';
+import { storageAPI, PageContent as SavedPageContent } from '@/lib/data/storage';
 
 interface Builder {
   id: string;
@@ -55,7 +55,7 @@ interface Builder {
   featured?: boolean;
 }
 
-interface PageContent {
+interface LocalPageContent {
   id: string;
   title: string;
   metaTitle: string;
@@ -69,7 +69,7 @@ interface CountryCityPageProps {
   country: string;
   city?: string;
   initialBuilders: Builder[];
-  initialContent?: PageContent;
+  initialContent?: LocalPageContent;
   isEditable?: boolean;
   cityData?: any;
   showComingSoon?: boolean;
@@ -95,9 +95,9 @@ export function CountryCityPage({
   const [sortBy, setSortBy] = useState('rating');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isEditingContent, setIsEditingContent] = useState(false);
-  const [savedPageContent, setSavedPageContent] = useState<PageContent | null>(null);
+  const [savedPageContent, setSavedPageContent] = useState<SavedPageContent | null>(null);
   const [isLoadingContent, setIsLoadingContent] = useState(false);
-  const [pageContent, setPageContent] = useState<PageContent>(initialContent || {
+  const [pageContent, setPageContent] = useState<LocalPageContent>(initialContent || {
     id: `${country}-${city || 'main'}`,
     title: city ? `Exhibition Stand Builders in ${city}, ${country}` : `Exhibition Stand Builders in ${country}`,
     metaTitle: city ? `${city} Exhibition Stand Builders | ${country}` : `${country} Exhibition Stand Builders`,
@@ -258,7 +258,7 @@ export function CountryCityPage({
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Show other cities in the same country */}
-              {getOtherCitiesInCountry(country, city).map((otherCity, index) => (
+              {getOtherCitiesInCountry(country, city).map((otherCity: any, index: number) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-center mb-4">
@@ -407,7 +407,7 @@ export function CountryCityPage({
               
               console.log(`🔍 Checking builder: ${builder.companyName}`);
               console.log(`  - HQ: ${builder.headquarters?.city}, ${builder.headquarters?.country}`);
-              console.log(`  - Service locations: ${builder.serviceLocations?.map(l => `${l.city}, ${l.country}`).join(' | ')}`);
+              console.log(`  - Service locations: ${builder.serviceLocations?.map((l: any) => `${l.city}, ${l.country}`).join(' | ')}`);
               
               const servesCity = builder.serviceLocations?.some((loc: any) => 
                 countryVariations.includes(loc.country) && 
@@ -664,7 +664,7 @@ export function CountryCityPage({
           averagePrice: 450
         }}
         isEditable={isEditable}
-        onContentUpdate={async (content) => {
+        onContentUpdate={async (content: any) => {
           const pageId = city ? 
             `${country.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, '')}-${city.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, '')}` :
             `${country.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`;
@@ -726,6 +726,20 @@ export function CountryCityPage({
           }
         }}
       />
+
+      {/* Personalized Section (renders saved HTML) */}
+      {savedPageContent?.content?.extra?.personalizedHtml && (
+        <section className="py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {savedPageContent?.content?.extra?.sectionHeading && (
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                {savedPageContent.content.extra.sectionHeading}
+              </h2>
+            )}
+            <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: savedPageContent.content.extra.personalizedHtml }} />
+          </div>
+        </section>
+      )}
     </>
   );
 

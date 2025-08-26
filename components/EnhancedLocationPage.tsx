@@ -13,9 +13,9 @@ import {
 } from 'lucide-react';
 
 interface LocationPageProps {
-  country: string;
+  country?: string;
   city?: string;
-  builders: any[];
+  builders?: any[];
   locationStats?: {
     totalBuilders: number;
     averageRating: number;
@@ -30,23 +30,26 @@ interface LocationPageProps {
 }
 
 export function EnhancedLocationPage({ 
-  locationType,
-  locationName,
-  countryName,
-  initialBuilders = [],
-  exhibitions = [],
-  venues = [],
-  pageContent,
-  isEditable = false,
-  onContentUpdate,
-  
-  // Legacy props for backward compatibility
-  country, 
-  city, 
-  builders = [], 
-  locationStats,
-  upcomingEvents = []
-}: LocationPageProps) {
+  // New flexible props (optional to avoid TS conflicts)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ...props
+}: any) {
+  const {
+    locationType,
+    locationName,
+    countryName,
+    initialBuilders = [],
+    exhibitions = [],
+    venues = [],
+    pageContent,
+    isEditable = false,
+    onContentUpdate,
+    country,
+    city,
+    builders = [],
+    locationStats,
+    upcomingEvents = []
+  } = props;
   // Use new props if available, fallback to legacy props
   const finalBuilders = initialBuilders.length > 0 ? initialBuilders : builders;
   const finalLocationName = locationName || city || country || 'Unknown Location';
@@ -79,8 +82,8 @@ export function EnhancedLocationPage({
   const stats = {
     totalBuilders: finalBuilders.length,
     averageRating: finalBuilders.length > 0 ? 
-      Math.round((finalBuilders.reduce((sum, b) => sum + (b.rating || 4.5), 0) / finalBuilders.length) * 10) / 10 : 4.8,
-    completedProjects: finalBuilders.reduce((acc, b) => acc + (b.projectsCompleted || 50), 0),
+      Math.round((finalBuilders.reduce((sum: number, b: any) => sum + (b.rating || 4.5), 0) / finalBuilders.length) * 10) / 10 : 4.8,
+    completedProjects: finalBuilders.reduce((acc: number, b: any) => acc + (b.projectsCompleted || 50), 0),
     averagePrice: 450,
     // Merge with locationStats but prioritize calculated values
     ...(locationStats && {
@@ -104,7 +107,7 @@ export function EnhancedLocationPage({
     }
 
     // Only update state when content actually changes to prevent re-render loops
-    setFilteredBuilders((prev) => {
+    setFilteredBuilders((prev: any[]) => {
       if (prev === sorted) return prev;
       if (!prev || prev.length !== sorted.length) return sorted;
       // shallow compare by stable keys
@@ -288,7 +291,7 @@ export function EnhancedLocationPage({
               </div>
 
               <div className="grid md:grid-cols-3 gap-6">
-                {upcomingEvents.map((event, index) => (
+                {upcomingEvents.map((event: any, index: number) => (
                   <Card key={index} className="hover:shadow-lg transition-all duration-300">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
@@ -357,7 +360,7 @@ export function EnhancedLocationPage({
 
             {filteredBuilders.length > 0 ? (
               <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
-                {filteredBuilders.map((builder) => (
+                {filteredBuilders.map((builder: any) => (
                   <BuilderCard 
                     key={builder.id} 
                     builder={builder} 
