@@ -73,7 +73,8 @@ export default function AdminSettingsPage() {
     <div className="min-h-screen bg-[#f9fafb]">
       <Navigation />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -119,6 +120,7 @@ export default function AdminSettingsPage() {
         {/* Settings Panel */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <SystemSettingsPanel adminId={adminId} permissions={permissions} />
+        </div>
         </div>
       </div>
 

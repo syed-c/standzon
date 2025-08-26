@@ -541,7 +541,7 @@ export function GlobalPagesManager() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
@@ -716,7 +716,7 @@ export function GlobalPagesManager() {
       </Card>
 
       {/* Pages List */}
-      <Card>
+      <Card className="max-h-[70vh] overflow-hidden">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="w-5 h-5" />
@@ -726,7 +726,7 @@ export function GlobalPagesManager() {
             Click edit to modify content, SEO, and settings for each page
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-auto max-h-[55vh] pr-2">
           <div className="space-y-4">
             {filteredPages.map((page) => (
               <div

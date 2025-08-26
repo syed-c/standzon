@@ -9,8 +9,8 @@ export default function GlobalPagesPage() {
     <div className="min-h-screen bg-[#f9fafb]">
       <Navigation />
       
-      <div className="pt-20 pb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           <GlobalPagesManager />
         </div>
       </div>

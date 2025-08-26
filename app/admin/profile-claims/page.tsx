@@ -11,8 +11,8 @@ export default function ProfileClaimsPage() {
     <div className="min-h-screen bg-[#f9fafb]">
       <Navigation />
       
-      <div className="pt-20 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
             <Card className="bg-white border-0 shadow-sm">
