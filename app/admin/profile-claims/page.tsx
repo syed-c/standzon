@@ -8,27 +8,28 @@ import { Shield, Users, TrendingUp, AlertCircle } from 'lucide-react';
 
 export default function ProfileClaimsPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#f9fafb]">
       <Navigation />
       
       <div className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 text-white p-8 rounded-xl">
-              <div className="flex items-center gap-4">
-                <div className="bg-white/20 p-3 rounded-lg">
-                  <Shield className="w-8 h-8" />
+            <Card className="bg-white border-0 shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="bg-[#5b5bf1]/10 p-3 rounded-lg">
+                    <Shield className="w-7 h-7 text-[#5b5bf1]" />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-bold text-[#111827]">Profile Claims Management</h1>
+                    <p className="text-[#6b7280] mt-1">
+                      Manage builder profile claims, verification status, and business ownership verification. Monitor OTP verification, email confirmations, and upgrade tracking.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h1 className="text-3xl font-bold">Profile Claims Management</h1>
-                  <p className="text-blue-100 mt-2">
-                    Manage builder profile claims, verification status, and business ownership verification.
-                    Monitor OTP verification, email confirmations, and upgrade tracking.
-                  </p>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Quick Info Cards */}

@@ -6,7 +6,7 @@ import { GlobalPagesManager } from '@/components/GlobalPagesManager';
 
 export default function GlobalPagesPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#f9fafb]">
       <Navigation />
       
       <div className="pt-20 pb-12">
