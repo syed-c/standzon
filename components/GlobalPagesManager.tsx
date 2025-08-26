@@ -507,6 +507,25 @@ export function GlobalPagesManager() {
 
         setShowEditor(false);
         setEditingPage(null);
+
+        // Trigger ISR revalidation for affected public paths
+        try {
+          const countrySlug = (content.slug || pageId).toLowerCase();
+          const paths: string[] = [
+            `/exhibition-stands/${countrySlug}`
+          ];
+          await fetch('/api/revalidate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ paths })
+          });
+        } catch {}
+
+        // Broadcast client-side event so open pages can refetch immediately
+        try {
+          const event = new CustomEvent('global-pages:updated', { detail: { pageId: (content.slug || pageId).toLowerCase() } });
+          window.dispatchEvent(event);
+        } catch {}
       } else {
         throw new Error(result.error);
       }

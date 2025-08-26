@@ -319,6 +319,32 @@ export function CountryCityPage({
     loadSavedContent();
   }, [country, city]);
 
+  // Listen for admin updates and refetch saved content in real-time
+  useEffect(() => {
+    const handler = (e: Event) => {
+      try {
+        const detail = (e as CustomEvent)?.detail as { pageId?: string } | undefined;
+        const currentPageId = city ? 
+          `${country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}-${city.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}` :
+          `${country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`;
+        if (!detail?.pageId || detail.pageId === currentPageId) {
+          // Re-run saved content fetch
+          (async () => {
+            try {
+              const resp = await fetch(`/api/admin/global-pages?action=get-content&pageId=${currentPageId}`);
+              const data = await resp.json();
+              if (data.success && data.data) {
+                setSavedPageContent(data.data);
+              }
+            } catch {}
+          })();
+        }
+      } catch {}
+    };
+    window.addEventListener('global-pages:updated', handler as EventListener);
+    return () => window.removeEventListener('global-pages:updated', handler as EventListener);
+  }, [country, city]);
+
   useEffect(() => {
     const loadBuilders = async () => {
       try {
