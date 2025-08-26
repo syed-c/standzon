@@ -38,10 +38,15 @@ class EnhancedFileBasedStorage {
       this.dataDir = path.join(process.cwd(), 'data');
       this.backupDir = path.join(process.cwd(), 'data', 'backups');
       this.ensureDataDirectories();
-      this.startAutoBackupSystem();
+      // Start auto-backups ONLY when explicitly enabled
+      if (process.env.ENABLE_BACKUPS === 'true') {
+        this.startAutoBackupSystem();
+      }
       this.performStartupRecovery();
     } else {
-      console.log('🔍 Client-side detected - persistence features disabled');
+      if (process.env.VERBOSE_LOGS === 'true') {
+        console.log('🔍 Client-side detected - persistence features disabled');
+      }
     }
   }
 
@@ -50,11 +55,15 @@ class EnhancedFileBasedStorage {
     if (typeof window === 'undefined' && fs && path) {
       if (!fs.existsSync(this.dataDir)) {
         fs.mkdirSync(this.dataDir, { recursive: true });
-        console.log('📁 Created data directory:', this.dataDir);
+        if (process.env.VERBOSE_LOGS === 'true') {
+          console.log('📁 Created data directory:', this.dataDir);
+        }
       }
       if (!fs.existsSync(this.backupDir)) {
         fs.mkdirSync(this.backupDir, { recursive: true });
-        console.log('📁 Created backup directory:', this.backupDir);
+        if (process.env.VERBOSE_LOGS === 'true') {
+          console.log('📁 Created backup directory:', this.backupDir);
+        }
       }
     }
   }
@@ -63,40 +72,54 @@ class EnhancedFileBasedStorage {
   private startAutoBackupSystem() {
     // ✅ Server-side only check
     if (typeof window !== 'undefined' || !fs || !path) {
-      console.log('🔍 Client-side detected - backup system disabled');
+      if (process.env.VERBOSE_LOGS === 'true') {
+        console.log('🔍 Client-side detected - backup system disabled');
+      }
       return;
     }
 
     // ✅ FIXED: Prevent duplicate backup intervals
     if (this.autoBackupInterval) {
-      console.log('🔄 Auto-backup system already running, skipping duplicate setup');
+      if (process.env.VERBOSE_LOGS === 'true') {
+        console.log('🔄 Auto-backup system already running, skipping duplicate setup');
+      }
       return;
     }
 
-    console.log('🔄 Starting hourly auto-backup system...');
+    if (process.env.VERBOSE_LOGS === 'true') {
+      console.log('🔄 Starting hourly auto-backup system...');
+    }
     
     // Run backup immediately on startup
-    this.performFullBackup();
+    if (process.env.RUN_BACKUP_ON_START === 'true') {
+      this.performFullBackup();
+    }
     
     // Set up hourly backup (every 3600000ms = 1 hour)
     this.autoBackupInterval = setInterval(() => {
       this.performFullBackup();
     }, 3600000); // 1 hour
     
-    console.log('✅ Auto-backup system started - backups every hour');
+    if (process.env.VERBOSE_LOGS === 'true') {
+      console.log('✅ Auto-backup system started - backups every hour');
+    }
   }
 
   // ✅ NEW: Perform full system backup
   private async performFullBackup() {
     // ✅ Server-side only check
     if (typeof window !== 'undefined' || !fs || !path) {
-      console.log('🔍 Client-side detected - backup skipped');
+      if (process.env.VERBOSE_LOGS === 'true') {
+        console.log('🔍 Client-side detected - backup skipped');
+      }
       return;
     }
 
     // ✅ FIXED: Skip backup during build/deployment
-    if (process.env.VERCEL || process.env.NODE_ENV === 'production' && !process.env.ENABLE_BACKUPS) {
-      console.log('🔍 Build/deployment environment - backup skipped');
+    if (process.env.VERCEL || (process.env.NODE_ENV === 'production' && process.env.ENABLE_BACKUPS !== 'true')) {
+      if (process.env.VERBOSE_LOGS === 'true') {
+        console.log('🔍 Build/deployment environment - backup skipped');
+      }
       return;
     }
 
@@ -113,7 +136,9 @@ class EnhancedFileBasedStorage {
         fs.mkdirSync(backupFolder, { recursive: true });
       }
 
-      console.log('🔄 Starting hourly backup...');
+      if (process.env.VERBOSE_LOGS === 'true') {
+        console.log('🔄 Starting hourly backup...');
+      }
       
       // Get all data files
       const dataFiles = fs.readdirSync(this.dataDir).filter(file => 

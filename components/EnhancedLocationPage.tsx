@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -56,6 +56,17 @@ export function EnhancedLocationPage({
   const [filteredBuilders, setFilteredBuilders] = useState(finalBuilders);
   const [sortBy, setSortBy] = useState<'rating' | 'projects' | 'price'>('rating');
 
+  // Stabilize effect dependency on builders to avoid infinite update loops
+  const buildersDepKey = useMemo(() => {
+    try {
+      return (finalBuilders || [])
+        .map((b: any) => b?.id || b?.slug || b?.companyName || '')
+        .join('|');
+    } catch {
+      return String((finalBuilders || []).length);
+    }
+  }, [finalBuilders]);
+
   const displayLocation = isCity && finalCountryName ? 
     `${finalLocationName}, ${finalCountryName}` : 
     finalLocationName;
@@ -91,8 +102,23 @@ export function EnhancedLocationPage({
         sorted.sort((a, b) => (a.priceRange?.basicStand?.min || 300) - (b.priceRange?.basicStand?.min || 300));
         break;
     }
-    setFilteredBuilders(sorted);
-  }, [sortBy, finalBuilders]);
+
+    // Only update state when content actually changes to prevent re-render loops
+    setFilteredBuilders((prev) => {
+      if (prev === sorted) return prev;
+      if (!prev || prev.length !== sorted.length) return sorted;
+      // shallow compare by stable keys
+      let identical = true;
+      for (let i = 0; i < sorted.length; i++) {
+        const a = prev[i];
+        const b = sorted[i];
+        const aKey = a?.id || a?.slug || a?.companyName;
+        const bKey = b?.id || b?.slug || b?.companyName;
+        if (aKey !== bKey) { identical = false; break; }
+      }
+      return identical ? prev : sorted;
+    });
+  }, [sortBy, buildersDepKey]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">

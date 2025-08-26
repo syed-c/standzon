@@ -175,8 +175,50 @@ export async function PUT(request: NextRequest) {
             }, { status: 400 });
           }
 
+          // Ensure minimal required fields to prevent runtime errors in storage
+          const safeContent: PageContent = {
+            id: content.id || pageId,
+            type: content.type || 'country',
+            location: content.location || {
+              name: pageId
+                .split('-')
+                .map((p: string) => p.charAt(0).toUpperCase() + p.slice(1))
+                .join(' '),
+              slug: pageId,
+            },
+            seo: {
+              metaTitle: content.seo?.metaTitle || 'Exhibition Stand Builders',
+              metaDescription: content.seo?.metaDescription || 'Find professional exhibition stand builders worldwide.',
+              keywords: content.seo?.keywords || [],
+              canonicalUrl: content.seo?.canonicalUrl || `/exhibition-stands/${content.location?.slug || pageId}`,
+            },
+            hero: {
+              title: content.hero?.title || (content.location?.name || 'Exhibition Stand Builders'),
+              subtitle: content.hero?.subtitle || 'Professional booth design and construction services',
+              description: content.hero?.description || content.seo?.metaDescription || '',
+              backgroundImage: content.hero?.backgroundImage,
+              ctaText: content.hero?.ctaText || 'Get Free Quote',
+            },
+            content: {
+              introduction: content.content?.introduction || '',
+              whyChooseSection: content.content?.whyChooseSection || '',
+              industryOverview: content.content?.industryOverview || '',
+              venueInformation: content.content?.venueInformation || '',
+              builderAdvantages: content.content?.builderAdvantages || '',
+              conclusion: content.content?.conclusion || '',
+            },
+            design: {
+              primaryColor: content.design?.primaryColor || '#ec4899',
+              accentColor: content.design?.accentColor || '#f97316',
+              layout: content.design?.layout || 'modern',
+              showStats: content.design?.showStats ?? true,
+              showMap: content.design?.showMap ?? false,
+            },
+            lastModified: new Date().toISOString(),
+          };
+
           // Save to persistent storage
-          storageAPI.savePageContent(pageId, content as PageContent);
+          storageAPI.savePageContent(pageId, safeContent as PageContent);
           
           console.log('✅ Page content saved successfully for:', pageId);
           
@@ -186,7 +228,7 @@ export async function PUT(request: NextRequest) {
             data: {
               pageId,
               updatedAt: new Date().toISOString(),
-              content
+              content: safeContent
             }
           });
         } catch (saveError) {

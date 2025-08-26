@@ -197,7 +197,24 @@ class PlatformStorage {
 
   // Page content management
   savePageContent(pageId: string, content: PageContent): void {
-    console.log('Saving page content:', pageId, content.location.name);
+    // Defensive defaults to avoid runtime errors from partial payloads
+    if (!content) {
+      throw new Error('Invalid content payload: content is required');
+    }
+
+    if (!content.location) {
+      // Infer minimal location from pageId
+      const inferredName = pageId
+        .split('-')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ');
+      (content as any).location = {
+        name: inferredName,
+        slug: pageId,
+      } as PageContent["location"];
+    }
+
+    console.log('Saving page content:', pageId, content.location?.name || '(unknown)');
     content.lastModified = new Date().toISOString();
     this.pageContents.set(pageId, content);
   }

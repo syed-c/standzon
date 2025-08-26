@@ -31,7 +31,6 @@ export default function AdminLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [demoOTP, setDemoOTP] = useState(""); // Store demo OTP for development
 
   const handleSendOTP = async () => {
     if (!email) {
@@ -42,7 +41,6 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     setError("");
     setSuccess("");
-    setDemoOTP(""); // Clear previous demo OTP
 
     try {
       console.log("🔐 Requesting OTP for admin:", email);
@@ -65,13 +63,7 @@ export default function AdminLoginPage() {
         console.log("✅ OTP sent successfully");
         setStep("verify");
 
-        // Show demo OTP in development
-        if (data.data.demoOTP) {
-          setDemoOTP(data.data.demoOTP);
-          setSuccess(`OTP generated! Demo Mode - Use the code below:`);
-        } else {
-          setSuccess(`OTP sent to ${email}. Please check your email.`);
-        }
+        setSuccess(`OTP sent to ${email}. Please check your email.`);
       } else {
         setError(data.error || "Failed to send OTP. Please try again.");
       }
@@ -80,13 +72,6 @@ export default function AdminLoginPage() {
       setError("Network error. Please check your connection and try again.");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const copyOTPToClipboard = () => {
-    if (demoOTP) {
-      navigator.clipboard.writeText(demoOTP);
-      setOtp(demoOTP); // Auto-fill the OTP input
     }
   };
 
@@ -222,35 +207,6 @@ export default function AdminLoginPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {/* Demo Mode OTP Display */}
-                {demoOTP && (
-                  <Alert className="border-blue-200 bg-blue-50">
-                    <Code className="h-4 w-4" />
-                    <AlertDescription className="text-blue-800">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <strong>Development OTP:</strong>
-                          <div className="text-2xl font-mono font-bold mt-1 text-blue-900">
-                            {demoOTP}
-                          </div>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={copyOTPToClipboard}
-                          className="ml-2"
-                        >
-                          <Copy className="w-4 h-4 mr-1" />
-                          Copy & Fill
-                        </Button>
-                      </div>
-                      <p className="text-xs mt-2 text-blue-700">
-                        Click "Copy & Fill" to automatically use this OTP
-                      </p>
-                    </AlertDescription>
-                  </Alert>
-                )}
-
                 <div>
                   <Label htmlFor="otp-code">6-Digit OTP Code</Label>
                   <Input
@@ -286,7 +242,6 @@ export default function AdminLoginPage() {
                       setStep("email");
                       setOtp("");
                       setError("");
-                      setDemoOTP(""); // Clear demo OTP when going back
                     }}
                     disabled={isLoading}
                   >
@@ -341,16 +296,7 @@ export default function AdminLoginPage() {
               <p>
                 <strong>Method:</strong> OTP via Email
               </p>
-              {process.env.NODE_ENV === "development" && (
-                <div className="mt-3 p-2 bg-blue-50 rounded border border-blue-200">
-                  <p className="text-xs text-blue-700 font-medium">
-                    🔧 Development Mode Active
-                  </p>
-                  <p className="text-xs text-blue-600 mt-1">
-                    OTP will be displayed on screen for easy testing
-                  </p>
-                </div>
-              )}
+
               <p className="text-xs text-gray-500 mt-2">
                 Use the OTP sent to your email to access the admin dashboard
               </p>

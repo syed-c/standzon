@@ -15,8 +15,8 @@ import {
 } from "@/lib/database/persistenceAPI";
 import { gmbProtection } from "@/lib/database/gmbDataProtection";
 
-const isVerbose =
-  process.env.VERBOSE_LOGS === "true" || process.env.NODE_ENV !== "production";
+// Only log when explicitly enabled
+const isVerbose = process.env.VERBOSE_LOGS === "true";
 
 // Helper function to get continent from country name
 function getContinent(country: string): string {
@@ -172,8 +172,14 @@ export async function GET(request: Request) {
       );
     }
 
+    // Fallback: if none in persistent storage, serve static builders automatically
+    const buildersSource = allBuilders.length === 0 ? getExhibitionBuilders() : allBuilders;
+    if (allBuilders.length === 0 && isVerbose) {
+      console.log(`📂 Using ${buildersSource.length} static builders as fallback (auto)`);
+    }
+
     // Apply filters
-    let filteredBuilders = [...allBuilders];
+    let filteredBuilders = [...buildersSource];
 
     // Apply search filter
     if (search) {
