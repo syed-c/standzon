@@ -4,7 +4,7 @@ import { api } from "@/convex/_generated/api";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
-import EnhancedCountryPage from "@/components/EnhancedCountryPage";
+import { CountryCityPage } from "@/components/CountryCityPage";
 
 interface CountryPageProps {
   params: Promise<{
@@ -24,7 +24,7 @@ export async function generateMetadata({
 
     // Preload country data for metadata
     const countryData = await preloadQuery(api.locations.getCountryBySlug, {
-      countrySlug: country,
+      slug: country,
     });
 
     if (!countryData) {
@@ -35,7 +35,7 @@ export async function generateMetadata({
       };
     }
 
-    const countryName = countryData.countryName;
+    const countryName = countryData.countryName || country;
 
     console.log(`✅ Metadata generated for: ${countryName}`);
 
@@ -70,7 +70,7 @@ export default async function CountryPage({ params }: CountryPageProps) {
     const preloadedCountryData = await preloadQuery(
       api.locations.getCountryBySlug,
       {
-        countrySlug: country,
+        slug: country,
       }
     );
 
@@ -95,34 +95,27 @@ export default async function CountryPage({ params }: CountryPageProps) {
       );
     }
 
-    // Preload cities data for this country
-    const preloadedCitiesData = await preloadQuery(
-      api.locations.getCitiesForCountry,
-      {
-        countrySlug: country,
-      }
-    );
-
-    // Preload builders data for this country
-    const preloadedBuildersData = await preloadQuery(
-      api.locations.getBuildersForCountry,
-      {
-        country: preloadedCountryData.countryName,
-      }
-    );
-
-    console.log("✅ Found country data:", preloadedCountryData.countryName);
-    console.log("🏙️ Loaded cities:", preloadedCitiesData?.length || 0);
-    console.log("📊 Loaded builders:", preloadedBuildersData?.length || 0);
+    const countryName = preloadedCountryData.countryName || "Belgium";
 
     return (
       <div className="font-inter">
         <Navigation />
-        <EnhancedCountryPage
-          countrySlug={country}
-          preloadedCountryData={preloadedCountryData}
-          preloadedCitiesData={preloadedCitiesData}
-          preloadedBuildersData={preloadedBuildersData}
+        <CountryCityPage
+          country={countryName}
+          initialBuilders={[]}
+          initialContent={{
+            id: `${country}-main`,
+            title: `Exhibition Stand Builders in ${countryName}`,
+            metaTitle: `${countryName} Exhibition Stand Builders | Trade Show Booth Design`,
+            metaDescription: `Leading exhibition stand builders across ${countryName}. Custom trade show displays, booth design, and professional exhibition services in major cities.`,
+            description: `Find the best exhibition stand builders across ${countryName}. Connect with experienced professionals who create stunning custom displays for trade shows and exhibitions across all major cities.`,
+            heroContent: `Discover ${countryName}'s premier exhibition stand builders and booth designers.`,
+            seoKeywords: [
+              `${countryName} exhibition stands`,
+              `${countryName} trade show builders`,
+              `${countryName} booth design`,
+            ],
+          }}
         />
         <Footer />
         <WhatsAppFloat />
