@@ -141,6 +141,22 @@ export async function GET(request: NextRequest) {
       { headers: { 'Cache-Control': 'no-store, max-age=0' } }
     );
   }
+  if (action === 'save-content') {
+    const pathParam = searchParams.get('path') || '';
+    if (!pathParam) return NextResponse.json({ success: false, error: 'Missing path' }, { status: 400 });
+    // For GET save-content usage (not ideal), just return latest saved content
+    let pageId = '';
+    const parts = pathParam.split('/').filter(Boolean);
+    if (parts[0] === 'exhibition-stands') pageId = parts.slice(1).join('-');
+    else if (parts.length === 0) pageId = 'home';
+    else pageId = parts.join('-');
+    const fileMap = await readAllPageContentsFromFile();
+    const content = fileMap[pageId] || storageAPI.getPageContent(pageId);
+    return NextResponse.json(
+      { success: true, data: content || null },
+      { headers: { 'Cache-Control': 'no-store, max-age=0' } }
+    );
+  }
   return NextResponse.json({ success: false, error: 'Unsupported action' }, { status: 400 });
 }
 
@@ -243,7 +259,7 @@ export async function PUT(request: NextRequest) {
     } catch {}
 
     return NextResponse.json(
-      { success: true, data: { pageId, path } },
+      { success: true, data: updated },
       { headers: { 'Cache-Control': 'no-store, max-age=0' } }
     );
   } catch (e) {

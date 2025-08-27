@@ -1,6 +1,8 @@
 // Real-time data storage system for exhibition platform
 
 import { ExhibitionBuilder } from './exhibitionBuilders';
+import fs from 'fs';
+import path from 'path';
 
 // Page content interface
 export interface PageContent {
@@ -75,6 +77,40 @@ class PlatformStorage {
   private quotes: any[] = [];
   private uploadedBuilders: ExhibitionBuilder[] = [];
   private pageContents: Map<string, PageContent> = new Map();
+
+  private getDataFilePath(): string {
+    try {
+      return path.join(process.cwd(), 'data', 'page-contents.json');
+    } catch {
+      return 'page-contents.json';
+    }
+  }
+
+  private ensureDataDir(): void {
+    const filePath = this.getDataFilePath();
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  }
+
+  private readAllFromFile(): Record<string, PageContent> {
+    try {
+      const filePath = this.getDataFilePath();
+      this.ensureDataDir();
+      if (!fs.existsSync(filePath)) return {};
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  private writeAllToFile(map: Record<string, PageContent>): void {
+    try {
+      const filePath = this.getDataFilePath();
+      this.ensureDataDir();
+      fs.writeFileSync(filePath, JSON.stringify(map, null, 2), 'utf-8');
+    } catch {}
+  }
 
   constructor() {
     // Initialize with some sample data
@@ -244,19 +280,34 @@ class PlatformStorage {
     console.log('Saving page content:', pageId, content.location?.name || '(unknown)');
     content.lastModified = new Date().toISOString();
     this.pageContents.set(pageId, content);
+    const current = this.readAllFromFile();
+    current[pageId] = content;
+    this.writeAllToFile(current);
   }
 
   getPageContent(pageId: string): PageContent | undefined {
+    // Always prefer on-disk content in production/serverless
+    const all = this.readAllFromFile();
+    if (all[pageId]) return all[pageId];
     return this.pageContents.get(pageId);
   }
 
   getAllPageContents(): PageContent[] {
+    const all = this.readAllFromFile();
+    const values = Object.values(all);
+    if (values.length > 0) return values;
     return Array.from(this.pageContents.values());
   }
 
   deletePageContent(pageId: string): boolean {
     console.log('Deleting page content:', pageId);
-    return this.pageContents.delete(pageId);
+    const ok = this.pageContents.delete(pageId);
+    const all = this.readAllFromFile();
+    if (all[pageId]) {
+      delete all[pageId];
+      this.writeAllToFile(all);
+    }
+    return ok;
   }
 
   hasPageContent(pageId: string): boolean {
