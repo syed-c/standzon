@@ -135,8 +135,7 @@ export async function GET(request: NextRequest) {
     } else {
       pageId = parts.join('-');
     }
-    // Prefer Supabase if configured
-    let content: PageContent | undefined;
+    // Prefer Supabase if configured; if configured, do not fall back silently
     try {
       const sb = getServerSupabase();
       if (sb) {
@@ -145,17 +144,18 @@ export async function GET(request: NextRequest) {
           .select('content')
           .eq('id', pageId)
           .single();
-        if (!error && data?.content) content = data.content as PageContent;
+        return NextResponse.json(
+          { success: !error, data: data?.content || null, error: error?.message },
+          { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'supabase' } }
+        );
       }
     } catch {}
 
-    if (!content) {
-      const fileMap = await readAllPageContentsFromFile();
-      content = fileMap[pageId] || storageAPI.getPageContent(pageId);
-    }
+    const fileMap = await readAllPageContentsFromFile();
+    const content = fileMap[pageId] || storageAPI.getPageContent(pageId);
     return NextResponse.json(
       { success: true, data: content || null },
-      { headers: { 'Cache-Control': 'no-store, max-age=0' } }
+      { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'file' } }
     );
   }
   if (action === 'save-content') {
@@ -270,6 +270,9 @@ export async function PUT(request: NextRequest) {
           .from('page_contents')
           .upsert({ id: pageId, path, content: updated, updated_at: new Date().toISOString() });
         if (!error) savedToSupabase = true;
+        if (error) {
+          return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+        }
       }
     } catch {}
 

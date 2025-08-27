@@ -36,6 +36,7 @@ export default function AdminPagesEditor() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [editingPath, setEditingPath] = useState<string | null>(null);
+  const [cmsSource, setCmsSource] = useState<'supabase' | 'file' | null>(null);
   const [seoTitle, setSeoTitle] = useState('');
   const [seoDescription, setSeoDescription] = useState('');
   const [seoKeywords, setSeoKeywords] = useState<string>('');
@@ -118,6 +119,10 @@ export default function AdminPagesEditor() {
     try {
       // 1) Try loading saved content first
       const savedRes = await fetch(`/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(path)}`, { cache: 'no-store' });
+      try {
+        const src = savedRes.headers.get('x-cms-source');
+        if (src === 'supabase' || src === 'file') setCmsSource(src as 'supabase' | 'file');
+      } catch {}
       const saved = await savedRes.json();
       if (saved?.success && saved?.data) {
         const pc = saved.data;
@@ -260,6 +265,12 @@ export default function AdminPagesEditor() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Pages Editor</h1>
               <p className="text-gray-600">View and edit SEO and headings for site pages.</p>
+              {cmsSource && (
+                <div className="mt-2 inline-flex items-center gap-2 text-xs px-2 py-1 rounded-full border" style={{ borderColor: cmsSource==='supabase' ? '#10b981' : '#60a5fa', color: cmsSource==='supabase' ? '#065f46' : '#1e3a8a', background: cmsSource==='supabase' ? '#ecfdf5' : '#eff6ff' }}>
+                  <span className="w-2 h-2 rounded-full" style={{ background: cmsSource==='supabase' ? '#10b981' : '#3b82f6' }}></span>
+                  <span>CMS source: {cmsSource}</span>
+                </div>
+              )}
             </div>
             <Button variant="outline" onClick={loadPages}><RefreshCw className="w-4 h-4 mr-2" /> Refresh</Button>
           </div>
