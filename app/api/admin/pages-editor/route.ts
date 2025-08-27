@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { storageAPI, PageContent } from '@/lib/data/storage';
 import fs from 'fs';
 import path from 'path';
+import { getServerSupabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -134,8 +135,24 @@ export async function GET(request: NextRequest) {
     } else {
       pageId = parts.join('-');
     }
-    const fileMap = await readAllPageContentsFromFile();
-    const content = fileMap[pageId] || storageAPI.getPageContent(pageId);
+    // Prefer Supabase if configured
+    let content: PageContent | undefined;
+    try {
+      const sb = getServerSupabase();
+      if (sb) {
+        const { data, error } = await sb
+          .from('page_contents')
+          .select('content')
+          .eq('id', pageId)
+          .single();
+        if (!error && data?.content) content = data.content as PageContent;
+      }
+    } catch {}
+
+    if (!content) {
+      const fileMap = await readAllPageContentsFromFile();
+      content = fileMap[pageId] || storageAPI.getPageContent(pageId);
+    }
     return NextResponse.json(
       { success: true, data: content || null },
       { headers: { 'Cache-Control': 'no-store, max-age=0' } }
@@ -244,13 +261,25 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    storageAPI.savePageContent(pageId, updated);
-    // Also persist to a file so edits survive serverless cold starts
-    const current = await readAllPageContentsFromFile();
-    current[pageId] = updated;
-    await writeAllPageContentsToFile(current);
-    // Try to commit to GitHub for durability on Vercel (optional env-configured)
-    try { await commitToGitHub('data/page-contents.json', current); } catch {}
+    // If Supabase configured, upsert there (durable). Else fallback to file+GitHub path
+    let savedToSupabase = false;
+    try {
+      const sb = getServerSupabase();
+      if (sb) {
+        const { error } = await sb
+          .from('page_contents')
+          .upsert({ id: pageId, path, content: updated, updated_at: new Date().toISOString() });
+        if (!error) savedToSupabase = true;
+      }
+    } catch {}
+
+    if (!savedToSupabase) {
+      storageAPI.savePageContent(pageId, updated);
+      const current = await readAllPageContentsFromFile();
+      current[pageId] = updated;
+      await writeAllPageContentsToFile(current);
+      try { await commitToGitHub('data/page-contents.json', current); } catch {}
+    }
 
     try { revalidatePath(path); } catch {}
     try {
