@@ -115,6 +115,11 @@ export default function AdminLoginPage() {
           })
         );
 
+        // Set HTTP-only-ish cookie substitute (client-side set via document.cookie)
+        try {
+          document.cookie = `admin_auth=1; path=/; max-age=${60*60*8}`;
+        } catch {}
+
         // Redirect to admin dashboard
         router.push("/admin/dashboard");
       } else {

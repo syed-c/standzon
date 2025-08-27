@@ -19,6 +19,19 @@ type PageItem = {
 };
 
 export default function AdminPagesEditor() {
+  // Simple client-side guard: require admin session in localStorage
+  React.useEffect(() => {
+    try {
+      const raw = typeof window !== 'undefined' ? localStorage.getItem('currentUser') : null;
+      const user = raw ? JSON.parse(raw) : null;
+      const isAdmin = !!user && (user.role === 'super_admin' || user.role === 'admin' || user.isAdmin);
+      if (!isAdmin) {
+        window.location.href = '/admin/login';
+      }
+    } catch {
+      if (typeof window !== 'undefined') window.location.href = '/admin/login';
+    }
+  }, []);
   const [pages, setPages] = useState<PageItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');

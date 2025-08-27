@@ -55,7 +55,7 @@ export function SlidingHeroSection({
 
   return (
     <section 
-      className={`relative min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-24 ${className}`} 
+      className={`relative min-h-[70vh] md:min-h-[78vh] flex items-center justify-center overflow-hidden pt-16 md:pt-20 pb-16 md:pb-20 ${className}`} 
       style={{ background: backgroundGradient }}
     >
       {/* Animated Background Elements */}
@@ -67,7 +67,7 @@ export function SlidingHeroSection({
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in">
         {/* Sliding Main Heading */}
-        <div className="min-h-[180px] md:min-h-[200px] flex items-center justify-center mb-8">
+        <div className="min-h-[120px] md:min-h-[160px] flex items-center justify-center mb-6 md:mb-8">
           <h1 
             className={`text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight transition-all duration-500 ${ 
               isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'
@@ -83,13 +83,13 @@ export function SlidingHeroSection({
         </div>
 
         {/* Description */}
-        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-100 mb-8 md:mb-12 max-w-4xl mx-auto leading-relaxed px-4" data-macaly="hero-description">
+        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-100 mb-6 md:mb-10 max-w-4xl mx-auto leading-relaxed px-4" data-macaly="hero-description">
           {description}
         </p>
 
         {/* Stats Section */}
         {stats && stats.length > 0 && (
-          <div className="flex flex-col sm:flex-row gap-6 md:gap-8 justify-center items-center mb-12 md:mb-16">
+          <div className="flex flex-col sm:flex-row gap-6 md:gap-8 justify-center items-center mb-8 md:mb-12">
             {stats.map((stat, index) => (
               <React.Fragment key={index}>
                 <div className="text-center">
@@ -105,7 +105,7 @@ export function SlidingHeroSection({
         )}
 
         {/* CTA Buttons - Fixed spacing and visibility with more bottom margin */}
-        <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center max-w-4xl mx-auto px-4 mb-32">
+        <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center max-w-4xl mx-auto px-4 mb-16 md:mb-24">
           {buttons.map((button, index) => (
             button.isQuoteButton ? (
               <PublicQuoteRequest 

@@ -41,6 +41,49 @@ async function writeAllPageContentsToFile(map: Record<string, PageContent>) {
   } catch {}
 }
 
+// Persist edited JSON to GitHub so changes survive serverless restarts
+async function commitToGitHub(fileRelativePath: string, contentJson: any) {
+  const token = process.env.GITHUB_TOKEN;
+  const owner = process.env.GITHUB_REPO_OWNER;
+  const repo = process.env.GITHUB_REPO_NAME;
+  const branch = process.env.GITHUB_REPO_BRANCH || 'main';
+  if (!token || !owner || !repo) return; // Silently skip if not configured
+
+  const apiBase = `https://api.github.com/repos/${owner}/${repo}/contents/${fileRelativePath}`;
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'application/vnd.github+json',
+    'Content-Type': 'application/json',
+  } as any;
+
+  let sha: string | undefined;
+  try {
+    const getRes = await fetch(`${apiBase}?ref=${encodeURIComponent(branch)}`, { headers });
+    if (getRes.ok) {
+      const data = await getRes.json();
+      sha = data.sha;
+    }
+  } catch {}
+
+  const message = `chore(cms): update ${fileRelativePath} via admin editor`;
+  const contentBase64 = Buffer.from(
+    typeof contentJson === 'string' ? contentJson : JSON.stringify(contentJson, null, 2)
+  ).toString('base64');
+
+  try {
+    await fetch(apiBase, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({
+        message,
+        content: contentBase64,
+        branch,
+        sha,
+      }),
+    });
+  } catch {}
+}
+
 // Minimal site map; extend as needed
 type PageItem = { title: string; path: string; type: 'static' | 'country' | 'city' };
 const STATIC_PAGES: PageItem[] = [
@@ -190,6 +233,8 @@ export async function PUT(request: NextRequest) {
     const current = await readAllPageContentsFromFile();
     current[pageId] = updated;
     await writeAllPageContentsToFile(current);
+    // Try to commit to GitHub for durability on Vercel (optional env-configured)
+    try { await commitToGitHub('data/page-contents.json', current); } catch {}
 
     try { revalidatePath(path); } catch {}
     try {

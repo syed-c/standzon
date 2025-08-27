@@ -4,6 +4,17 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // Admin protection
+  if (pathname.startsWith('/admin')) {
+    const cookie = request.cookies.get('admin_auth')?.value
+    const isApi = pathname.startsWith('/api')
+    if (!cookie && !pathname.startsWith('/admin/login')) {
+      const loginUrl = new URL('/admin/login', request.url)
+      if (isApi) return NextResponse.json({ success:false, error:'Unauthorized' }, { status: 401 })
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+
   // Redirect UAE routes to United Arab Emirates
   if (pathname.startsWith('/exhibition-stands/uae')) {
     const newPathname = pathname.replace('/exhibition-stands/uae', '/exhibition-stands/united-arab-emirates')
@@ -20,6 +31,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/admin/:path*',
     '/exhibition-stands/uae/:path*',
     '/uae/:path*'
   ]
