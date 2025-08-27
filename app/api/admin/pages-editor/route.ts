@@ -146,7 +146,7 @@ export async function GET(request: NextRequest) {
           .single();
         return NextResponse.json(
           { success: !error, data: data?.content || null, error: error?.message },
-          { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'supabase' } }
+          { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'supabase', 'x-sb-present': 'true' } }
         );
       }
     } catch {}
@@ -155,7 +155,7 @@ export async function GET(request: NextRequest) {
     const content = fileMap[pageId] || storageAPI.getPageContent(pageId);
     return NextResponse.json(
       { success: true, data: content || null },
-      { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'file' } }
+      { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'file', 'x-sb-present': String(!!getServerSupabase()) } }
     );
   }
   if (action === 'save-content') {
