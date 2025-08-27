@@ -233,9 +233,9 @@ export default function AboutPageContent() {
       {/* Trade Shows style banner */}
       <TradeStyleBanner
         badgeText="Professional Trade Show Database"
-        mainHeading="About StandsZone"
+        mainHeading={(saved as any)?.sections?.hero?.heading || "About StandsZone"}
         highlightHeading="& Our Mission"
-        description={bannerDescription}
+        description={(saved as any)?.sections?.hero?.description || bannerDescription}
         stats={[
           { icon: "calendar", value: "5,000+", label: "Successful Projects" },
           { icon: "map-pin", value: "40+", label: "Countries" },
@@ -271,17 +271,12 @@ export default function AboutPageContent() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-navy-900 mb-6">
-                Our Mission
+                {(saved as any)?.sections?.mission?.heading || "Our Mission"}
               </h2>
-              {saved?.content?.extra?.rawHtml ||
-              saved?.content?.introduction ? (
+              {((saved as any)?.sections?.mission?.paragraph) ? (
                 <div
                   className="prose max-w-none text-gray-700 mb-8"
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      saved?.content?.extra?.rawHtml ||
-                      saved?.content?.introduction,
-                  }}
+                  dangerouslySetInnerHTML={{ __html: (saved as any)?.sections?.mission?.paragraph || "" }}
                 />
               ) : (
                 <>
@@ -331,12 +326,8 @@ export default function AboutPageContent() {
             <div className="bg-gradient-to-br from-blue-primary to-blue-dark rounded-2xl p-12 text-white">
               <div className="text-center">
                 <div className="text-6xl mb-6">🎯</div>
-                <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
-                <p className="text-blue-100 mb-6">
-                  To become the world's most trusted platform for exhibition
-                  stand services, empowering businesses to create memorable
-                  brand experiences at every trade show.
-                </p>
+                <h3 className="text-2xl font-bold mb-4">{(saved as any)?.sections?.vision?.heading || "Our Vision"}</h3>
+                <p className="text-blue-100 mb-6" dangerouslySetInnerHTML={{ __html: (saved as any)?.sections?.vision?.paragraph || "To become the world's most trusted platform for exhibition stand services, empowering businesses to create memorable brand experiences at every trade show." }} />
                 <div className="bg-white/10 rounded-lg p-4">
                   <div className="text-3xl font-bold mb-1">2019</div>
                   <div className="text-blue-100">Founded in Berlin</div>
@@ -351,18 +342,24 @@ export default function AboutPageContent() {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-navy-900">
-            Our Core Values
+            {(saved as any)?.sections?.coreValues ? "Our Core Values" : "Our Core Values"}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
-              <div key={index} className="text-center">
-                <div className="flex justify-center mb-6">{value.icon}</div>
-                <h3 className="text-xl font-semibold text-navy-900 mb-4">
-                  {value.title}
-                </h3>
-                <p className="text-gray-600">{value.description}</p>
-              </div>
-            ))}
+            {((saved as any)?.sections?.coreValues || []).length > 0
+              ? (saved as any)?.sections?.coreValues?.map((cv: any, index: number) => (
+                  <div key={index} className="text-center">
+                    <div className="flex justify-center mb-6">{values[index]?.icon}</div>
+                    <h3 className="text-xl font-semibold text-navy-900 mb-4">{cv.heading}</h3>
+                    <p className="text-gray-600" dangerouslySetInnerHTML={{ __html: cv.paragraph || "" }} />
+                  </div>
+                ))
+              : values.map((value, index) => (
+                  <div key={index} className="text-center">
+                    <div className="flex justify-center mb-6">{value.icon}</div>
+                    <h3 className="text-xl font-semibold text-navy-900 mb-4">{value.title}</h3>
+                    <p className="text-gray-600">{value.description}</p>
+                  </div>
+                ))}
           </div>
         </div>
       </section>
@@ -371,20 +368,24 @@ export default function AboutPageContent() {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-navy-900">
-            How It Works
+            {(saved as any)?.sections?.howItWorks ? "How It Works" : "How It Works"}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {process.map((step, index) => (
+            {(((saved as any)?.sections?.howItWorks as any[]) || process).map((step: any, index: number) => (
               <div key={index} className="text-center">
                 <div className="w-16 h-16 bg-blue-primary rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-2xl font-bold text-white">
-                    {step.step}
+                    {step.step || (index + 1)}
                   </span>
                 </div>
                 <h3 className="text-xl font-semibold text-navy-900 mb-4">
-                  {step.title}
+                  {step.title || step.heading}
                 </h3>
-                <p className="text-gray-600">{step.description}</p>
+                {step.paragraph || step.description ? (
+                  <p className="text-gray-600" dangerouslySetInnerHTML={{ __html: step.paragraph || step.description }} />
+                ) : (
+                  <p className="text-gray-600">{step.description}</p>
+                )}
               </div>
             ))}
           </div>
@@ -395,10 +396,10 @@ export default function AboutPageContent() {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-navy-900">
-            Meet Our Team
+            {(saved as any)?.sections?.team ? "Meet Our Team" : "Meet Our Team"}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
+            {(((saved as any)?.sections?.team as any[]) || team).map((member: any, index: number) => (
               <Card
                 key={index}
                 className="group hover:shadow-lg transition-all duration-300"
@@ -408,7 +409,7 @@ export default function AboutPageContent() {
                     <span className="text-2xl font-bold text-white">
                       {member.name
                         .split(" ")
-                        .map((n) => n[0])
+                        .map((n: string) => n[0])
                         .join("")}
                     </span>
                   </div>
@@ -418,14 +419,20 @@ export default function AboutPageContent() {
                   <div className="text-blue-primary font-medium mb-4">
                     {member.role}
                   </div>
-                  <p className="text-gray-600 text-sm mb-4">{member.bio}</p>
-                  <div className="space-y-1">
-                    {member.specialties.map((specialty) => (
-                      <div key={specialty} className="text-xs text-gray-500">
-                        • {specialty}
-                      </div>
-                    ))}
-                  </div>
+                  {member.bio ? (
+                    <p className="text-gray-600 text-sm mb-4" dangerouslySetInnerHTML={{ __html: member.bio }} />
+                  ) : (
+                    <p className="text-gray-600 text-sm mb-4">{member.bio}</p>
+                  )}
+                  {Array.isArray((member as any).specialties) && (
+                    <div className="space-y-1">
+                      {(member as any).specialties.map((specialty: string) => (
+                        <div key={specialty} className="text-xs text-gray-500">
+                          • {specialty}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
@@ -437,27 +444,31 @@ export default function AboutPageContent() {
       <section className="py-16 bg-blue-primary text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Transform Your Exhibition Experience?
+            {(saved as any)?.sections?.cta?.heading || "Ready to Transform Your Exhibition Experience?"}
           </h2>
-          <p className="text-xl mb-8 text-blue-100">
-            Join thousands of satisfied clients who trust StandsZone to connect
-            them with the world's best exhibition stand builders. Start your
-            journey today.
-          </p>
+          {(saved as any)?.sections?.cta?.paragraph ? (
+            <p className="text-xl mb-8 text-blue-100" dangerouslySetInnerHTML={{ __html: (saved as any)?.sections?.cta?.paragraph }} />
+          ) : (
+            <p className="text-xl mb-8 text-blue-100">
+              Join thousands of satisfied clients who trust StandsZone to connect
+              them with the world's best exhibition stand builders. Start your
+              journey today.
+            </p>
+          )}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/contact">
-              <Button className="bg-transparent text-blue-primary hover:bg-gray-100 px-8 py-4 text-lg">
-                Get Started Today
-              </Button>
-            </Link>
-            <Link href="/exhibition-stands">
-              <Button
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-primary px-8 py-4 text-lg"
-              >
-                Browse Contractors
-              </Button>
-            </Link>
+            {(((saved as any)?.sections?.cta?.buttons as any[]) || [
+              { text: "Get Started Today", href: "/contact" },
+              { text: "Browse Contractors", href: "/exhibition-stands" },
+            ]).map((b: any, i: number) => (
+              <Link key={i} href={b.href || "#"}>
+                <Button
+                  className={i === 0 ? "bg-transparent text-blue-primary hover:bg-gray-100 px-8 py-4 text-lg" : "border-white text-white hover:bg-white hover:text-blue-primary px-8 py-4 text-lg"}
+                  variant={i === 0 ? undefined : "outline"}
+                >
+                  {b.text || (i === 0 ? "Get Started Today" : "Browse Contractors")}
+                </Button>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

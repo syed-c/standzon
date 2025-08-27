@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, Edit, RefreshCw, FileText } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 type PageItem = {
   title: string;
@@ -29,10 +30,45 @@ export default function AdminPagesEditor() {
   const [pageMap, setPageMap] = useState<Array<{ tag: string; text: string }>>([]);
   // Section-aware state
   const [sections, setSections] = useState<any>({
-    hero: { heading: '', description: '', buttonText: '' },
+    // Common
+    hero: { heading: '', description: '' },
+    cta: { heading: 'Ready to Transform Your Exhibition Experience?', paragraph: '', buttons: [ { text: 'Get Started Today', href: '/contact' }, { text: 'Browse Contractors', href: '/exhibition-stands' } ] },
+    // About
     mission: { heading: '', paragraph: '' },
-    team: { heading: '', paragraph: '' },
-    cta: { heading: '', buttonText: '' },
+    vision: { heading: '', paragraph: '' },
+    coreValues: [
+      { heading: 'Trust & Reliability', paragraph: '' },
+      { heading: 'Global Reach', paragraph: '' },
+      { heading: 'Efficiency', paragraph: '' },
+      { heading: 'Partnership', paragraph: '' },
+    ],
+    howItWorks: [
+      { heading: 'Submit Your Requirements', paragraph: '' },
+      { heading: 'Receive Matched Proposals', paragraph: '' },
+      { heading: 'Compare & Choose', paragraph: '' },
+      { heading: 'Project Success', paragraph: '' },
+    ],
+    team: [
+      { name: 'Marcus Weber', role: 'Founder & CEO', bio: '' },
+      { name: 'Sarah Chen', role: 'Head of Operations', bio: '' },
+      { name: 'David Rodriguez', role: 'Technical Director', bio: '' },
+      { name: 'Emma Thompson', role: 'Client Success Manager', bio: '' },
+    ],
+    // Home specific
+    heroButtons: [ { text: 'Get Free Quote →', href: '/quote' }, { text: 'Global Venues', href: '/exhibition-stands' }, { text: 'Find Builders', href: '/builders' } ],
+    // Leads intro (separate from CTA)
+    leadsIntro: { heading: 'Live Lead Activity', paragraph: 'Real exhibition stand requests from clients worldwide' },
+    // Leads CTA block
+    readyLeads: { heading: 'Ready to Access These Leads?', paragraph: 'Join our platform as a verified builder and start receiving qualified leads like these' },
+    globalPresence: { heading: 'Global Presence, Local Expertise', paragraph: 'With operations spanning five continents, we deliver world-class exhibition solutions while maintaining deep local market knowledge and cultural understanding.' },
+    moreCountries: { heading: 'More Countries in {country}', paragraph: 'Discover exhibition stand builders across all major markets in this region. Click on any country to explore local professionals and get instant quotes.' },
+    expandingMarkets: { heading: 'Expanding to New Markets?', paragraph: "We're continuously growing our global network. If you don't see your location listed, contact us to discuss how we can support your exhibition needs." },
+    readyStart: { heading: 'Ready to Get Started?', paragraph: 'Connect with verified exhibition stand builders in your target location. Get multiple competitive quotes without creating an account.' },
+    clientSay: { heading: 'What Our Clients Say', paragraph: 'Join thousands of satisfied clients who found their perfect exhibition stand builders through our platform' },
+    reviews: [
+      { name: '', role: '', rating: 5, text: '', image: '' },
+    ],
+    finalCta: { heading: "Let's Create Something Extraordinary", paragraph: 'Ready to transform your exhibition presence? Get a personalized quote and discover how we can bring your vision to life.', buttons: [ { text: 'Get Free Quotes Now', href: '/quote' } ] },
   });
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -75,16 +111,9 @@ export default function AdminPagesEditor() {
         setSeoTitle(pc?.seo?.metaTitle || '');
         setSeoDescription(pc?.seo?.metaDescription || '');
         setSeoKeywords((pc?.seo?.keywords || []).join(', '));
-        setH1(pc?.hero?.title || '');
+        setH1(pc?.sections?.hero?.heading || pc?.hero?.title || '');
         // Load sections if present
-        if (pc?.sections) {
-          setSections({
-            hero: { heading: pc.sections.hero?.heading || pc.hero?.title || '', description: pc.sections.hero?.description || pc.hero?.description || '', buttonText: pc.sections.hero?.buttonText || pc.hero?.ctaText || '' },
-            mission: { heading: pc.sections.mission?.heading || 'Our Mission', paragraph: pc.sections.mission?.paragraph || '' },
-            team: { heading: pc.sections.team?.heading || 'Meet Our Team', paragraph: pc.sections.team?.paragraph || '' },
-            cta: { heading: pc.sections.cta?.heading || 'Ready to Transform Your Exhibition Experience?', buttonText: pc.sections.cta?.buttonText || 'Get Started Today' },
-          });
-        }
+        if (pc?.sections) setSections((prev:any)=>({ ...prev, ...pc.sections }));
         const rawHtml: string | undefined = pc?.content?.extra?.rawHtml || pc?.content?.introduction;
         if (rawHtml && typeof rawHtml === 'string') {
           const doc = new DOMParser().parseFromString(rawHtml, 'text/html');
@@ -192,16 +221,7 @@ export default function AdminPagesEditor() {
           contentHtml,
           // new: send structured sections so changes are scoped
           // keep sending sections for non-about pages; for /about, contentHtml drives visible text
-          sections: editingPath === '/about' ? undefined : {
-            hero: {
-              heading: sections.hero?.heading || h1,
-              description: sections.hero?.description,
-              buttonText: sections.hero?.buttonText,
-            },
-            mission: sections.mission,
-            team: sections.team,
-            cta: sections.cta,
-          },
+          sections,
         })
       });
       const data = await res.json();
@@ -292,76 +312,309 @@ export default function AdminPagesEditor() {
                     <Input value={seoKeywords} onChange={(e) => setSeoKeywords(e.target.value)} placeholder="keyword1, keyword2, …" />
                   </div>
 
-                  <h3 className="font-semibold mt-4">Content</h3>
-                  <div>
-                    <Label>H1 (Main Heading)</Label>
-                    <Input value={h1} onChange={(e) => setH1(e.target.value)} placeholder="Main page heading" />
-                  </div>
-                  {/* For /about keep the editor simple and organized; other pages may show extra fields */}
+                  {editingPath !== '/' && (
+                    <>
+                      <h3 className="font-semibold mt-4">Content</h3>
+                      <div>
+                        <Label>H1 (Main Heading)</Label>
+                        <Input value={h1} onChange={(e) => setH1(e.target.value)} placeholder="Main page heading" />
+                      </div>
+                    </>
+                  )}
                 </div>
 
-                <div className="space-y-3">
-                  <h3 className="font-semibold">Detected Page Content (Editable)</h3>
-                  <div className="border rounded-md max-h-[50vh] overflow-auto p-3 bg-gray-50 space-y-3">
-                    {pageMap.slice(0, 200).map((s, idx) => (
-                      <div key={idx} className="bg-white rounded-md p-3 border">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Label className="text-xs text-gray-500">Type</Label>
-                          <select
-                            className="text-sm border rounded px-2 py-1"
-                            value={s.tag}
-                            onChange={(e) => {
-                              const v = e.target.value;
-                              setPageMap((prev) => prev.map((it, i) => i === idx ? { ...it, tag: v } : it));
-                            }}
-                          >
-                            <option value="h1">H1</option>
-                            <option value="h2">H2</option>
-                            <option value="h3">H3</option>
-                            <option value="h4">H4</option>
-                            <option value="p">Paragraph</option>
-                            <option value="li">List Item</option>
-                          </select>
-                        </div>
-                        {/* Inline toolbar for paragraph blocks */}
-                        {s.tag === 'p' && (
-                          <div className="flex items-center gap-2 mb-2">
-                            <Button variant="outline" size="sm" onClick={() => {
-                              const text = prompt('Text to make bold in this paragraph?');
-                              if (!text) return;
-                              setPageMap(prev => prev.map((it, i) => {
-                                if (i !== idx) return it;
-                                const replaced = it.text.replace(text, `<strong>${text}</strong>`);
-                                return { ...it, text: replaced };
-                              }));
-                            }}>Bold</Button>
-                            <Button variant="outline" size="sm" onClick={() => {
-                              const anchor = prompt('Text to hyperlink?');
-                              if (!anchor) return;
-                              const url = prompt('URL to link to (https://...)');
-                              if (!url) return;
-                              setPageMap(prev => prev.map((it, i) => {
-                                if (i !== idx) return it;
-                                const replaced = it.text.replace(anchor, `<a href="${url}">${anchor}</a>`);
-                                return { ...it, text: replaced };
-                              }));
-                            }}>Link</Button>
+                {/* Right column: Home or About editors */}
+                <div className="space-y-6">
+                  {editingPath === '/' ? (
+                    <Accordion type="multiple" className="bg-transparent">
+                      <AccordionItem value="hero">
+                        <AccordionTrigger>Hero</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Hero H1</Label>
+                            <Input value={sections.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Hero Description</Label>
+                            <Textarea rows={3} value={sections.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} />
+                            <div className="mt-2">
+                              <h5 className="font-semibold mb-2">Hero Buttons</h5>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {(sections.heroButtons||[]).map((b:any, idx:number)=> (
+                                  <div key={idx} className="border rounded p-3">
+                                    <Label>Text</Label>
+                                    <Input value={b.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.heroButtons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, heroButtons:arr }; })} />
+                                    <Label className="mt-2 block">Link</Label>
+                                    <Input value={b.href||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.heroButtons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, heroButtons:arr }; })} />
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="flex gap-2 mt-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, heroButtons:[...(s.heroButtons||[]), { text:'', href:'' }] }))}>Add Button</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, heroButtons:(s.heroButtons||[]).slice(0,-1) }))}>Remove Last</Button>
+                              </div>
+                            </div>
                           </div>
-                        )}
-                        <Textarea
-                          rows={3}
-                          value={s.text}
-                          onChange={(e) => {
-                            const v = e.target.value;
-                            setPageMap((prev) => prev.map((it, i) => i === idx ? { ...it, text: v } : it));
-                          }}
-                        />
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="leadsIntro">
+                        <AccordionTrigger>Leads Intro</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Leads Section Heading</Label>
+                            <Input value={sections.leadsIntro?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, leadsIntro:{ ...(s.leadsIntro||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Leads Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.leadsIntro?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, leadsIntro:{ ...(s.leadsIntro||{}), paragraph:e.target.value } }))} />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="leads">
+                        <AccordionTrigger>Leads CTA</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Leads CTA Heading</Label>
+                            <Input value={sections.readyLeads?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, readyLeads:{ ...(s.readyLeads||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Leads CTA Paragraph</Label>
+                            <Textarea rows={3} value={sections.readyLeads?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, readyLeads:{ ...(s.readyLeads||{}), paragraph:e.target.value } }))} />
+                            <div className="mt-2">
+                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {(sections.readyLeads?.buttons||[]).map((b:any, idx:number)=> (
+                                  <div key={idx} className="border rounded p-3">
+                                    <Label>Text</Label>
+                                    <Input value={b.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.readyLeads?.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, readyLeads:{ ...(s.readyLeads||{}), buttons:arr } }; })} />
+                                    <Label className="mt-2 block">Link</Label>
+                                    <Input value={b.href||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.readyLeads?.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, readyLeads:{ ...(s.readyLeads||{}), buttons:arr } }; })} />
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="flex gap-2 mt-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, readyLeads:{ ...(s.readyLeads||{}), buttons:[...(s.readyLeads?.buttons||[]), { text:'', href:'' }] } }))}>Add Button</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, readyLeads:{ ...(s.readyLeads||{}), buttons:(s.readyLeads?.buttons||[]).slice(0,-1) } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="globalPresence">
+                        <AccordionTrigger>Global Presence</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Heading</Label>
+                            <Input value={sections.globalPresence?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, globalPresence:{ ...(s.globalPresence||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Paragraph</Label>
+                            <Textarea rows={3} value={sections.globalPresence?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, globalPresence:{ ...(s.globalPresence||{}), paragraph:e.target.value } }))} />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="moreCountries">
+                        <AccordionTrigger>More Countries</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Heading</Label>
+                            <Input value={sections.moreCountries?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, moreCountries:{ ...(s.moreCountries||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Paragraph</Label>
+                            <Textarea rows={3} value={sections.moreCountries?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, moreCountries:{ ...(s.moreCountries||{}), paragraph:e.target.value } }))} />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="expandingMarkets">
+                        <AccordionTrigger>Expanding Markets</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Heading</Label>
+                            <Input value={sections.expandingMarkets?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, expandingMarkets:{ ...(s.expandingMarkets||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Paragraph</Label>
+                            <Textarea rows={3} value={sections.expandingMarkets?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, expandingMarkets:{ ...(s.expandingMarkets||{}), paragraph:e.target.value } }))} />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="readyStart">
+                        <AccordionTrigger>Ready to Get Started</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Heading</Label>
+                            <Input value={sections.readyStart?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, readyStart:{ ...(s.readyStart||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Paragraph</Label>
+                            <Textarea rows={3} value={sections.readyStart?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, readyStart:{ ...(s.readyStart||{}), paragraph:e.target.value } }))} />
+                            <div className="mt-2">
+                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {(sections.readyStart?.buttons||[]).map((b:any, idx:number)=> (
+                                  <div key={idx} className="border rounded p-3">
+                                    <Label>Text</Label>
+                                    <Input value={b.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.readyStart?.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, readyStart:{ ...(s.readyStart||{}), buttons:arr } }; })} />
+                                    <Label className="mt-2 block">Link</Label>
+                                    <Input value={b.href||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.readyStart?.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, readyStart:{ ...(s.readyStart||{}), buttons:arr } }; })} />
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="flex gap-2 mt-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, readyStart:{ ...(s.readyStart||{}), buttons:[...(s.readyStart?.buttons||[]), { text:'', href:'' }] } }))}>Add Button</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, readyStart:{ ...(s.readyStart||{}), buttons:(s.readyStart?.buttons||[]).slice(0,-1) } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="testimonials">
+                        <AccordionTrigger>Testimonials</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.clientSay?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, clientSay:{ ...(s.clientSay||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.clientSay?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, clientSay:{ ...(s.clientSay||{}), paragraph:e.target.value } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Reviews</h5>
+                              {(sections.reviews||[]).map((r:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    <div>
+                                      <Label>Name</Label>
+                                      <Input value={r.name||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.reviews||[])]; arr[idx]={...arr[idx], name:e.target.value}; return { ...s, reviews:arr }; })} />
+                                    </div>
+                                    <div>
+                                      <Label>Role</Label>
+                                      <Input value={r.role||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.reviews||[])]; arr[idx]={...arr[idx], role:e.target.value}; return { ...s, reviews:arr }; })} />
+                                    </div>
+                                    <div>
+                                      <Label>Rating (1–5)</Label>
+                                      <Input value={String(r.rating ?? 5)} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.reviews||[])]; arr[idx]={...arr[idx], rating:Math.max(1, Math.min(5, Number(e.target.value)||1))}; return { ...s, reviews:arr }; })} />
+                                    </div>
+                                    <div>
+                                      <Label>Image</Label>
+                                      <Input type="file" accept="image/*" onChange={(e)=>{
+                                        const file = e.currentTarget.files?.[0];
+                                        if (!file) return;
+                                        const reader = new FileReader();
+                                        reader.onload = ()=> setSections((s:any)=>{ const arr=[...(s.reviews||[])]; arr[idx]={...arr[idx], image:String(reader.result||'')}; return { ...s, reviews:arr }; });
+                                        reader.readAsDataURL(file);
+                                      }} />
+                                    </div>
+                                  </div>
+                                  <Label className="mt-2 block">Review Text</Label>
+                                  <Textarea rows={3} value={r.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.reviews||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, reviews:arr }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, reviews:[...(s.reviews||[]), { name:'', role:'', rating:5, text:'', image:'' }] }))}>Add Review</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, reviews:(s.reviews||[]).slice(0,-1) }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="finalCta">
+                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Heading</Label>
+                            <Input value={sections.finalCta?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, finalCta:{ ...(s.finalCta||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Paragraph</Label>
+                            <Textarea rows={3} value={sections.finalCta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, finalCta:{ ...(s.finalCta||{}), paragraph:e.target.value } }))} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                              {(sections.finalCta?.buttons||[]).map((b:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3">
+                                  <Label>Button Text</Label>
+                                  <Input value={b.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.finalCta.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, finalCta:{...s.finalCta, buttons:arr} }; })} />
+                                  <Label className="mt-2 block">Button Link</Label>
+                                  <Input value={b.href||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.finalCta.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, finalCta:{...s.finalCta, buttons:arr} }; })} />
+                                </div>
+                              ))}
+                            </div>
+                            <div className="flex gap-2 mt-2">
+                              <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, finalCta:{ ...(s.finalCta||{}), buttons:[...(s.finalCta?.buttons||[]), { text:'', href:'' }] } }))}>Add Button</Button>
+                              <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, finalCta:{ ...(s.finalCta||{}), buttons:(s.finalCta?.buttons||[]).slice(0,-1) } }))}>Remove Last</Button>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  ) : (
+                    <>
+                      <h3 className="font-semibold">About Page Sections</h3>
+                      <div className="bg-white border rounded-md p-3">
+                        <h4 className="font-semibold mb-2">1) Hero</h4>
+                        <Label>H1</Label>
+                        <Input value={sections.hero.heading} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{...s.hero, heading:e.target.value} }))} />
+                        <Label className="mt-2 block">Description (Paragraph)</Label>
+                        <Textarea rows={3} value={sections.hero.description} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{...s.hero, description:e.target.value} }))} />
                       </div>
-                    ))}
-                    {pageMap.length === 0 && (
-                      <div className="text-gray-500 text-sm">No content detected yet.</div>
-                    )}
-                  </div>
+                      <div className="bg-white border rounded-md p-3">
+                        <h4 className="font-semibold mb-2">2) Mission</h4>
+                        <Label>H2</Label>
+                        <Input value={sections.mission.heading} onChange={(e)=>setSections((s:any)=>({ ...s, mission:{...s.mission, heading:e.target.value} }))} />
+                        <Label className="mt-2 block">Paragraph</Label>
+                        <Textarea rows={4} value={sections.mission.paragraph} onChange={(e)=>setSections((s:any)=>({ ...s, mission:{...s.mission, paragraph:e.target.value} }))} />
+                      </div>
+                      <div className="bg-white border rounded-md p-3">
+                        <h4 className="font-semibold mb-2">3) Vision</h4>
+                        <Label>H2</Label>
+                        <Input value={sections.vision.heading} onChange={(e)=>setSections((s:any)=>({ ...s, vision:{...s.vision, heading:e.target.value} }))} />
+                        <Label className="mt-2 block">Paragraph</Label>
+                        <Textarea rows={3} value={sections.vision.paragraph} onChange={(e)=>setSections((s:any)=>({ ...s, vision:{...s.vision, paragraph:e.target.value} }))} />
+                      </div>
+                      <div className="bg-white border rounded-md p-3">
+                        <h4 className="font-semibold mb-2">4) Core Values</h4>
+                        {sections.coreValues.map((item:any, idx:number)=> (
+                          <div key={idx} className="border rounded p-3 mb-3">
+                            <Label>H3</Label>
+                            <Input value={item.heading} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.coreValues]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, coreValues:arr }; })} />
+                            <Label className="mt-2 block">Paragraph</Label>
+                            <Textarea rows={3} value={item.paragraph} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.coreValues]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, coreValues:arr }; })} />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="bg-white border rounded-md p-3">
+                        <h4 className="font-semibold mb-2">5) How It Works</h4>
+                        {sections.howItWorks.map((item:any, idx:number)=> (
+                          <div key={idx} className="border rounded p-3 mb-3">
+                            <Label>H3</Label>
+                            <Input value={item.heading} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.howItWorks]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, howItWorks:arr }; })} />
+                            <Label className="mt-2 block">Paragraph</Label>
+                            <Textarea rows={3} value={item.paragraph} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.howItWorks]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, howItWorks:arr }; })} />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="bg-white border rounded-md p-3">
+                        <h4 className="font-semibold mb-2">6) Meet Our Team</h4>
+                        {sections.team.map((m:any, idx:number)=> (
+                          <div key={idx} className="border rounded p-3 mb-3">
+                            <Label>H3 (Name)</Label>
+                            <Input value={m.name} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.team]; arr[idx]={...arr[idx], name:e.target.value}; return { ...s, team:arr }; })} />
+                            <Label className="mt-2 block">H4 (Role)</Label>
+                            <Input value={m.role} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.team]; arr[idx]={...arr[idx], role:e.target.value}; return { ...s, team:arr }; })} />
+                            <Label className="mt-2 block">Paragraph (Bio)</Label>
+                            <Textarea rows={3} value={m.bio} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.team]; arr[idx]={...arr[idx], bio:e.target.value}; return { ...s, team:arr }; })} />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="bg-white border rounded-md p-3">
+                        <h4 className="font-semibold mb-2">7) CTA</h4>
+                        <Label>H2</Label>
+                        <Input value={sections.cta.heading} onChange={(e)=>setSections((s:any)=>({ ...s, cta:{...s.cta, heading:e.target.value} }))} />
+                        <Label className="mt-2 block">Paragraph</Label>
+                        <Textarea rows={3} value={sections.cta.paragraph} onChange={(e)=>setSections((s:any)=>({ ...s, cta:{...s.cta, paragraph:e.target.value} }))} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                          {sections.cta.buttons?.map((b:any, idx:number)=> (
+                            <div key={idx} className="border rounded p-3">
+                              <Label>Button Text</Label>
+                              <Input value={b.text} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.cta.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, cta:{...s.cta, buttons:arr} }; })} />
+                              <Label className="mt-2 block">Button Link</Label>
+                              <Input value={b.href} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.cta.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, cta:{...s.cta, buttons:arr} }; })} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 

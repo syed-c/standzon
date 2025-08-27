@@ -7,7 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
-export default function LocationsSection() {
+type SectionText = { heading?: string; paragraph?: string } | undefined;
+
+export default function LocationsSection({
+  globalPresence,
+  moreCountries,
+  expandingMarkets,
+}: {
+  globalPresence?: SectionText;
+  moreCountries?: SectionText;
+  expandingMarkets?: SectionText;
+}) {
   const [activeTab, setActiveTab] = useState('North America');
 
   const continents = {
@@ -255,13 +265,17 @@ export default function LocationsSection() {
             </div>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Global Presence,{' '}
-            <span className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 bg-clip-text text-transparent">
-              Local Expertise
-            </span>
+            {globalPresence?.heading || (
+              <>
+                Global Presence,{' '}
+                <span className="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 bg-clip-text text-transparent">
+                  Local Expertise
+                </span>
+              </>
+            )}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            With operations spanning five continents, we deliver world-class exhibition solutions while maintaining deep local market knowledge and cultural understanding.
+            {globalPresence?.paragraph || 'With operations spanning five continents, we deliver world-class exhibition solutions while maintaining deep local market knowledge and cultural understanding.'}
           </p>
           
           {/* Global Stats */}
@@ -371,13 +385,10 @@ export default function LocationsSection() {
         <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 mb-16">
           <div className="text-center mb-8">
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              More Countries in {' '}
-              <span className={`bg-gradient-to-r ${currentContinent.color} bg-clip-text text-transparent`}>
-                {activeTab}
-              </span>
+              {(moreCountries?.heading ? (moreCountries.heading as string) : 'More Countries in {country}').replace(/\{country\}/ig, activeTab)}
             </h3>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Discover exhibition stand builders across all major markets in this region. Click on any country to explore local professionals and get instant quotes.
+              {moreCountries?.paragraph || 'Discover exhibition stand builders across all major markets in this region. Click on any country to explore local professionals and get instant quotes.'}
             </p>
           </div>
           
@@ -419,10 +430,10 @@ export default function LocationsSection() {
               </div>
             </div>
             <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Expanding to New Markets?
+              {expandingMarkets?.heading || 'Expanding to New Markets?'}
             </h3>
             <p className="text-lg text-gray-300 mb-8">
-              We're continuously growing our global network. If you don't see your location listed, contact us to discuss how we can support your exhibition needs.
+              {expandingMarkets?.paragraph || "We're continuously growing our global network. If you don't see your location listed, contact us to discuss how we can support your exhibition needs."}
             </p>
             <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-3 text-lg font-semibold rounded-xl">
               Contact Global Team

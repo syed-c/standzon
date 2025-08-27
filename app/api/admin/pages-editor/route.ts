@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { action, path, seo, h1, contentHtml, structured, sections } = body || {};
+    const { action, path, seo, h1, contentHtml, structured, sections, reviews, buttons } = body || {};
     if (action !== 'update' || !path) {
       return NextResponse.json({ success: false, error: 'Missing action or path' }, { status: 400 });
     }
@@ -159,6 +159,30 @@ export async function PUT(request: NextRequest) {
         ...(updated as any).sections,
         ...sections,
       };
+    }
+
+    // Accept top-level reviews/buttons for Home editor schema
+    if (Array.isArray(reviews)) {
+      // Prefer storing under sections.reviews but also keep a top-level mirror for compatibility
+      (updated as any).sections = {
+        ...(updated as any).sections,
+        reviews: reviews,
+      };
+      (updated as any).reviews = reviews;
+    }
+    if (Array.isArray(buttons)) {
+      // Store raw array for flexible grouping on client
+      (updated as any).buttons = buttons;
+      // Additionally map common groups to existing keys if present
+      const heroBtns = buttons.filter((b:any)=> (b.section||'').toLowerCase() === 'hero').map((b:any)=>({ text:b.text, href:b.link||b.href }));
+      if (heroBtns.length > 0) {
+        (updated as any).sections = { ...(updated as any).sections, heroButtons: heroBtns };
+      }
+      const finalBtns = buttons.filter((b:any)=> (b.section||'').toLowerCase() === 'finalcta').map((b:any)=>({ text:b.text, href:b.link||b.href }));
+      if (finalBtns.length > 0) {
+        const prevFinal = (updated as any).sections?.finalCta || {};
+        (updated as any).sections = { ...(updated as any).sections, finalCta: { ...prevFinal, buttons: finalBtns } };
+      }
     }
 
     storageAPI.savePageContent(pageId, updated);

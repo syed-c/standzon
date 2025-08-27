@@ -40,10 +40,23 @@ export interface PageContent {
   };
   // Section-aware structured content for precise editing
   sections?: {
-    hero?: { heading?: string; description?: string; buttonText?: string };
+    hero?: { heading?: string; description?: string };
+    heroButtons?: Array<{ text?: string; href?: string }>;
     mission?: { heading?: string; paragraph?: string };
-    team?: { heading?: string; paragraph?: string };
-    cta?: { heading?: string; buttonText?: string };
+    vision?: { heading?: string; paragraph?: string };
+    coreValues?: Array<{ heading?: string; paragraph?: string }>;
+    howItWorks?: Array<{ heading?: string; paragraph?: string }>;
+    team?: Array<{ name?: string; role?: string; bio?: string }>;
+    cta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
+    // Home specific sections
+    readyLeads?: { heading?: string; paragraph?: string };
+    globalPresence?: { heading?: string; paragraph?: string };
+    moreCountries?: { heading?: string; paragraph?: string };
+    expandingMarkets?: { heading?: string; paragraph?: string };
+    readyStart?: { heading?: string; paragraph?: string };
+    clientSay?: { heading?: string; paragraph?: string };
+    finalCta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
+    reviews?: Array<{ name?: string; role?: string; rating?: number; text?: string; image?: string }>;
     [key: string]: any;
   };
   design: {

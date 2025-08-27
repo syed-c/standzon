@@ -5,7 +5,16 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useState, useEffect } from "react";
 
-export default function RecentLeadsSection() {
+type LeadsCTAButton = { text?: string; href?: string };
+export default function RecentLeadsSection({
+  ctaHeading,
+  ctaParagraph,
+  ctaButtons,
+}: {
+  ctaHeading?: string;
+  ctaParagraph?: string;
+  ctaButtons?: LeadsCTAButton[];
+}) {
   console.log('🎯 RecentLeadsSection rendering...');
   
   const [displayLeads, setDisplayLeads] = useState<any[]>([]);
@@ -140,17 +149,17 @@ export default function RecentLeadsSection() {
       {/* Call to Action */}
       <div className="mt-6">
         <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-4 md:p-6 text-white">
-          <h3 className="text-lg md:text-xl font-bold mb-2">Ready to Access These Leads?</h3>
+          <h3 className="text-lg md:text-xl font-bold mb-2">{ctaHeading || 'Ready to Access These Leads?'}</h3>
           <p className="text-emerald-100 mb-4 text-sm md:text-base">
-            Join our platform as a verified builder and start receiving qualified leads like these
+            {ctaParagraph || 'Join our platform as a verified builder and start receiving qualified leads like these'}
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
-            <button className="px-4 py-2 bg-white text-emerald-600 font-semibold rounded-lg hover:bg-emerald-50 transition-colors text-sm md:text-base">
-              Join as Builder
-            </button>
-            <button className="px-4 py-2 border border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors text-sm md:text-base">
-              Learn More
-            </button>
+            {(ctaButtons && ctaButtons.length > 0 ? ctaButtons : [{ text: 'Join as Builder', href: '/builders' }, { text: 'Learn More', href: '/about' }]).map((b, i) => (
+              <a key={i} href={b.href || '#'}
+                 className={i === 0 ? 'px-4 py-2 bg-white text-emerald-600 font-semibold rounded-lg hover:bg-emerald-50 transition-colors text-sm md:text-base' : 'px-4 py-2 border border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors text-sm md:text-base'}>
+                {b.text || (i === 0 ? 'Primary' : 'Secondary')}
+              </a>
+            ))}
           </div>
         </div>
       </div>
