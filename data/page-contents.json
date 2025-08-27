@@ -198,7 +198,7 @@
       "canonicalUrl": "/"
     },
     "hero": {
-      "title": "We Build Your Stand in",
+      "title": "We Build Your Stand in Rayyan",
       "subtitle": "",
       "description": "",
       "ctaText": "Get Free Quote"
@@ -221,11 +221,11 @@
       "showStats": true,
       "showMap": false
     },
-    "lastModified": "2025-08-27T11:23:20.449Z",
+    "lastModified": "2025-08-27T12:59:17.949Z",
     "sections": {
       "hero": {
-        "heading": "We Build Your Stand in Rayyan",
-        "description": "Get competitive quotes from verified exhibition stand builders. We compare 500+ contractors in your city to find the perfect match. Save 23% on average with free, instant quotes. Rayyan"
+        "heading": "We Build Your Stand in",
+        "description": "Get competitive quotes from verified exhibition stand builders. We compare 500+ contractors in your city to find the perfect match. Save 23% on average with free, instant quotes."
       },
       "cta": {
         "heading": "Ready to Transform Your Exhibition Experience? Rayyan",
@@ -374,6 +374,10 @@
       "globalNetwork": {
         "heading": "Global Network Rayyan",
         "paragraph": "With operations spanning five continents, we deliver world-class exhibition solutions while maintaining deep local market knowledge and cultural understanding. Rayyan"
+      },
+      "leadsIntro": {
+        "heading": "Live Lead Activity",
+        "paragraph": "Real exhibition stand requests from clients worldwide"
       }
     }
   }
