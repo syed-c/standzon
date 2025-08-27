@@ -4,6 +4,8 @@ import { Inter } from "next/font/google";
 import { Toaster } from '@/components/ui/toaster';
 import siteMetadata from '@/app/metadata.json';
 import { ConvexClientProvider } from '@/components/convex-client-provider';
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +23,8 @@ export default function RootLayout({
           <ConvexClientProvider>
             {children}
             <Toaster />
+            <SpeedInsights />
+            <Analytics />
           </ConvexClientProvider>
         </body>
     </html>

@@ -51,6 +51,8 @@
     "@types/negotiator": "^0.6.4",
     "@types/react-icons": "^2.2.7",
     "@types/uuid": "^10.0.0",
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
     "all-countries": "^2.0.2",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
