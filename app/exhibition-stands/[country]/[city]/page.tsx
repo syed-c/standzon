@@ -1,26 +1,29 @@
 import { Metadata } from 'next';
-import { preloadQuery } from "convex/nextjs";
-import { api } from "@/convex/_generated/api";
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import EnhancedCityPageClient from '@/components/EnhancedCityPageClient';
+import { getCityBySlug } from '@/lib/data/globalExhibitionDatabase';
 
 interface CityPageProps {
-  params: Promise<{
+  params: {
     country: string;
     city: string;
-  }>;
+  };
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ country: string; city: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { country: string; city: string } }): Promise<Metadata> {
   try {
-    const resolvedParams = await params;
-    const { country, city } = resolvedParams;
+    const { country, city } = params;
+    const normalize = (s: string) => s.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const toTitle = (s: string) => s.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const countrySlug = normalize(country);
+    const citySlug = normalize(city);
     
-    // Simple metadata without preloadQuery to avoid issues
-    const cityName = city.charAt(0).toUpperCase() + city.slice(1).replace(/-/g, ' ');
-    const countryName = country.charAt(0).toUpperCase() + country.slice(1).replace(/-/g, ' ');
+    // Try to get city data from global database for better metadata
+    const cityData = getCityBySlug(countrySlug, citySlug);
+    const cityName = cityData ? cityData.name : toTitle(citySlug);
+    const countryName = toTitle(countrySlug);
     
     return {
       title: `Exhibition Stand Builders in ${cityName}, ${countryName} | Professional Trade Show Displays`,
@@ -32,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
         type: 'website',
       },
       alternates: {
-        canonical: `/exhibition-stands/${country}/${city}`,
+        canonical: `/exhibition-stands/${countrySlug}/${citySlug}`,
       },
     };
   } catch (error) {
@@ -45,52 +48,20 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
 }
 
 export default async function CityPage({ params }: CityPageProps) {
-  const { country, city } = await params;
-  
-  console.log('🏙️ Loading city page:', { country, city });
+  const { country, city } = params;
+  const normalize = (s: string) => s.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const countrySlug = normalize(country);
+  const citySlug = normalize(city);
+  console.log('🏙️ Loading city page:', { country: countrySlug, city: citySlug });
   
   return (
     <div className="font-inter">
       <Navigation />
-      <EnhancedCityPageClient 
-        countrySlug={country}
-        citySlug={city}
-      />
+      <EnhancedCityPageClient countrySlug={countrySlug} citySlug={citySlug} />
       <Footer />
       <WhatsAppFloat />
     </div>
   );
 }
 
-export async function generateStaticParams() {
-  console.log('🚀 Generating static params for all cities from comprehensive global database...');
-  
-  try {
-    // Get all cities from comprehensive global database
-    const allCities = await preloadQuery(api.locations.getAllCities, {});
-    
-    // Check if allCities is valid and is an array
-    if (!allCities || !Array.isArray(allCities)) {
-      console.warn('⚠️ No cities data available or invalid format, returning empty params');
-      return [];
-    }
-    
-    // Generate params for all cities in the comprehensive database
-    const params = allCities
-      .filter((city) => city && city.countrySlug && city.slug) // Filter out invalid entries
-      .map((city) => {
-        return {
-          country: city.countrySlug,
-          city: city.slug
-        };
-      });
-    
-    console.log(`📄 Generated ${params.length} static city pages from comprehensive global database`);
-    console.log('🔍 Sample cities:', params.slice(0, 10).map(p => `${p.city}, ${p.country}`));
-    
-    return params;
-  } catch (error) {
-    console.error('❌ Error generating static params:', error);
-    return [];
-  }
-}
+// Dynamic route: don't generate static params to avoid build-time dependencies

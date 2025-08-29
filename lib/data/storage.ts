@@ -265,6 +265,9 @@ class PlatformStorage {
       throw new Error('Invalid content payload: content is required');
     }
 
+    // Normalize pageId to lowercase for case-insensitive storage
+    const normalizedPageId = pageId.toLowerCase().trim();
+
     if (!content.location) {
       // Infer minimal location from pageId
       const inferredName = pageId
@@ -277,19 +280,22 @@ class PlatformStorage {
       } as PageContent["location"];
     }
 
-    console.log('Saving page content:', pageId, content.location?.name || '(unknown)');
+    console.log('Saving page content:', normalizedPageId, content.location?.name || '(unknown)');
     content.lastModified = new Date().toISOString();
-    this.pageContents.set(pageId, content);
+    this.pageContents.set(normalizedPageId, content);
     const current = this.readAllFromFile();
-    current[pageId] = content;
+    current[normalizedPageId] = content;
     this.writeAllToFile(current);
   }
 
   getPageContent(pageId: string): PageContent | undefined {
+    // Normalize pageId to lowercase for case-insensitive lookup
+    const normalizedPageId = pageId.toLowerCase().trim();
+    
     // Always prefer on-disk content in production/serverless
     const all = this.readAllFromFile();
-    if (all[pageId]) return all[pageId];
-    return this.pageContents.get(pageId);
+    if (all[normalizedPageId]) return all[normalizedPageId];
+    return this.pageContents.get(normalizedPageId);
   }
 
   getAllPageContents(): PageContent[] {
@@ -300,18 +306,20 @@ class PlatformStorage {
   }
 
   deletePageContent(pageId: string): boolean {
-    console.log('Deleting page content:', pageId);
-    const ok = this.pageContents.delete(pageId);
+    const normalizedPageId = pageId.toLowerCase().trim();
+    console.log('Deleting page content:', normalizedPageId);
+    const ok = this.pageContents.delete(normalizedPageId);
     const all = this.readAllFromFile();
-    if (all[pageId]) {
-      delete all[pageId];
+    if (all[normalizedPageId]) {
+      delete all[normalizedPageId];
       this.writeAllToFile(all);
     }
     return ok;
   }
 
   hasPageContent(pageId: string): boolean {
-    return this.pageContents.has(pageId);
+    const normalizedPageId = pageId.toLowerCase().trim();
+    return this.pageContents.has(normalizedPageId);
   }
 
   // Clear all data (for testing)

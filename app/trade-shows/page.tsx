@@ -227,18 +227,7 @@ export default function TradeShowsDirectory() {
             </div>
 
             {/* Enhanced Search Bar */}
-            <div className="max-w-2xl mx-auto">
-              <div className="relative">
-                <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <Input
-                  type="text"
-                  placeholder="Search by show name, city, industry, or venue..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 pr-4 py-4 text-lg bg-white/95 backdrop-blur-sm border-0 text-deep-navy placeholder-gray-500 shadow-lg"
-                />
-              </div>
-            </div>
+            {/* Search removed per request */}
           </div>
         </div>
       </section>

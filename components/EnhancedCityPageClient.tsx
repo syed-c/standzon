@@ -1,9 +1,7 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { EnhancedCityPage } from '@/components/EnhancedCityPage';
-import LoadingSpinner from '@/components/LoadingSpinner';
+import { getCityBySlug } from '@/lib/data/globalExhibitionDatabase';
 
 interface EnhancedCityPageClientProps {
   countrySlug: string;
@@ -13,27 +11,8 @@ interface EnhancedCityPageClientProps {
 export default function EnhancedCityPageClient({ countrySlug, citySlug }: EnhancedCityPageClientProps) {
   console.log('🏙️ EnhancedCityPageClient props:', { countrySlug, citySlug });
   
-  // Ensure we have valid parameters before making the query
-  const shouldSkipQuery = !countrySlug || !citySlug || countrySlug === '' || citySlug === '';
-  
-  const cityData = useQuery(
-    api.locations.getCityBySlug, 
-    shouldSkipQuery ? "skip" : { 
-      countrySlug, 
-      citySlug 
-    }
-  );
-  
-  const builders = useQuery(
-    api.locations.getBuildersForLocation, 
-    (shouldSkipQuery || !cityData || cityData === null) ? "skip" : {
-      country: cityData.country?.countryName,
-      city: cityData.cityName
-    }
-  );
-
-  // Show loading state
-  if (shouldSkipQuery) {
+  // Ensure we have valid parameters
+  if (!countrySlug || !citySlug || countrySlug === '' || citySlug === '') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
@@ -44,15 +23,10 @@ export default function EnhancedCityPageClient({ countrySlug, citySlug }: Enhanc
     );
   }
 
-  if (cityData === undefined) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  if (cityData === null) {
+  // Get city data from global database
+  const globalCityData = getCityBySlug(countrySlug, citySlug);
+  
+  if (!globalCityData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
@@ -63,19 +37,25 @@ export default function EnhancedCityPageClient({ countrySlug, citySlug }: Enhanc
       </div>
     );
   }
-
-  // Create mock preloaded data structure for compatibility
+  
+  // Use global database data
+  console.log('🔄 Using global database for:', citySlug);
   const mockPreloadedCityData = {
-    _valueJSON: JSON.stringify(cityData),
+    _valueJSON: JSON.stringify({
+      cityName: globalCityData.name,
+      country: {
+        countryName: globalCityData.country,
+        countryCode: globalCityData.countryCode
+      },
+      slug: globalCityData.slug,
+      countrySlug: globalCityData.countrySlug
+    }),
     _args: { countrySlug, citySlug }
   } as any;
 
   const mockPreloadedBuildersData = {
-    _valueJSON: JSON.stringify(builders || []),
-    _args: cityData && cityData.country ? {
-      country: cityData.country.countryName,
-      city: cityData.cityName
-    } : {}
+    _valueJSON: JSON.stringify([]),
+    _args: { country: globalCityData.country, city: globalCityData.name }
   } as any;
 
   return (

@@ -89,11 +89,9 @@ async function commitToGitHub(fileRelativePath: string, contentJson: any) {
 type PageItem = { title: string; path: string; type: 'static' | 'country' | 'city' };
 const STATIC_PAGES: PageItem[] = [
   { title: 'Home', path: '/', type: 'static' },
-  { title: 'Builders', path: '/builders', type: 'static' },
-  { title: 'Exhibition Stands', path: '/exhibition-stands', type: 'static' },
+  // Removed from editor: /builders, /exhibition-stands, /quote
   { title: 'Custom Booth', path: '/custom-booth', type: 'static' },
   { title: 'About', path: '/about', type: 'static' },
-  { title: 'Quote', path: '/quote', type: 'static' },
 ];
 
 export async function GET(request: NextRequest) {

@@ -188,8 +188,8 @@ export default function ExhibitionStandsContent() {
           { icon: 'users', value: String(totalCities), label: 'Major Cities', color: '#f4a261' },
           { icon: 'chart-line', value: String(activeCountries), label: 'Active Markets', color: '#a06cd5' }
         ]}
-        showSearch={true}
-        searchPlaceholder="Search countries or cities..."
+        showSearch={false}
+        searchPlaceholder=""
       />
 
       {/* Render saved raw HTML if available */}
@@ -268,11 +268,7 @@ export default function ExhibitionStandsContent() {
                       </div>
                       
                       <div className="flex flex-col items-end space-y-1">
-                        {isActive ? (
-                          <Badge className="bg-green-100 text-green-800 text-xs">Active</Badge>
-                        ) : (
-                          <Badge className="bg-orange-100 text-orange-800 text-xs">Coming Soon</Badge>
-                        )}
+                        <Badge className="bg-green-100 text-green-800 text-xs">Active</Badge>
                         {country.cities && country.cities.length > 0 && (
                           <Button
                             variant="ghost"
@@ -310,17 +306,7 @@ export default function ExhibitionStandsContent() {
                       </div>
                     </div>
 
-                    {/* Market Info for Coming Soon Countries */}
-                    {!isActive && (
-                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                        <div className="text-sm text-orange-800">
-                          <div className="font-medium">Market Size: ${country.marketSize}M</div>
-                          <div className="text-xs text-orange-600 mt-1">
-                            {country.annualEvents} annual events • Expanding soon
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    {/* Removed Coming Soon/Expanding Soon section as requested */}
 
                     {/* Cities List - Expandable */}
                     {isExpanded && country.cities && country.cities.length > 0 && (
@@ -348,11 +334,11 @@ export default function ExhibitionStandsContent() {
                     <div className="pt-2">
                       <Button 
                         asChild 
-                        className={`w-full ${isActive ? 'bg-blue-600 hover:bg-blue-700' : 'bg-orange-500 hover:bg-orange-600'}`}
+                        className={`w-full bg-blue-600 hover:bg-blue-700`}
                       >
                         <a href={`/exhibition-stands/${country.slug}`}>
                           <Building className="h-4 w-4 mr-2" />
-                          {isActive ? `Explore ${country.name} Builders` : `View ${country.name} - Coming Soon`}
+                          {`Explore ${country.name} Builders`}
                           <ArrowRight className="h-4 w-4 ml-auto" />
                         </a>
                       </Button>
