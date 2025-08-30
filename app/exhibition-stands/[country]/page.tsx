@@ -11,12 +11,36 @@ import {
   isValidCountrySlug,
   sanitizeCountrySlug,
 } from "@/lib/locations/countries";
+import { getServerSupabase } from "@/lib/supabase";
 
 interface PageProps {
   params: Promise<{
     country: string;
   }>;
 }
+
+// Default fallback content for each country
+const getDefaultCountryContent = (countryName: string, countrySlug: string) => ({
+  whyChooseHeading: `Why Choose Local Builders in ${countryName}?`,
+  whyChooseParagraph: `Local builders offer unique advantages including market knowledge, logistical expertise, and established vendor relationships.`,
+  infoCards: [
+    {
+      title: "Local Market Knowledge",
+      text: `Understand local regulations, venue requirements, and cultural preferences specific to ${countryName}.`
+    },
+    {
+      title: "Faster Project Delivery",
+      text: "Reduced logistics time, easier coordination, and faster response times for urgent modifications or support."
+    },
+    {
+      title: "Cost-Effective Solutions",
+      text: "Lower transportation costs, established supplier networks, and competitive local pricing structures."
+    }
+  ],
+  quotesParagraph: `Connect with 3-5 verified local builders who understand your market. No registration required, quotes within 24 hours.`,
+  servicesHeading: `Exhibition Stand Builders in ${countryName}: Services, Costs, and Tips`,
+  servicesParagraph: `Finding the right exhibition stand partner in ${countryName} can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.`
+});
 
 export async function generateMetadata({
   params,
@@ -55,11 +79,53 @@ export async function generateMetadata({
   };
 }
 
+// Fetch CMS content for the country page
+async function getCountryPageContent(countrySlug: string) {
+  try {
+    const sb = getServerSupabase();
+    if (sb) {
+      console.log('🔍 Server-side: Fetching CMS data for country:', countrySlug);
+      
+      const { data, error } = await sb
+        .from('page_contents')
+        .select('content')
+        .eq('id', countrySlug)
+        .single();
+      
+      if (error) {
+        console.log('❌ Server-side: Supabase error:', error);
+        return null;
+      }
+      
+      if (data?.content) {
+        console.log('✅ Server-side: Found CMS data for country:', countrySlug);
+        return data.content;
+      }
+    }
+  } catch (error) {
+    console.error('❌ Server-side: Error fetching CMS data:', error);
+  }
+  
+  return null;
+}
+
 export default async function CountryPage({ params }: PageProps) {
   const { country } = await params;
   const sanitized = sanitizeCountrySlug(country);
   const isValid = isValidCountrySlug(sanitized);
   const countryName = getDisplayNameFromSlug(sanitized);
+
+  // Fetch CMS content server-side for better SEO and performance
+  const cmsContent = await getCountryPageContent(sanitized);
+  
+  // Generate default content as fallback
+  const defaultContent = getDefaultCountryContent(countryName, sanitized);
+  
+  // Merge CMS content with defaults (CMS content takes precedence)
+  const mergedContent = {
+    ...defaultContent,
+    ...(cmsContent?.sections?.countryPages?.[sanitized] || {})
+  };
 
   try {
     if (!isValid) {
@@ -82,6 +148,8 @@ export default async function CountryPage({ params }: PageProps) {
                 `${countryName} booth design`,
               ],
             }}
+            // Pass CMS content for dynamic rendering
+            cmsContent={mergedContent}
           />
           <Footer />
           <WhatsAppFloat />
@@ -119,6 +187,8 @@ export default async function CountryPage({ params }: PageProps) {
               `${displayName} booth design`,
             ],
           }}
+          // Pass CMS content for dynamic rendering
+          cmsContent={mergedContent}
         />
         <Footer />
         <WhatsAppFloat />
@@ -144,6 +214,8 @@ export default async function CountryPage({ params }: PageProps) {
               `${countryName} booth design`,
             ],
           }}
+          // Pass CMS content for dynamic rendering
+          cmsContent={mergedContent}
         />
         <Footer />
         <WhatsAppFloat />
@@ -156,3 +228,6 @@ export async function generateStaticParams() {
   // Generate static params for the full list provided
   return ALL_COUNTRY_SLUGS.map((slug) => ({ country: slug }));
 }
+
+// Enable ISR with revalidation for dynamic content updates
+export const revalidate = 60; // Revalidate every 60 seconds

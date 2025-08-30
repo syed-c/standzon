@@ -27,6 +27,8 @@ interface LocationPageProps {
     date: string;
     venue: string;
   }>;
+  // Add server CMS content prop
+  serverCmsContent?: any;
 }
 
 export function EnhancedLocationPage({ 
@@ -48,7 +50,8 @@ export function EnhancedLocationPage({
     city,
     builders = [],
     locationStats,
-    upcomingEvents = []
+    upcomingEvents = [],
+    serverCmsContent
   } = props;
   // Use new props if available, fallback to legacy props
   const finalBuilders = initialBuilders.length > 0 ? initialBuilders : builders;
@@ -94,6 +97,12 @@ export function EnhancedLocationPage({
     })
   };
 
+  // Generate consistent country slug for CMS data access
+  const countrySlug = useMemo(() => {
+    return finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 
+           finalLocationName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  }, [finalCountryName, finalLocationName]);
+
   useEffect(() => {
     let sorted = [...finalBuilders];
     switch (sortBy) {
@@ -125,17 +134,27 @@ export function EnhancedLocationPage({
     });
   }, [sortBy, buildersDepKey]);
 
-  // Fetch CMS data for country pages
+  // Initialize CMS data with server-side content if available
   useEffect(() => {
+    if (serverCmsContent) {
+      console.log("✅ Using server-side CMS content:", serverCmsContent);
+      setCmsData({
+        sections: {
+          countryPages: {
+            [countrySlug]: serverCmsContent
+          }
+        }
+      });
+      setIsLoadingCms(false);
+      return;
+    }
+
+    // Fetch CMS data for country pages only if no server content
     const fetchCmsData = async () => {
       if (!finalCountryName && !isCity) return; // Only fetch for country pages
       
       setIsLoadingCms(true);
       try {
-        // Generate country slug consistently with the API
-        const countrySlug = finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 
-                           finalLocationName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-        
         console.log("🔍 Fetching CMS data for country:", countrySlug);
         
         const res = await fetch(
@@ -171,13 +190,7 @@ export function EnhancedLocationPage({
     };
 
     fetchCmsData();
-  }, [finalCountryName, finalLocationName, isCity]);
-
-  // Generate consistent country slug for CMS data access
-  const countrySlug = useMemo(() => {
-    return finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 
-           finalLocationName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  }, [finalCountryName, finalLocationName]);
+  }, [finalCountryName, finalLocationName, isCity, serverCmsContent, countrySlug]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">

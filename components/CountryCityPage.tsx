@@ -73,6 +73,8 @@ interface CountryCityPageProps {
   isEditable?: boolean;
   cityData?: any;
   showComingSoon?: boolean;
+  // Add CMS content prop for server-side rendered content
+  cmsContent?: any;
 }
 
 const BUILDERS_PER_PAGE = 9;
@@ -84,7 +86,8 @@ export function CountryCityPage({
   initialContent,
   isEditable = false,
   cityData,
-  showComingSoon = false
+  showComingSoon = false,
+  cmsContent
 }: CountryCityPageProps) {
   const [builders, setBuilders] = useState<Builder[]>(initialBuilders);
   const [filteredBuilders, setFilteredBuilders] = useState<Builder[]>(initialBuilders);
@@ -676,6 +679,8 @@ export function CountryCityPage({
           completedProjects: filteredBuilders.reduce((sum, b) => sum + b.projectsCompleted, 0),
           averagePrice: 450
         }}
+        // ✅ NEW: Pass server-side CMS content for immediate rendering
+        serverCmsContent={cmsContent}
         isEditable={isEditable}
         onContentUpdate={async (content: any) => {
           const pageId = city ? 
