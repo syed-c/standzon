@@ -73,22 +73,8 @@
   box-sizing: border-box;
 }
 
-#__next {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
 html, body {
-  margin: 0;
-  padding: 0;
   height: 100%;
-  width: 100%;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
 }
 
 body {
@@ -423,14 +409,18 @@ a:focus {
   }
 }
 
-.page-container {
+#__next {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-.main-content {
-  flex: 1;
+.page-container {
+  display: flex;
+  flex-direction: column;
 }
 
-
+/* Fix double scroll specifically for homepage */
+.homepage-container {
+  min-height: auto !important;
+}

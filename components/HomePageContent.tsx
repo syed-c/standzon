@@ -59,7 +59,7 @@ export default function HomePageContent() {
   }).map(b => ({ text: b.text, href: b.link || b.href }));
 
   return (
-    <div className="page-container">
+    <div className="page-container homepage-container">
       <Navigation />
 
       <main className="main-content pt-16">
