@@ -187,7 +187,10 @@ export default function CustomBoothPageContent() {
             {(saved?.sections?.whyChooseCustom?.features || defaultFeatures).map((feature: any, index: number) => (
               <div key={index} className="text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  {defaultFeatures[index]?.icon ? <defaultFeatures[index].icon className="w-8 h-8 text-purple-600" /> : <Palette className="w-8 h-8 text-purple-600" />}
+                  {(() => {
+                    const IconComponent = defaultFeatures[index]?.icon;
+                    return IconComponent ? <IconComponent className="w-8 h-8 text-purple-600" /> : <Palette className="w-8 h-8 text-purple-600" />;
+                  })()}
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   {feature.heading || feature.title || defaultFeatures[index]?.title}
