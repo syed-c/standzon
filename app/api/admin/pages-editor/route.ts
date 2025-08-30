@@ -91,6 +91,11 @@ const STATIC_PAGES: PageItem[] = [
   { title: 'Home', path: '/', type: 'static' },
   // Removed from editor: /builders, /exhibition-stands, /quote
   { title: 'Custom Booth', path: '/custom-booth', type: 'static' },
+  { title: 'Booth Rental', path: '/booth-rental', type: 'static' },
+  { title: '3D Rendering & Concept Development', path: '/3d-rendering-and-concept-development', type: 'static' },
+  { title: 'Installation & Dismantle', path: '/trade-show-installation-and-dismantle', type: 'static' },
+  { title: 'Project Management', path: '/trade-show-project-management', type: 'static' },
+  { title: 'Graphics & Printing', path: '/trade-show-graphics-printing', type: 'static' },
   { title: 'About', path: '/about', type: 'static' },
   // Country pages
   { title: 'China Exhibition Stands', path: '/exhibition-stands/china', type: 'country' },

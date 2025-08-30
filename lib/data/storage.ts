@@ -77,6 +77,112 @@ export interface PageContent {
       }>;
     };
     customBoothCta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
+    
+    // Service Pages specific sections (cloned from custom-booth structure)
+    boothRental?: { 
+      hero?: { heading?: string; description?: string };
+      whyChoose?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
+      process?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
+      services?: { 
+        heading?: string; 
+        paragraph?: string; 
+        serviceCards?: Array<{
+          title?: string;
+          description?: string;
+          startingFrom?: string;
+          price?: string;
+          features?: string[];
+          buttonText?: string;
+          buttonLink?: string;
+          badge?: string;
+        }>;
+      };
+      cta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
+    };
+    
+    renderingConcept?: { 
+      hero?: { heading?: string; description?: string };
+      whyChoose?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
+      process?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
+      services?: { 
+        heading?: string; 
+        paragraph?: string; 
+        serviceCards?: Array<{
+          title?: string;
+          description?: string;
+          startingFrom?: string;
+          price?: string;
+          features?: string[];
+          buttonText?: string;
+          buttonLink?: string;
+          badge?: string;
+        }>;
+      };
+      cta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
+    };
+    
+    installationDismantle?: { 
+      hero?: { heading?: string; description?: string };
+      whyChoose?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
+      process?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
+      services?: { 
+        heading?: string; 
+        paragraph?: string; 
+        serviceCards?: Array<{
+          title?: string;
+          description?: string;
+          startingFrom?: string;
+          price?: string;
+          features?: string[];
+          buttonText?: string;
+          buttonLink?: string;
+          badge?: string;
+        }>;
+      };
+      cta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
+    };
+    
+    projectManagement?: { 
+      hero?: { heading?: string; description?: string };
+      whyChoose?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
+      process?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
+      services?: { 
+        heading?: string; 
+        paragraph?: string; 
+        serviceCards?: Array<{
+          title?: string;
+          description?: string;
+          startingFrom?: string;
+          price?: string;
+          features?: string[];
+          buttonText?: string;
+          buttonLink?: string;
+          badge?: string;
+        }>;
+      };
+      cta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
+    };
+    
+    graphicsPrinting?: { 
+      hero?: { heading?: string; description?: string };
+      whyChoose?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
+      process?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
+      services?: { 
+        heading?: string; 
+        paragraph?: string; 
+        serviceCards?: Array<{
+          title?: string;
+          description?: string;
+          startingFrom?: string;
+          price?: string;
+          features?: string[];
+          buttonText?: string;
+          buttonLink?: string;
+          badge?: string;
+        }>;
+      };
+      cta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
+    };
     // Country pages specific sections
     countryPages?: {
       [country: string]: {
@@ -89,6 +195,11 @@ export interface PageContent {
         quotesParagraph?: string;
         servicesHeading?: string;
         servicesParagraph?: string;
+        // Final CTA section
+        finalCtaHeading?: string;
+        finalCtaParagraph?: string;
+        finalCtaButtonText?: string;
+        backToTopButtonText?: string;
       };
     };
     [key: string]: any;

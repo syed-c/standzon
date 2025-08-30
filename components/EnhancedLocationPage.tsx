@@ -466,33 +466,7 @@ export function EnhancedLocationPage({
             </h2>
             <p>
               {cmsData?.sections?.countryPages?.[countrySlug]?.servicesParagraph || 
-               `Finding the right exhibition stand partner in ${displayLocation} can dramatically improve your event ROI. Local builders offer`}
-              end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand
-              presents a professional, high‑impact presence on the show floor.
-            </p>
-            <h3 className="!mt-6">What You Can Expect</h3>
-            <ul>
-              <li><strong>Custom design</strong> that aligns with your brand strategy and visitor journey.</li>
-              <li><strong>Modular or rental options</strong> to optimize budget and reusability across shows.</li>
-              <li><strong>Project management</strong> covering approvals, venue coordination, and timelines.</li>
-              <li><strong>On‑site services</strong> including installation, dismantle, and show support.</li>
-            </ul>
-            <h3 className="!mt-6">Typical Budget Ranges</h3>
-            <p>
-              Pricing varies by size, materials, and scope. As a broad reference, 9–18 sqm booths often start from budget‑friendly builds,
-              while 24–36+ sqm custom stands require higher investment. Request multiple quotes from verified builders in {displayLocation}
-              to compare concepts, materials, and timelines.
-            </p>
-            <h3 className="!mt-6">How to Choose a Builder</h3>
-            <ol>
-              <li>Review recent projects and case studies relevant to your industry.</li>
-              <li>Validate certifications, insurance, and familiarity with local venue regulations.</li>
-              <li>Assess timelines, warranty, and post‑show support.</li>
-              <li>Prioritize transparent quotes that itemize design, build, logistics, and services.</li>
-            </ol>
-            <p>
-              With the right partner, your trade show presence in {displayLocation} can attract qualified leads, strengthen customer
-              relationships, and elevate brand perception.
+               `Finding the right exhibition stand partner in ${displayLocation} can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.`}
             </p>
           </div>
         </div>
@@ -503,16 +477,17 @@ export function EnhancedLocationPage({
         <div className="container mx-auto px-6 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Ready to Find Your Perfect Builder in {displayLocation}?
+              {cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaHeading || 
+               `Ready to Find Your Perfect Builder in ${displayLocation}?`}
             </h2>
             <p className="text-xl text-slate-300 mb-8">
-              Get competitive quotes from verified local builders. 
-              Compare proposals and choose the best fit for your exhibition needs.
+              {cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaParagraph || 
+               `Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.`}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <PublicQuoteRequest 
                 location={displayLocation}
-                buttonText="Start Getting Quotes"
+                buttonText={cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaButtonText || "Start Getting Quotes"}
                 className="text-lg px-8 py-4"
               />
               <Button 
@@ -521,7 +496,7 @@ export function EnhancedLocationPage({
                 className="border-white/20 text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-4"
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               >
-                Back to Top
+                {cmsData?.sections?.countryPages?.[countrySlug]?.backToTopButtonText || "Back to Top"}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </div>

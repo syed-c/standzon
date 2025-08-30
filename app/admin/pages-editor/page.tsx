@@ -149,6 +149,73 @@ export default function AdminPagesEditor() {
             { text: 'Browse Designers', href: '/quote' }
           ]
         },
+        boothRental: { 
+          hero: { heading: 'Booth Rental Services', description: 'Flexible, cost-effective exhibition booth rental solutions with full setup and support.' },
+          whyChoose: { 
+            heading: 'Why Choose Booth Rental?', 
+            paragraph: 'Cost-effective solutions for businesses that need professional exhibition presence without the long-term commitment', 
+            features: [
+              { heading: 'Cost-Effective', paragraph: 'No long-term investment, pay only for what you need' },
+              { heading: 'Flexible Options', paragraph: 'Choose from various booth sizes and configurations' },
+              { heading: 'Professional Quality', paragraph: 'High-quality materials and professional appearance' },
+              { heading: 'Quick Setup', paragraph: 'Fast installation and dismantle for multiple shows' }
+            ]
+          },
+          process: { 
+            heading: 'Our Rental Process', 
+            paragraph: 'Simple, streamlined process from selection to show floor', 
+            steps: [
+              { heading: 'Select Booth', paragraph: 'Choose from our range of booth options and sizes' },
+              { heading: 'Customize Graphics', paragraph: 'Add your branding and graphics to the rental booth' },
+              { heading: 'Schedule Delivery', paragraph: 'We coordinate delivery and installation timing' },
+              { heading: 'Show Support', paragraph: 'Professional support during your exhibition' }
+            ]
+          },
+          services: { 
+            heading: 'Booth Rental Services', 
+            paragraph: 'Comprehensive rental solutions for every exhibition need',
+            serviceCards: [
+              {
+                title: 'Modular Booth Rental',
+                description: 'Flexible modular systems for various booth sizes and configurations',
+                startingFrom: 'Starting from',
+                price: '$1,500',
+                features: ['Easy setup', 'Multiple configurations', 'Professional appearance', 'Cost-effective'],
+                buttonText: 'Get Quote',
+                buttonLink: '/quote',
+                badge: ''
+              },
+              {
+                title: 'Custom Graphics Package',
+                description: 'Complete branding and graphics for your rental booth',
+                startingFrom: 'Starting from',
+                price: '$800',
+                features: ['Brand integration', 'High-quality prints', 'Quick turnaround', 'Installation included'],
+                buttonText: 'Get Quote',
+                buttonLink: '/quote',
+                badge: 'Most Popular'
+              },
+              {
+                title: 'Full Service Rental',
+                description: 'Complete booth rental with setup, graphics, and support',
+                startingFrom: 'Starting from',
+                price: '$3,500',
+                features: ['End-to-end service', 'Professional installation', 'On-site support', 'Complete package'],
+                buttonText: 'Get Quote',
+                buttonLink: '/quote',
+                badge: 'Premium'
+              }
+            ]
+          },
+          cta: { 
+            heading: 'Ready to Rent Your Exhibition Booth?', 
+            paragraph: 'Connect with rental experts who understand your exhibition needs', 
+            buttons: [
+              { text: 'Get Started', href: '/quote' },
+              { text: 'Browse Options', href: '/quote' }
+            ]
+          }
+        },
         // Country pages structure
         countryPages: {
           'china': {
@@ -294,6 +361,18 @@ export default function AdminPagesEditor() {
                 designProcess: pc.sections.designProcess || prev.designProcess,
                 customDesignServices: pc.sections.customDesignServices || prev.customDesignServices,
                 customBoothCta: pc.sections.customBoothCta || prev.customBoothCta,
+              };
+              console.log("New sections state:", newSections);
+              return newSections;
+            });
+          } else if (path === '/booth-rental') {
+            // For booth-rental page, load booth-rental specific sections
+            console.log("Loading booth-rental sections:", pc.sections);
+            setSections((prev:any) => {
+              const newSections = {
+                ...prev,
+                hero: pc.sections.hero || prev.hero,
+                boothRental: pc.sections.boothRental || prev.boothRental,
               };
               console.log("New sections state:", newSections);
               return newSections;
@@ -1069,11 +1148,350 @@ export default function AdminPagesEditor() {
                                   <Input value={button.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.customBoothCta?.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:arr } }; })} />
                               <Label className="mt-2 block">Button Link</Label>
                                   <Input value={button.href||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.customBoothCta?.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:arr } }; })} />
-                            </div>
-                          ))}
+                          </div>
+                        ))}
                               <div className="flex gap-2">
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:[...(s.customBoothCta?.buttons||[]), { text:'', href:'' }] } }))}>Add Button</Button>
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:(s.customBoothCta?.buttons||[]).slice(0,-1) } }))}>Remove Last</Button>
+                      </div>
+                      </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  ) : editingPath === '/booth-rental' ? (
+                    <Accordion type="multiple" className="bg-transparent">
+                      <AccordionItem value="hero">
+                        <AccordionTrigger>Hero</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Hero H1</Label>
+                            <Input value={sections.boothRental?.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), hero:{ ...(s.boothRental?.hero||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Hero Description</Label>
+                            <Textarea rows={3} value={sections.boothRental?.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), hero:{ ...(s.boothRental?.hero||{}), description:e.target.value } } }))} />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="whyChoose">
+                        <AccordionTrigger>Why Choose Booth Rental</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.boothRental?.whyChoose?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.boothRental?.whyChoose?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Features</h5>
+                              {(sections.boothRental?.whyChoose?.features||[]).map((feature:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Feature Heading</Label>
+                                  <Input value={feature.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.boothRental?.whyChoose?.features||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), features:arr } } }; })} />
+                                  <Label className="mt-2 block">Feature Description</Label>
+                                  <Textarea rows={2} value={feature.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.boothRental?.whyChoose?.features||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), features:arr } } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), features:[...(s.boothRental?.whyChoose?.features||[]), { heading:'', paragraph:'' }] } } }))}>Add Feature</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), features:(s.boothRental?.whyChoose?.features||[]).slice(0,-1) } } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="process">
+                        <AccordionTrigger>Rental Process</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.boothRental?.process?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), process:{ ...(s.boothRental?.process||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.boothRental?.process?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), process:{ ...(s.boothRental?.process||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Process Steps</h5>
+                              {(sections.boothRental?.process?.steps||[]).map((step:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Step Heading</Label>
+                                  <Input value={step.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.boothRental?.process?.steps||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, boothRental:{ ...(s.boothRental||{}), process:{ ...(s.boothRental?.process||{}), steps:arr } } }; })} />
+                                  <Label className="mt-2 block">Step Description</Label>
+                                  <Textarea rows={2} value={step.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.boothRental?.process?.steps||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, boothRental:{ ...(s.boothRental||{}), process:{ ...(s.boothRental?.process||{}), steps:arr } } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), process:{ ...(s.boothRental?.process||{}), steps:[...(s.boothRental?.process?.steps||[]), { heading:'', paragraph:'' }] } } }))}>Add Step</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), process:{ ...(s.boothRental?.process||{}), steps:(s.boothRental?.process?.steps||[]).slice(0,-1) } } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="services">
+                        <AccordionTrigger>Booth Rental Services</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.boothRental?.services?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), services:{ ...(s.boothRental?.services||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.boothRental?.services?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), services:{ ...(s.boothRental?.services||{}), paragraph:e.target.value } } }))} />
+                            
+                            <div className="mt-4">
+                              <h5 className="font-semibold mb-3">Service Cards</h5>
+                              {(sections.boothRental?.services?.serviceCards || []).map((card: any, idx: number) => (
+                                <div key={idx} className="border rounded p-4 mb-3 bg-gray-50">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <h6 className="font-medium">Card {idx + 1}</h6>
+                                    <Button 
+                                      type="button" 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => {
+                                        const arr = [...(sections.boothRental?.services?.serviceCards || [])];
+                                        arr.splice(idx, 1);
+                                        setSections((s: any) => ({ 
+                                          ...s, 
+                                          boothRental: { 
+                                            ...(s.boothRental || {}), 
+                                            services: { ...(s.boothRental?.services || {}), serviceCards: arr }
+                                          } 
+                                        }));
+                                      }}
+                                    >
+                                      Remove
+                                    </Button>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                      <Label>Card Title</Label>
+                                      <Input 
+                                        value={card.title || ''} 
+                                        onChange={(e) => {
+                                          const arr = [...(sections.boothRental?.services?.serviceCards || [])];
+                                          arr[idx] = { ...arr[idx], title: e.target.value };
+                                          setSections((s: any) => ({ 
+                                            ...s, 
+                                            boothRental: { 
+                                              ...(s.boothRental || {}), 
+                                              services: { ...(s.boothRental?.services || {}), serviceCards: arr }
+                                            } 
+                                          }));
+                                        }} 
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label>Badge (optional)</Label>
+                                      <Input 
+                                        value={card.badge || ''} 
+                                        placeholder="e.g., Most Popular"
+                                        onChange={(e) => {
+                                          const arr = [...(sections.boothRental?.services?.serviceCards || [])];
+                                          arr[idx] = { ...arr[idx], badge: e.target.value };
+                                          setSections((s: any) => ({ 
+                                            ...s, 
+                                            boothRental: { 
+                                              ...(s.boothRental || {}), 
+                                              services: { ...(s.boothRental?.services || {}), serviceCards: arr }
+                                            } 
+                                          }));
+                                        }} 
+                                      />
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="mt-3">
+                                    <Label>Card Description</Label>
+                                    <Textarea 
+                                      rows={2} 
+                                      value={card.description || ''} 
+                                      onChange={(e) => {
+                                        const arr = [...(sections.boothRental?.services?.serviceCards || [])];
+                                        arr[idx] = { ...arr[idx], description: e.target.value };
+                                        setSections((s: any) => ({ 
+                                          ...s, 
+                                          boothRental: { 
+                                            ...(s.boothRental || {}), 
+                                            services: { ...(s.boothRental?.services || {}), serviceCards: arr }
+                                          } 
+                                        }));
+                                      }} 
+                                    />
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                    <div>
+                                      <Label>Starting From Text</Label>
+                                      <Input 
+                                        value={card.startingFrom || ''} 
+                                        placeholder="Starting from"
+                                        onChange={(e) => {
+                                          const arr = [...(sections.boothRental?.services?.serviceCards || [])];
+                                          arr[idx] = { ...arr[idx], startingFrom: e.target.value };
+                                          setSections((s: any) => ({ 
+                                            ...s, 
+                                            boothRental: { 
+                                              ...(s.boothRental || {}), 
+                                              services: { ...(s.boothRental?.services || {}), serviceCards: arr }
+                                            } 
+                                          }));
+                                        }} 
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label>Price</Label>
+                                      <Input 
+                                        value={card.price || ''} 
+                                        placeholder="e.g., $1,500"
+                                        onChange={(e) => {
+                                          const arr = [...(sections.boothRental?.services?.serviceCards || [])];
+                                          arr[idx] = { ...arr[idx], price: e.target.value };
+                                          setSections((s: any) => ({ 
+                                            ...s, 
+                                            boothRental: { 
+                                              ...(s.boothRental || {}), 
+                                              services: { ...(s.boothRental?.services || {}), serviceCards: arr }
+                                            } 
+                                          }));
+                                        }} 
+                                      />
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="mt-3">
+                                    <Label>Features (one per line)</Label>
+                                    <Textarea 
+                                      rows={3} 
+                                      value={(card.features || []).join('\n')} 
+                                      placeholder="Easy setup&#10;Multiple configurations&#10;Professional appearance&#10;Cost-effective"
+                                      onChange={(e) => {
+                                        const features = e.target.value.split('\n').filter(f => f.trim());
+                                        const arr = [...(sections.boothRental?.services?.serviceCards || [])];
+                                        arr[idx] = { ...arr[idx], features };
+                                        setSections((s: any) => ({ 
+                                          ...s, 
+                                          boothRental: { 
+                                            ...(s.boothRental || {}), 
+                                            services: { ...(s.boothRental?.services || {}), serviceCards: arr }
+                                          } 
+                                        }));
+                                      }} 
+                                    />
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                    <div>
+                              <Label>Button Text</Label>
+                                      <Input 
+                                        value={card.buttonText || ''} 
+                                        placeholder="Get Quote"
+                                        onChange={(e) => {
+                                          const arr = [...(sections.boothRental?.services?.serviceCards || [])];
+                                          arr[idx] = { ...arr[idx], buttonText: e.target.value };
+                                          setSections((s: any) => ({ 
+                                            ...s, 
+                                            boothRental: { 
+                                              ...(s.boothRental || {}), 
+                                              services: { ...(s.boothRental?.services || {}), serviceCards: arr }
+                                            } 
+                                          }));
+                                        }} 
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label>Button Link</Label>
+                                      <Input 
+                                        value={card.buttonLink || ''} 
+                                        placeholder="/quote"
+                                        onChange={(e) => {
+                                          const arr = [...(sections.boothRental?.services?.serviceCards || [])];
+                                          arr[idx] = { ...arr[idx], buttonLink: e.target.value };
+                                          setSections((s: any) => ({ 
+                                            ...s, 
+                                            boothRental: { 
+                                              ...(s.boothRental || {}), 
+                                              services: { ...(s.boothRental?.services || {}), serviceCards: arr }
+                                            } 
+                                          }));
+                                        }} 
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              
+                              <div className="flex gap-2 mt-3">
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  onClick={() => {
+                                    const newCard = {
+                                      title: '',
+                                      description: '',
+                                      startingFrom: 'Starting from',
+                                      price: '',
+                                      features: [],
+                                      buttonText: 'Get Quote',
+                                      buttonLink: '/quote',
+                                      badge: ''
+                                    };
+                                    setSections((s: any) => ({ 
+                                      ...s, 
+                                      boothRental: { 
+                                        ...(s.boothRental || {}), 
+                                        services: { ...(s.boothRental?.services || {}), serviceCards: [...(s.boothRental?.services?.serviceCards || []), newCard] }
+                                      } 
+                                    }));
+                                  }}
+                                >
+                                  Add Service Card
+                                </Button>
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  onClick={() => {
+                                    const arr = [...(sections.boothRental?.services?.serviceCards || [])];
+                                    if (arr.length > 0) {
+                                      arr.splice(-1, 1);
+                                      setSections((s: any) => ({ 
+                                        ...s, 
+                                        boothRental: { 
+                                          ...(s.boothRental || {}), 
+                                          services: { ...(s.boothRental?.services || {}), serviceCards: arr }
+                                        } 
+                                      }));
+                                    }
+                                  }}
+                                >
+                                  Remove Last Card
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="cta">
+                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.boothRental?.cta?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), cta:{ ...(s.boothRental?.cta||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.boothRental?.cta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), cta:{ ...(s.boothRental?.cta||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              {(sections.boothRental?.cta?.buttons||[]).map((button:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Button Text</Label>
+                                  <Input value={button.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.boothRental?.cta?.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, boothRental:{ ...(s.boothRental||{}), cta:{ ...(s.boothRental?.cta||{}), buttons:arr } } }; })} />
+                              <Label className="mt-2 block">Button Link</Label>
+                                  <Input value={button.href||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.boothRental?.cta?.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, boothRental:{ ...(s.boothRental||{}), cta:{ ...(s.boothRental?.cta||{}), buttons:arr } } }; })} />
+                            </div>
+                          ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), cta:{ ...(s.boothRental?.cta||{}), buttons:[...(s.boothRental?.cta?.buttons||[]), { text:'', href:'' }] } } }))}>Add Button</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), cta:{ ...(s.boothRental?.cta||{}), buttons:(s.boothRental?.cta?.buttons||[]).slice(0,-1) } } }))}>Remove Last</Button>
                         </div>
                       </div>
                           </div>
@@ -1367,6 +1785,85 @@ export default function AdminPagesEditor() {
                                               [countrySlug]: {
                                                 ...(s.countryPages?.[countrySlug] || {}),
                                                 servicesParagraph: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Final CTA Section */}
+                                  <div className="mt-8 p-6 bg-white rounded-lg border border-gray-100">
+                                    <h5 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
+                                      <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                                      Final Call-to-Action
+                                    </h5>
+                                    <div className="space-y-4">
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Section Heading</Label>
+                                        <Input 
+                                          className="mt-1"
+                                          value={countryData?.finalCtaHeading || ''} 
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                finalCtaHeading: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
+                                        <Textarea 
+                                          className="mt-1"
+                                          rows={3} 
+                                          value={countryData?.finalCtaParagraph || ''} 
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                finalCtaParagraph: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Primary Button Text</Label>
+                                        <Input 
+                                          className="mt-1"
+                                          value={countryData?.finalCtaButtonText || ''} 
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                finalCtaButtonText: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Back to Top Button Text</Label>
+                                        <Input 
+                                          className="mt-1"
+                                          value={countryData?.backToTopButtonText || ''} 
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                backToTopButtonText: e.target.value
                                               }
                                             }
                                           }))}

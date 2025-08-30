@@ -1276,6 +1276,36 @@
     "description": "Expert exhibition stand builders in Birmingham, United Kingdom. Professional contractors for all major Birmingham trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
     "keywords": "Birmingham exhibition stands, Birmingham trade show builders, Birmingham contractors, Birmingham exhibition services, United Kingdom trade shows",
     "ogImage": "/og-image-birmingham.png"
+  },
+  "/booth-rental": {
+    "title": "Booth Rental Services | Exhibition Stand Rental | StandsZone",
+    "description": "Flexible, cost-effective exhibition booth rental solutions with full setup and support. Professional rental services for trade shows and exhibitions.",
+    "keywords": "booth rental, exhibition stand rental, trade show booth rental, modular booth rental, booth rental services",
+    "ogImage": "/og-image.jpg"
+  },
+  "/3d-rendering-and-concept-development": {
+    "title": "3D Rendering & Concept Development | Exhibition Stand Visualization | StandsZone",
+    "description": "Photorealistic 3D visuals and rapid concept iterations to align stakeholders and accelerate approvals for exhibition stands.",
+    "keywords": "3D rendering, concept development, exhibition visualization, 3D booth design, trade show concepts",
+    "ogImage": "/og-image.jpg"
+  },
+  "/trade-show-installation-and-dismantle": {
+    "title": "Trade Show Installation & Dismantle | Professional I&D Services | StandsZone",
+    "description": "End-to-end I&D services for a flawless show experience, from logistics to on-site execution.",
+    "keywords": "installation dismantle, trade show setup, booth installation, exhibition dismantle, I&D services",
+    "ogImage": "/og-image.jpg"
+  },
+  "/trade-show-project-management": {
+    "title": "Trade Show Project Management | Professional Coordination | StandsZone",
+    "description": "End-to-end PM including vendor coordination, timelines, and on-site supervision.",
+    "keywords": "project management, trade show coordination, exhibition PM, vendor management, timeline management",
+    "ogImage": "/og-image.jpg"
+  },
+  "/trade-show-graphics-printing": {
+    "title": "Trade Show Graphics & Printing | Professional Branding | StandsZone",
+    "description": "High-quality large-format prints, branding, and wayfinding tailored for exhibitions.",
+    "keywords": "graphics printing, trade show branding, exhibition graphics, large format printing, booth graphics",
+    "ogImage": "/og-image.jpg"
   }
 }
 
