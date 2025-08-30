@@ -47,27 +47,6 @@ export default function AdminPagesEditor() {
     // Common
     hero: { heading: '', description: '' },
     cta: { heading: 'Ready to Transform Your Exhibition Experience?', paragraph: '', buttons: [ { text: 'Get Started Today', href: '/contact' }, { text: 'Browse Contractors', href: '/exhibition-stands' } ] },
-    // About
-    mission: { heading: '', paragraph: '' },
-    vision: { heading: '', paragraph: '' },
-    coreValues: [
-      { heading: 'Trust & Reliability', paragraph: '' },
-      { heading: 'Global Reach', paragraph: '' },
-      { heading: 'Efficiency', paragraph: '' },
-      { heading: 'Partnership', paragraph: '' },
-    ],
-    howItWorks: [
-      { heading: 'Submit Your Requirements', paragraph: '' },
-      { heading: 'Receive Matched Proposals', paragraph: '' },
-      { heading: 'Compare & Choose', paragraph: '' },
-      { heading: 'Project Success', paragraph: '' },
-    ],
-    team: [
-      { name: 'Marcus Weber', role: 'Founder & CEO', bio: '' },
-      { name: 'Sarah Chen', role: 'Head of Operations', bio: '' },
-      { name: 'David Rodriguez', role: 'Technical Director', bio: '' },
-      { name: 'Emma Thompson', role: 'Client Success Manager', bio: '' },
-    ],
     // Home specific
     heroButtons: [ { text: 'Get Free Quote →', href: '/quote' }, { text: 'Global Venues', href: '/exhibition-stands' }, { text: 'Find Builders', href: '/builders' } ],
     // Leads intro (separate from CTA)
@@ -145,25 +124,7 @@ export default function AdminPagesEditor() {
             }
           });
           if (sections.length > 0) {
-            // For /about, organize blocks into page order for cleaner editing
-            if (path === '/about') {
-              const organized: Array<{ tag: string; text: string }> = [];
-              const firstH1Idx = sections.findIndex(s => s.tag === 'h1');
-              if (firstH1Idx >= 0) organized.push(sections[firstH1Idx]);
-              const firstParaAfterH1Idx = sections.findIndex((s, i) => i > firstH1Idx && s.tag === 'p');
-              if (firstParaAfterH1Idx >= 0) organized.push(sections[firstParaAfterH1Idx]);
-              const missionH2Idx = sections.findIndex(s => s.tag === 'h2' && /mission/i.test(s.text));
-              if (missionH2Idx >= 0) organized.push(sections[missionH2Idx]);
-              const missionParaIdx = sections.findIndex((s, i) => i > missionH2Idx && s.tag === 'p');
-              if (missionParaIdx >= 0) organized.push(sections[missionParaIdx]);
-              // Append remaining unique blocks (avoid duplicates)
-              sections.forEach(s => {
-                if (!organized.includes(s)) organized.push(s);
-              });
-              setPageMap(organized);
-            } else {
-              setPageMap(sections);
-            }
+            setPageMap(sections);
             return; // Use saved content; skip scraping
           }
         }
@@ -203,17 +164,7 @@ export default function AdminPagesEditor() {
     if (!editingPath) return;
     setIsSaving(true);
     try {
-      // Enforce single H1 for /about by converting subsequent H1s to H2s
-      const normalizedMap = editingPath === '/about' ? (() => {
-        let seenH1 = false;
-        return pageMap.map((s) => {
-          if (s.tag.toLowerCase() === 'h1') {
-            if (seenH1) return { ...s, tag: 'h2' };
-            seenH1 = true;
-          }
-          return s;
-        });
-      })() : pageMap;
+      const normalizedMap = pageMap;
 
       // Build simple HTML from edited map
       const contentHtml = normalizedMap
@@ -347,7 +298,7 @@ export default function AdminPagesEditor() {
                   )}
                 </div>
 
-                {/* Right column: Home or About editors */}
+                {/* Right column: Home editor */}
                 <div className="space-y-6">
                   {editingPath === '/' ? (
                     <Accordion type="multiple" className="bg-transparent">
@@ -561,84 +512,7 @@ export default function AdminPagesEditor() {
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>
-                  ) : (
-                    <>
-                      <h3 className="font-semibold">About Page Sections</h3>
-                      <div className="bg-white border rounded-md p-3">
-                        <h4 className="font-semibold mb-2">1) Hero</h4>
-                        <Label>H1</Label>
-                        <Input value={sections.hero.heading} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{...s.hero, heading:e.target.value} }))} />
-                        <Label className="mt-2 block">Description (Paragraph)</Label>
-                        <Textarea rows={3} value={sections.hero.description} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{...s.hero, description:e.target.value} }))} />
-                      </div>
-                      <div className="bg-white border rounded-md p-3">
-                        <h4 className="font-semibold mb-2">2) Mission</h4>
-                        <Label>H2</Label>
-                        <Input value={sections.mission.heading} onChange={(e)=>setSections((s:any)=>({ ...s, mission:{...s.mission, heading:e.target.value} }))} />
-                        <Label className="mt-2 block">Paragraph</Label>
-                        <Textarea rows={4} value={sections.mission.paragraph} onChange={(e)=>setSections((s:any)=>({ ...s, mission:{...s.mission, paragraph:e.target.value} }))} />
-                      </div>
-                      <div className="bg-white border rounded-md p-3">
-                        <h4 className="font-semibold mb-2">3) Vision</h4>
-                        <Label>H2</Label>
-                        <Input value={sections.vision.heading} onChange={(e)=>setSections((s:any)=>({ ...s, vision:{...s.vision, heading:e.target.value} }))} />
-                        <Label className="mt-2 block">Paragraph</Label>
-                        <Textarea rows={3} value={sections.vision.paragraph} onChange={(e)=>setSections((s:any)=>({ ...s, vision:{...s.vision, paragraph:e.target.value} }))} />
-                      </div>
-                      <div className="bg-white border rounded-md p-3">
-                        <h4 className="font-semibold mb-2">4) Core Values</h4>
-                        {sections.coreValues.map((item:any, idx:number)=> (
-                          <div key={idx} className="border rounded p-3 mb-3">
-                            <Label>H3</Label>
-                            <Input value={item.heading} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.coreValues]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, coreValues:arr }; })} />
-                            <Label className="mt-2 block">Paragraph</Label>
-                            <Textarea rows={3} value={item.paragraph} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.coreValues]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, coreValues:arr }; })} />
-                          </div>
-                        ))}
-                      </div>
-                      <div className="bg-white border rounded-md p-3">
-                        <h4 className="font-semibold mb-2">5) How It Works</h4>
-                        {sections.howItWorks.map((item:any, idx:number)=> (
-                          <div key={idx} className="border rounded p-3 mb-3">
-                            <Label>H3</Label>
-                            <Input value={item.heading} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.howItWorks]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, howItWorks:arr }; })} />
-                            <Label className="mt-2 block">Paragraph</Label>
-                            <Textarea rows={3} value={item.paragraph} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.howItWorks]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, howItWorks:arr }; })} />
-                          </div>
-                        ))}
-                      </div>
-                      <div className="bg-white border rounded-md p-3">
-                        <h4 className="font-semibold mb-2">6) Meet Our Team</h4>
-                        {sections.team.map((m:any, idx:number)=> (
-                          <div key={idx} className="border rounded p-3 mb-3">
-                            <Label>H3 (Name)</Label>
-                            <Input value={m.name} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.team]; arr[idx]={...arr[idx], name:e.target.value}; return { ...s, team:arr }; })} />
-                            <Label className="mt-2 block">H4 (Role)</Label>
-                            <Input value={m.role} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.team]; arr[idx]={...arr[idx], role:e.target.value}; return { ...s, team:arr }; })} />
-                            <Label className="mt-2 block">Paragraph (Bio)</Label>
-                            <Textarea rows={3} value={m.bio} onChange={(e)=>setSections((s:any)=>{ const arr=[...s.team]; arr[idx]={...arr[idx], bio:e.target.value}; return { ...s, team:arr }; })} />
-                          </div>
-                        ))}
-                      </div>
-                      <div className="bg-white border rounded-md p-3">
-                        <h4 className="font-semibold mb-2">7) CTA</h4>
-                        <Label>H2</Label>
-                        <Input value={sections.cta.heading} onChange={(e)=>setSections((s:any)=>({ ...s, cta:{...s.cta, heading:e.target.value} }))} />
-                        <Label className="mt-2 block">Paragraph</Label>
-                        <Textarea rows={3} value={sections.cta.paragraph} onChange={(e)=>setSections((s:any)=>({ ...s, cta:{...s.cta, paragraph:e.target.value} }))} />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-                          {sections.cta.buttons?.map((b:any, idx:number)=> (
-                            <div key={idx} className="border rounded p-3">
-                              <Label>Button Text</Label>
-                              <Input value={b.text} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.cta.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, cta:{...s.cta, buttons:arr} }; })} />
-                              <Label className="mt-2 block">Button Link</Label>
-                              <Input value={b.href} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.cta.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, cta:{...s.cta, buttons:arr} }; })} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
+                  ) : null}
                 </div>
               </div>
 
