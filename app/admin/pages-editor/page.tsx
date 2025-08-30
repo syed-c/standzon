@@ -186,14 +186,19 @@ export default function AdminPagesEditor() {
         if (pc?.sections) {
           if (path === '/custom-booth') {
             // For custom-booth page, only load custom-booth specific sections
-            setSections((prev:any) => ({
-              ...prev,
-              hero: pc.sections.hero || prev.hero,
-              whyChooseCustom: pc.sections.whyChooseCustom || prev.whyChooseCustom,
-              designProcess: pc.sections.designProcess || prev.designProcess,
-              customDesignServices: pc.sections.customDesignServices || prev.customDesignServices,
-              customBoothCta: pc.sections.customBoothCta || prev.customBoothCta,
-            }));
+            console.log("Loading custom-booth sections:", pc.sections);
+            setSections((prev:any) => {
+              const newSections = {
+                ...prev,
+                hero: pc.sections.hero || prev.hero,
+                whyChooseCustom: pc.sections.whyChooseCustom || prev.whyChooseCustom,
+                designProcess: pc.sections.designProcess || prev.designProcess,
+                customDesignServices: pc.sections.customDesignServices || prev.customDesignServices,
+                customBoothCta: pc.sections.customBoothCta || prev.customBoothCta,
+              };
+              console.log("New sections state:", newSections);
+              return newSections;
+            });
           } else if (path === '/') {
             // For home page, load home-specific sections
             setSections((prev:any) => ({
