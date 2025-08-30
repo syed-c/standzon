@@ -229,6 +229,38 @@ export default function AdminPagesEditor() {
         reviews: [ { name: '', role: '', rating: 5, text: '', image: '' } ],
         finalCta: { heading: "Let's Create Something Extraordinary", paragraph: 'Ready to transform your exhibition presence? Get a personalized quote and discover how we can bring your vision to life.', buttons: [ { text: 'Get Free Quotes Now', href: '/quote' } ] },
       }));
+    } else if (path.startsWith('/exhibition-stands/')) {
+      // Extract country slug from path
+      const countrySlug = path.split('/').pop() || '';
+      const countryName = countrySlug?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      
+      setSections((prev: any) => ({
+        hero: { heading: '', description: '' },
+        // Country pages structure
+        countryPages: {
+          [countrySlug as string]: {
+            whyChooseHeading: `Why Choose Local Builders in ${countryName}?`,
+            whyChooseParagraph: 'Local builders offer unique advantages including market knowledge, logistical expertise, and established vendor relationships.',
+            infoCards: [
+              {
+                title: 'Local Market Knowledge',
+                text: `Understand local regulations, venue requirements, and cultural preferences specific to ${countryName}.`
+              },
+              {
+                title: 'Faster Project Delivery',
+                text: 'Reduced logistics time, easier coordination, and faster response times for urgent modifications or support.'
+              },
+              {
+                title: 'Cost-Effective Solutions',
+                text: 'Lower transportation costs, established supplier networks, and competitive local pricing structures.'
+              }
+            ],
+            quotesParagraph: 'Connect with 3-5 verified local builders who understand your market. No registration required, quotes within 24 hours.',
+            servicesHeading: `Exhibition Stand Builders in ${countryName}: Services, Costs, and Tips`,
+            servicesParagraph: `Finding the right exhibition stand partner in ${countryName} can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.`
+          }
+        }
+      }));
     } else {
       setSections((prev: any) => ({
         hero: { heading: '', description: '' },
@@ -280,6 +312,14 @@ export default function AdminPagesEditor() {
               clientSay: pc.sections.clientSay || prev.clientSay,
               reviews: pc.sections.reviews || prev.reviews,
               finalCta: pc.sections.finalCta || prev.finalCta,
+            }));
+          } else if (path.startsWith('/exhibition-stands/')) {
+            // For country pages, load country-specific sections
+            const countrySlug = path.split('/').pop() || '';
+            setSections((prev:any) => ({
+              ...prev,
+              hero: pc.sections.hero || prev.hero,
+              countryPages: pc.sections.countryPages || prev.countryPages,
             }));
           } else {
             // For other pages, load common sections only
