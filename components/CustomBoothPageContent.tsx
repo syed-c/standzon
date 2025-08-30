@@ -30,7 +30,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import TradeStyleBanner from "@/components/TradeStyleBanner";
 
-const features = [
+const defaultFeatures = [
   {
     icon: Palette,
     title: "Brand-Focused Design",
@@ -54,7 +54,7 @@ const features = [
   },
 ];
 
-const process = [
+const defaultProcess = [
   {
     step: "01",
     title: "Discovery & Brief",
@@ -128,9 +128,9 @@ export default function CustomBoothPageContent() {
       {/* Trade Shows style banner */}
       <TradeStyleBanner
         badgeText="Professional Trade Show Database"
-        mainHeading="Custom Exhibition Booths"
+        mainHeading={saved?.sections?.hero?.heading || "Custom Exhibition Booths"}
         highlightHeading="& Bespoke Stand Design"
-        description="Bespoke trade show stands designed to capture attention, engage visitors, and drive results for your business."
+        description={saved?.sections?.hero?.description || "Bespoke trade show stands designed to capture attention, engage visitors, and drive results for your business."}
         stats={[
           {
             icon: "calendar",
@@ -176,23 +176,23 @@ export default function CustomBoothPageContent() {
         <section className="mb-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Custom Design?
+              {saved?.sections?.whyChooseCustom?.heading || "Why Choose Custom Design?"}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Stand out from the crowd with a booth that's uniquely yours
+              {saved?.sections?.whyChooseCustom?.paragraph || "Stand out from the crowd with a booth that's uniquely yours"}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
+            {(saved?.sections?.whyChooseCustom?.features || defaultFeatures).map((feature: any, index: number) => (
               <div key={index} className="text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <feature.icon className="w-8 h-8 text-purple-600" />
+                  {defaultFeatures[index]?.icon ? <defaultFeatures[index].icon className="w-8 h-8 text-purple-600" /> : <Palette className="w-8 h-8 text-purple-600" />}
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {feature.title}
+                  {feature.heading || feature.title || defaultFeatures[index]?.title}
                 </h3>
-                <p className="text-gray-600">{feature.description}</p>
+                <p className="text-gray-600">{feature.paragraph || feature.description || defaultFeatures[index]?.description}</p>
               </div>
             ))}
           </div>
@@ -202,23 +202,23 @@ export default function CustomBoothPageContent() {
         <section className="mb-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Our Design Process
+              {saved?.sections?.designProcess?.heading || "Our Design Process"}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              From concept to completion, we guide you through every step
+              {saved?.sections?.designProcess?.paragraph || "From concept to completion, we guide you through every step"}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {process.map((item, index) => (
+            {(saved?.sections?.designProcess?.steps || defaultProcess).map((item: any, index: number) => (
               <div key={index} className="text-center relative">
                 <div className="w-16 h-16 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                  {item.step}
+                  {String(index + 1).padStart(2, '0')}
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {item.title}
+                  {item.heading || item.title || defaultProcess[index]?.title}
                 </h3>
-                <p className="text-gray-600">{item.description}</p>
+                <p className="text-gray-600">{item.paragraph || item.description || defaultProcess[index]?.description}</p>
                 {index < 3 && (
                   <ArrowRight className="hidden md:block absolute top-8 -right-4 w-6 h-6 text-gray-400" />
                 )}
@@ -231,10 +231,10 @@ export default function CustomBoothPageContent() {
         <section className="mb-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Custom Design Services
+              {saved?.sections?.customDesignServices?.heading || "Custom Design Services"}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Comprehensive custom booth solutions for every need
+              {saved?.sections?.customDesignServices?.paragraph || "Comprehensive custom booth solutions for every need"}
             </p>
           </div>
 
@@ -332,30 +332,26 @@ export default function CustomBoothPageContent() {
         {/* CTA Section */}
         <section className="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-2xl p-8 md:p-12 text-white text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Create Your Custom Booth?
+            {saved?.sections?.customBoothCta?.heading || "Ready to Create Your Custom Booth?"}
           </h2>
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            Connect with expert designers who understand your industry and
-            objectives
+            {saved?.sections?.customBoothCta?.paragraph || "Connect with expert designers who understand your industry and objectives"}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/quote">
-              <Button
-                size="lg"
-                className="bg-white text-purple-600 hover:bg-gray-100"
-              >
-                Start Your Project
-              </Button>
-            </Link>
-            <Link href="/builders">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-purple-600"
-              >
-                Browse Designers
-              </Button>
-            </Link>
+            {(saved?.sections?.customBoothCta?.buttons || [
+              { text: "Start Your Project", href: "/quote" },
+              { text: "Browse Designers", href: "/builders" }
+            ]).map((button: any, index: number) => (
+              <Link key={index} href={button.href || "/quote"}>
+                <Button
+                  size="lg"
+                  className={index === 0 ? "bg-white text-purple-600 hover:bg-gray-100" : "border-white text-white hover:bg-white hover:text-purple-600"}
+                  variant={index === 0 ? "default" : "outline"}
+                >
+                  {button.text || (index === 0 ? "Start Your Project" : "Browse Designers")}
+                </Button>
+              </Link>
+            ))}
           </div>
         </section>
       </div>

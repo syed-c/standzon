@@ -59,6 +59,11 @@ export interface PageContent {
     clientSay?: { heading?: string; paragraph?: string };
     finalCta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
     reviews?: Array<{ name?: string; role?: string; rating?: number; text?: string; image?: string }>;
+    // Custom Booth specific sections
+    whyChooseCustom?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
+    designProcess?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
+    customDesignServices?: { heading?: string; paragraph?: string };
+    customBoothCta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
     [key: string]: any;
   };
   design: {

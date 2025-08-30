@@ -62,6 +62,24 @@ export default function AdminPagesEditor() {
       { name: '', role: '', rating: 5, text: '', image: '' },
     ],
     finalCta: { heading: "Let's Create Something Extraordinary", paragraph: 'Ready to transform your exhibition presence? Get a personalized quote and discover how we can bring your vision to life.', buttons: [ { text: 'Get Free Quotes Now', href: '/quote' } ] },
+    // Custom Booth specific sections
+    whyChooseCustom: { heading: 'Why Choose Custom Design?', paragraph: 'Stand out from the crowd with a booth that\'s uniquely yours', features: [
+      { heading: 'Brand-Focused Design', paragraph: 'Every element designed to reflect your brand identity and values' },
+      { heading: 'Creative Innovation', paragraph: 'Cutting-edge design concepts that make your booth stand out' },
+      { heading: 'Goal-Oriented', paragraph: 'Designed specifically to achieve your exhibition objectives' },
+      { heading: 'Multi-Functional', paragraph: 'Spaces that work for meetings, demos, and networking' }
+    ]},
+    designProcess: { heading: 'Our Design Process', paragraph: 'From concept to completion, we guide you through every step', steps: [
+      { heading: 'Discovery & Brief', paragraph: 'We understand your brand, goals, and exhibition requirements' },
+      { heading: 'Concept Design', paragraph: '3D concepts and layouts tailored to your space and objectives' },
+      { heading: 'Design Refinement', paragraph: 'Collaborative refinement until the design is perfect' },
+      { heading: 'Production & Install', paragraph: 'Expert construction and professional installation at your venue' }
+    ]},
+    customDesignServices: { heading: 'Custom Design Services', paragraph: 'Comprehensive custom booth solutions for every need' },
+    customBoothCta: { heading: 'Ready to Create Your Custom Booth?', paragraph: 'Connect with expert designers who understand your industry and objectives', buttons: [
+      { text: 'Start Your Project', href: '/quote' },
+      { text: 'Browse Designers', href: '/builders' }
+    ]},
   });
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -507,6 +525,113 @@ export default function AdminPagesEditor() {
                             <div className="flex gap-2 mt-2">
                               <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, finalCta:{ ...(s.finalCta||{}), buttons:[...(s.finalCta?.buttons||[]), { text:'', href:'' }] } }))}>Add Button</Button>
                               <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, finalCta:{ ...(s.finalCta||{}), buttons:(s.finalCta?.buttons||[]).slice(0,-1) } }))}>Remove Last</Button>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  ) : editingPath === '/custom-booth' ? (
+                    <Accordion type="multiple" className="bg-transparent">
+                      <AccordionItem value="hero">
+                        <AccordionTrigger>Hero</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Hero H1</Label>
+                            <Input value={sections.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Hero Description</Label>
+                            <Textarea rows={3} value={sections.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="whyChooseCustom">
+                        <AccordionTrigger>Why Choose Custom Design</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.whyChooseCustom?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, whyChooseCustom:{ ...(s.whyChooseCustom||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.whyChooseCustom?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, whyChooseCustom:{ ...(s.whyChooseCustom||{}), paragraph:e.target.value } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Features</h5>
+                              {(sections.whyChooseCustom?.features||[]).map((feature:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Feature Heading</Label>
+                                  <Input value={feature.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.whyChooseCustom?.features||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, whyChooseCustom:{ ...(s.whyChooseCustom||{}), features:arr } }; })} />
+                                  <Label className="mt-2 block">Feature Description</Label>
+                                  <Textarea rows={2} value={feature.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.whyChooseCustom?.features||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, whyChooseCustom:{ ...(s.whyChooseCustom||{}), features:arr } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, whyChooseCustom:{ ...(s.whyChooseCustom||{}), features:[...(s.whyChooseCustom?.features||[]), { heading:'', paragraph:'' }] } }))}>Add Feature</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, whyChooseCustom:{ ...(s.whyChooseCustom||{}), features:(s.whyChooseCustom?.features||[]).slice(0,-1) } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="designProcess">
+                        <AccordionTrigger>Design Process</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.designProcess?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, designProcess:{ ...(s.designProcess||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.designProcess?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, designProcess:{ ...(s.designProcess||{}), paragraph:e.target.value } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Process Steps</h5>
+                              {(sections.designProcess?.steps||[]).map((step:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Step Heading</Label>
+                                  <Input value={step.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.designProcess?.steps||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, designProcess:{ ...(s.designProcess||{}), steps:arr } }; })} />
+                                  <Label className="mt-2 block">Step Description</Label>
+                                  <Textarea rows={2} value={step.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.designProcess?.steps||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, designProcess:{ ...(s.designProcess||{}), steps:arr } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, designProcess:{ ...(s.designProcess||{}), steps:[...(s.designProcess?.steps||[]), { heading:'', paragraph:'' }] } }))}>Add Step</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, designProcess:{ ...(s.designProcess||{}), steps:(s.designProcess?.steps||[]).slice(0,-1) } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="customDesignServices">
+                        <AccordionTrigger>Custom Design Services</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.customDesignServices?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, customDesignServices:{ ...(s.customDesignServices||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.customDesignServices?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, customDesignServices:{ ...(s.customDesignServices||{}), paragraph:e.target.value } }))} />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="customBoothCta">
+                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.customBoothCta?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.customBoothCta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), paragraph:e.target.value } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              {(sections.customBoothCta?.buttons||[]).map((button:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Button Text</Label>
+                                  <Input value={button.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.customBoothCta?.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:arr } }; })} />
+                                  <Label className="mt-2 block">Button Link</Label>
+                                  <Input value={button.href||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.customBoothCta?.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:arr } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:[...(s.customBoothCta?.buttons||[]), { text:'', href:'' }] } }))}>Add Button</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:(s.customBoothCta?.buttons||[]).slice(0,-1) } }))}>Remove Last</Button>
+                              </div>
                             </div>
                           </div>
                         </AccordionContent>
