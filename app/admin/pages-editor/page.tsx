@@ -1139,72 +1139,161 @@ export default function AdminPagesEditor() {
                                       </div>
                                       
                                                                           {/* Info Cards */}
-                                    <div className="mt-8">
-                                      <h6 className="text-lg font-semibold mb-6 text-gray-700 flex items-center">
-                                        <span className="w-3 h-3 bg-green-500 rounded-full mr-3"></span>
-                                        Info Cards
-                                      </h6>
-                                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    <div className="mt-10 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-200">
+                                      <div className="flex items-center justify-between mb-8">
+                                        <div className="flex items-center">
+                                          <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4">
+                                            <span className="text-white font-bold text-sm">3</span>
+                                          </div>
+                                          <div>
+                                            <h6 className="text-xl font-bold text-gray-800">Info Cards</h6>
+                                            <p className="text-sm text-gray-600">Customize the three key advantages for local builders</p>
+                                          </div>
+                                        </div>
+                                        <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-300">
+                                          Core Content
+                                        </Badge>
+                                      </div>
+                                      
+                                      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                                         {(countryData?.infoCards || []).map((card: any, idx: number) => (
-                                          <div key={idx} className="border-2 border-gray-200 rounded-xl p-6 bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md">
-                                            <div className="flex items-center justify-between mb-4">
-                                              <div className="flex items-center">
-                                                <span className="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
-                                                <span className="text-sm font-semibold text-gray-700">Card {idx + 1}</span>
+                                          <div key={idx} className="group relative">
+                                            {/* Card Container */}
+                                            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-gray-100 hover:border-blue-300 group-hover:scale-[1.02]">
+                                              {/* Card Header */}
+                                              <div className="flex items-center justify-between mb-6">
+                                                <div className="flex items-center">
+                                                  <div className={`w-6 h-6 rounded-full mr-3 flex items-center justify-center ${
+                                                    idx === 0 ? 'bg-blue-500' : 
+                                                    idx === 1 ? 'bg-green-500' : 'bg-purple-500'
+                                                  }`}>
+                                                    <span className="text-white font-bold text-sm">{idx + 1}</span>
+                                                  </div>
+                                                  <span className="text-lg font-bold text-gray-800">Card {idx + 1}</span>
+                                                </div>
+                                                <Badge variant="outline" className={`${
+                                                  idx === 0 ? 'border-blue-300 text-blue-700 bg-blue-50' : 
+                                                  idx === 1 ? 'border-green-300 text-green-700 bg-green-50' : 
+                                                  'border-purple-300 text-purple-700 bg-purple-50'
+                                                }`}>
+                                                  {idx === 0 ? "Market Knowledge" : idx === 1 ? "Project Delivery" : "Cost Solutions"}
+                                                </Badge>
                                               </div>
-                                              <Badge variant="secondary" className="text-xs">
-                                                {idx === 0 ? "Market Knowledge" : idx === 1 ? "Project Delivery" : "Cost Solutions"}
-                                              </Badge>
-                                            </div>
-                                            <div className="space-y-4">
-                                              <div>
-                                                <Label className="text-sm font-medium text-gray-600 mb-2 block">Title</Label>
-                                                <Input 
-                                                  className="text-sm"
-                                                  placeholder="e.g., Local Market Knowledge"
-                                                  value={card.title || ''} 
-                                                  onChange={(e) => {
-                                                    const arr = [...(countryData?.infoCards || [])];
-                                                    arr[idx] = { ...arr[idx], title: e.target.value };
-                                                    setSections((s: any) => ({
-                                                      ...s,
-                                                      countryPages: {
-                                                        ...(s.countryPages || {}),
-                                                        [countrySlug]: {
-                                                          ...(s.countryPages?.[countrySlug] || {}),
-                                                          infoCards: arr
+                                              
+                                              {/* Card Content */}
+                                              <div className="space-y-6">
+                                                <div>
+                                                  <Label className="text-base font-semibold text-gray-700 mb-3 block flex items-center">
+                                                    <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                                                    Card Title
+                                                  </Label>
+                                                  <Input 
+                                                    className="text-base h-12 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                                                    placeholder="e.g., Local Market Knowledge"
+                                                    value={card.title || ''} 
+                                                    onChange={(e) => {
+                                                      const arr = [...(countryData?.infoCards || [])];
+                                                      arr[idx] = { ...arr[idx], title: e.target.value };
+                                                      setSections((s: any) => ({
+                                                        ...s,
+                                                        countryPages: {
+                                                          ...(s.countryPages || {}),
+                                                          [countrySlug]: {
+                                                            ...(s.countryPages?.[countrySlug] || {}),
+                                                            infoCards: arr
+                                                          }
                                                         }
-                                                      }
-                                                    }));
-                                                  }}
-                                                />
-                                              </div>
-                                              <div>
-                                                <Label className="text-sm font-medium text-gray-600 mb-2 block">Description</Label>
-                                                <Textarea 
-                                                  className="text-sm"
-                                                  rows={4} 
-                                                  placeholder="Describe the advantage or benefit..."
-                                                  value={card.text || ''} 
-                                                  onChange={(e) => {
-                                                    const arr = [...(countryData?.infoCards || [])];
-                                                    arr[idx] = { ...arr[idx], text: e.target.value };
-                                                    setSections((s: any) => ({
-                                                      ...s,
-                                                      countryPages: {
-                                                        ...(s.countryPages || {}),
-                                                        [countrySlug]: {
-                                                          ...(s.countryPages?.[countrySlug] || {}),
-                                                          infoCards: arr
+                                                      }));
+                                                    }}
+                                                  />
+                                                </div>
+                                                
+                                                <div>
+                                                  <Label className="text-base font-semibold text-gray-700 mb-3 block flex items-center">
+                                                    <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                                                    Description
+                                                  </Label>
+                                                  <Textarea 
+                                                    className="text-base border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 resize-none"
+                                                    rows={5} 
+                                                    placeholder="Describe the advantage or benefit that local builders provide..."
+                                                    value={card.text || ''} 
+                                                    onChange={(e) => {
+                                                      const arr = [...(countryData?.infoCards || [])];
+                                                      arr[idx] = { ...arr[idx], text: e.target.value };
+                                                      setSections((s: any) => ({
+                                                        ...s,
+                                                        countryPages: {
+                                                          ...(s.countryPages || {}),
+                                                          [countrySlug]: {
+                                                            ...(s.countryPages?.[countrySlug] || {}),
+                                                            infoCards: arr
+                                                          }
                                                         }
-                                                      }
-                                                    }));
-                                                  }}
-                                                />
+                                                      }));
+                                                    }}
+                                                  />
+                                                </div>
+                                              </div>
+                                              
+                                              {/* Card Footer */}
+                                              <div className="mt-6 pt-4 border-t border-gray-100">
+                                                <div className="text-xs text-gray-500 text-center">
+                                                  This card will appear in the "Why Choose Local Builders" section
+                                                </div>
                                               </div>
                                             </div>
+                                            
+                                            {/* Hover Effect Overlay */}
+                                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                                           </div>
                                         ))}
+                                      </div>
+                                      
+                                      {/* Add/Remove Cards Controls */}
+                                      <div className="mt-8 flex justify-center">
+                                        <div className="bg-white rounded-xl p-4 shadow-md border border-gray-200">
+                                          <div className="text-sm text-gray-600 text-center mb-3">
+                                            Info cards are automatically managed - you can edit the content above
+                                          </div>
+                                          <div className="flex gap-2 justify-center">
+                                            <Button 
+                                              type="button" 
+                                              variant="outline" 
+                                              size="sm"
+                                              className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                                              onClick={() => {
+                                                // Reset cards to default content
+                                                const defaultCards = [
+                                                  {
+                                                    title: "Local Market Knowledge",
+                                                    text: `Understand local regulations, venue requirements, and cultural preferences specific to ${countrySlug}.`
+                                                  },
+                                                  {
+                                                    title: "Faster Project Delivery",
+                                                    text: "Reduced logistics time, easier coordination, and faster response times for urgent modifications or support."
+                                                  },
+                                                  {
+                                                    title: "Cost-Effective Solutions",
+                                                    text: "Lower transportation costs, established supplier networks, and competitive local pricing structures."
+                                                  }
+                                                ];
+                                                setSections((s: any) => ({
+                                                  ...s,
+                                                  countryPages: {
+                                                    ...(s.countryPages || {}),
+                                                    [countrySlug]: {
+                                                      ...(s.countryPages?.[countrySlug] || {}),
+                                                      infoCards: defaultCards
+                                                    }
+                                                  }
+                                                }));
+                                              }}
+                                            >
+                                              Reset to Default
+                                            </Button>
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
                                     </div>

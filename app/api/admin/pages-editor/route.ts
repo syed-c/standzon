@@ -167,17 +167,32 @@ export async function GET(request: NextRequest) {
     try {
       const sb = getServerSupabase();
       if (sb) {
+        console.log('🔍 API Debug - Fetching from Supabase for pageId:', pageId);
         const { data, error } = await sb
           .from('page_contents')
           .select('content')
           .eq('id', pageId)
           .single();
+        
+        if (error) {
+          console.log('❌ Supabase error:', error);
+          return NextResponse.json(
+            { success: false, data: null, error: error.message },
+            { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'supabase', 'x-sb-present': 'true' } }
+          );
+        }
+        
+        console.log('✅ Supabase data retrieved:', JSON.stringify(data?.content, null, 2));
+        console.log('🏳️ Country pages in retrieved data:', data?.content?.sections?.countryPages);
+        
         return NextResponse.json(
-          { success: !error, data: data?.content || null, error: error?.message },
+          { success: true, data: data?.content || null, error: null },
           { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'supabase', 'x-sb-present': 'true' } }
         );
       }
-    } catch {}
+    } catch (e) {
+      console.log('❌ Supabase fetch error:', e);
+    }
 
     const fileMap = await readAllPageContentsFromFile();
     const content = fileMap[pageId] || storageAPI.getPageContent(pageId);
@@ -299,15 +314,25 @@ export async function PUT(request: NextRequest) {
     try {
       const sb = getServerSupabase();
       if (sb) {
+        console.log('💾 Saving to Supabase - pageId:', pageId);
+        console.log('💾 Saving to Supabase - content structure:', JSON.stringify(updated, null, 2));
+        console.log('💾 Saving to Supabase - sections structure:', JSON.stringify((updated as any).sections, null, 2));
+        
         const { error } = await sb
           .from('page_contents')
           .upsert({ id: pageId, path, content: updated, updated_at: new Date().toISOString() });
-        if (!error) savedToSupabase = true;
-        if (error) {
+        
+        if (!error) {
+          savedToSupabase = true;
+          console.log('✅ Successfully saved to Supabase');
+        } else {
+          console.log('❌ Supabase save error:', error);
           return NextResponse.json({ success: false, error: error.message }, { status: 500 });
         }
       }
-    } catch {}
+    } catch (e) {
+      console.log('❌ Supabase save exception:', e);
+    }
 
     if (!savedToSupabase) {
       storageAPI.savePageContent(pageId, updated);
