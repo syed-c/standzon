@@ -2,12 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Palette,
   Lightbulb,
   Target,
   Layers,
   ArrowRight,
+  CheckCircle,
 } from "lucide-react";
 import Link from "next/link";
 import Navigation from "@/components/Navigation";
@@ -165,6 +167,60 @@ export default function CustomBoothPageContent() {
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               {saved?.sections?.customDesignServices?.paragraph || "Comprehensive custom booth solutions for every need"}
             </p>
+          </div>
+
+          {/* Service Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {(saved?.sections?.customDesignServices?.serviceCards || []).map((card: any, index: number) => (
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6 relative"
+              >
+                {card.badge && (
+                  <Badge className="absolute -top-2 -right-2 bg-purple-500 text-white">
+                    {card.badge}
+                  </Badge>
+                )}
+                <div className="mb-4">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {card.title || `Service ${index + 1}`}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    {card.description || "Service description"}
+                  </p>
+                </div>
+                
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm text-gray-500">
+                      {card.startingFrom || "Starting from"}
+                    </span>
+                    <span className="font-semibold text-purple-600">
+                      {card.price || "$0"}
+                    </span>
+                  </div>
+                  
+                  <ul className="space-y-2">
+                    {(card.features || []).map((feature: string, idx: number) => (
+                      <li
+                        key={idx}
+                        className="flex items-center text-sm text-gray-600"
+                      >
+                        <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <Link href={card.buttonLink || "/quote"}>
+                  <Button className="w-full" variant="outline">
+                    {card.buttonText || "Get Quote"}
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            ))}
           </div>
         </section>
 

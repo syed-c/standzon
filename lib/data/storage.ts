@@ -62,7 +62,20 @@ export interface PageContent {
     // Custom Booth specific sections
     whyChooseCustom?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
     designProcess?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
-    customDesignServices?: { heading?: string; paragraph?: string };
+    customDesignServices?: { 
+      heading?: string; 
+      paragraph?: string; 
+      serviceCards?: Array<{
+        title?: string;
+        description?: string;
+        startingFrom?: string;
+        price?: string;
+        features?: string[];
+        buttonText?: string;
+        buttonLink?: string;
+        badge?: string;
+      }>;
+    };
     customBoothCta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
     [key: string]: any;
   };

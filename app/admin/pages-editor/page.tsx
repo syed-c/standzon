@@ -104,7 +104,42 @@ export default function AdminPagesEditor() {
             { heading: 'Production & Install', paragraph: 'Expert construction and professional installation at your venue' }
           ]
         },
-        customDesignServices: { heading: 'Custom Design Services', paragraph: 'Comprehensive custom booth solutions for every need' },
+        customDesignServices: { 
+          heading: 'Custom Design Services', 
+          paragraph: 'Comprehensive custom booth solutions for every need',
+          serviceCards: [
+            {
+              title: 'Concept Development',
+              description: 'Initial design concepts based on your brief and objectives',
+              startingFrom: 'Starting from',
+              price: '$2,000',
+              features: ['Brand analysis', '3D visualization', 'Space planning', 'Material selection'],
+              buttonText: 'Get Quote',
+              buttonLink: '/quote',
+              badge: ''
+            },
+            {
+              title: 'Full Custom Design',
+              description: 'Complete custom booth design with all elements',
+              startingFrom: 'Starting from',
+              price: '$15,000',
+              features: ['Unique architecture', 'Custom graphics', 'Interactive elements', 'Lighting design'],
+              buttonText: 'Get Quote',
+              buttonLink: '/quote',
+              badge: 'Most Popular'
+            },
+            {
+              title: 'Modular Custom',
+              description: 'Custom-designed modular systems for flexibility',
+              startingFrom: 'Starting from',
+              price: '$8,000',
+              features: ['Reusable components', 'Multiple configurations', 'Easy transport', 'Cost-effective'],
+              buttonText: 'Get Quote',
+              buttonLink: '/quote',
+              badge: ''
+            }
+          ]
+        },
         customBoothCta: { 
           heading: 'Ready to Create Your Custom Booth?', 
           paragraph: 'Connect with expert designers who understand your industry and objectives', 
@@ -660,6 +695,238 @@ export default function AdminPagesEditor() {
                             <Input value={sections.customDesignServices?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, customDesignServices:{ ...(s.customDesignServices||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.customDesignServices?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, customDesignServices:{ ...(s.customDesignServices||{}), paragraph:e.target.value } }))} />
+                            
+                            <div className="mt-4">
+                              <h5 className="font-semibold mb-3">Service Cards</h5>
+                              {(sections.customDesignServices?.serviceCards || []).map((card: any, idx: number) => (
+                                <div key={idx} className="border rounded p-4 mb-3 bg-gray-50">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <h6 className="font-medium">Card {idx + 1}</h6>
+                                    <Button 
+                                      type="button" 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => {
+                                        const arr = [...(sections.customDesignServices?.serviceCards || [])];
+                                        arr.splice(idx, 1);
+                                        setSections((s: any) => ({ 
+                                          ...s, 
+                                          customDesignServices: { 
+                                            ...(s.customDesignServices || {}), 
+                                            serviceCards: arr 
+                                          } 
+                                        }));
+                                      }}
+                                    >
+                                      Remove
+                                    </Button>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                      <Label>Card Title</Label>
+                                      <Input 
+                                        value={card.title || ''} 
+                                        onChange={(e) => {
+                                          const arr = [...(sections.customDesignServices?.serviceCards || [])];
+                                          arr[idx] = { ...arr[idx], title: e.target.value };
+                                          setSections((s: any) => ({ 
+                                            ...s, 
+                                            customDesignServices: { 
+                                              ...(s.customDesignServices || {}), 
+                                              serviceCards: arr 
+                                            } 
+                                          }));
+                                        }} 
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label>Badge (optional)</Label>
+                                      <Input 
+                                        value={card.badge || ''} 
+                                        placeholder="e.g., Most Popular"
+                                        onChange={(e) => {
+                                          const arr = [...(sections.customDesignServices?.serviceCards || [])];
+                                          arr[idx] = { ...arr[idx], badge: e.target.value };
+                                          setSections((s: any) => ({ 
+                                            ...s, 
+                                            customDesignServices: { 
+                                              ...(s.customDesignServices || {}), 
+                                              serviceCards: arr 
+                                            } 
+                                          }));
+                                        }} 
+                                      />
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="mt-3">
+                                    <Label>Card Description</Label>
+                                    <Textarea 
+                                      rows={2} 
+                                      value={card.description || ''} 
+                                      onChange={(e) => {
+                                        const arr = [...(sections.customDesignServices?.serviceCards || [])];
+                                        arr[idx] = { ...arr[idx], description: e.target.value };
+                                        setSections((s: any) => ({ 
+                                          ...s, 
+                                          customDesignServices: { 
+                                            ...(s.customDesignServices || {}), 
+                                            serviceCards: arr 
+                                          } 
+                                        }));
+                                      }} 
+                                    />
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                    <div>
+                                      <Label>Starting From Text</Label>
+                                      <Input 
+                                        value={card.startingFrom || ''} 
+                                        placeholder="Starting from"
+                                        onChange={(e) => {
+                                          const arr = [...(sections.customDesignServices?.serviceCards || [])];
+                                          arr[idx] = { ...arr[idx], startingFrom: e.target.value };
+                                          setSections((s: any) => ({ 
+                                            ...s, 
+                                            customDesignServices: { 
+                                              ...(s.customDesignServices || {}), 
+                                              serviceCards: arr 
+                                            } 
+                                          }));
+                                        }} 
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label>Price</Label>
+                                      <Input 
+                                        value={card.price || ''} 
+                                        placeholder="e.g., $2,000"
+                                        onChange={(e) => {
+                                          const arr = [...(sections.customDesignServices?.serviceCards || [])];
+                                          arr[idx] = { ...arr[idx], price: e.target.value };
+                                          setSections((s: any) => ({ 
+                                            ...s, 
+                                            customDesignServices: { 
+                                              ...(s.customDesignServices || {}), 
+                                              serviceCards: arr 
+                                            } 
+                                          }));
+                                        }} 
+                                      />
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="mt-3">
+                                    <Label>Features (one per line)</Label>
+                                    <Textarea 
+                                      rows={3} 
+                                      value={(card.features || []).join('\n')} 
+                                      placeholder="Brand analysis&#10;3D visualization&#10;Space planning&#10;Material selection"
+                                      onChange={(e) => {
+                                        const features = e.target.value.split('\n').filter(f => f.trim());
+                                        const arr = [...(sections.customDesignServices?.serviceCards || [])];
+                                        arr[idx] = { ...arr[idx], features };
+                                        setSections((s: any) => ({ 
+                                          ...s, 
+                                          customDesignServices: { 
+                                            ...(s.customDesignServices || {}), 
+                                            serviceCards: arr 
+                                          } 
+                                        }));
+                                      }} 
+                                    />
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                    <div>
+                                      <Label>Button Text</Label>
+                                      <Input 
+                                        value={card.buttonText || ''} 
+                                        placeholder="Get Quote"
+                                        onChange={(e) => {
+                                          const arr = [...(sections.customDesignServices?.serviceCards || [])];
+                                          arr[idx] = { ...arr[idx], buttonText: e.target.value };
+                                          setSections((s: any) => ({ 
+                                            ...s, 
+                                            customDesignServices: { 
+                                              ...(s.customDesignServices || {}), 
+                                              serviceCards: arr 
+                                            } 
+                                          }));
+                                        }} 
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label>Button Link</Label>
+                                      <Input 
+                                        value={card.buttonLink || ''} 
+                                        placeholder="/quote"
+                                        onChange={(e) => {
+                                          const arr = [...(sections.customDesignServices?.serviceCards || [])];
+                                          arr[idx] = { ...arr[idx], buttonLink: e.target.value };
+                                          setSections((s: any) => ({ 
+                                            ...s, 
+                                            customDesignServices: { 
+                                              ...(s.customDesignServices || {}), 
+                                              serviceCards: arr 
+                                            } 
+                                          }));
+                                        }} 
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              
+                              <div className="flex gap-2 mt-3">
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  onClick={() => {
+                                    const newCard = {
+                                      title: '',
+                                      description: '',
+                                      startingFrom: 'Starting from',
+                                      price: '',
+                                      features: [],
+                                      buttonText: 'Get Quote',
+                                      buttonLink: '/quote',
+                                      badge: ''
+                                    };
+                                    setSections((s: any) => ({ 
+                                      ...s, 
+                                      customDesignServices: { 
+                                        ...(s.customDesignServices || {}), 
+                                        serviceCards: [...(s.customDesignServices?.serviceCards || []), newCard] 
+                                      } 
+                                    }));
+                                  }}
+                                >
+                                  Add Service Card
+                                </Button>
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  onClick={() => {
+                                    const arr = [...(sections.customDesignServices?.serviceCards || [])];
+                                    if (arr.length > 0) {
+                                      arr.splice(-1, 1);
+                                      setSections((s: any) => ({ 
+                                        ...s, 
+                                        customDesignServices: { 
+                                          ...(s.customDesignServices || {}), 
+                                          serviceCards: arr 
+                                        } 
+                                      }));
+                                    }
+                                  }}
+                                >
+                                  Remove Last Card
+                                </Button>
+                              </div>
+                            </div>
                           </div>
                         </AccordionContent>
                       </AccordionItem>
