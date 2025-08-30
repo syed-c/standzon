@@ -188,11 +188,11 @@ export default function BulkBuilderImporter() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="text-center p-4 border rounded-lg">
-              <div className="text-3xl font-bold text-blue-600">{importStatus.totalBuilders}</div>
+              <div className="text-3xl font-bold text-claret-600">{importStatus.totalBuilders}</div>
               <div className="text-sm text-gray-600">Total Builders</div>
             </div>
             <div className="text-center p-4 border rounded-lg">
-              <div className="text-3xl font-bold text-green-600">{importStatus.totalImported}</div>
+              <div className="text-3xl font-bold text-claret-600">{importStatus.totalImported}</div>
               <div className="text-sm text-gray-600">GMB Imported</div>
             </div>
             <div className="text-center p-4 border rounded-lg">
@@ -275,12 +275,12 @@ export default function BulkBuilderImporter() {
           </div>
 
           {importMode === 'all' && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-center gap-2 text-blue-800 mb-2">
+            <div className="bg-claret-50 border border-claret-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 text-claret-800 mb-2">
                 <CheckCircle className="h-4 w-4" />
                 <span className="font-medium">Recommended: Import All Countries</span>
               </div>
-              <p className="text-sm text-blue-700">
+              <p className="text-sm text-claret-700">
                 This will import builders for all supported countries: United States (25 builders), 
                 United Arab Emirates (15 builders), United Kingdom (20 builders), and Australia (25 builders).
                 Total: <strong>85 new builders</strong>
@@ -362,16 +362,16 @@ export default function BulkBuilderImporter() {
           {importResult && (
             <div className={`p-4 rounded-lg border ${
               importResult.success 
-                ? 'bg-green-50 border-green-200' 
+                ? 'bg-claret-50 border-claret-200' 
                 : 'bg-red-50 border-red-200'
             }`}>
               {importResult.success ? (
                 <div>
-                  <div className="flex items-center gap-2 text-green-800 font-medium mb-2">
+                  <div className="flex items-center gap-2 text-claret-800 font-medium mb-2">
                     <CheckCircle className="h-4 w-4" />
                     Import Successful!
                   </div>
-                  <div className="text-sm text-green-700 space-y-1">
+                  <div className="text-sm text-claret-700 space-y-1">
                     <p>✅ Imported: {importResult.data?.imported} new builders</p>
                     <p>📊 Total builders now: {importResult.data?.totalBuilders}</p>
                     {importResult.data?.duplicatesSkipped > 0 && (

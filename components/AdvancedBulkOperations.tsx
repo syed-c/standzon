@@ -91,7 +91,7 @@ export default function AdvancedBulkOperations({
       name: 'Approve Builders',
       description: 'Bulk approve selected builders for verification',
       icon: CheckCircle,
-      color: 'text-green-600',
+      color: 'text-russian-violet-600',
       requiresSettings: false,
       supportedTypes: ['builder']
     },
@@ -109,7 +109,7 @@ export default function AdvancedBulkOperations({
       name: 'Update Status',
       description: 'Change status for multiple items',
       icon: Edit,
-      color: 'text-blue-600',
+              color: 'text-russian-violet-600',
       requiresSettings: true,
       supportedTypes: ['builder', 'lead', 'exhibition']
     },
@@ -127,7 +127,7 @@ export default function AdvancedBulkOperations({
       name: 'Send Notifications',
       description: 'Send bulk email notifications',
       icon: Mail,
-      color: 'text-orange-600',
+      color: 'text-claret-600',
       requiresSettings: true,
       supportedTypes: ['builder', 'lead']
     },
@@ -280,8 +280,8 @@ export default function AdvancedBulkOperations({
 
   const getOperationStatusColor = (status: BulkOperation['status']) => {
     switch (status) {
-      case 'running': return 'text-blue-600 bg-blue-50';
-      case 'completed': return 'text-green-600 bg-green-50';
+      case 'running': return 'text-russian-violet-600 bg-russian-violet-50';
+      case 'completed': return 'text-claret-600 bg-claret-50';
       case 'error': return 'text-red-600 bg-red-50';
       case 'paused': return 'text-yellow-600 bg-yellow-50';
       default: return 'text-gray-600 bg-gray-50';
@@ -294,10 +294,10 @@ export default function AdvancedBulkOperations({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-blue-600" />
+            <Zap className="h-5 w-5 text-russian-violet-600" />
             <span>Advanced Bulk Operations</span>
             {selectedItems.length > 0 && (
-              <Badge className="bg-blue-100 text-blue-800">
+              <Badge className="bg-russian-violet-100 text-russian-violet-800">
                 {selectedItems.length} selected
               </Badge>
             )}
@@ -305,13 +305,13 @@ export default function AdvancedBulkOperations({
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <h3 className="text-2xl font-bold text-blue-600">{selectedItems.length}</h3>
-              <p className="text-sm text-blue-600">Selected Items</p>
+            <div className="text-center p-4 bg-russian-violet-50 rounded-lg">
+              <h3 className="text-2xl font-bold text-russian-violet-600">{selectedItems.length}</h3>
+              <p className="text-sm text-russian-violet-600">Selected Items</p>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <h3 className="text-2xl font-bold text-green-600">{availableItems.length}</h3>
-              <p className="text-sm text-green-600">Available Items</p>
+            <div className="text-center p-4 bg-claret-50 rounded-lg">
+              <h3 className="text-2xl font-bold text-claret-600">{availableItems.length}</h3>
+              <p className="text-sm text-claret-600">Available Items</p>
             </div>
             <div className="text-center p-4 bg-purple-50 rounded-lg">
               <h3 className="text-2xl font-bold text-purple-600">{operationHistory.length}</h3>
@@ -381,7 +381,7 @@ export default function AdvancedBulkOperations({
                     <Textarea
                       placeholder="Enter reason for rejection..."
                       value={operationSettings.reason || ''}
-                      onChange={(e) => setOperationSettings(prev => ({ ...prev, reason: e.target.value }))}
+                      onChange={(e) => setOperationSettings((prev: any) => ({ ...prev, reason: e.target.value }))}
                     />
                   </div>
                 )}
@@ -391,7 +391,7 @@ export default function AdvancedBulkOperations({
                     <Label>New Status</Label>
                     <Select 
                       value={operationSettings.status || ''}
-                      onValueChange={(value) => setOperationSettings(prev => ({ ...prev, status: value }))}
+                      onValueChange={(value) => setOperationSettings((prev: any) => ({ ...prev, status: value }))}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
@@ -413,7 +413,7 @@ export default function AdvancedBulkOperations({
                     <Input
                       placeholder="premium, verified, featured"
                       value={operationSettings.tags || ''}
-                      onChange={(e) => setOperationSettings(prev => ({ ...prev, tags: e.target.value }))}
+                      onChange={(e) => setOperationSettings((prev: any) => ({ ...prev, tags: e.target.value }))}
                     />
                   </div>
                 )}
@@ -424,7 +424,7 @@ export default function AdvancedBulkOperations({
                       <Label>Email Template</Label>
                       <Select 
                         value={operationSettings.template || ''}
-                        onValueChange={(value) => setOperationSettings(prev => ({ ...prev, template: value }))}
+                        onValueChange={(value) => setOperationSettings((prev: any) => ({ ...prev, template: value }))}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select template" />
@@ -442,7 +442,7 @@ export default function AdvancedBulkOperations({
                       <Textarea
                         placeholder="Optional custom message..."
                         value={operationSettings.message || ''}
-                        onChange={(e) => setOperationSettings(prev => ({ ...prev, message: e.target.value }))}
+                        onChange={(e) => setOperationSettings((prev: any) => ({ ...prev, message: e.target.value }))}
                       />
                     </div>
                   </div>
@@ -473,8 +473,8 @@ export default function AdvancedBulkOperations({
                     selectedItems.map(item => (
                       <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-3">
-                          {item.type === 'builder' && <Building className="h-4 w-4 text-blue-600" />}
-                          {item.type === 'lead' && <Users className="h-4 w-4 text-green-600" />}
+                          {item.type === 'builder' && <Building className="h-4 w-4 text-russian-violet-600" />}
+                          {item.type === 'lead' && <Users className="h-4 h-4 text-claret-600" />}
                           {item.type === 'exhibition' && <Calendar className="h-4 w-4 text-purple-600" />}
                           <div>
                             <p className="font-medium text-sm">{item.name}</p>
@@ -597,7 +597,7 @@ export default function AdvancedBulkOperations({
                 
                 <div className="grid grid-cols-4 gap-4 text-center">
                   <div>
-                    <p className="text-2xl font-bold text-blue-600">{activeOperation.totalItems}</p>
+                    <p className="text-2xl font-bold text-russian-violet-600">{activeOperation.totalItems}</p>
                     <p className="text-xs text-gray-600">Total</p>
                   </div>
                   <div>
@@ -605,7 +605,7 @@ export default function AdvancedBulkOperations({
                     <p className="text-xs text-gray-600">Processed</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-green-600">{activeOperation.successItems}</p>
+                    <p className="text-2xl font-bold text-claret-600">{activeOperation.successItems}</p>
                     <p className="text-xs text-gray-600">Success</p>
                   </div>
                   <div>
@@ -620,7 +620,7 @@ export default function AdvancedBulkOperations({
                     {activeOperation.logs.slice(-10).map((log, index) => (
                       <div key={index} className={`p-2 rounded text-xs ${
                         log.level === 'error' ? 'bg-red-50 text-red-700' :
-                        log.level === 'success' ? 'bg-green-50 text-green-700' :
+                        log.level === 'success' ? 'bg-claret-50 text-claret-700' :
                         log.level === 'warning' ? 'bg-yellow-50 text-yellow-700' :
                         'bg-gray-50 text-gray-700'
                       }`}>
@@ -671,7 +671,7 @@ export default function AdvancedBulkOperations({
                           <p className="text-gray-500">Total</p>
                         </div>
                         <div>
-                          <p className="font-semibold text-green-600">{operation.successItems}</p>
+                          <p className="font-semibold text-claret-600">{operation.successItems}</p>
                           <p className="text-gray-500">Success</p>
                         </div>
                         <div>

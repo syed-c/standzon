@@ -12,7 +12,7 @@ import {
   Target, 
   CreditCard, 
   Bell, 
-  Sync,
+  RefreshCw,
   Users,
   MapPin,
   Star,
@@ -25,7 +25,8 @@ import {
   Zap,
   Shield,
   Crown,
-  Settings
+  Settings,
+  User
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -219,7 +220,7 @@ export default function ComprehensiveBuilderFlow({
 
   const getStatusIcon = (status: boolean) => {
     return status ? (
-      <CheckCircle2 className="h-5 w-5 text-green-500" />
+      <CheckCircle2 className="h-5 w-5 text-claret-500" />
     ) : (
       <AlertCircle className="h-5 w-5 text-orange-500" />
     );
@@ -229,7 +230,7 @@ export default function ComprehensiveBuilderFlow({
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-russian-violet-600 mx-auto"></div>
           <p className="mt-4 text-gray-500">Loading builder flow status...</p>
         </div>
       </div>
@@ -241,12 +242,12 @@ export default function ComprehensiveBuilderFlow({
   return (
     <div className="space-y-6" data-macaly="comprehensive-builder-flow">
       {/* Flow Status Overview */}
-      <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+      <Card className="bg-gradient-to-r from-russian-violet-50 to-purple-50 border-russian-violet-200">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center space-x-2">
-                <Shield className="h-6 w-6 text-blue-600" />
+                <Shield className="h-6 w-6 text-russian-violet-600" />
                 <span>Builder Flow Status</span>
               </CardTitle>
               <CardDescription>
@@ -254,7 +255,7 @@ export default function ComprehensiveBuilderFlow({
               </CardDescription>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold text-blue-600">{completionPercentage}%</div>
+              <div className="text-3xl font-bold text-russian-violet-600">{completionPercentage}%</div>
               <div className="text-sm text-gray-500">Complete</div>
             </div>
           </div>
@@ -262,7 +263,7 @@ export default function ComprehensiveBuilderFlow({
         <CardContent>
           <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
             <div 
-              className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+              className="bg-gradient-to-r from-russian-violet-500 to-purple-500 h-3 rounded-full transition-all duration-500"
               style={{ width: `${completionPercentage}%` }}
             ></div>
           </div>
@@ -379,7 +380,7 @@ export default function ComprehensiveBuilderFlow({
 
         <TabsContent value="leads" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+            <Card className="bg-gradient-to-r from-russian-violet-500 to-russian-violet-600 text-white">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -433,7 +434,7 @@ export default function ComprehensiveBuilderFlow({
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center space-x-3">
-                    <Target className="h-5 w-5 text-blue-500" />
+                    <Target className="h-5 w-5 text-russian-violet-500" />
                     <span>Automated Lead Routing</span>
                   </div>
                   <Badge variant={flowStatus.leadsReceiving ? 'default' : 'secondary'}>
@@ -443,7 +444,7 @@ export default function ComprehensiveBuilderFlow({
                 
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center space-x-3">
-                    <Bell className="h-5 w-5 text-green-500" />
+                    <Bell className="h-5 w-5 text-claret-500" />
                     <span>Real-time Notifications</span>
                   </div>
                   <Badge variant={flowStatus.notificationsWorking ? 'default' : 'secondary'}>
@@ -453,7 +454,7 @@ export default function ComprehensiveBuilderFlow({
                 
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center space-x-3">
-                    <Sync className="h-5 w-5 text-purple-500" />
+                    <RefreshCw className="h-5 w-5 text-purple-500" />
                     <span>Profile Deduplication</span>
                   </div>
                   <Badge variant="default">Active</Badge>
@@ -511,7 +512,7 @@ export default function ComprehensiveBuilderFlow({
                   className="justify-start"
                 >
                   {testingFeature === 'lead_routing' ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-russian-violet-600 mr-2"></div>
                   ) : (
                     <Target className="h-4 w-4 mr-2" />
                   )}
@@ -525,9 +526,9 @@ export default function ComprehensiveBuilderFlow({
                   className="justify-start"
                 >
                   {testingFeature === 'profile_sync' ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-russian-violet-600 mr-2"></div>
                   ) : (
-                    <Sync className="h-4 w-4 mr-2" />
+                    <RefreshCw className="h-4 w-4 mr-2" />
                   )}
                   Test Profile Sync
                 </Button>
@@ -539,7 +540,7 @@ export default function ComprehensiveBuilderFlow({
                   className="justify-start"
                 >
                   {testingFeature === 'notifications' ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-russian-violet-600 mr-2"></div>
                   ) : (
                     <Bell className="h-4 w-4 mr-2" />
                   )}
@@ -553,7 +554,7 @@ export default function ComprehensiveBuilderFlow({
                   className="justify-start"
                 >
                   {testingFeature === 'subscription_upgrade' ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-russian-violet-600 mr-2"></div>
                   ) : (
                     <CreditCard className="h-4 w-4 mr-2" />
                   )}

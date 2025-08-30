@@ -106,7 +106,7 @@ export default function Phase2ShowcasePage() {
             Explore the advanced features and enhancements delivered in Phase 2 of the Exhibition Platform Intelligence Center.
           </p>
           <div className="flex items-center justify-center gap-4">
-            <Badge className="bg-green-100 text-green-800 px-4 py-2">
+            <Badge className="bg-claret-100 text-claret-800 px-4 py-2">
               ✅ Enhanced Filtering & Search
             </Badge>
             <Badge className="bg-blue-100 text-blue-800 px-4 py-2">
@@ -128,18 +128,18 @@ export default function Phase2ShowcasePage() {
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${
-                    feature.status === 'complete' ? 'bg-green-100' :
+                    feature.status === 'complete' ? 'bg-claret-100' :
                     feature.status === 'enhanced' ? 'bg-blue-100' : 'bg-gray-100'
                   }`}>
                     <feature.icon className={`w-5 h-5 ${
-                      feature.status === 'complete' ? 'text-green-600' :
+                      feature.status === 'complete' ? 'text-claret-600' :
                       feature.status === 'enhanced' ? 'text-blue-600' : 'text-gray-600'
                     }`} />
                   </div>
                   <div>
                     <CardTitle className="text-lg">{feature.title}</CardTitle>
                     <Badge className={`text-xs ${
-                      feature.status === 'complete' ? 'bg-green-100 text-green-800' :
+                      feature.status === 'complete' ? 'bg-claret-100 text-claret-800' :
                       feature.status === 'enhanced' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
                     }`}>
                       {feature.status === 'complete' ? 'Complete' : 
@@ -155,7 +155,7 @@ export default function Phase2ShowcasePage() {
                   <ul className="space-y-1">
                     {feature.highlights.map((highlight, i) => (
                       <li key={i} className="flex items-center gap-2 text-xs text-gray-600">
-                        <CheckCircle className="w-3 h-3 text-green-500" />
+                        <CheckCircle className="w-3 h-3 text-claret-500" />
                         {highlight}
                       </li>
                     ))}
@@ -269,9 +269,9 @@ export default function Phase2ShowcasePage() {
         </Tabs>
 
         {/* Implementation Summary */}
-        <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+        <Card className="bg-gradient-to-r from-claret-50 to-blue-50 border-claret-200">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-green-800">
+            <CardTitle className="flex items-center gap-2 text-claret-800">
               <CheckCircle className="w-6 h-6" />
               Phase 2 Implementation Summary
             </CardTitle>
@@ -279,8 +279,8 @@ export default function Phase2ShowcasePage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h4 className="font-semibold text-green-800 mb-3">✅ Completed Features</h4>
-                <ul className="space-y-2 text-sm text-green-700">
+                <h4 className="font-semibold text-claret-800 mb-3">✅ Completed Features</h4>
+                <ul className="space-y-2 text-sm text-claret-700">
                   <li>• Enhanced filtering with real-time search and smart suggestions</li>
                   <li>• Advanced bulk operations with progress tracking and error handling</li>
                   <li>• Real-time notification system with categorization and priorities</li>
@@ -301,7 +301,7 @@ export default function Phase2ShowcasePage() {
                 </ul>
               </div>
             </div>
-            <div className="mt-6 p-4 bg-white rounded-lg border border-green-200">
+            <div className="mt-6 p-4 bg-white rounded-lg border border-claret-200">
               <p className="text-sm text-gray-600">
                 <strong>Phase 2 Status:</strong> Successfully completed all major objectives including enhanced filtering, 
                 advanced bulk operations, real-time notifications, comprehensive analytics, and mobile responsiveness. 

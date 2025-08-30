@@ -273,7 +273,7 @@ export default function CustomBoothPageContent() {
 
                 <Link href={card.buttonLink || "/quote"}>
                   <Button 
-                    className="w-full bg-white text-purple-600 border-2 border-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300 font-semibold py-3 rounded-lg" 
+                    className="w-full bg-white text-claret border-2 border-claret hover:bg-claret hover:text-white transition-all duration-300 font-semibold py-3 rounded-lg" 
                     variant="outline"
                   >
                     {card.buttonText || "Get Quote"}
@@ -286,7 +286,7 @@ export default function CustomBoothPageContent() {
         </section>
 
         {/* Final CTA Section */}
-        <section className="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-2xl p-8 md:p-12 text-white text-center">
+        <section className="bg-gradient-to-r from-claret to-russian-violet rounded-2xl p-8 md:p-12 text-white text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             {saved?.sections?.customBoothCta?.heading || "Ready to Create Your Custom Booth?"}
           </h2>
@@ -298,7 +298,7 @@ export default function CustomBoothPageContent() {
               <Link key={index} href={button.href || "/quote"}>
                 <Button
                   size="lg"
-                  className={index === 0 ? "bg-white text-purple-600 hover:bg-gray-100" : "border-white text-white hover:bg-white hover:text-purple-600"}
+                  className={index === 0 ? "bg-white text-claret hover:bg-gray-100" : "border-white text-white hover:bg-white hover:text-claret"}
                   variant={index === 0 ? "default" : "outline"}
                 >
                   {button.text || "Get Started"}

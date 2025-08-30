@@ -257,10 +257,10 @@ export default function ExhibitionStandsContent() {
                           {country.code}
                         </div>
                         <div>
-                          <CardTitle className={`text-lg ${isActive ? 'text-gray-900' : 'text-gray-600'}`}>
+                          <CardTitle className={`text-lg ${isActive ? 'text-location-highlight' : 'text-gray-600'}`}>
                             {country.name}
                           </CardTitle>
-                          <p className="text-sm text-gray-500 flex items-center">
+                          <p className="text-sm text-location-highlight flex items-center">
                             <MapPin className="h-3 w-3 mr-1" />
                             {country.continent}
                           </p>
@@ -318,7 +318,7 @@ export default function ExhibitionStandsContent() {
                               isActive ? 'bg-blue-50 hover:bg-blue-100' : 'bg-gray-50 hover:bg-gray-100'
                             }`}>
                               <Building className="h-3 w-3 text-gray-400" />
-                              <span className="text-sm text-gray-700">{city}</span>
+                              <span className="text-sm text-location-highlight">{city}</span>
                             </div>
                           ))}
                           {country.cities.length > 8 && (

@@ -68,7 +68,7 @@ export default function PlatformPage() {
             onClick={() => setActiveTab('builder')}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               activeTab === 'builder' 
-                ? 'bg-green-600 text-white' 
+                ? 'bg-claret-600 text-white' 
                 : 'bg-white/10 text-gray-300 hover:bg-white/20'
             }`}
           >
@@ -93,15 +93,15 @@ export default function PlatformPage() {
               <CardContent className="text-gray-300">
                 <ul className="space-y-2">
                   <li className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+                    <CheckCircle className="w-4 h-4 mr-2 text-claret-400" />
                     Revenue tracking & trends
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+                    <CheckCircle className="w-4 h-4 mr-2 text-claret-400" />
                     User activity monitoring
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+                    <CheckCircle className="w-4 h-4 mr-2 text-claret-400" />
                     Geographic performance
                   </li>
                 </ul>
@@ -121,15 +121,15 @@ export default function PlatformPage() {
               <CardContent className="text-gray-300">
                 <ul className="space-y-2">
                   <li className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+                    <CheckCircle className="w-4 h-4 mr-2 text-claret-400" />
                     Builder verification
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+                    <CheckCircle className="w-4 h-4 mr-2 text-claret-400" />
                     Account approval workflow
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+                    <CheckCircle className="w-4 h-4 mr-2 text-claret-400" />
                     Suspension & moderation
                   </li>
                 </ul>
@@ -149,15 +149,15 @@ export default function PlatformPage() {
               <CardContent className="text-gray-300">
                 <ul className="space-y-2">
                   <li className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+                    <CheckCircle className="w-4 h-4 mr-2 text-claret-400" />
                     Content management
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+                    <CheckCircle className="w-4 h-4 mr-2 text-claret-400" />
                     System configuration
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
+                    <CheckCircle className="w-4 h-4 mr-2 text-claret-400" />
                     Feature toggles
                   </li>
                 </ul>

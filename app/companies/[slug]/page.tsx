@@ -115,25 +115,25 @@ export default async function CompanyProfile({ params }: Props) {
       <Navigation />
       
       {/* Company Header */}
-      <section className="pt-20 pb-12 bg-gradient-to-br from-navy-900 via-navy-800 to-blue-dark text-white">
+      <section className="pt-20 pb-12 bg-gradient-to-br from-russian-violet-900 via-dark-purple-800 to-russian-violet-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-16 h-16 bg-blue-primary rounded-lg flex items-center justify-center">
+                <div className="w-16 h-16 bg-russian-violet-500 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-xl">
                     {company.name.split(' ').map((word: string) => word[0]).join('').substring(0, 2)}
                   </span>
                 </div>
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold">{company.name}</h1>
-                  <p className="text-blue-primary font-medium">{company.tagline}</p>
+                  <p className="text-russian-violet-500 font-medium">{company.tagline}</p>
                 </div>
               </div>
               
               <div className="flex items-center space-x-2 mb-4">
-                <FiMapPin className="text-blue-primary" />
-                <span>{company.location}</span>
+                <FiMapPin className="text-location-highlight" />
+                <span className="text-location-highlight">{company.location}</span>
               </div>
 
               <div className="flex items-center space-x-6 mb-6">
@@ -143,12 +143,12 @@ export default async function CompanyProfile({ params }: Props) {
                   <span className="text-gray-300">({company.reviews} reviews)</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <FiUsers className="w-5 h-5 text-blue-primary" />
+                  <FiUsers className="w-5 h-5 text-russian-violet-500" />
                   <span>{company.projects} projects completed</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <FiTrendingUp className="w-5 h-5 text-blue-primary" />
-                  <span>{company.countries} countries served</span>
+                  <FiTrendingUp className="w-5 h-5 text-location-highlight" />
+                  <span className="text-location-highlight">{company.countries} countries served</span>
                 </div>
               </div>
 
@@ -163,18 +163,18 @@ export default async function CompanyProfile({ params }: Props) {
                   <h3 className="text-xl font-bold mb-4 text-white">Get Quote</h3>
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3">
-                      <FiPhone className="text-blue-primary" />
+                      <FiPhone className="text-russian-violet-500" />
                       <span className="text-white">{company.contact.phone}</span>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <FiMail className="text-blue-primary" />
+                      <FiMail className="text-russian-violet-500" />
                       <span className="text-white">{company.contact.email}</span>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <FiGlobe className="text-blue-primary" />
+                      <FiGlobe className="text-russian-violet-500" />
                       <span className="text-white">{company.contact.website}</span>
                     </div>
-                    <Button className="w-full bg-blue-primary hover:bg-blue-dark text-white mt-4">
+                    <Button className="w-full bg-russian-violet-500 hover:bg-russian-violet-900 text-white mt-4">
                       Request Free Quote
                     </Button>
                   </div>
@@ -194,7 +194,7 @@ export default async function CompanyProfile({ params }: Props) {
               <div className="grid grid-cols-2 gap-3">
                 {company.specialties.map((specialty: string, index: number) => (
                   <div key={index} className="flex items-center space-x-2">
-                    <FiCheckCircle className="w-5 h-5 text-green-500" />
+                    <FiCheckCircle className="w-5 h-5 text-claret-500" />
                     <span className="text-gray-700">{specialty}</span>
                   </div>
                 ))}
@@ -205,7 +205,7 @@ export default async function CompanyProfile({ params }: Props) {
               <div className="grid grid-cols-1 gap-3">
                 {company.services.map((service: string, index: number) => (
                   <div key={index} className="flex items-center space-x-2">
-                    <FiCheckCircle className="w-5 h-5 text-blue-primary" />
+                    <FiCheckCircle className="w-5 h-5 text-claret-500" />
                     <span className="text-gray-700">{service}</span>
                   </div>
                 ))}
@@ -224,8 +224,8 @@ export default async function CompanyProfile({ params }: Props) {
               <Card key={index} className="hover:shadow-lg transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-2 mb-3">
-                    <FiCamera className="w-5 h-5 text-blue-primary" />
-                    <span className="text-sm font-medium text-blue-primary">{project.size}</span>
+                    <FiCamera className="w-5 h-5 text-russian-violet-500" />
+                    <span className="text-sm font-medium text-russian-violet-500">{project.size}</span>
                   </div>
                   <h3 className="text-xl font-bold text-navy-900 mb-2">{project.title}</h3>
                   <div className="text-sm text-gray-500 mb-3">
@@ -259,7 +259,7 @@ export default async function CompanyProfile({ params }: Props) {
               <div className="space-y-3">
                 {company.certifications.map((cert: string, index: number) => (
                   <div key={index} className="flex items-center space-x-3">
-                    <FiCheckCircle className="w-5 h-5 text-green-500" />
+                    <FiCheckCircle className="w-5 h-5 text-claret-500" />
                     <span className="text-gray-700">{cert}</span>
                   </div>
                 ))}
@@ -270,20 +270,20 @@ export default async function CompanyProfile({ params }: Props) {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-blue-primary text-white">
+      <section className="py-16 bg-russian-violet-500 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-6">
             Ready to Work with {company.name}?
           </h2>
-          <p className="text-xl mb-8 text-blue-100">
+          <p className="text-xl mb-8 text-russian-violet-100">
             Get a free, no-obligation quote for your next exhibition stand project. 
             Our team is ready to bring your vision to life.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-white text-blue-primary hover:bg-gray-100 px-8 py-4 text-lg">
+            <Button className="bg-white text-russian-violet-500 hover:bg-gray-100 px-8 py-4 text-lg">
               Request Free Quote
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-primary px-8 py-4 text-lg">
+            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-russian-violet-500 px-8 py-4 text-lg">
               View More Projects
             </Button>
           </div>

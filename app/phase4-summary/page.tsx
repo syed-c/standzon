@@ -46,7 +46,7 @@ export default function Phase4SummaryPage() {
       link: '/dashboard'
     },
     {
-      icon: <MessageSquare className="h-8 w-8 text-green-600" />,
+              icon: <MessageSquare className="h-8 w-8 text-claret-600" />,
       title: 'Real-Time Messaging',
       description: 'Secure communication between clients and builders',
       features: [
@@ -215,7 +215,7 @@ export default function Phase4SummaryPage() {
         <div className="container mx-auto px-4 py-12">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-6">
-              <Badge className="bg-green-100 text-green-800 px-4 py-2 text-lg font-semibold">
+              <Badge className="bg-claret-100 text-claret-800 px-4 py-2 text-lg font-semibold">
                 <CheckCircle className="h-5 w-5 mr-2" />
                 Phase 4 Complete
               </Badge>
@@ -253,7 +253,7 @@ export default function Phase4SummaryPage() {
               <div className="text-sm text-gray-600">Verified Builders</div>
             </div>
             <div className="text-center p-6 bg-white rounded-xl shadow-lg">
-              <Globe className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <Globe className="h-8 w-8 text-claret-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">{platformStats.totalCountries}</div>
               <div className="text-sm text-gray-600">Countries Covered</div>
             </div>
@@ -282,7 +282,7 @@ export default function Phase4SummaryPage() {
                       {feature.icon}
                       <Badge 
                         className={feature.status === 'completed' 
-                          ? 'bg-green-100 text-green-800' 
+                          ? 'bg-claret-100 text-claret-800' 
                           : 'bg-yellow-100 text-yellow-800'
                         }
                       >
@@ -298,7 +298,7 @@ export default function Phase4SummaryPage() {
                     <ul className="space-y-2 mb-6">
                       {feature.features.map((item, idx) => (
                         <li key={idx} className="flex items-start text-sm text-gray-600">
-                          <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-4 w-4 text-claret-500 mr-2 mt-0.5 flex-shrink-0" />
                           {item}
                         </li>
                       ))}

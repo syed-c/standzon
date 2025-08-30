@@ -218,7 +218,7 @@ export function AutoGenerationSystem() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-gray-900 flex items-center">
-            <Globe className="h-8 w-8 mr-3 text-blue-600" />
+            <Globe className="h-8 h-8 mr-3 text-russian-violet-600" />
             Global Page Auto-Generation System
           </h2>
           <p className="text-gray-600 mt-1">Create and manage exhibition pages for cities worldwide with AI-powered content</p>
@@ -228,7 +228,7 @@ export function AutoGenerationSystem() {
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
-          <Button className="bg-gradient-to-r from-blue-600 to-purple-600" onClick={generateGlobalPages} disabled={isGenerating}>
+          <Button className="bg-gradient-to-r from-russian-violet-600 to-purple-600" onClick={generateGlobalPages} disabled={isGenerating}>
             {isGenerating ? (
               <>
                 <Sparkles className="h-4 w-4 mr-2 animate-spin" />
@@ -246,17 +246,17 @@ export function AutoGenerationSystem() {
 
       {/* Generation Progress */}
       {isGenerating && (
-        <Card className="border-blue-200 bg-blue-50">
+        <Card className="border-russian-violet-200 bg-russian-violet-50">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Brain className="h-5 w-5 text-blue-600 animate-pulse" />
-                <span className="font-medium text-blue-900">AI Page Generation in Progress</span>
+                <Brain className="h-5 w-5 text-russian-violet-600 animate-pulse" />
+                <span className="font-medium text-russian-violet-900">AI Page Generation in Progress</span>
               </div>
-              <span className="text-blue-700 font-medium">{Math.round(generationProgress)}%</span>
+              <span className="text-russian-violet-700 font-medium">{Math.round(generationProgress)}%</span>
             </div>
             <Progress value={generationProgress} className="h-2" />
-            <p className="text-sm text-blue-700 mt-2">
+            <p className="text-sm text-russian-violet-700 mt-2">
               Generating SEO-optimized country and city pages with real exhibition data...
             </p>
           </CardContent>
@@ -265,26 +265,26 @@ export function AutoGenerationSystem() {
 
       {/* Statistics Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-0">
+        <Card className="bg-gradient-to-br from-claret-500 to-persian-orange-600 text-white border-0">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Total Countries</p>
+                <p className="text-claret-100 text-sm font-medium">Total Countries</p>
                 <p className="text-3xl font-bold">{GLOBAL_EXHIBITION_DATA.countries.length}</p>
               </div>
-              <Globe className="h-8 w-8 text-blue-200" />
+              <Globe className="h-8 h-8 text-russian-violet-200" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white border-0">
+        <Card className="bg-gradient-to-br from-claret-500 to-persian-orange-600 text-white border-0">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm font-medium">Major Cities</p>
+                <p className="text-claret-100 text-sm font-medium">Major Cities</p>
                 <p className="text-3xl font-bold">{GLOBAL_EXHIBITION_DATA.cities.length}</p>
               </div>
-              <MapPin className="h-8 w-8 text-green-200" />
+              <MapPin className="h-8 w-8 text-claret-200" />
             </div>
           </CardContent>
         </Card>
@@ -318,12 +318,12 @@ export function AutoGenerationSystem() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Bulk Upload */}
         <Card className="shadow-lg border-0">
-          <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-t-lg">
+          <CardHeader className="bg-gradient-to-r from-claret-500 to-persian-orange-600 text-white rounded-t-lg">
             <CardTitle className="flex items-center">
               <Upload className="h-6 w-6 mr-3" />
               Global Builder Bulk Upload
             </CardTitle>
-            <CardDescription className="text-green-100">
+            <CardDescription className="text-claret-100">
               Upload builders and automatically assign them to cities worldwide
             </CardDescription>
           </CardHeader>
@@ -332,7 +332,7 @@ export function AutoGenerationSystem() {
               <Button 
                 onClick={downloadBulkTemplate}
                 variant="outline"
-                className="w-full border-green-200 text-green-700 hover:bg-green-50"
+                className="w-full border-claret-200 text-claret-700 hover:bg-claret-50"
               >
                 <Download className="h-4 w-4 mr-2" />
                 Download Global Template CSV
@@ -413,7 +413,7 @@ export function AutoGenerationSystem() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center">
-              <Target className="h-6 w-6 mr-3 text-blue-600" />
+              <Target className="h-6 h-6 mr-3 text-russian-violet-600" />
               Global Page Management
             </CardTitle>
             <div className="flex items-center space-x-4">
@@ -429,7 +429,7 @@ export function AutoGenerationSystem() {
                   <SelectItem value="South America">South America</SelectItem>
                 </SelectContent>
               </Select>
-              <Badge className="bg-blue-100 text-blue-800">
+              <Badge className="bg-russian-violet-100 text-russian-violet-800">
                 {filteredPages.length} pages
               </Badge>
             </div>
@@ -444,12 +444,12 @@ export function AutoGenerationSystem() {
               <div key={page.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow">
                 <div className="flex items-center space-x-4">
                   <div className={`p-2 rounded-lg ${
-                    page.type === 'country' ? 'bg-blue-100' : 'bg-green-100'
+                    page.type === 'country' ? 'bg-russian-violet-100' : 'bg-claret-100'
                   }`}>
                     {page.type === 'country' ? (
-                      <Globe className={`h-5 w-5 ${page.type === 'country' ? 'text-blue-600' : 'text-green-600'}`} />
+                      <Globe className={`h-5 w-5 ${page.type === 'country' ? 'text-russian-violet-600' : 'text-claret-600'}`} />
                     ) : (
-                      <MapPin className="h-5 w-5 text-green-600" />
+                      <MapPin className="h-5 w-5 text-claret-600" />
                     )}
                   </div>
                   <div>
@@ -471,7 +471,7 @@ export function AutoGenerationSystem() {
                   <Button size="sm" variant="outline">
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700">
+                  <Button size="sm" variant="outline" className="text-claret-600 hover:text-claret-700">
                     <BarChart3 className="h-4 w-4" />
                   </Button>
                 </div>

@@ -141,15 +141,15 @@ export default function ContactPageContent() {
             </p>
             <div className="flex flex-wrap justify-center gap-8 text-lg">
               <div className="flex items-center space-x-2">
-                <FiCheckCircle className="text-green-400" />
+                <FiCheckCircle className="text-claret-400" />
                 <span>Free Quotes</span>
               </div>
               <div className="flex items-center space-x-2">
-                <FiCheckCircle className="text-green-400" />
+                <FiCheckCircle className="text-claret-400" />
                 <span>Pre-Vetted Contractors</span>
               </div>
               <div className="flex items-center space-x-2">
-                <FiCheckCircle className="text-green-400" />
+                <FiCheckCircle className="text-claret-400" />
                 <span>24h Response</span>
               </div>
             </div>

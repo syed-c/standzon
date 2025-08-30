@@ -10,18 +10,26 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        'inter': ['Inter', 'sans-serif'],
-        'geist': ['Geist Sans', 'sans-serif'],
+        'heading': ['Tinos', 'serif'],
+        'body': ['Lato', 'sans-serif'],
+        'sans': ['Lato', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        'serif': ['Tinos', 'ui-serif', 'Georgia', 'serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'hero-gradient': 'linear-gradient(135deg, #7c2d92 0%, #db2777 50%, #ec4899 100%)',
-        'premium-gradient': 'linear-gradient(45deg, #301934 0%, #8B5CF6 100%)',
-        'smart-gradient': 'linear-gradient(135deg, #301934 0%, #764ba2 100%)',
-        'ai-gradient': 'linear-gradient(135deg, #301934 0%, #764ba2 50%, #f093fb 100%)',
-        'neural-gradient': 'linear-gradient(45deg, #301934 0%, #764ba2 25%, #f093fb 50%, #ffecd2 75%, #fcb69f 100%)',
-        'cosmic-gradient': 'linear-gradient(135deg, #301934 0%, #764ba2 25%, #89f7fe 50%, #66a6ff 75%, #301934 100%)',
+        // Premium Gradients using the new color palette
+        'hero-gradient': 'linear-gradient(135deg, #0B0033 0%, #370031 50%, #832232 100%)',
+        'premium-gradient': 'linear-gradient(45deg, #0B0033 0%, #370031 100%)',
+        'smart-gradient': 'linear-gradient(135deg, #0B0033 0%, #832232 100%)',
+        'ai-gradient': 'linear-gradient(135deg, #0B0033 0%, #370031 50%, #CE8964 100%)',
+        'neural-gradient': 'linear-gradient(45deg, #0B0033 0%, #370031 25%, #832232 50%, #CE8964 75%, #0B0033 100%)',
+        'cosmic-gradient': 'linear-gradient(135deg, #0B0033 0%, #370031 25%, #832232 50%, #CE8964 75%, #0B0033 100%)',
+        // Premium specific gradients
+        'premium-primary': 'linear-gradient(135deg, #0B0033 0%, #370031 100%)',
+        'premium-secondary': 'linear-gradient(135deg, #370031 0%, #832232 100%)',
+        'premium-accent': 'linear-gradient(135deg, #832232 0%, #CE8964 100%)',
+        'premium-warm': 'linear-gradient(135deg, #CE8964 0%, #832232 100%)',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -31,92 +39,162 @@ const config: Config = {
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        // Phase 2 Professional Color Palette
-        'primary-blue': '#3B82F6',
-        'industry-green': '#10B981', 
+        // Premium Color Palette - 55% Russian Violet, 25% Dark Purple, 15% Claret, 5% Persian Orange
+        'russian-violet': {
+          DEFAULT: '#0B0033',
+          50: '#F0F0F5',
+          100: '#E1E1EB',
+          200: '#C3C3D7',
+          300: '#A5A5C3',
+          400: '#8787AF',
+          500: '#0B0033',
+          600: '#090029',
+          700: '#07001F',
+          800: '#050015',
+          900: '#03000B',
+          950: '#0B0033',
+        },
+        'dark-purple': {
+          DEFAULT: '#370031',
+          50: '#F7F0F6',
+          100: '#EFE1ED',
+          200: '#DFC3DB',
+          300: '#CFA5C9',
+          400: '#BF87B7',
+          500: '#370031',
+          600: '#2C0027',
+          700: '#21001D',
+          800: '#160013',
+          900: '#0B0009',
+          950: '#370031',
+        },
+        'claret': {
+          DEFAULT: '#832232',
+          50: '#F7F0F1',
+          100: '#EFE1E3',
+          200: '#DFC3C7',
+          300: '#CFA5AB',
+          400: '#BF878F',
+          500: '#832232',
+          600: '#681B28',
+          700: '#4D141E',
+          800: '#320D14',
+          900: '#17060A',
+          950: '#832232',
+        },
+        'persian-orange': {
+          DEFAULT: '#CE8964',
+          50: '#FDF8F5',
+          100: '#FBF1EB',
+          200: '#F7E3D7',
+          300: '#F3D5C3',
+          400: '#EFC7AF',
+          500: '#CE8964',
+          600: '#A56E50',
+          700: '#7C523C',
+          800: '#523728',
+          900: '#291B14',
+          950: '#CE8964',
+        },
+        // Legacy colors for backward compatibility - Updated to new palette
+        'primary-blue': '#0B0033', // Russian violet (55%)
+        'industry-green': '#370031', // Dark purple (25%)
         'warning-orange': '#F59E0B',
-        'deep-navy': '#1E293B',
+        'deep-navy': '#0B0033', // Russian violet
         'background-gray': '#F8FAFC',
         theme: {
-          50: '#F9F5FF',
-          100: '#F3E8FF',
-          200: '#E9D5FF',
-          300: '#D8B4FE',
-          400: '#C084FC',
-          500: '#A855F7',
-          600: '#9333EA',
-          700: '#7C3AED',
-          800: '#6B21A8',
-          900: '#581C87',
-          950: '#301934',
+          50: '#F7F0F6', // Dark purple 50
+          100: '#EFE1ED', // Dark purple 100
+          200: '#DFC3DB', // Dark purple 200
+          300: '#CFA5C9', // Dark purple 300
+          400: '#BF87B7', // Dark purple 400
+          500: '#370031', // Dark purple (25%)
+          600: '#2C0027', // Dark purple 600
+          700: '#21001D', // Dark purple 700
+          800: '#160013', // Dark purple 800
+          900: '#0B0009', // Dark purple 900
+          950: '#370031', // Dark purple 950
         },
         blue: {
-          primary: '#3B82F6',
-          light: '#60A5FA',
-          dark: '#2563EB',
-          50: '#EFF6FF',
-          100: '#DBEAFE',
-          200: '#BFDBFE',
-          300: '#93C5FD',
-          400: '#60A5FA',
-          500: '#3B82F6',
-          600: '#2563EB',
-          700: '#1D4ED8',
-          800: '#1E40AF',
-          900: '#1E3A8A',
-          950: '#172554',
+          primary: '#0B0033', // Russian violet (55%)
+          light: '#370031', // Dark purple (25%)
+          dark: '#832232', // Claret (15%)
+          50: '#F0F0F5', // Russian violet 50
+          100: '#E1E1EB', // Russian violet 100
+          200: '#C3C3D7', // Russian violet 200
+          300: '#A5A5C3', // Russian violet 300
+          400: '#8787AF', // Russian violet 400
+          500: '#0B0033', // Russian violet (55%)
+          600: '#090029', // Russian violet 600
+          700: '#07001F', // Russian violet 700
+          800: '#050015', // Russian violet 800
+          900: '#03000B', // Russian violet 900
+          950: '#0B0033', // Russian violet 950
         },
         purple: {
-          50: '#FAF5FF',
-          100: '#F3E8FF',
-          200: '#E9D5FF',
-          300: '#D8B4FE',
-          400: '#C084FC',
-          500: '#A855F7',
-          600: '#9333EA',
-          700: '#7C3AED',
-          800: '#6B21A8',
-          900: '#581C87',
-          950: '#3B0764',
+          50: '#F7F0F6', // Dark purple 50
+          100: '#EFE1ED', // Dark purple 100
+          200: '#DFC3DB', // Dark purple 200
+          300: '#CFA5C9', // Dark purple 300
+          400: '#BF87B7', // Dark purple 400
+          500: '#370031', // Dark purple (25%)
+          600: '#2C0027', // Dark purple 600
+          700: '#21001D', // Dark purple 700
+          800: '#160013', // Dark purple 800
+          900: '#0B0009', // Dark purple 900
+          950: '#370031', // Dark purple 950
         },
         indigo: {
-          50: '#EEF2FF',
-          100: '#E0E7FF',
-          200: '#C7D2FE',
-          300: '#A5B4FC',
-          400: '#818CF8',
-          500: '#6366F1',
-          600: '#4F46E5',
-          700: '#4338CA',
-          800: '#3730A3',
-          900: '#312E81',
-          950: '#1E1B4B',
+          50: '#F0F0F5', // Russian violet 50
+          100: '#E1E1EB', // Russian violet 100
+          200: '#C3C3D7', // Russian violet 200
+          300: '#A5A5C3', // Russian violet 300
+          400: '#8787AF', // Russian violet 400
+          500: '#0B0033', // Russian violet (55%)
+          600: '#090029', // Russian violet 600
+          700: '#07001F', // Russian violet 700
+          800: '#050015', // Russian violet 800
+          900: '#03000B', // Russian violet 900
+          950: '#0B0033', // Russian violet 950
         },
         violet: {
-          50: '#F5F3FF',
-          100: '#EDE9FE',
-          200: '#DDD6FE',
-          300: '#C4B5FD',
-          400: '#A78BFA',
-          500: '#8B5CF6',
-          600: '#7C3AED',
-          700: '#6D28D9',
-          800: '#5B21B6',
-          900: '#4C1D95',
-          950: '#2E1065',
+          50: '#F7F0F6', // Dark purple 50
+          100: '#EFE1ED', // Dark purple 100
+          200: '#DFC3DB', // Dark purple 200
+          300: '#CFA5C9', // Dark purple 300
+          400: '#BF87B7', // Dark purple 400
+          500: '#370031', // Dark purple (25%)
+          600: '#2C0027', // Dark purple 600
+          700: '#21001D', // Dark purple 700
+          800: '#160013', // Dark purple 800
+          900: '#0B0009', // Dark purple 900
+          950: '#370031', // Dark purple 950
         },
         emerald: {
-          50: '#ECFDF5',
-          100: '#D1FAE5',
-          200: '#A7F3D0',
-          300: '#6EE7B7',
-          400: '#34D399',
-          500: '#10B981',
-          600: '#059669',
-          700: '#047857',
-          800: '#065F46',
-          900: '#064E3B',
-          950: '#022C22',
+          50: '#F7F0F1', // Claret 50
+          100: '#EFE1E3', // Claret 100
+          200: '#DFC3C7', // Claret 200
+          300: '#CFA5AB', // Claret 300
+          400: '#BF878F', // Claret 400
+          500: '#832232', // Claret (15%)
+          600: '#681B28', // Claret 600
+          700: '#4D141E', // Claret 700
+          800: '#320D14', // Claret 800
+          900: '#17060A', // Claret 900
+          950: '#832232', // Claret 950
+        },
+        green: {
+          50: '#F7F0F1', // Claret 50
+          100: '#EFE1E3', // Claret 100
+          200: '#DFC3C7', // Claret 200
+          300: '#CFA5AB', // Claret 300
+          400: '#BF878F', // Claret 400
+          500: '#832232', // Claret (15%)
+          600: '#681B28', // Claret 600
+          700: '#4D141E', // Claret 700
+          800: '#320D14', // Claret 800
+          900: '#17060A', // Claret 900
+          950: '#832232', // Claret 950
         },
         gold: {
           primary: '#F59E0B',
@@ -233,6 +311,19 @@ const config: Config = {
           900: '#881337',
           950: '#4C0519',
         },
+        // Location highlight color
+        'location-highlight': '#dd9568',
+        'location-highlight-50': '#fdf8f3',
+        'location-highlight-100': '#faf0e6',
+        'location-highlight-200': '#f5e1cc',
+        'location-highlight-300': '#eec9a3',
+        'location-highlight-400': '#e4ac7a',
+        'location-highlight-500': '#dd9568',
+        'location-highlight-600': '#d17d4f',
+        'location-highlight-700': '#b8643f',
+        'location-highlight-800': '#955036',
+        'location-highlight-900': '#7a4330',
+        'location-highlight-950': '#422218',
       },
       keyframes: {
         'accordion-down': {

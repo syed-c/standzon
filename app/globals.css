@@ -1,71 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ✅ PERFORMANCE FIX: Removed Google Fonts external import to prevent blocking
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-*/
-
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
-
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-
-  --muted: 210 40% 96%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-
-  --accent: 210 40% 96%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 222.2 84% 4.9%;
-
-  --radius: 0.5rem;
+  /* Premium Color Palette - 55% Russian Violet, 25% Dark Purple, 15% Claret, 5% Persian Orange */
+  --russian-violet: 11 0% 20%; /* #0B0033 - 55% usage */
+  --dark-purple: 330 100% 11%; /* #370031 - 25% usage */
+  --claret: 350 58% 32%; /* #832232 - 15% usage */
+  --persian-orange: 20 50% 60%; /* #CE8964 - 5% usage */
+  
+  /* Location Highlight Color */
+  --location-highlight: 25 60% 65%; /* #dd9568 */
+  
+  /* Additional colors for the palette */
+  --russian-violet-50: 11 0% 95%;
+  --russian-violet-100: 11 0% 90%;
+  --russian-violet-200: 11 0% 80%;
+  --russian-violet-300: 11 0% 65%;
+  --russian-violet-400: 11 0% 45%;
+  --russian-violet-500: 11 0% 30%;
+  --russian-violet-600: 11 0% 25%;
+  --russian-violet-700: 11 0% 20%;
+  --russian-violet-800: 11 0% 15%;
+  --russian-violet-900: 11 0% 10%;
+  
+  --dark-purple-50: 330 100% 95%;
+  --dark-purple-100: 330 100% 90%;
+  --dark-purple-200: 330 100% 80%;
+  --dark-purple-300: 330 100% 65%;
+  --dark-purple-400: 330 100% 45%;
+  --dark-purple-500: 330 100% 30%;
+  --dark-purple-600: 330 100% 25%;
+  --dark-purple-700: 330 100% 20%;
+  --dark-purple-800: 330 100% 15%;
+  --dark-purple-900: 330 100% 10%;
+  
+  --claret-50: 350 58% 95%;
+  --claret-100: 350 58% 90%;
+  --claret-200: 350 58% 80%;
+  --claret-300: 350 58% 65%;
+  --claret-400: 350 58% 45%;
+  --claret-500: 350 58% 32%;
+  --claret-600: 350 58% 25%;
+  --claret-700: 350 58% 20%;
+  --claret-800: 350 58% 15%;
+  --claret-900: 350 58% 10%;
+  
+  --persian-orange-50: 20 50% 95%;
+  --persian-orange-100: 20 50% 90%;
+  --persian-orange-200: 20 50% 80%;
+  --persian-orange-300: 20 50% 65%;
+  --persian-orange-400: 20 50% 45%;
+  --persian-orange-500: 20 50% 60%;
+  --persian-orange-600: 20 50% 50%;
+  --persian-orange-700: 20 50% 40%;
+  --persian-orange-800: 20 50% 30%;
+  --persian-orange-900: 20 50% 20%;
+  
+  /* Font Families */
+  --font-heading: 'Tinos', serif;
+  --font-body: 'Lato', sans-serif;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
+  --russian-violet: 11 0% 80%;
+  --dark-purple: 330 100% 80%;
+  --claret: 350 58% 80%;
+  --persian-orange: 20 50% 80%;
+}
 
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
+/* Custom Font Classes */
+.font-heading {
+  font-family: var(--font-heading);
+}
 
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
+.font-body {
+  font-family: var(--font-body);
+}
 
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
+/* Location Highlight Color */
+.text-location-highlight {
+  color: #dd9568;
+}
 
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
+.bg-location-highlight {
+  background-color: #dd9568;
+}
 
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
+.border-location-highlight {
+  border-color: #dd9568;
+}
 
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
+/* Base Typography */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+  
+  p, span, div, li, a, button, input, textarea, label {
+    font-family: var(--font-body);
+  }
+}
 
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
 
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #dd9568;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c8855a;
 }
 
 * {
@@ -85,9 +141,21 @@ body {
   background: hsl(var(--background));
 }
 
-/* Custom styles for ExhibitBay */
+/* Premium Custom Gradients */
 .hero-gradient {
-  background: linear-gradient(135deg, #7c2d92 0%, #db2777 50%, #ec4899 100%);
+  background: linear-gradient(135deg, #0B0033 0%, #370031 50%, #832232 100%);
+}
+
+.premium-gradient {
+  background: linear-gradient(135deg, #0B0033 0%, #370031 100%);
+}
+
+.premium-accent {
+  background: linear-gradient(135deg, #832232 0%, #CE8964 100%);
+}
+
+.premium-warm {
+  background: linear-gradient(135deg, #CE8964 0%, #832232 100%);
 }
 
 .animate-float {

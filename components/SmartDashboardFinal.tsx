@@ -655,25 +655,25 @@ function SmartOverview({ analytics, insights, onRefresh }: any) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 h-auto p-4 flex flex-col items-center space-y-2">
+            <Button className="bg-gradient-to-r from-russian-violet to-dark-purple hover:from-dark-purple hover:to-claret h-auto p-4 flex flex-col items-center space-y-2">
               <Plus className="h-6 w-6" />
               <span className="font-medium">Add Builder</span>
               <span className="text-xs opacity-75">High demand detected</span>
             </Button>
             
-            <Button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 h-auto p-4 flex flex-col items-center space-y-2">
+            <Button className="bg-gradient-to-r from-claret to-persian-orange hover:from-persian-orange hover:to-claret h-auto p-4 flex flex-col items-center space-y-2">
               <Upload className="h-6 w-6" />
               <span className="font-medium">Bulk Import</span>
               <span className="text-xs opacity-75">Optimize workflow</span>
             </Button>
             
-            <Button className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 h-auto p-4 flex flex-col items-center space-y-2">
+            <Button className="bg-gradient-to-r from-dark-purple to-claret hover:from-claret hover:to-persian-orange h-auto p-4 flex flex-col items-center space-y-2">
               <MessageSquare className="h-6 w-6" />
               <span className="font-medium">Review Leads</span>
               <span className="text-xs opacity-75">{analytics?.totalLeads || 0} pending</span>
             </Button>
             
-            <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 h-auto p-4 flex flex-col items-center space-y-2">
+            <Button className="bg-gradient-to-r from-persian-orange to-claret hover:from-claret hover:to-dark-purple h-auto p-4 flex flex-col items-center space-y-2">
               <BarChart3 className="h-6 w-6" />
               <span className="font-medium">View Analytics</span>
               <span className="text-xs opacity-75">New insights available</span>

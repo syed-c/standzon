@@ -123,7 +123,7 @@ export default function HomePageContent() {
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
                 {startButtonsFromTop.length > 0 ? (
                   startButtonsFromTop.map((b, i) => (
-                    <a key={`${b.text}-${i}`} href={b.href || "#"} className={i === 0 ? "bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-semibold" : "border-2 border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white px-6 md:px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-semibold"}>
+                    <a key={`${b.text}-${i}`} href={b.href || "#"} className={i === 0 ? "bg-gradient-to-r from-claret to-russian-violet hover:from-dark-purple hover:to-claret text-white px-6 md:px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-semibold" : "border-2 border-dark-purple text-dark-purple hover:bg-dark-purple hover:text-white px-6 md:px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-semibold"}>
                       {b.text || (i === 0 ? "Get Free Quotes Now" : "Learn More")}
                     </a>
                   ))
@@ -135,7 +135,7 @@ export default function HomePageContent() {
                     />
                     <PublicQuoteRequest
                       buttonText="Find Local Builders"
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-base md:text-lg px-6 md:px-8 py-3 md:py-4"
+                      className="bg-gradient-to-r from-dark-purple to-claret hover:from-russian-violet hover:to-dark-purple text-base md:text-lg px-6 md:px-8 py-3 md:py-4"
                     />
                   </>
                 )}
@@ -185,16 +185,16 @@ export default function HomePageContent() {
         <ContactSection />
 
         {/* Final CTA */}
-        <section className="py-12 md:py-16 bg-blue-primary text-white">
+        <section className="py-12 md:py-16 bg-russian-violet text-white">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               {finalCta.heading}
             </h2>
-            <p className="text-xl mb-8 text-blue-100" dangerouslySetInnerHTML={{ __html: finalCta.paragraph }} />
+            <p className="text-xl mb-8 text-gray-200" dangerouslySetInnerHTML={{ __html: finalCta.paragraph }} />
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {((finalButtonsFromTop.length>0 ? finalButtonsFromTop : finalCta.buttons) || []).map((b: any, i: number) => (
                 <a key={i} href={b.href || "#"}>
-                  <button className={i === 0 ? "bg-transparent text-blue-primary hover:bg-gray-100 px-8 py-4 text-lg rounded" : "border-white text-white hover:bg-white hover:text-blue-primary px-8 py-4 text-lg rounded border"}>
+                  <button className={i === 0 ? "bg-transparent text-persian-orange hover:bg-gray-100 px-8 py-4 text-lg rounded" : "border-white text-white hover:bg-white hover:text-russian-violet px-8 py-4 text-lg rounded border"}>
                     {b.text || (i === 0 ? "Get Free Quotes Now" : "Learn More")}
                   </button>
                 </a>

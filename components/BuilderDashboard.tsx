@@ -89,7 +89,7 @@ export default function BuilderDashboard({ builderId, builderType }: BuilderDash
       localStorage.setItem('builderUserData', JSON.stringify(currentUserData));
       
       // Update local state
-      setBuilderData(prev => ({ 
+      setBuilderData((prev: any) => ({ 
         ...prev, 
         profile: { ...prev.profile, ...editedProfile } 
       }));
@@ -103,7 +103,7 @@ export default function BuilderDashboard({ builderId, builderType }: BuilderDash
   };
 
   const updateEditedProfile = (field: string, value: any) => {
-    setEditedProfile(prev => ({ ...prev, [field]: value }));
+    setEditedProfile((prev: any) => ({ ...prev, [field]: value }));
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,7 +120,7 @@ export default function BuilderDashboard({ builderId, builderType }: BuilderDash
           currentUserData.profile.logo = imageUrl;
           localStorage.setItem('builderUserData', JSON.stringify(currentUserData));
           
-          setBuilderData(prev => ({ 
+          setBuilderData((prev: any) => ({ 
             ...prev, 
             profile: { ...prev.profile, logo: imageUrl } 
           }));
@@ -506,7 +506,7 @@ ExhibitBay Team
           <div className="pb-4">
             <div className="flex items-center space-x-3 mb-2">
               {profile.verified && (
-                <Badge className="bg-green-100 text-green-800">
+                <Badge className="bg-claret-100 text-claret-800">
                   <CheckCircle className="h-3 w-3 mr-1" />
                   Verified
                 </Badge>
@@ -581,7 +581,7 @@ ExhibitBay Team
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+        <Card className="bg-gradient-to-r from-claret-500 to-claret-600 text-white">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium opacity-90">Quote Requests</CardTitle>
             <FileText className="h-4 w-4 opacity-90" />
@@ -719,7 +719,7 @@ ExhibitBay Team
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Repeat Clients</span>
-                  <span className="font-semibold text-green-600">{stats.repeatClients}</span>
+                                          <span className="font-semibold text-claret-600">{stats.repeatClients}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Avg Project Value</span>
@@ -791,7 +791,7 @@ ExhibitBay Team
                             className={
                               quote.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                               quote.status === 'responded' ? 'bg-blue-100 text-blue-800' :
-                              quote.status === 'won' ? 'bg-green-100 text-green-800' :
+                              quote.status === 'won' ? 'bg-claret-100 text-claret-800' :
                               'bg-gray-100 text-gray-800'
                             }
                           >
@@ -868,7 +868,7 @@ ExhibitBay Team
               <CardContent>
                 <div className="space-y-6">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600">
+                    <div className="text-3xl font-bold text-claret-600">
                       ${(stats.totalRevenue || 0).toLocaleString()}
                     </div>
                     <p className="text-gray-600">Total Business Value</p>
@@ -921,7 +921,7 @@ ExhibitBay Team
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Estimated Value</span>
-                  <span className="font-semibold text-green-600">
+                  <span className="font-semibold text-claret-600">
                     ${leads.reduce((sum, lead) => sum + (lead.estimatedValue || 0), 0).toLocaleString()}
                   </span>
                 </div>
@@ -965,7 +965,7 @@ ExhibitBay Team
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Completed Projects</span>
-                  <span className="font-semibold text-green-600">{stats.completedProjects}</span>
+                  <span className="font-semibold text-claret-600">{stats.completedProjects}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Client Satisfaction</span>
@@ -1145,9 +1145,9 @@ ExhibitBay Team
 
         <TabsContent value="subscription" className="space-y-6">
           {showUpgradeSuccess && (
-            <Alert className="border-green-200 bg-green-50">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-800">
+                    <Alert className="border-claret-200 bg-claret-50">
+          <CheckCircle className="h-4 w-4 text-claret-600" />
+          <AlertDescription className="text-claret-800">
                 <strong>Upgrade successful!</strong> Your subscription has been updated and you now have access to premium features.
               </AlertDescription>
             </Alert>
@@ -1299,7 +1299,7 @@ ExhibitBay Team
                             <Badge 
                               variant="outline" 
                               className={`text-xs ${
-                                transaction.status === 'paid' ? 'text-green-600 border-green-200' : 
+                                transaction.status === 'paid' ? 'text-claret-600 border-claret-200' : 
                                 transaction.status === 'pending' ? 'text-yellow-600 border-yellow-200' :
                                 'text-red-600 border-red-200'
                               }`}
@@ -1327,9 +1327,9 @@ ExhibitBay Team
 
               {/* Upgrade Benefits */}
               {subscriptionStatus === 'free' && (
-                <Alert className="mt-6 border-green-200 bg-green-50">
-                  <Zap className="h-4 w-4 text-green-600" />
-                  <AlertDescription className="text-green-800">
+                        <Alert className="mt-6 border-claret-200 bg-claret-50">
+          <Zap className="h-4 w-4 text-claret-600" />
+          <AlertDescription className="text-claret-800">
                     <strong>Unlock more leads!</strong> Upgrade to Professional and get 25 lead unlocks per month, priority support, and advanced analytics for just $49/month.
                   </AlertDescription>
                 </Alert>
@@ -1367,7 +1367,7 @@ ExhibitBay Team
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center">
-                  <Unlock className="h-8 w-8 text-green-600" />
+                  <Unlock className="h-8 w-8 text-claret-600" />
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Unlocked Leads</p>
                     <p className="text-2xl font-bold">{leads.filter(lead => lead.accessGranted).length}</p>

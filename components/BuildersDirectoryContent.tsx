@@ -700,7 +700,7 @@ export default function BuildersDirectoryContent() {
                         </div>
                         <div className="flex items-center gap-1">
                           {builder.verified && (
-                            <FiShield className="w-4 h-4 text-green-500" />
+                            <FiShield className="w-4 h-4 text-claret-500" />
                           )}
                           {builder.premiumMember && (
                             <Badge className="bg-yellow-100 text-yellow-800 text-xs">
@@ -820,7 +820,7 @@ export default function BuildersDirectoryContent() {
             </Card>
             <Card className="text-center">
               <CardContent className="pt-6">
-                <div className="text-3xl font-bold text-green-500 mb-2">
+                <div className="text-3xl font-bold text-claret-500 mb-2">
                   {realTimeStats.verifiedBuilders ||
                     builderStats.verifiedBuilders}
                 </div>

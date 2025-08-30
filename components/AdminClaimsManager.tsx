@@ -383,7 +383,7 @@ export default function AdminClaimsManager({
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-russian-violet-600 mx-auto"></div>
           <p className="mt-4 text-gray-500">Loading claims data...</p>
         </div>
       </div>
@@ -394,32 +394,32 @@ export default function AdminClaimsManager({
     <div className="space-y-6">
       {/* Statistics Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100">
+        <Card className="bg-gradient-to-br from-russian-violet-50 to-russian-violet-100">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-blue-600 font-medium">
+                <p className="text-sm text-russian-violet-600 font-medium">
                   Total Builders
                 </p>
-                <p className="text-3xl font-bold text-blue-900">
+                <p className="text-3xl font-bold text-russian-violet-900">
                   {stats.totalBuilders}
                 </p>
               </div>
-              <Users className="h-8 w-8 text-blue-600" />
+              <Users className="h-8 w-8 text-russian-violet-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-green-100">
+        <Card className="bg-gradient-to-br from-claret-50 to-claret-100">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-green-600 font-medium">Claimed</p>
-                <p className="text-3xl font-bold text-green-900">
+                <p className="text-sm text-claret-600 font-medium">Claimed</p>
+                <p className="text-3xl font-bold text-claret-900">
                   {stats.claimedBuilders}
                 </p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-claret-600" />
             </div>
           </CardContent>
         </Card>
@@ -461,7 +461,7 @@ export default function AdminClaimsManager({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center space-x-2">
-                <Shield className="h-5 w-5 text-blue-600" />
+                <Shield className="h-5 w-5 text-russian-violet-600" />
                 <span>Claim Management System</span>
               </CardTitle>
               <CardDescription>
@@ -556,7 +556,7 @@ export default function AdminClaimsManager({
                           {claim.location}
                         </div>
                         {claim.gmbImported && (
-                          <Badge className="bg-blue-100 text-blue-800">
+                          <Badge className="bg-russian-violet-100 text-russian-violet-800">
                             GMB Import
                           </Badge>
                         )}
@@ -584,7 +584,7 @@ export default function AdminClaimsManager({
                       <div className="space-y-2">
                         <div className="flex items-center space-x-2">
                           {claim.claimStatus === "claimed" ? (
-                            <Badge className="bg-green-100 text-green-800">
+                            <Badge className="bg-claret-100 text-claret-800">
                               <CheckCircle className="h-3 w-3 mr-1" />
                               Claimed
                             </Badge>
@@ -596,7 +596,7 @@ export default function AdminClaimsManager({
                           )}
                         </div>
                         {claim.verified && (
-                          <Badge className="bg-blue-100 text-blue-800">
+                          <Badge className="bg-russian-violet-100 text-russian-violet-800">
                             <Shield className="h-3 w-3 mr-1" />
                             Verified
                           </Badge>
@@ -615,9 +615,9 @@ export default function AdminClaimsManager({
                           claim.planType === "pro"
                             ? "bg-purple-100 text-purple-800"
                             : claim.planType === "growth"
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-claret-100 text-claret-800"
                               : claim.planType === "basic"
-                                ? "bg-blue-100 text-blue-800"
+                                ? "bg-russian-violet-100 text-russian-violet-800"
                                 : "bg-gray-100 text-gray-800"
                         }`}
                       >
@@ -628,7 +628,7 @@ export default function AdminClaimsManager({
                       <div className="flex items-center space-x-2">
                         <div className="w-16 bg-gray-200 rounded-full h-2">
                           <div
-                            className="bg-blue-600 h-2 rounded-full"
+                            className="bg-russian-violet-600 h-2 rounded-full"
                             style={{ width: `${claim.profileCompleteness}%` }}
                           ></div>
                         </div>
@@ -656,7 +656,7 @@ export default function AdminClaimsManager({
                             size="sm"
                             onClick={() => handleManualClaim(claim)}
                             disabled={processingAction}
-                            className="text-green-600 hover:text-green-700"
+                            className="text-claret-600 hover:text-claret-700"
                           >
                             <UserCheck className="h-4 w-4" />
                           </Button>
@@ -670,7 +670,7 @@ export default function AdminClaimsManager({
                               setSelectedClaim(claim);
                               setShowSendOTPDialog(true);
                             }}
-                            className="text-blue-600 hover:text-blue-700"
+                            className="text-russian-violet-600 hover:text-russian-violet-700"
                           >
                             <MessageSquare className="h-4 w-4" />
                           </Button>
@@ -720,7 +720,7 @@ export default function AdminClaimsManager({
                     <Badge
                       className={
                         selectedClaim.claimStatus === "claimed"
-                          ? "bg-green-100 text-green-800"
+                                                      ? "bg-claret-100 text-claret-800"
                           : "bg-orange-100 text-orange-800"
                       }
                     >
@@ -733,7 +733,7 @@ export default function AdminClaimsManager({
                     Plan Type
                   </label>
                   <div className="mt-1">
-                    <Badge className="bg-blue-100 text-blue-800">
+                    <Badge className="bg-russian-violet-100 text-russian-violet-800">
                       {selectedClaim.planType}
                     </Badge>
                   </div>

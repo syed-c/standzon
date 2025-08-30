@@ -72,7 +72,7 @@ export function EnhancedCityPage({
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-20">
+      <section className="relative bg-gradient-to-br from-russian-violet via-dark-purple to-claret text-white py-20">
         <div className="absolute inset-0 opacity-20">
           <div className="w-full h-full bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-pink-500/10"></div>
         </div>
@@ -80,7 +80,7 @@ export function EnhancedCityPage({
         <div className="relative container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex justify-center mb-6">
-              <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-lg px-4 py-2">
+              <Badge className="bg-persian-orange/20 text-persian-orange border-persian-orange/30 text-lg px-4 py-2">
                 <MapPin className="w-5 h-5 mr-2" />
                 {cityName}, {countryName}
               </Badge>
@@ -88,12 +88,12 @@ export function EnhancedCityPage({
             
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               <span className="block">Exhibition Stand Builders</span>
-              <span className="block bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-persian-orange via-claret to-dark-purple bg-clip-text text-transparent">
                 in {cityName}, {countryName}
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-200 mb-8 leading-relaxed">
               Connect with {builderCount}+ verified exhibition stand builders in {cityName}, {countryName}. 
               Get competitive quotes from local experts who understand your market.
             </p>

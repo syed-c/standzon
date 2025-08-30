@@ -45,7 +45,7 @@ export default function AdminSystemSummaryPage() {
     {
       category: "Builder Management",
       icon: <Building className="h-6 w-6" />,
-      color: "bg-green-500",
+              color: "bg-claret-500",
       features: [
         "Complete CRUD operations for all builders",
         "Bulk CSV import/export with validation",
@@ -212,7 +212,7 @@ export default function AdminSystemSummaryPage() {
             </Card>
             <Card className="text-center">
               <CardContent className="pt-6">
-                <Globe className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                <Globe className="h-8 w-8 text-claret-600 mx-auto mb-2" />
                 <div className="text-3xl font-bold text-gray-900">{statsData.totalCountries}</div>
                 <p className="text-gray-600">Countries</p>
               </CardContent>
@@ -252,7 +252,7 @@ export default function AdminSystemSummaryPage() {
                   <ul className="space-y-2">
                     {category.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start space-x-2">
-                        <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle className="h-4 w-4 text-claret-600 mt-0.5 flex-shrink-0" />
                         <span className="text-sm text-gray-700">{feature}</span>
                       </li>
                     ))}
@@ -280,7 +280,7 @@ export default function AdminSystemSummaryPage() {
                       </div>
                     </div>
                     <Badge 
-                      className={capability.status === 'Implemented' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}
+                      className={capability.status === 'Implemented' ? 'bg-claret-100 text-claret-800' : 'bg-yellow-100 text-yellow-800'}
                     >
                       {capability.status}
                     </Badge>
@@ -298,7 +298,7 @@ export default function AdminSystemSummaryPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <TrendingUp className="h-6 w-6 text-green-600" />
+                <TrendingUp className="h-6 w-6 text-claret-600" />
                 <span>Why We Exceed Competitors</span>
               </CardTitle>
               <CardDescription>
@@ -308,9 +308,9 @@ export default function AdminSystemSummaryPage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {competitiveAdvantages.map((advantage, index) => (
-                  <div key={index} className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
-                    <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm font-medium text-green-900">{advantage}</span>
+                  <div key={index} className="flex items-start space-x-3 p-3 bg-claret-50 rounded-lg">
+                    <CheckCircle className="h-5 w-5 text-claret-600 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm font-medium text-claret-900">{advantage}</span>
                   </div>
                 ))}
               </div>
@@ -331,9 +331,9 @@ export default function AdminSystemSummaryPage() {
             </Card>
             <Card className="text-center bg-gradient-to-br from-green-50 to-green-100">
               <CardContent className="pt-6">
-                <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-green-900">{statsData.systemUptime}</div>
-                <p className="text-green-700">System Uptime</p>
+                <CheckCircle className="h-8 w-8 text-claret-600 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-claret-900">{statsData.systemUptime}</div>
+                <p className="text-claret-700">System Uptime</p>
               </CardContent>
             </Card>
             <Card className="text-center bg-gradient-to-br from-purple-50 to-purple-100">

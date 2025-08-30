@@ -153,11 +153,11 @@ export default function BoothRentalPageContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {(saved?.sections?.boothRental?.whyChoose?.features || []).map((feature: any, index: number) => (
               <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-russian-violet-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   {(() => {
                     const icons = [Palette, Lightbulb, Target, Layers];
                     const IconComponent = icons[index] || Palette;
-                    return <IconComponent className="w-8 h-8 text-blue-600" />;
+                    return <IconComponent className="w-8 h-8 text-russian-violet-600" />;
                   })()}
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -183,7 +183,7 @@ export default function BoothRentalPageContent() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {(saved?.sections?.boothRental?.process?.steps || []).map((step: any, index: number) => (
               <div key={index} className="text-center relative">
-                <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                <div className="w-16 h-16 bg-russian-violet-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                   {String(index + 1).padStart(2, '0')}
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -217,7 +217,7 @@ export default function BoothRentalPageContent() {
                 className="bg-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 p-6 relative border border-gray-100"
               >
                 {card.badge && (
-                  <Badge className="absolute -top-3 -right-3 bg-blue-500 text-white text-xs font-medium px-3 py-1 rounded-full shadow-md">
+                  <Badge className="absolute -top-3 -right-3 bg-russian-violet-500 text-white text-xs font-medium px-3 py-1 rounded-full shadow-md">
                     {card.badge}
                   </Badge>
                 )}
@@ -235,7 +235,7 @@ export default function BoothRentalPageContent() {
                     <span className="text-sm text-gray-500 font-medium">
                       {card.startingFrom || "Starting from"}
                     </span>
-                    <span className="text-lg font-bold text-blue-600">
+                    <span className="text-lg font-bold text-russian-violet-600">
                       {card.price || "$0"}
                     </span>
                   </div>
@@ -246,7 +246,7 @@ export default function BoothRentalPageContent() {
                         key={idx}
                         className="flex items-start text-sm text-gray-600"
                       >
-                        <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
+                        <CheckCircle className="w-5 h-5 text-claret-500 mr-3 flex-shrink-0 mt-0.5" />
                         <span className="leading-relaxed">{feature}</span>
                       </li>
                     ))}
@@ -255,7 +255,7 @@ export default function BoothRentalPageContent() {
 
                 <Link href={card.buttonLink || "/quote"}>
                   <Button 
-                    className="w-full bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300 font-semibold py-3 rounded-lg" 
+                    className="w-full bg-white text-russian-violet-600 border-2 border-russian-violet-600 hover:bg-russian-violet-600 hover:text-white transition-all duration-300 font-semibold py-3 rounded-lg" 
                     variant="outline"
                   >
                     {card.buttonText || "Get Quote"}
@@ -268,7 +268,7 @@ export default function BoothRentalPageContent() {
         </section>
 
         {/* Final CTA Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 md:p-12 text-white text-center">
+        <section className="bg-gradient-to-r from-dark-purple to-russian-violet rounded-2xl p-8 md:p-12 text-white text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             {saved?.sections?.boothRental?.cta?.heading || "Ready to Rent Your Exhibition Booth?"}
           </h2>
@@ -280,7 +280,7 @@ export default function BoothRentalPageContent() {
               <Link key={index} href={button.href || "/quote"}>
                 <Button
                   size="lg"
-                  className={index === 0 ? "bg-white text-blue-600 hover:bg-gray-100" : "border-white text-white hover:bg-white hover:text-blue-600"}
+                  className={index === 0 ? "bg-white text-dark-purple hover:bg-gray-100" : "border-white text-white hover:bg-white hover:text-dark-purple"}
                   variant={index === 0 ? "default" : "outline"}
                 >
                   {button.text || "Get Started"}
