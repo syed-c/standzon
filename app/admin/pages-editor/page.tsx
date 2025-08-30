@@ -377,6 +377,54 @@ export default function AdminPagesEditor() {
               console.log("New sections state:", newSections);
               return newSections;
             });
+          } else if (path === '/3d-rendering-and-concept-development') {
+            // For 3D rendering page, load rendering-specific sections
+            console.log("Loading 3D rendering sections:", pc.sections);
+            setSections((prev:any) => {
+              const newSections = {
+                ...prev,
+                hero: pc.sections.hero || prev.hero,
+                renderingConcept: pc.sections.renderingConcept || prev.renderingConcept,
+              };
+              console.log("New sections state:", newSections);
+              return newSections;
+            });
+          } else if (path === '/trade-show-installation-and-dismantle') {
+            // For installation & dismantle page, load I&D specific sections
+            console.log("Loading installation & dismantle sections:", pc.sections);
+            setSections((prev:any) => {
+              const newSections = {
+                ...prev,
+                hero: pc.sections.hero || prev.hero,
+                installationDismantle: pc.sections.installationDismantle || prev.installationDismantle,
+              };
+              console.log("New sections state:", newSections);
+              return newSections;
+            });
+          } else if (path === '/trade-show-project-management') {
+            // For project management page, load PM specific sections
+            console.log("Loading project management sections:", pc.sections);
+            setSections((prev:any) => {
+              const newSections = {
+                ...prev,
+                hero: pc.sections.hero || prev.hero,
+                projectManagement: pc.sections.projectManagement || prev.projectManagement,
+              };
+              console.log("New sections state:", newSections);
+              return newSections;
+            });
+          } else if (path === '/trade-show-graphics-printing') {
+            // For graphics & printing page, load graphics-specific sections
+            console.log("Loading graphics & printing sections:", pc.sections);
+            setSections((prev:any) => {
+              const newSections = {
+                ...prev,
+                hero: pc.sections.hero || prev.hero,
+                graphicsPrinting: pc.sections.graphicsPrinting || prev.graphicsPrinting,
+              };
+              console.log("New sections state:", newSections);
+              return newSections;
+            });
           } else if (path === '/') {
             // For home page, load home-specific sections
             setSections((prev:any) => ({
@@ -478,6 +526,17 @@ export default function AdminPagesEditor() {
         console.log('🌍 Saving country page:', editingPath);
         console.log('📝 Sections data:', sections);
         console.log('🏳️ Country pages data:', sections.countryPages);
+      }
+      
+      // Debug: Log what we're sending for custom-booth page
+      if (editingPath === '/custom-booth') {
+        console.log('🎨 Saving custom-booth page:', editingPath);
+        console.log('📝 Sections data:', sections);
+        console.log('🎯 Hero data:', sections.hero);
+        console.log('💡 Why Choose data:', sections.whyChooseCustom);
+        console.log('🔄 Design Process data:', sections.designProcess);
+        console.log('🛠️ Custom Design Services data:', sections.customDesignServices);
+        console.log('🚀 CTA data:', sections.customBoothCta);
       }
 
       const res = await fetch('/api/admin/pages-editor', {
@@ -1875,10 +1934,484 @@ export default function AdminPagesEditor() {
                               ))}
                             </div>
                           </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </div>
-                  ) : null}
+                                              </AccordionItem>
+                    </Accordion>
+                  </div>
+                ) : editingPath === '/3d-rendering-and-concept-development' ? (
+                  <div className="space-y-6">
+                    <Accordion type="single" collapsible className="w-full">
+                      <AccordionItem value="hero">
+                        <AccordionTrigger>Hero Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.renderingConcept?.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), hero:{ ...(s.renderingConcept?.hero||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Description</Label>
+                            <Textarea rows={3} value={sections.renderingConcept?.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), hero:{ ...(s.renderingConcept?.hero||{}), description:e.target.value } } }))} />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="whyChoose">
+                        <AccordionTrigger>Why Choose Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.renderingConcept?.whyChoose?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), whyChoose:{ ...(s.renderingConcept?.whyChoose||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.renderingConcept?.whyChoose?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), whyChoose:{ ...(s.renderingConcept?.whyChoose||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Features</h5>
+                              {(sections.renderingConcept?.whyChoose?.features||[]).map((feature:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Feature Heading</Label>
+                                  <Input value={feature.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.whyChoose?.features||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), whyChoose:{ ...(s.renderingConcept?.whyChoose||{}), features:arr } } }; })} />
+                                  <Label className="mt-2 block">Feature Paragraph</Label>
+                                  <Textarea rows={2} value={feature.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.whyChoose?.features||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), whyChoose:{ ...(s.renderingConcept?.whyChoose||{}), features:arr } } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), whyChoose:{ ...(s.renderingConcept?.whyChoose||{}), features:[...(s.renderingConcept?.whyChoose?.features||[]), { heading:'', paragraph:'' }] } } }))}>Add Feature</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), whyChoose:{ ...(s.renderingConcept?.whyChoose||{}), features:(s.renderingConcept?.whyChoose?.features||[]).slice(0,-1) } } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="process">
+                        <AccordionTrigger>Process Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.renderingConcept?.process?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), process:{ ...(s.renderingConcept?.process||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.renderingConcept?.process?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), process:{ ...(s.renderingConcept?.process||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Process Steps</h5>
+                              {(sections.renderingConcept?.process?.steps||[]).map((step:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Step Heading</Label>
+                                  <Input value={step.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.process?.steps||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), process:{ ...(s.renderingConcept?.process||{}), steps:arr } } }; })} />
+                                  <Label className="mt-2 block">Step Paragraph</Label>
+                                  <Textarea rows={2} value={step.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.process?.steps||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), process:{ ...(s.renderingConcept?.process||{}), steps:arr } } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), process:{ ...(s.renderingConcept?.process||{}), steps:[...(s.renderingConcept?.process?.steps||[]), { heading:'', paragraph:'' }] } } }))}>Add Step</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), process:{ ...(s.renderingConcept?.process||{}), steps:(s.renderingConcept?.process?.steps||[]).slice(0,-1) } } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="services">
+                        <AccordionTrigger>Services Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.renderingConcept?.services?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.renderingConcept?.services?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Service Cards</h5>
+                              {(sections.renderingConcept?.services?.serviceCards||[]).map((card:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                      <Label>Card Title</Label>
+                                      <Input value={card.title||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.services?.serviceCards||[])]; arr[idx]={...arr[idx], title:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                    <div>
+                                      <Label>Badge (optional)</Label>
+                                      <Input value={card.badge||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.services?.serviceCards||[])]; arr[idx]={...arr[idx], badge:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                  </div>
+                                  <div className="mt-3">
+                                    <Label>Description</Label>
+                                    <Textarea rows={2} value={card.description||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.services?.serviceCards||[])]; arr[idx]={...arr[idx], description:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), serviceCards:arr } } }; })} />
+                                  </div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                    <div>
+                                      <Label>Starting From Text</Label>
+                                      <Input value={card.startingFrom||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.services?.serviceCards||[])]; arr[idx]={...arr[idx], startingFrom:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                    <div>
+                                      <Label>Price</Label>
+                                      <Input value={card.price||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.services?.serviceCards||[])]; arr[idx]={...arr[idx], price:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                  </div>
+                                  <div className="mt-3">
+                                    <Label>Features (one per line)</Label>
+                                    <Textarea rows={3} value={(card.features||[]).join('\n')} onChange={(e)=>{ const features=e.target.value.split('\n').filter(f=>f.trim()); const arr=[...(s.renderingConcept?.services?.serviceCards||[])]; arr[idx]={...arr[idx], features}; setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), serviceCards:arr } } })); }} />
+                                  </div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                    <div>
+                                      <Label>Button Text</Label>
+                                      <Input value={card.buttonText||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.services?.serviceCards||[])]; arr[idx]={...arr[idx], buttonText:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                    <div>
+                                      <Label>Button Link</Label>
+                                      <Input value={card.buttonLink||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.services?.serviceCards||[])]; arr[idx]={...arr[idx], buttonLink:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              <div className="flex gap-2 mt-3">
+                                <Button type="button" variant="outline" onClick={()=>{ const newCard={ title:'', description:'', startingFrom:'Starting from', price:'', features:[], buttonText:'Get Quote', buttonLink:'/quote', badge:'' }; setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), serviceCards:[...(s.renderingConcept?.services?.serviceCards||[]), newCard] } } })); }}>Add Service Card</Button>
+                                <Button type="button" variant="outline" onClick={()=>{ const arr=[...(sections.renderingConcept?.services?.serviceCards||[])]; if(arr.length>0){ arr.splice(-1,1); setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), serviceCards:arr } } })); } }}>Remove Last Card</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="cta">
+                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.renderingConcept?.cta?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), cta:{ ...(s.renderingConcept?.cta||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.renderingConcept?.cta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), cta:{ ...(s.renderingConcept?.cta||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              {(sections.renderingConcept?.cta?.buttons||[]).map((button:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Button Text</Label>
+                                  <Input value={button.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.cta?.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), cta:{ ...(s.renderingConcept?.cta||{}), buttons:arr } } }; })} />
+                                  <Label className="mt-2 block">Button Link</Label>
+                                  <Input value={button.href||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.renderingConcept?.cta?.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), cta:{ ...(s.renderingConcept?.cta||{}), buttons:arr } } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), cta:{ ...(s.renderingConcept?.cta||{}), buttons:[...(s.renderingConcept?.cta?.buttons||[]), { text:'', href:'' }] } } }))}>Add Button</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), cta:{ ...(s.renderingConcept?.cta||{}), buttons:(s.renderingConcept?.cta?.buttons||[]).slice(0,-1) } } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                ) : editingPath === '/trade-show-installation-and-dismantle' ? (
+                  <div className="space-y-6">
+                    <Accordion type="single" collapsible className="w-full">
+                      <AccordionItem value="hero">
+                        <AccordionTrigger>Hero Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.installationDismantle?.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), hero:{ ...(s.installationDismantle?.hero||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Description</Label>
+                            <Textarea rows={3} value={sections.installationDismantle?.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), hero:{ ...(s.installationDismantle?.hero||{}), description:e.target.value } } }))} />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="whyChoose">
+                        <AccordionTrigger>Why Choose Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.installationDismantle?.whyChoose?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), whyChoose:{ ...(s.installationDismantle?.whyChoose||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.installationDismantle?.whyChoose?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), whyChoose:{ ...(s.installationDismantle?.whyChoose||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Features</h5>
+                              {(sections.installationDismantle?.whyChoose?.features||[]).map((feature:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Feature Heading</Label>
+                                  <Input value={feature.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.whyChoose?.features||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), whyChoose:{ ...(s.installationDismantle?.whyChoose||{}), features:arr } } }; })} />
+                                  <Label className="mt-2 block">Feature Paragraph</Label>
+                                  <Textarea rows={2} value={feature.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.whyChoose?.features||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), whyChoose:{ ...(s.installationDismantle?.whyChoose||{}), features:arr } } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), whyChoose:{ ...(s.installationDismantle?.whyChoose||{}), features:[...(s.installationDismantle?.whyChoose?.features||[]), { heading:'', paragraph:'' }] } } }))}>Add Feature</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), whyChoose:{ ...(s.installationDismantle?.whyChoose||{}), features:(s.installationDismantle?.whyChoose?.features||[]).slice(0,-1) } } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="process">
+                        <AccordionTrigger>Process Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.installationDismantle?.process?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), process:{ ...(s.installationDismantle?.process||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.installationDismantle?.process?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), process:{ ...(s.installationDismantle?.process||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Process Steps</h5>
+                              {(sections.installationDismantle?.process?.steps||[]).map((step:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Step Heading</Label>
+                                  <Input value={step.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.process?.steps||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), process:{ ...(s.installationDismantle?.process||{}), steps:arr } } }; })} />
+                                  <Label className="mt-2 block">Step Paragraph</Label>
+                                  <Textarea rows={2} value={step.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.process?.steps||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), process:{ ...(s.installationDismantle?.process||{}), steps:arr } } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), process:{ ...(s.installationDismantle?.process||{}), steps:[...(s.installationDismantle?.process?.steps||[]), { heading:'', paragraph:'' }] } } }))}>Add Step</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), process:{ ...(s.installationDismantle?.process||{}), steps:(s.installationDismantle?.process?.steps||[]).slice(0,-1) } } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="services">
+                        <AccordionTrigger>Services Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.installationDismantle?.services?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.installationDismantle?.services?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Service Cards</h5>
+                              {(sections.installationDismantle?.services?.serviceCards||[]).map((card:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                      <Label>Card Title</Label>
+                                      <Input value={card.title||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.services?.serviceCards||[])]; arr[idx]={...arr[idx], title:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                    <div>
+                                      <Label>Badge (optional)</Label>
+                                      <Input value={card.badge||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.services?.serviceCards||[])]; arr[idx]={...arr[idx], badge:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                  </div>
+                                  <div className="mt-3">
+                                    <Label>Description</Label>
+                                    <Textarea rows={2} value={card.description||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.services?.serviceCards||[])]; arr[idx]={...arr[idx], description:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), serviceCards:arr } } }; })} />
+                                  </div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                    <div>
+                                      <Label>Starting From Text</Label>
+                                      <Input value={card.startingFrom||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.services?.serviceCards||[])]; arr[idx]={...arr[idx], startingFrom:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                    <div>
+                                      <Label>Price</Label>
+                                      <Input value={card.price||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.services?.serviceCards||[])]; arr[idx]={...arr[idx], price:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                  </div>
+                                  <div className="mt-3">
+                                    <Label>Features (one per line)</Label>
+                                    <Textarea rows={3} value={(card.features||[]).join('\n')} onChange={(e)=>{ const features=e.target.value.split('\n').filter(f=>f.trim()); const arr=[...(s.installationDismantle?.services?.serviceCards||[])]; arr[idx]={...arr[idx], features}; setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), serviceCards:arr } } })); }} />
+                                  </div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                    <div>
+                                      <Label>Button Text</Label>
+                                      <Input value={card.buttonText||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.services?.serviceCards||[])]; arr[idx]={...arr[idx], buttonText:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                    <div>
+                                      <Label>Button Link</Label>
+                                      <Input value={card.buttonLink||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.services?.serviceCards||[])]; arr[idx]={...arr[idx], buttonLink:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              <div className="flex gap-2 mt-3">
+                                <Button type="button" variant="outline" onClick={()=>{ const newCard={ title:'', description:'', startingFrom:'Starting from', price:'', features:[], buttonText:'Get Quote', buttonLink:'/quote', badge:'' }; setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), serviceCards:[...(s.installationDismantle?.services?.serviceCards||[]), newCard] } } })); }}>Add Service Card</Button>
+                                <Button type="button" variant="outline" onClick={()=>{ const arr=[...(sections.installationDismantle?.services?.serviceCards||[])]; if(arr.length>0){ arr.splice(-1,1); setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), serviceCards:arr } } })); } }}>Remove Last Card</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="cta">
+                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.installationDismantle?.cta?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), cta:{ ...(s.installationDismantle?.cta||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.installationDismantle?.cta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), cta:{ ...(s.installationDismantle?.cta||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              {(sections.installationDismantle?.cta?.buttons||[]).map((button:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Button Text</Label>
+                                  <Input value={button.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.cta?.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), cta:{ ...(s.installationDismantle?.cta||{}), buttons:arr } } }; })} />
+                                  <Label className="mt-2 block">Button Link</Label>
+                                  <Input value={button.href||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.installationDismantle?.cta?.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), cta:{ ...(s.installationDismantle?.cta||{}), buttons:arr } } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), cta:{ ...(s.installationDismantle?.cta||{}), buttons:[...(s.installationDismantle?.cta?.buttons||[]), { text:'', href:'' }] } } }))}>Add Button</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), cta:{ ...(s.installationDismantle?.cta||{}), buttons:(s.installationDismantle?.cta?.buttons||[]).slice(0,-1) } } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                ) : editingPath === '/trade-show-project-management' ? (
+                  <div className="space-y-6">
+                    <Accordion type="single" collapsible className="w-full">
+                      <AccordionItem value="hero">
+                        <AccordionTrigger>Hero Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.projectManagement?.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), hero:{ ...(s.projectManagement?.hero||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Description</Label>
+                            <Textarea rows={3} value={sections.projectManagement?.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), hero:{ ...(s.projectManagement?.hero||{}), description:e.target.value } } }))} />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="whyChoose">
+                        <AccordionTrigger>Why Choose Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.projectManagement?.whyChoose?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), whyChoose:{ ...(s.projectManagement?.whyChoose||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.projectManagement?.whyChoose?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), whyChoose:{ ...(s.projectManagement?.whyChoose||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Features</h5>
+                              {(sections.projectManagement?.whyChoose?.features||[]).map((feature:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Feature Heading</Label>
+                                  <Input value={feature.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.whyChoose?.features||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), whyChoose:{ ...(s.projectManagement?.whyChoose||{}), features:arr } } }; })} />
+                                  <Label className="mt-2 block">Feature Paragraph</Label>
+                                  <Textarea rows={2} value={feature.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.whyChoose?.features||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), whyChoose:{ ...(s.projectManagement?.whyChoose||{}), features:arr } } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), whyChoose:{ ...(s.projectManagement?.whyChoose||{}), features:[...(s.projectManagement?.whyChoose?.features||[]), { heading:'', paragraph:'' }] } } }))}>Add Feature</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), whyChoose:{ ...(s.projectManagement?.whyChoose||{}), features:(s.projectManagement?.whyChoose?.features||[]).slice(0,-1) } } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="process">
+                        <AccordionTrigger>Process Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.projectManagement?.process?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), process:{ ...(s.projectManagement?.process||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.projectManagement?.process?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), process:{ ...(s.projectManagement?.process||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Process Steps</h5>
+                              {(sections.projectManagement?.process?.steps||[]).map((step:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Step Heading</Label>
+                                  <Input value={step.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.process?.steps||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), process:{ ...(s.projectManagement?.process||{}), steps:arr } } }; })} />
+                                  <Label className="mt-2 block">Step Paragraph</Label>
+                                  <Textarea rows={2} value={step.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.process?.steps||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), process:{ ...(s.projectManagement?.process||{}), steps:arr } } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), process:{ ...(s.projectManagement?.process||{}), steps:[...(s.projectManagement?.process?.steps||[]), { heading:'', paragraph:'' }] } } }))}>Add Step</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), process:{ ...(s.projectManagement?.process||{}), steps:(s.projectManagement?.process?.steps||[]).slice(0,-1) } } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="services">
+                        <AccordionTrigger>Services Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.projectManagement?.services?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.projectManagement?.services?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Service Cards</h5>
+                              {(sections.projectManagement?.services?.serviceCards||[]).map((card:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                      <Label>Card Title</Label>
+                                      <Input value={card.title||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.services?.serviceCards||[])]; arr[idx]={...arr[idx], title:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                    <div>
+                                      <Label>Badge (optional)</Label>
+                                      <Input value={card.badge||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.services?.serviceCards||[])]; arr[idx]={...arr[idx], badge:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                  </div>
+                                  <div className="mt-3">
+                                    <Label>Description</Label>
+                                    <Textarea rows={2} value={card.description||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.services?.serviceCards||[])]; arr[idx]={...arr[idx], description:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), serviceCards:arr } } }; })} />
+                                  </div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                    <div>
+                                      <Label>Starting From Text</Label>
+                                      <Input value={card.startingFrom||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.services?.serviceCards||[])]; arr[idx]={...arr[idx], startingFrom:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                    <div>
+                                      <Label>Price</Label>
+                                      <Input value={card.price||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.services?.serviceCards||[])]; arr[idx]={...arr[idx], price:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                  </div>
+                                  <div className="mt-3">
+                                    <Label>Features (one per line)</Label>
+                                    <Textarea rows={3} value={(card.features||[]).join('\n')} onChange={(e)=>{ const features=e.target.value.split('\n').filter(f=>f.trim()); const arr=[...(s.projectManagement?.services?.serviceCards||[])]; arr[idx]={...arr[idx], features}; setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), serviceCards:arr } } })); }} />
+                                  </div>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                    <div>
+                                      <Label>Button Text</Label>
+                                      <Input value={card.buttonText||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.services?.serviceCards||[])]; arr[idx]={...arr[idx], buttonText:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                    <div>
+                                      <Label>Button Link</Label>
+                                      <Input value={card.buttonLink||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.services?.serviceCards||[])]; arr[idx]={...arr[idx], buttonLink:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), serviceCards:arr } } }; })} />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              <div className="flex gap-2 mt-3">
+                                <Button type="button" variant="outline" onClick={()=>{ const newCard={ title:'', description:'', startingFrom:'Starting from', price:'', features:[], buttonText:'Get Quote', buttonLink:'/quote', badge:'' }; setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), serviceCards:[...(s.projectManagement?.services?.serviceCards||[]), newCard] } } })); }}>Add Service Card</Button>
+                                <Button type="button" variant="outline" onClick={()=>{ const arr=[...(sections.projectManagement?.services?.serviceCards||[])]; if(arr.length>0){ arr.splice(-1,1); setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), serviceCards:arr } } })); } }}>Remove Last Card</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="cta">
+                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.projectManagement?.cta?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), cta:{ ...(s.projectManagement?.cta||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.projectManagement?.cta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), cta:{ ...(s.projectManagement?.cta||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              {(sections.projectManagement?.cta?.buttons||[]).map((button:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Button Text</Label>
+                                  <Input value={button.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.cta?.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), cta:{ ...(s.projectManagement?.cta||{}), buttons:arr } } }; })} />
+                                  <Label className="mt-2 block">Button Link</Label>
+                                  <Input value={button.href||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.projectManagement?.cta?.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), cta:{ ...(s.projectManagement?.cta||{}), buttons:arr } } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), cta:{ ...(s.projectManagement?.cta||{}), buttons:[...(s.projectManagement?.cta?.buttons||[]), { text:'', href:'' }] } } }))}>Add Button</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), cta:{ ...(s.projectManagement?.cta||{}), buttons:(s.projectManagement?.cta?.buttons||[]).slice(0,-1) } } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                ) : null}
                 </div>
               </div>
 

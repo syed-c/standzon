@@ -62,8 +62,14 @@ export default function CustomBoothPageContent() {
         );
         const data = await res.json();
         if (data?.success && data?.data) {
-          console.log("Loaded custom-booth data:", data.data);
-          console.log("Service cards:", data.data?.sections?.customDesignServices?.serviceCards);
+          console.log("🎨 Loaded custom-booth data:", data.data);
+          console.log("📝 Sections:", data.data?.sections);
+          console.log("🎯 Hero:", data.data?.sections?.hero);
+          console.log("💡 Why Choose:", data.data?.sections?.whyChooseCustom);
+          console.log("🔄 Design Process:", data.data?.sections?.designProcess);
+          console.log("🛠️ Custom Design Services:", data.data?.sections?.customDesignServices);
+          console.log("🚀 CTA:", data.data?.sections?.customBoothCta);
+          console.log("🔧 Service cards:", data.data?.sections?.customDesignServices?.serviceCards);
           setSaved(data.data);
         }
       } catch (error) {
@@ -99,6 +105,10 @@ export default function CustomBoothPageContent() {
       );
   }, []);
 
+  // Debug: Log what we're rendering
+  console.log("🎨 Rendering custom-booth with saved data:", saved);
+  console.log("📝 Current sections state:", saved?.sections);
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />

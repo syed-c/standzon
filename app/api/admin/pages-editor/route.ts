@@ -204,6 +204,15 @@ export async function GET(request: NextRequest) {
         console.log('🏳️ Sections:', Object.keys(data?.content?.sections || {}));
         console.log('🏳️ Country pages in retrieved data:', data?.content?.sections?.countryPages);
         
+        // Special debug for custom-booth
+        if (pageId === 'custom-booth') {
+          console.log('🎨 Custom-booth GET debug - pageId:', pageId);
+          console.log('🎨 Custom-booth GET debug - sections:', data?.content?.sections);
+          console.log('🎨 Custom-booth GET debug - hero:', data?.content?.sections?.hero);
+          console.log('🎨 Custom-booth GET debug - whyChooseCustom:', data?.content?.sections?.whyChooseCustom);
+          console.log('🎨 Custom-booth GET debug - customDesignServices:', data?.content?.sections?.customDesignServices);
+        }
+        
         // For country pages, ensure we return the correct structure
         if (parts[0] === 'exhibition-stands' && parts.length >= 2) {
           const countrySlug = parts[1];
@@ -296,6 +305,12 @@ export async function PUT(request: NextRequest) {
 
     // Debug: Log pageId generation
     console.log('🔍 API Debug - Path:', path, 'PageId:', pageId, 'Parts:', parts);
+    
+    // Special debug for custom-booth
+    if (path === '/custom-booth') {
+      console.log('🎨 Custom-booth debug - Path:', path, 'PageId:', pageId);
+      console.log('🎨 Custom-booth debug - Sections received:', JSON.stringify(sections, null, 2));
+    }
 
     // Load existing from storage (if any) and merge minimal SEO/H1
     const existing = storageAPI.getPageContent(pageId);
