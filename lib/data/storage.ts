@@ -77,6 +77,26 @@ export interface PageContent {
       }>;
     };
     customBoothCta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
+    // Country pages specific sections
+    countryPages?: {
+      [country: string]: {
+        whyChooseLocal?: {
+          heading?: string;
+          paragraph?: string;
+          infoCards?: Array<{
+            title?: string;
+            paragraph?: string;
+          }>;
+        };
+        getQuotes?: {
+          paragraph?: string;
+        };
+        servicesOverview?: {
+          heading?: string;
+          paragraph?: string;
+        };
+      };
+    };
     [key: string]: any;
   };
   design: {

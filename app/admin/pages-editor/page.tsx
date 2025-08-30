@@ -145,9 +145,93 @@ export default function AdminPagesEditor() {
           paragraph: 'Connect with expert designers who understand your industry and objectives', 
           buttons: [
             { text: 'Start Your Project', href: '/quote' },
-            { text: 'Browse Designers', href: '/builders' }
+            { text: 'Browse Designers', href: '/quote' }
           ]
         },
+        // Country pages structure
+        countryPages: {
+          'china': {
+            whyChooseLocal: {
+              heading: 'Why Choose Local Builders in China?',
+              paragraph: 'Local builders offer unique advantages including market knowledge, logistical expertise, and established vendor relationships.',
+              infoCards: [
+                {
+                  title: 'Local Market Knowledge',
+                  paragraph: 'Understand local regulations, venue requirements, and cultural preferences specific to China.'
+                },
+                {
+                  title: 'Faster Project Delivery',
+                  paragraph: 'Reduced logistics time, easier coordination, and faster response times for urgent modifications or support.'
+                },
+                {
+                  title: 'Cost-Effective Solutions',
+                  paragraph: 'Lower transportation costs, established supplier networks, and competitive local pricing structures.'
+                }
+              ]
+            },
+            getQuotes: {
+              paragraph: 'Connect with 3-5 verified local builders who understand your market. No registration required, quotes within 24 hours.'
+            },
+            servicesOverview: {
+              heading: 'Exhibition Stand Builders in China: Services, Costs, and Tips',
+              paragraph: 'Finding the right exhibition stand partner in China can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.'
+            }
+          },
+          'germany': {
+            whyChooseLocal: {
+              heading: 'Why Choose Local Builders in Germany?',
+              paragraph: 'Local builders offer unique advantages including market knowledge, logistical expertise, and established vendor relationships.',
+              infoCards: [
+                {
+                  title: 'Local Market Knowledge',
+                  paragraph: 'Understand local regulations, venue requirements, and cultural preferences specific to Germany.'
+                },
+                {
+                  title: 'Faster Project Delivery',
+                  paragraph: 'Reduced logistics time, easier coordination, and faster response times for urgent modifications or support.'
+                },
+                {
+                  title: 'Cost-Effective Solutions',
+                  paragraph: 'Lower transportation costs, established supplier networks, and competitive local pricing structures.'
+                }
+              ]
+            },
+            getQuotes: {
+              paragraph: 'Connect with 3-5 verified local builders who understand your market. No registration required, quotes within 24 hours.'
+            },
+            servicesOverview: {
+              heading: 'Exhibition Stand Builders in Germany: Services, Costs, and Tips',
+              paragraph: 'Finding the right exhibition stand partner in Germany can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.'
+            }
+          },
+          'united-states': {
+            whyChooseLocal: {
+              heading: 'Why Choose Local Builders in United States?',
+              paragraph: 'Local builders offer unique advantages including market knowledge, logistical expertise, and established vendor relationships.',
+              infoCards: [
+                {
+                  title: 'Local Market Knowledge',
+                  paragraph: 'Understand local regulations, venue requirements, and cultural preferences specific to United States.'
+                },
+                {
+                  title: 'Faster Project Delivery',
+                  paragraph: 'Reduced logistics time, easier coordination, and faster response times for urgent modifications or support.'
+                },
+                {
+                  title: 'Cost-Effective Solutions',
+                  paragraph: 'Lower transportation costs, established supplier networks, and competitive local pricing structures.'
+                }
+              ]
+            },
+            getQuotes: {
+              paragraph: 'Connect with 3-5 verified local builders who understand your market. No registration required, quotes within 24 hours.'
+            },
+            servicesOverview: {
+              heading: 'Exhibition Stand Builders in United States: Services, Costs, and Tips',
+              paragraph: 'Finding the right exhibition stand partner in United States can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.'
+            }
+          }
+        }
       }));
     } else if (path === '/') {
       setSections((prev: any) => ({
@@ -958,6 +1042,180 @@ export default function AdminPagesEditor() {
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:[...(s.customBoothCta?.buttons||[]), { text:'', href:'' }] } }))}>Add Button</Button>
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:(s.customBoothCta?.buttons||[]).slice(0,-1) } }))}>Remove Last</Button>
                               </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  ) : editingPath?.startsWith('/exhibition-stands/') ? (
+                    <Accordion type="multiple" className="bg-transparent">
+                      <AccordionItem value="countryPages">
+                        <AccordionTrigger>Country Pages Content</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-6 bg-white border rounded-md p-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {Object.entries(sections.countryPages || {}).map(([countrySlug, countryData]: [string, any]) => (
+                                <div key={countrySlug} className="border rounded-lg p-4 bg-gray-50">
+                                  <h4 className="font-semibold text-lg mb-3 capitalize">
+                                    {countrySlug.replace(/-/g, ' ')}
+                                  </h4>
+                                  
+                                  {/* Why Choose Local Section */}
+                                  <div className="mb-4">
+                                    <h5 className="font-medium mb-2">Why Choose Local Builders</h5>
+                                    <Label>Section Heading</Label>
+                                    <Input 
+                                      value={countryData?.whyChooseLocal?.heading || ''} 
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        countryPages: {
+                                          ...(s.countryPages || {}),
+                                          [countrySlug]: {
+                                            ...(s.countryPages?.[countrySlug] || {}),
+                                            whyChooseLocal: {
+                                              ...(s.countryPages?.[countrySlug]?.whyChooseLocal || {}),
+                                              heading: e.target.value
+                                            }
+                                          }
+                                        }
+                                      }))}
+                                    />
+                                    <Label className="mt-2 block">Section Paragraph</Label>
+                                    <Textarea 
+                                      rows={2} 
+                                      value={countryData?.whyChooseLocal?.paragraph || ''} 
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        countryPages: {
+                                          ...(s.countryPages || {}),
+                                          [countrySlug]: {
+                                            ...(s.countryPages?.[countrySlug] || {}),
+                                            whyChooseLocal: {
+                                              ...(s.countryPages?.[countrySlug]?.whyChooseLocal || {}),
+                                              paragraph: e.target.value
+                                            }
+                                          }
+                                        }
+                                      }))}
+                                    />
+                                    
+                                    {/* Info Cards */}
+                                    <div className="mt-3">
+                                      <h6 className="font-medium mb-2">Info Cards</h6>
+                                      {(countryData?.whyChooseLocal?.infoCards || []).map((card: any, idx: number) => (
+                                        <div key={idx} className="border rounded p-3 mb-2 bg-white">
+                                          <Label>Card {idx + 1} Title</Label>
+                                          <Input 
+                                            value={card.title || ''} 
+                                            onChange={(e) => {
+                                              const arr = [...(countryData?.whyChooseLocal?.infoCards || [])];
+                                              arr[idx] = { ...arr[idx], title: e.target.value };
+                                              setSections((s: any) => ({
+                                                ...s,
+                                                countryPages: {
+                                                  ...(s.countryPages || {}),
+                                                  [countrySlug]: {
+                                                    ...(s.countryPages?.[countrySlug] || {}),
+                                                    whyChooseLocal: {
+                                                      ...(s.countryPages?.[countrySlug]?.whyChooseLocal || {}),
+                                                      infoCards: arr
+                                                    }
+                                                  }
+                                                }
+                                              }));
+                                            }}
+                                          />
+                                          <Label className="mt-2 block">Card {idx + 1} Paragraph</Label>
+                                          <Textarea 
+                                            rows={2} 
+                                            value={card.paragraph || ''} 
+                                            onChange={(e) => {
+                                              const arr = [...(countryData?.whyChooseLocal?.infoCards || [])];
+                                              arr[idx] = { ...arr[idx], paragraph: e.target.value };
+                                              setSections((s: any) => ({
+                                                ...s,
+                                                countryPages: {
+                                                  ...(s.countryPages || {}),
+                                                  [countrySlug]: {
+                                                    ...(s.countryPages?.[countrySlug] || {}),
+                                                    whyChooseLocal: {
+                                                      ...(s.countryPages?.[countrySlug]?.whyChooseLocal || {}),
+                                                      infoCards: arr
+                                                    }
+                                                  }
+                                                }
+                                              }));
+                                            }}
+                                          />
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Get Quotes Section */}
+                                  <div className="mb-4">
+                                    <h5 className="font-medium mb-2">Get Quotes Section</h5>
+                                    <Label>Paragraph</Label>
+                                    <Textarea 
+                                      rows={2} 
+                                      value={countryData?.getQuotes?.paragraph || ''} 
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        countryPages: {
+                                          ...(s.countryPages || {}),
+                                          [countrySlug]: {
+                                            ...(s.countryPages?.[countrySlug] || {}),
+                                            getQuotes: {
+                                              ...(s.countryPages?.[countrySlug]?.getQuotes || {}),
+                                              paragraph: e.target.value
+                                            }
+                                          }
+                                        }
+                                      }))}
+                                    />
+                                  </div>
+                                  
+                                  {/* Services Overview Section */}
+                                  <div className="mb-4">
+                                    <h5 className="font-medium mb-2">Services Overview</h5>
+                                    <Label>Section Heading</Label>
+                                    <Input 
+                                      value={countryData?.servicesOverview?.heading || ''} 
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        countryPages: {
+                                          ...(s.countryPages || {}),
+                                          [countrySlug]: {
+                                            ...(s.countryPages?.[countrySlug] || {}),
+                                            servicesOverview: {
+                                              ...(s.countryPages?.[countrySlug]?.servicesOverview || {}),
+                                              heading: e.target.value
+                                            }
+                                          }
+                                        }
+                                      }))}
+                                    />
+                                    <Label className="mt-2 block">Section Paragraph</Label>
+                                    <Textarea 
+                                      rows={3} 
+                                      value={countryData?.servicesOverview?.paragraph || ''} 
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        countryPages: {
+                                          ...(s.countryPages || {}),
+                                          [countrySlug]: {
+                                            ...(s.countryPages?.[countrySlug] || {}),
+                                            servicesOverview: {
+                                              ...(s.countryPages?.[countrySlug]?.servicesOverview || {}),
+                                              paragraph: e.target.value
+                                            }
+                                          }
+                                        }
+                                      }))}
+                                    />
+                                  </div>
+                                </div>
+                              ))}
                             </div>
                           </div>
                         </AccordionContent>
