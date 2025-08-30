@@ -1155,40 +1155,45 @@ export default function AdminPagesEditor() {
                                         </Badge>
                                       </div>
                                       
-                                      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                                      <div className="space-y-8">
                                         {(countryData?.infoCards || []).map((card: any, idx: number) => (
                                           <div key={idx} className="group relative">
                                             {/* Card Container */}
-                                            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-gray-100 hover:border-blue-300 group-hover:scale-[1.02]">
+                                            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-gray-100 hover:border-blue-300 group-hover:scale-[1.01] w-full">
                                               {/* Card Header */}
-                                              <div className="flex items-center justify-between mb-6">
+                                              <div className="flex items-center justify-between mb-8">
                                                 <div className="flex items-center">
-                                                  <div className={`w-6 h-6 rounded-full mr-3 flex items-center justify-center ${
+                                                  <div className={`w-8 h-8 rounded-full mr-4 flex items-center justify-center ${
                                                     idx === 0 ? 'bg-blue-500' : 
                                                     idx === 1 ? 'bg-green-500' : 'bg-purple-500'
                                                   }`}>
-                                                    <span className="text-white font-bold text-sm">{idx + 1}</span>
+                                                    <span className="text-white font-bold text-lg">{idx + 1}</span>
                                                   </div>
-                                                  <span className="text-lg font-bold text-gray-800">Card {idx + 1}</span>
+                                                  <div>
+                                                    <span className="text-xl font-bold text-gray-800">Card {idx + 1}</span>
+                                                    <div className="text-sm text-gray-600 mt-1">
+                                                      {idx === 0 ? "Market Knowledge" : idx === 1 ? "Project Delivery" : "Cost Solutions"}
+                                                    </div>
+                                                  </div>
                                                 </div>
                                                 <Badge variant="outline" className={`${
                                                   idx === 0 ? 'border-blue-300 text-blue-700 bg-blue-50' : 
                                                   idx === 1 ? 'border-green-300 text-green-700 bg-green-50' : 
                                                   'border-purple-300 text-purple-700 bg-purple-50'
-                                                }`}>
+                                                } px-4 py-2 text-sm`}>
                                                   {idx === 0 ? "Market Knowledge" : idx === 1 ? "Project Delivery" : "Cost Solutions"}
                                                 </Badge>
                                               </div>
                                               
                                               {/* Card Content */}
-                                              <div className="space-y-6">
+                                              <div className="space-y-8">
                                                 <div>
-                                                  <Label className="text-base font-semibold text-gray-700 mb-3 block flex items-center">
-                                                    <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                                                  <Label className="text-lg font-semibold text-gray-700 mb-4 block flex items-center">
+                                                    <span className="w-3 h-3 bg-gray-400 rounded-full mr-3"></span>
                                                     Card Title
                                                   </Label>
                                                   <Input 
-                                                    className="text-base h-12 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                                                    className="text-base h-14 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 w-full"
                                                     placeholder="e.g., Local Market Knowledge"
                                                     value={card.title || ''} 
                                                     onChange={(e) => {
@@ -1209,13 +1214,13 @@ export default function AdminPagesEditor() {
                                                 </div>
                                                 
                                                 <div>
-                                                  <Label className="text-base font-semibold text-gray-700 mb-3 block flex items-center">
-                                                    <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                                                  <Label className="text-lg font-semibold text-gray-700 mb-4 block flex items-center">
+                                                    <span className="w-3 h-3 bg-gray-400 rounded-full mr-3"></span>
                                                     Description
                                                   </Label>
                                                   <Textarea 
-                                                    className="text-base border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 resize-none"
-                                                    rows={5} 
+                                                    className="text-base border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 resize-none w-full"
+                                                    rows={6} 
                                                     placeholder="Describe the advantage or benefit that local builders provide..."
                                                     value={card.text || ''} 
                                                     onChange={(e) => {
@@ -1237,8 +1242,8 @@ export default function AdminPagesEditor() {
                                               </div>
                                               
                                               {/* Card Footer */}
-                                              <div className="mt-6 pt-4 border-t border-gray-100">
-                                                <div className="text-xs text-gray-500 text-center">
+                                              <div className="mt-8 pt-6 border-t border-gray-100">
+                                                <div className="text-sm text-gray-500 text-center bg-gray-50 rounded-lg p-3">
                                                   This card will appear in the "Why Choose Local Builders" section
                                                 </div>
                                               </div>

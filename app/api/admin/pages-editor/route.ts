@@ -154,16 +154,28 @@ export async function GET(request: NextRequest) {
   if (action === 'get-content') {
     const path = searchParams.get('path') || '';
     if (!path) return NextResponse.json({ success: false, error: 'Missing path' }, { status: 400 });
+    
     let pageId = '';
     const parts = path.split('/').filter(Boolean);
+    
+    // Handle dynamic country pages
     if (parts[0] === 'exhibition-stands') {
-      pageId = parts.slice(1).join('-');
+      if (parts.length >= 2) {
+        // For country pages: /exhibition-stands/china -> pageId = china
+        pageId = parts[1];
+        console.log('🌍 API Debug - Country page detected:', { path, pageId, parts });
+      } else {
+        pageId = 'exhibition-stands';
+      }
     } else if (parts.length === 0) {
       pageId = 'home';
     } else {
       pageId = parts.join('-');
     }
-    // Prefer Supabase if configured; if configured, do not fall back silently
+    
+    console.log('🔍 API Debug - Final pageId:', pageId, 'for path:', path);
+    
+    // Prefer Supabase if configured
     try {
       const sb = getServerSupabase();
       if (sb) {
@@ -182,8 +194,37 @@ export async function GET(request: NextRequest) {
           );
         }
         
-        console.log('✅ Supabase data retrieved:', JSON.stringify(data?.content, null, 2));
+        console.log('✅ Supabase data retrieved for pageId:', pageId);
+        console.log('📊 Content structure:', Object.keys(data?.content || {}));
+        console.log('🏳️ Sections:', Object.keys(data?.content?.sections || {}));
         console.log('🏳️ Country pages in retrieved data:', data?.content?.sections?.countryPages);
+        
+        // For country pages, ensure we return the correct structure
+        if (parts[0] === 'exhibition-stands' && parts.length >= 2) {
+          const countrySlug = parts[1];
+          const countryData = data?.content?.sections?.countryPages?.[countrySlug];
+          console.log('🌍 Country data for', countrySlug, ':', countryData);
+          
+          if (countryData) {
+            // Return the specific country data
+            return NextResponse.json(
+              { 
+                success: true, 
+                data: { 
+                  ...data.content,
+                  sections: {
+                    ...data.content.sections,
+                    countryPages: {
+                      [countrySlug]: countryData
+                    }
+                  }
+                }, 
+                error: null 
+              },
+              { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'supabase', 'x-sb-present': 'true' } }
+            );
+          }
+        }
         
         return NextResponse.json(
           { success: true, data: data?.content || null, error: null },
@@ -232,8 +273,15 @@ export async function PUT(request: NextRequest) {
     // /exhibition-stands/{country}[/{city}] or static
     let pageId = '';
     const parts = path.split('/').filter(Boolean);
+    
     if (parts[0] === 'exhibition-stands') {
-      pageId = parts.slice(1).join('-');
+      if (parts.length >= 2) {
+        // For country pages: /exhibition-stands/china -> pageId = china
+        pageId = parts[1];
+        console.log('🌍 PUT Debug - Country page detected:', { path, pageId, parts });
+      } else {
+        pageId = 'exhibition-stands';
+      }
     } else if (parts.length === 0) {
       pageId = 'home';
     } else {

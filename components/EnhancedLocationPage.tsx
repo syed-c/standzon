@@ -133,7 +133,6 @@ export function EnhancedLocationPage({
       setIsLoadingCms(true);
       try {
         // Generate country slug consistently with the API
-        // For country pages, the API stores content with pageId = country name (e.g., "china", "germany")
         const countrySlug = finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 
                            finalLocationName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
         
@@ -149,6 +148,17 @@ export function EnhancedLocationPage({
         if (data?.success && data?.data) {
           console.log("✅ Loaded CMS data for country:", countrySlug, data.data);
           console.log("🏳️ Country pages data:", data.data?.sections?.countryPages);
+          console.log("🌍 Available country data keys:", Object.keys(data.data?.sections?.countryPages || {}));
+          
+          // Check if we have the specific country data
+          const countryData = data.data?.sections?.countryPages?.[countrySlug];
+          if (countryData) {
+            console.log("✅ Found country-specific data for:", countrySlug, countryData);
+          } else {
+            console.warn("⚠️ No country-specific data found for:", countrySlug);
+            console.log("🔍 Available countries:", Object.keys(data.data?.sections?.countryPages || {}));
+          }
+          
           setCmsData(data.data);
         } else {
           console.warn("⚠️ No CMS data found for country:", countrySlug);
