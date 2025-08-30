@@ -42,44 +42,10 @@ export default function AdminPagesEditor() {
   const [seoKeywords, setSeoKeywords] = useState<string>('');
   const [h1, setH1] = useState('');
   const [pageMap, setPageMap] = useState<Array<{ tag: string; text: string }>>([]);
-  // Section-aware state
+  // Section-aware state - starts with minimal common sections
   const [sections, setSections] = useState<any>({
-    // Common
+    // Common sections (used by multiple pages)
     hero: { heading: '', description: '' },
-    cta: { heading: 'Ready to Transform Your Exhibition Experience?', paragraph: '', buttons: [ { text: 'Get Started Today', href: '/contact' }, { text: 'Browse Contractors', href: '/exhibition-stands' } ] },
-    // Home specific
-    heroButtons: [ { text: 'Get Free Quote →', href: '/quote' }, { text: 'Global Venues', href: '/exhibition-stands' }, { text: 'Find Builders', href: '/builders' } ],
-    // Leads intro (separate from CTA)
-    leadsIntro: { heading: 'Live Lead Activity', paragraph: 'Real exhibition stand requests from clients worldwide' },
-    // Leads CTA block
-    readyLeads: { heading: 'Ready to Access These Leads?', paragraph: 'Join our platform as a verified builder and start receiving qualified leads like these' },
-    globalPresence: { heading: 'Global Presence, Local Expertise', paragraph: 'With operations spanning five continents, we deliver world-class exhibition solutions while maintaining deep local market knowledge and cultural understanding.' },
-    moreCountries: { heading: 'More Countries in {country}', paragraph: 'Discover exhibition stand builders across all major markets in this region. Click on any country to explore local professionals and get instant quotes.' },
-    expandingMarkets: { heading: 'Expanding to New Markets?', paragraph: "We're continuously growing our global network. If you don't see your location listed, contact us to discuss how we can support your exhibition needs." },
-    readyStart: { heading: 'Ready to Get Started?', paragraph: 'Connect with verified exhibition stand builders in your target location. Get multiple competitive quotes without creating an account.' },
-    clientSay: { heading: 'What Our Clients Say', paragraph: 'Join thousands of satisfied clients who found their perfect exhibition stand builders through our platform' },
-    reviews: [
-      { name: '', role: '', rating: 5, text: '', image: '' },
-    ],
-    finalCta: { heading: "Let's Create Something Extraordinary", paragraph: 'Ready to transform your exhibition presence? Get a personalized quote and discover how we can bring your vision to life.', buttons: [ { text: 'Get Free Quotes Now', href: '/quote' } ] },
-    // Custom Booth specific sections
-    whyChooseCustom: { heading: 'Why Choose Custom Design?', paragraph: 'Stand out from the crowd with a booth that\'s uniquely yours', features: [
-      { heading: 'Brand-Focused Design', paragraph: 'Every element designed to reflect your brand identity and values' },
-      { heading: 'Creative Innovation', paragraph: 'Cutting-edge design concepts that make your booth stand out' },
-      { heading: 'Goal-Oriented', paragraph: 'Designed specifically to achieve your exhibition objectives' },
-      { heading: 'Multi-Functional', paragraph: 'Spaces that work for meetings, demos, and networking' }
-    ]},
-    designProcess: { heading: 'Our Design Process', paragraph: 'From concept to completion, we guide you through every step', steps: [
-      { heading: 'Discovery & Brief', paragraph: 'We understand your brand, goals, and exhibition requirements' },
-      { heading: 'Concept Design', paragraph: '3D concepts and layouts tailored to your space and objectives' },
-      { heading: 'Design Refinement', paragraph: 'Collaborative refinement until the design is perfect' },
-      { heading: 'Production & Install', paragraph: 'Expert construction and professional installation at your venue' }
-    ]},
-    customDesignServices: { heading: 'Custom Design Services', paragraph: 'Comprehensive custom booth solutions for every need' },
-    customBoothCta: { heading: 'Ready to Create Your Custom Booth?', paragraph: 'Connect with expert designers who understand your industry and objectives', buttons: [
-      { text: 'Start Your Project', href: '/quote' },
-      { text: 'Browse Designers', href: '/builders' }
-    ]},
   });
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -113,6 +79,60 @@ export default function AdminPagesEditor() {
     setSeoKeywords('');
     setH1('');
     setPageMap([]);
+    
+    // Reset sections based on page type
+    if (path === '/custom-booth') {
+      setSections((prev: any) => ({
+        hero: { heading: '', description: '' },
+        whyChooseCustom: { 
+          heading: 'Why Choose Custom Design?', 
+          paragraph: 'Stand out from the crowd with a booth that\'s uniquely yours', 
+          features: [
+            { heading: 'Brand-Focused Design', paragraph: 'Every element designed to reflect your brand identity and values' },
+            { heading: 'Creative Innovation', paragraph: 'Cutting-edge design concepts that make your booth stand out' },
+            { heading: 'Goal-Oriented', paragraph: 'Designed specifically to achieve your exhibition objectives' },
+            { heading: 'Multi-Functional', paragraph: 'Spaces that work for meetings, demos, and networking' }
+          ]
+        },
+        designProcess: { 
+          heading: 'Our Design Process', 
+          paragraph: 'From concept to completion, we guide you through every step', 
+          steps: [
+            { heading: 'Discovery & Brief', paragraph: 'We understand your brand, goals, and exhibition requirements' },
+            { heading: 'Concept Design', paragraph: '3D concepts and layouts tailored to your space and objectives' },
+            { heading: 'Design Refinement', paragraph: 'Collaborative refinement until the design is perfect' },
+            { heading: 'Production & Install', paragraph: 'Expert construction and professional installation at your venue' }
+          ]
+        },
+        customDesignServices: { heading: 'Custom Design Services', paragraph: 'Comprehensive custom booth solutions for every need' },
+        customBoothCta: { 
+          heading: 'Ready to Create Your Custom Booth?', 
+          paragraph: 'Connect with expert designers who understand your industry and objectives', 
+          buttons: [
+            { text: 'Start Your Project', href: '/quote' },
+            { text: 'Browse Designers', href: '/builders' }
+          ]
+        },
+      }));
+    } else if (path === '/') {
+      setSections((prev: any) => ({
+        hero: { heading: '', description: '' },
+        heroButtons: [ { text: 'Get Free Quote →', href: '/quote' }, { text: 'Global Venues', href: '/exhibition-stands' }, { text: 'Find Builders', href: '/builders' } ],
+        leadsIntro: { heading: 'Live Lead Activity', paragraph: 'Real exhibition stand requests from clients worldwide' },
+        readyLeads: { heading: 'Ready to Access These Leads?', paragraph: 'Join our platform as a verified builder and start receiving qualified leads like these' },
+        globalPresence: { heading: 'Global Presence, Local Expertise', paragraph: 'With operations spanning five continents, we deliver world-class exhibition solutions while maintaining deep local market knowledge and cultural understanding.' },
+        moreCountries: { heading: 'More Countries in {country}', paragraph: 'Discover exhibition stand builders across all major markets in this region. Click on any country to explore local professionals and get instant quotes.' },
+        expandingMarkets: { heading: 'Expanding to New Markets?', paragraph: "We're continuously growing our global network. If you don't see your location listed, contact us to discuss how we can support your exhibition needs." },
+        readyStart: { heading: 'Ready to Get Started?', paragraph: 'Connect with verified exhibition stand builders in your target location. Get multiple competitive quotes without creating an account.' },
+        clientSay: { heading: 'What Our Clients Say', paragraph: 'Join thousands of satisfied clients who found their perfect exhibition stand builders through our platform' },
+        reviews: [ { name: '', role: '', rating: 5, text: '', image: '' } ],
+        finalCta: { heading: "Let's Create Something Extraordinary", paragraph: 'Ready to transform your exhibition presence? Get a personalized quote and discover how we can bring your vision to life.', buttons: [ { text: 'Get Free Quotes Now', href: '/quote' } ] },
+      }));
+    } else {
+      setSections((prev: any) => ({
+        hero: { heading: '', description: '' },
+      }));
+    }
     try {
       // 1) Try loading saved content first
       const savedRes = await fetch(`/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(path)}`, { cache: 'no-store' });
@@ -127,8 +147,42 @@ export default function AdminPagesEditor() {
         setSeoDescription(pc?.seo?.metaDescription || '');
         setSeoKeywords((pc?.seo?.keywords || []).join(', '));
         setH1(pc?.sections?.hero?.heading || pc?.hero?.title || '');
-        // Load sections if present
-        if (pc?.sections) setSections((prev:any)=>({ ...prev, ...pc.sections }));
+        // Load sections if present, but only load page-specific sections
+        if (pc?.sections) {
+          if (path === '/custom-booth') {
+            // For custom-booth page, only load custom-booth specific sections
+            setSections((prev:any) => ({
+              ...prev,
+              hero: pc.sections.hero || prev.hero,
+              whyChooseCustom: pc.sections.whyChooseCustom || prev.whyChooseCustom,
+              designProcess: pc.sections.designProcess || prev.designProcess,
+              customDesignServices: pc.sections.customDesignServices || prev.customDesignServices,
+              customBoothCta: pc.sections.customBoothCta || prev.customBoothCta,
+            }));
+          } else if (path === '/') {
+            // For home page, load home-specific sections
+            setSections((prev:any) => ({
+              ...prev,
+              hero: pc.sections.hero || prev.hero,
+              heroButtons: pc.sections.heroButtons || prev.heroButtons,
+              leadsIntro: pc.sections.leadsIntro || prev.leadsIntro,
+              readyLeads: pc.sections.readyLeads || prev.readyLeads,
+              globalPresence: pc.sections.globalPresence || prev.globalPresence,
+              moreCountries: pc.sections.moreCountries || prev.moreCountries,
+              expandingMarkets: pc.sections.expandingMarkets || prev.expandingMarkets,
+              readyStart: pc.sections.readyStart || prev.readyStart,
+              clientSay: pc.sections.clientSay || prev.clientSay,
+              reviews: pc.sections.reviews || prev.reviews,
+              finalCta: pc.sections.finalCta || prev.finalCta,
+            }));
+          } else {
+            // For other pages, load common sections only
+            setSections((prev:any) => ({
+              ...prev,
+              hero: pc.sections.hero || prev.hero,
+            }));
+          }
+        }
         const rawHtml: string | undefined = pc?.content?.extra?.rawHtml || pc?.content?.introduction;
         if (rawHtml && typeof rawHtml === 'string') {
           const doc = new DOMParser().parseFromString(rawHtml, 'text/html');
