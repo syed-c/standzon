@@ -226,6 +226,9 @@ export async function PUT(request: NextRequest) {
     }
     if (!pageId) pageId = 'home';
 
+    // Debug: Log pageId generation
+    console.log('🔍 API Debug - Path:', path, 'PageId:', pageId, 'Parts:', parts);
+
     // Load existing from storage (if any) and merge minimal SEO/H1
     const existing = storageAPI.getPageContent(pageId);
     const updated: PageContent = existing ? { ...existing } : {
@@ -259,10 +262,12 @@ export async function PUT(request: NextRequest) {
 
     // Merge section-aware updates (do not overwrite unrelated fields)
     if (sections && typeof sections === 'object') {
+      console.log('🔍 API Debug - Sections received:', JSON.stringify(sections, null, 2));
       (updated as any).sections = {
         ...(updated as any).sections,
         ...sections,
       };
+      console.log('🔍 API Debug - Updated sections:', JSON.stringify((updated as any).sections, null, 2));
     }
 
     // Accept top-level reviews/buttons for Home editor schema

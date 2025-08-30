@@ -393,6 +393,13 @@ export default function AdminPagesEditor() {
         })
         .join('\n');
 
+      // Debug: Log what we're sending for country pages
+      if (editingPath.startsWith('/exhibition-stands/')) {
+        console.log('🌍 Saving country page:', editingPath);
+        console.log('📝 Sections data:', sections);
+        console.log('🏳️ Country pages data:', sections.countryPages);
+      }
+
       const res = await fetch('/api/admin/pages-editor', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -414,10 +421,13 @@ export default function AdminPagesEditor() {
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Update failed');
 
+      // Debug: Log the response
+      console.log('✅ Save response:', data);
+
       toast({ title: 'Updated', description: 'Page updated successfully and revalidated.' });
       setEditingPath(null);
     } catch (e: any) {
-      console.error(e);
+      console.error('❌ Save error:', e);
       toast({ title: 'Save Failed', description: e.message || 'Could not save.', variant: 'destructive' });
     } finally {
       setIsSaving(false);
@@ -482,14 +492,14 @@ export default function AdminPagesEditor() {
       {/* Edit Modal */}
       {editingPath && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 space-y-4">
+          <div className="bg-white rounded-lg w-full max-w-6xl max-h-[95vh] overflow-y-auto">
+            <div className="p-8 space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Edit Page</h2>
+                <h2 className="text-3xl font-bold">Edit Page: {editingPath}</h2>
                 <Button variant="outline" onClick={() => setEditingPath(null)}>Close</Button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 <div className="space-y-3">
                   <h3 className="font-semibold">SEO</h3>
                   <div>
@@ -1070,158 +1080,202 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
                     </Accordion>
                   ) : editingPath?.startsWith('/exhibition-stands/') ? (
-                    <Accordion type="multiple" className="bg-transparent">
-                      <AccordionItem value="countryPages">
-                        <AccordionTrigger>Country Pages Content</AccordionTrigger>
-                        <AccordionContent>
-                          <div className="space-y-6 bg-white border rounded-md p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-6">
+                      <Accordion type="multiple" className="bg-transparent">
+                        <AccordionItem value="countryPages" className="border-2 border-blue-200 rounded-lg">
+                          <AccordionTrigger className="text-xl font-semibold px-6 py-4 bg-blue-50 hover:bg-blue-100 rounded-t-lg">
+                            🌍 Country Pages Content
+                          </AccordionTrigger>
+                          <AccordionContent className="px-6 pb-6">
+                            <div className="space-y-8">
                               {Object.entries(sections.countryPages || {}).map(([countrySlug, countryData]: [string, any]) => (
-                                <div key={countrySlug} className="border rounded-lg p-4 bg-gray-50">
-                                  <h4 className="font-semibold text-lg mb-3 capitalize">
-                                    {countrySlug.replace(/-/g, ' ')}
+                                <div key={countrySlug} className="border-2 border-gray-200 rounded-xl p-8 bg-gradient-to-br from-gray-50 to-white shadow-sm">
+                                  <h4 className="text-2xl font-bold mb-6 text-gray-800 capitalize border-b border-gray-200 pb-3">
+                                    🏳️ {countrySlug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                                   </h4>
                                   
-                                                                     {/* Why Choose Local Section */}
-                                   <div className="mb-4">
-                                     <h5 className="font-medium mb-2">Why Choose Local Builders</h5>
-                                     <Label>Section Heading</Label>
-                                     <Input 
-                                       value={countryData?.whyChooseHeading || ''} 
-                                       onChange={(e) => setSections((s: any) => ({
-                                         ...s,
-                                         countryPages: {
-                                           ...(s.countryPages || {}),
-                                           [countrySlug]: {
-                                             ...(s.countryPages?.[countrySlug] || {}),
-                                             whyChooseHeading: e.target.value
-                                           }
-                                         }
-                                       }))}
-                                     />
-                                     <Label className="mt-2 block">Section Paragraph</Label>
-                                     <Textarea 
-                                       rows={2} 
-                                       value={countryData?.whyChooseParagraph || ''} 
-                                       onChange={(e) => setSections((s: any) => ({
-                                         ...s,
-                                         countryPages: {
-                                           ...(s.countryPages || {}),
-                                           [countrySlug]: {
-                                             ...(s.countryPages?.[countrySlug] || {}),
-                                             whyChooseParagraph: e.target.value
-                                           }
-                                         }
-                                       }))}
-                                     />
-                                     
-                                     {/* Info Cards */}
-                                     <div className="mt-3">
-                                       <h6 className="font-medium mb-2">Info Cards</h6>
-                                       {(countryData?.infoCards || []).map((card: any, idx: number) => (
-                                         <div key={idx} className="border rounded p-3 mb-2 bg-white">
-                                           <Label>Card {idx + 1} Title</Label>
-                                           <Input 
-                                             value={card.title || ''} 
-                                             onChange={(e) => {
-                                               const arr = [...(countryData?.infoCards || [])];
-                                               arr[idx] = { ...arr[idx], title: e.target.value };
-                                               setSections((s: any) => ({
-                                                 ...s,
-                                                 countryPages: {
-                                                   ...(s.countryPages || {}),
-                                                   [countrySlug]: {
-                                                     ...(s.countryPages?.[countrySlug] || {}),
-                                                     infoCards: arr
-                                                   }
-                                                 }
-                                               }));
-                                             }}
-                                           />
-                                           <Label className="mt-2 block">Card {idx + 1} Text</Label>
-                                           <Textarea 
-                                             rows={2} 
-                                             value={card.text || ''} 
-                                             onChange={(e) => {
-                                               const arr = [...(countryData?.infoCards || [])];
-                                               arr[idx] = { ...arr[idx], text: e.target.value };
-                                               setSections((s: any) => ({
-                                                 ...s,
-                                                 countryPages: {
-                                                   ...(s.countryPages || {}),
-                                                   [countrySlug]: {
-                                                     ...(s.countryPages?.[countrySlug] || {}),
-                                                     infoCards: arr
-                                                   }
-                                                 }
-                                               }));
-                                             }}
-                                           />
-                                         </div>
-                                       ))}
-                                     </div>
-                                   </div>
-                                   
-                                   {/* Get Quotes Section */}
-                                   <div className="mb-4">
-                                     <h5 className="font-medium mb-2">Get Quotes Section</h5>
-                                     <Label>Paragraph</Label>
-                                     <Textarea 
-                                       rows={2} 
-                                       value={countryData?.quotesParagraph || ''} 
-                                       onChange={(e) => setSections((s: any) => ({
-                                         ...s,
-                                         countryPages: {
-                                           ...(s.countryPages || {}),
-                                           [countrySlug]: {
-                                             ...(s.countryPages?.[countrySlug] || {}),
-                                             quotesParagraph: e.target.value
-                                           }
-                                         }
-                                       }))}
-                                     />
-                                   </div>
-                                   
-                                   {/* Services Overview Section */}
-                                   <div className="mb-4">
-                                     <h5 className="font-medium mb-2">Services Overview</h5>
-                                     <Label>Section Heading</Label>
-                                     <Input 
-                                       value={countryData?.servicesHeading || ''} 
-                                       onChange={(e) => setSections((s: any) => ({
-                                         ...s,
-                                         countryPages: {
-                                           ...(s.countryPages || {}),
-                                           [countrySlug]: {
-                                             ...(s.countryPages?.[countrySlug] || {}),
-                                             servicesHeading: e.target.value
-                                           }
-                                         }
-                                       }))}
-                                     />
-                                     <Label className="mt-2 block">Section Paragraph</Label>
-                                     <Textarea 
-                                       rows={3} 
-                                       value={countryData?.servicesParagraph || ''} 
-                                       onChange={(e) => setSections((s: any) => ({
-                                         ...s,
-                                         countryPages: {
-                                           ...(s.countryPages || {}),
-                                           [countrySlug]: {
-                                             ...(s.countryPages?.[countrySlug] || {}),
-                                             servicesParagraph: e.target.value
-                                           }
-                                         }
-                                       }))}
-                                     />
-                                   </div>
+                                  {/* Why Choose Local Section */}
+                                  <div className="mb-8 p-6 bg-white rounded-lg border border-gray-100">
+                                    <h5 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
+                                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                      Why Choose Local Builders
+                                    </h5>
+                                    <div className="space-y-4">
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Section Heading</Label>
+                                        <Input 
+                                          className="mt-1"
+                                          value={countryData?.whyChooseHeading || ''} 
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                whyChooseHeading: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
+                                        <Textarea 
+                                          className="mt-1"
+                                          rows={3} 
+                                          value={countryData?.whyChooseParagraph || ''} 
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                whyChooseParagraph: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                      
+                                      {/* Info Cards */}
+                                      <div className="mt-6">
+                                        <h6 className="text-md font-semibold mb-4 text-gray-600">Info Cards</h6>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                          {(countryData?.infoCards || []).map((card: any, idx: number) => (
+                                            <div key={idx} className="border-2 border-gray-200 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
+                                              <div className="flex items-center mb-3">
+                                                <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                                <span className="text-sm font-medium text-gray-700">Card {idx + 1}</span>
+                                              </div>
+                                              <div className="space-y-3">
+                                                <div>
+                                                  <Label className="text-xs font-medium text-gray-600">Title</Label>
+                                                  <Input 
+                                                    className="mt-1 text-sm"
+                                                    value={card.title || ''} 
+                                                    onChange={(e) => {
+                                                      const arr = [...(countryData?.infoCards || [])];
+                                                      arr[idx] = { ...arr[idx], title: e.target.value };
+                                                      setSections((s: any) => ({
+                                                        ...s,
+                                                        countryPages: {
+                                                          ...(s.countryPages || {}),
+                                                          [countrySlug]: {
+                                                            ...(s.countryPages?.[countrySlug] || {}),
+                                                            infoCards: arr
+                                                          }
+                                                        }
+                                                      }));
+                                                    }}
+                                                  />
+                                                </div>
+                                                <div>
+                                                  <Label className="text-xs font-medium text-gray-600">Description</Label>
+                                                  <Textarea 
+                                                    className="mt-1 text-sm"
+                                                    rows={3} 
+                                                    value={card.text || ''} 
+                                                    onChange={(e) => {
+                                                      const arr = [...(countryData?.infoCards || [])];
+                                                      arr[idx] = { ...arr[idx], text: e.target.value };
+                                                      setSections((s: any) => ({
+                                                        ...s,
+                                                        countryPages: {
+                                                          ...(s.countryPages || {}),
+                                                          [countrySlug]: {
+                                                            ...(s.countryPages?.[countrySlug] || {}),
+                                                            infoCards: arr
+                                                          }
+                                                        }
+                                                      }));
+                                                    }}
+                                                  />
+                                                </div>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Get Quotes Section */}
+                                  <div className="mb-8 p-6 bg-white rounded-lg border border-gray-100">
+                                    <h5 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
+                                      <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                      Get Quotes Section
+                                    </h5>
+                                    <div>
+                                      <Label className="text-sm font-medium text-gray-600">Paragraph</Label>
+                                      <Textarea 
+                                        className="mt-1"
+                                        rows={3} 
+                                        value={countryData?.quotesParagraph || ''} 
+                                        onChange={(e) => setSections((s: any) => ({
+                                          ...s,
+                                          countryPages: {
+                                            ...(s.countryPages || {}),
+                                            [countrySlug]: {
+                                              ...(s.countryPages?.[countrySlug] || {}),
+                                              quotesParagraph: e.target.value
+                                            }
+                                          }
+                                        }))}
+                                      />
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Services Overview Section */}
+                                  <div className="p-6 bg-white rounded-lg border border-gray-100">
+                                    <h5 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
+                                      <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                                      Services Overview
+                                    </h5>
+                                    <div className="space-y-4">
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Section Heading</Label>
+                                        <Input 
+                                          className="mt-1"
+                                          value={countryData?.servicesHeading || ''} 
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                servicesHeading: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
+                                        <Textarea 
+                                          className="mt-1"
+                                          rows={4} 
+                                          value={countryData?.servicesParagraph || ''} 
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                servicesParagraph: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
                               ))}
                             </div>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    </div>
                   ) : null}
                 </div>
               </div>
