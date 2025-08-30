@@ -80,21 +80,15 @@ export interface PageContent {
     // Country pages specific sections
     countryPages?: {
       [country: string]: {
-        whyChooseLocal?: {
-          heading?: string;
-          paragraph?: string;
-          infoCards?: Array<{
-            title?: string;
-            paragraph?: string;
-          }>;
-        };
-        getQuotes?: {
-          paragraph?: string;
-        };
-        servicesOverview?: {
-          heading?: string;
-          paragraph?: string;
-        };
+        whyChooseHeading?: string;
+        whyChooseParagraph?: string;
+        infoCards?: Array<{
+          title?: string;
+          text?: string;
+        }>;
+        quotesParagraph?: string;
+        servicesHeading?: string;
+        servicesParagraph?: string;
       };
     };
     [key: string]: any;

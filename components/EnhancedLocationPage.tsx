@@ -245,29 +245,29 @@ export function EnhancedLocationPage({
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.whyChooseLocal?.heading || 
+                {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.whyChooseHeading || 
                  `Why Choose Local Builders in ${displayLocation}?`}
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.whyChooseLocal?.paragraph || 
+                {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.whyChooseParagraph || 
                  `Local builders offer unique advantages including market knowledge, 
                  logistical expertise, and established vendor relationships.`}
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 mb-12">
-              {(cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.whyChooseLocal?.infoCards || [
+              {(cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.infoCards || [
                 {
                   title: "Local Market Knowledge",
-                  paragraph: `Understand local regulations, venue requirements, and cultural preferences specific to ${displayLocation}.`
+                  text: `Understand local regulations, venue requirements, and cultural preferences specific to ${displayLocation}.`
                 },
                 {
                   title: "Faster Project Delivery",
-                  paragraph: "Reduced logistics time, easier coordination, and faster response times for urgent modifications or support."
+                  text: "Reduced logistics time, easier coordination, and faster response times for urgent modifications or support."
                 },
                 {
                   title: "Cost-Effective Solutions",
-                  paragraph: "Lower transportation costs, established supplier networks, and competitive local pricing structures."
+                  text: "Lower transportation costs, established supplier networks, and competitive local pricing structures."
                 }
               ]).map((card: any, index: number) => (
                 <div key={index} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
@@ -280,7 +280,7 @@ export function EnhancedLocationPage({
                      <DollarSign className="w-8 h-8 text-purple-600" />}
                   </div>
                   <h3 className="text-xl font-semibold mb-4">{card.title}</h3>
-                  <p className="text-gray-600">{card.paragraph}</p>
+                  <p className="text-gray-600">{card.text}</p>
                 </div>
               ))}
             </div>
@@ -291,7 +291,7 @@ export function EnhancedLocationPage({
                 Get Quotes from {displayLocation} Experts
               </h3>
               <p className="text-lg mb-6 opacity-90">
-                {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.getQuotes?.paragraph || 
+                {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.quotesParagraph || 
                  `Connect with 3-5 verified local builders who understand your market. 
                  No registration required, quotes within 24 hours.`}
               </p>
@@ -423,11 +423,11 @@ export function EnhancedLocationPage({
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto prose prose-slate">
             <h2 className="text-2xl md:text-3xl font-bold !mb-4">
-              {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.servicesOverview?.heading || 
+              {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.servicesHeading || 
                `Exhibition Stand Builders in ${displayLocation}: Services, Costs, and Tips`}
             </h2>
             <p>
-              {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.servicesOverview?.paragraph || 
+              {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.servicesParagraph || 
                `Finding the right exhibition stand partner in ${displayLocation} can dramatically improve your event ROI. Local builders offer`}
               end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand
               presents a professional, high‑impact presence on the show floor.
