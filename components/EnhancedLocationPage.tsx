@@ -132,20 +132,29 @@ export function EnhancedLocationPage({
       
       setIsLoadingCms(true);
       try {
+        // Generate country slug consistently with the API
+        // For country pages, the API stores content with pageId = country name (e.g., "china", "germany")
         const countrySlug = finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 
                            finalLocationName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
         
+        console.log("🔍 Fetching CMS data for country:", countrySlug);
+        
         const res = await fetch(
-          `/api/admin/pages-editor?action=get-content&path=%2Fexhibition-stands%2F${countrySlug}`,
+          `/api/admin/pages-editor?action=get-content&path=/exhibition-stands/${countrySlug}`,
           { cache: "no-store" }
         );
         const data = await res.json();
+        console.log("📡 CMS API response:", data);
+        
         if (data?.success && data?.data) {
-          console.log("Loaded CMS data for country:", countrySlug, data.data);
+          console.log("✅ Loaded CMS data for country:", countrySlug, data.data);
+          console.log("🏳️ Country pages data:", data.data?.sections?.countryPages);
           setCmsData(data.data);
+        } else {
+          console.warn("⚠️ No CMS data found for country:", countrySlug);
         }
       } catch (error) {
-        console.error("Error loading CMS data:", error);
+        console.error("❌ Error loading CMS data:", error);
       } finally {
         setIsLoadingCms(false);
       }
@@ -153,6 +162,12 @@ export function EnhancedLocationPage({
 
     fetchCmsData();
   }, [finalCountryName, finalLocationName, isCity]);
+
+  // Generate consistent country slug for CMS data access
+  const countrySlug = useMemo(() => {
+    return finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 
+           finalLocationName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  }, [finalCountryName, finalLocationName]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
@@ -245,18 +260,18 @@ export function EnhancedLocationPage({
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.whyChooseHeading || 
+                {cmsData?.sections?.countryPages?.[countrySlug]?.whyChooseHeading || 
                  `Why Choose Local Builders in ${displayLocation}?`}
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.whyChooseParagraph || 
+                {cmsData?.sections?.countryPages?.[countrySlug]?.whyChooseParagraph || 
                  `Local builders offer unique advantages including market knowledge, 
                  logistical expertise, and established vendor relationships.`}
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 mb-12">
-              {(cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.infoCards || [
+              {(cmsData?.sections?.countryPages?.[countrySlug]?.infoCards || [
                 {
                   title: "Local Market Knowledge",
                   text: `Understand local regulations, venue requirements, and cultural preferences specific to ${displayLocation}.`
@@ -291,7 +306,7 @@ export function EnhancedLocationPage({
                 Get Quotes from {displayLocation} Experts
               </h3>
               <p className="text-lg mb-6 opacity-90">
-                {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.quotesParagraph || 
+                {cmsData?.sections?.countryPages?.[countrySlug]?.quotesParagraph || 
                  `Connect with 3-5 verified local builders who understand your market. 
                  No registration required, quotes within 24 hours.`}
               </p>
@@ -423,11 +438,11 @@ export function EnhancedLocationPage({
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto prose prose-slate">
             <h2 className="text-2xl md:text-3xl font-bold !mb-4">
-              {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.servicesHeading || 
+              {cmsData?.sections?.countryPages?.[countrySlug]?.servicesHeading || 
                `Exhibition Stand Builders in ${displayLocation}: Services, Costs, and Tips`}
             </h2>
             <p>
-              {cmsData?.sections?.countryPages?.[finalCountryName?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]?.servicesParagraph || 
+              {cmsData?.sections?.countryPages?.[countrySlug]?.servicesParagraph || 
                `Finding the right exhibition stand partner in ${displayLocation} can dramatically improve your event ROI. Local builders offer`}
               end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand
               presents a professional, high‑impact presence on the show floor.

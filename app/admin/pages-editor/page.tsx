@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, Edit, RefreshCw, FileText } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -342,7 +343,7 @@ export default function AdminPagesEditor() {
             }
           });
           if (sections.length > 0) {
-            setPageMap(sections);
+              setPageMap(sections);
             return; // Use saved content; skip scraping
           }
         }
@@ -750,7 +751,7 @@ export default function AdminPagesEditor() {
                             <Input value={sections.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Hero Description</Label>
                             <Textarea rows={3} value={sections.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} />
-                          </div>
+                      </div>
                         </AccordionContent>
                       </AccordionItem>
 
@@ -770,14 +771,14 @@ export default function AdminPagesEditor() {
                                   <Input value={feature.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.whyChooseCustom?.features||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, whyChooseCustom:{ ...(s.whyChooseCustom||{}), features:arr } }; })} />
                                   <Label className="mt-2 block">Feature Description</Label>
                                   <Textarea rows={2} value={feature.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.whyChooseCustom?.features||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, whyChooseCustom:{ ...(s.whyChooseCustom||{}), features:arr } }; })} />
-                                </div>
+                      </div>
                               ))}
                               <div className="flex gap-2">
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, whyChooseCustom:{ ...(s.whyChooseCustom||{}), features:[...(s.whyChooseCustom?.features||[]), { heading:'', paragraph:'' }] } }))}>Add Feature</Button>
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, whyChooseCustom:{ ...(s.whyChooseCustom||{}), features:(s.whyChooseCustom?.features||[]).slice(0,-1) } }))}>Remove Last</Button>
-                              </div>
-                            </div>
+                      </div>
                           </div>
+                      </div>
                         </AccordionContent>
                       </AccordionItem>
 
@@ -797,12 +798,12 @@ export default function AdminPagesEditor() {
                                   <Input value={step.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.designProcess?.steps||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, designProcess:{ ...(s.designProcess||{}), steps:arr } }; })} />
                                   <Label className="mt-2 block">Step Description</Label>
                                   <Textarea rows={2} value={step.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.designProcess?.steps||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, designProcess:{ ...(s.designProcess||{}), steps:arr } }; })} />
-                                </div>
-                              ))}
+                          </div>
+                        ))}
                               <div className="flex gap-2">
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, designProcess:{ ...(s.designProcess||{}), steps:[...(s.designProcess?.steps||[]), { heading:'', paragraph:'' }] } }))}>Add Step</Button>
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, designProcess:{ ...(s.designProcess||{}), steps:(s.designProcess?.steps||[]).slice(0,-1) } }))}>Remove Last</Button>
-                              </div>
+                      </div>
                             </div>
                           </div>
                         </AccordionContent>
@@ -998,8 +999,8 @@ export default function AdminPagesEditor() {
                                       />
                                     </div>
                                   </div>
-                                </div>
-                              ))}
+                          </div>
+                        ))}
                               
                               <div className="flex gap-2 mt-3">
                                 <Button 
@@ -1046,7 +1047,7 @@ export default function AdminPagesEditor() {
                                 >
                                   Remove Last Card
                                 </Button>
-                              </div>
+                      </div>
                             </div>
                           </div>
                         </AccordionContent>
@@ -1064,17 +1065,17 @@ export default function AdminPagesEditor() {
                               <h5 className="font-semibold mb-2">Buttons</h5>
                               {(sections.customBoothCta?.buttons||[]).map((button:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
-                                  <Label>Button Text</Label>
+                              <Label>Button Text</Label>
                                   <Input value={button.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.customBoothCta?.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:arr } }; })} />
-                                  <Label className="mt-2 block">Button Link</Label>
+                              <Label className="mt-2 block">Button Link</Label>
                                   <Input value={button.href||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.customBoothCta?.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:arr } }; })} />
-                                </div>
-                              ))}
+                            </div>
+                          ))}
                               <div className="flex gap-2">
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:[...(s.customBoothCta?.buttons||[]), { text:'', href:'' }] } }))}>Add Button</Button>
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), buttons:(s.customBoothCta?.buttons||[]).slice(0,-1) } }))}>Remove Last</Button>
-                              </div>
-                            </div>
+                        </div>
+                      </div>
                           </div>
                         </AccordionContent>
                       </AccordionItem>
@@ -1137,65 +1138,75 @@ export default function AdminPagesEditor() {
                                         />
                                       </div>
                                       
-                                      {/* Info Cards */}
-                                      <div className="mt-6">
-                                        <h6 className="text-md font-semibold mb-4 text-gray-600">Info Cards</h6>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                          {(countryData?.infoCards || []).map((card: any, idx: number) => (
-                                            <div key={idx} className="border-2 border-gray-200 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
-                                              <div className="flex items-center mb-3">
-                                                <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
-                                                <span className="text-sm font-medium text-gray-700">Card {idx + 1}</span>
+                                                                          {/* Info Cards */}
+                                    <div className="mt-8">
+                                      <h6 className="text-lg font-semibold mb-6 text-gray-700 flex items-center">
+                                        <span className="w-3 h-3 bg-green-500 rounded-full mr-3"></span>
+                                        Info Cards
+                                      </h6>
+                                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                        {(countryData?.infoCards || []).map((card: any, idx: number) => (
+                                          <div key={idx} className="border-2 border-gray-200 rounded-xl p-6 bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md">
+                                            <div className="flex items-center justify-between mb-4">
+                                              <div className="flex items-center">
+                                                <span className="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+                                                <span className="text-sm font-semibold text-gray-700">Card {idx + 1}</span>
                                               </div>
-                                              <div className="space-y-3">
-                                                <div>
-                                                  <Label className="text-xs font-medium text-gray-600">Title</Label>
-                                                  <Input 
-                                                    className="mt-1 text-sm"
-                                                    value={card.title || ''} 
-                                                    onChange={(e) => {
-                                                      const arr = [...(countryData?.infoCards || [])];
-                                                      arr[idx] = { ...arr[idx], title: e.target.value };
-                                                      setSections((s: any) => ({
-                                                        ...s,
-                                                        countryPages: {
-                                                          ...(s.countryPages || {}),
-                                                          [countrySlug]: {
-                                                            ...(s.countryPages?.[countrySlug] || {}),
-                                                            infoCards: arr
-                                                          }
+                                              <Badge variant="secondary" className="text-xs">
+                                                {idx === 0 ? "Market Knowledge" : idx === 1 ? "Project Delivery" : "Cost Solutions"}
+                                              </Badge>
+                                            </div>
+                                            <div className="space-y-4">
+                                              <div>
+                                                <Label className="text-sm font-medium text-gray-600 mb-2 block">Title</Label>
+                                                <Input 
+                                                  className="text-sm"
+                                                  placeholder="e.g., Local Market Knowledge"
+                                                  value={card.title || ''} 
+                                                  onChange={(e) => {
+                                                    const arr = [...(countryData?.infoCards || [])];
+                                                    arr[idx] = { ...arr[idx], title: e.target.value };
+                                                    setSections((s: any) => ({
+                                                      ...s,
+                                                      countryPages: {
+                                                        ...(s.countryPages || {}),
+                                                        [countrySlug]: {
+                                                          ...(s.countryPages?.[countrySlug] || {}),
+                                                          infoCards: arr
                                                         }
-                                                      }));
-                                                    }}
-                                                  />
-                                                </div>
-                                                <div>
-                                                  <Label className="text-xs font-medium text-gray-600">Description</Label>
-                                                  <Textarea 
-                                                    className="mt-1 text-sm"
-                                                    rows={3} 
-                                                    value={card.text || ''} 
-                                                    onChange={(e) => {
-                                                      const arr = [...(countryData?.infoCards || [])];
-                                                      arr[idx] = { ...arr[idx], text: e.target.value };
-                                                      setSections((s: any) => ({
-                                                        ...s,
-                                                        countryPages: {
-                                                          ...(s.countryPages || {}),
-                                                          [countrySlug]: {
-                                                            ...(s.countryPages?.[countrySlug] || {}),
-                                                            infoCards: arr
-                                                          }
+                                                      }
+                                                    }));
+                                                  }}
+                                                />
+                                              </div>
+                                              <div>
+                                                <Label className="text-sm font-medium text-gray-600 mb-2 block">Description</Label>
+                                                <Textarea 
+                                                  className="text-sm"
+                                                  rows={4} 
+                                                  placeholder="Describe the advantage or benefit..."
+                                                  value={card.text || ''} 
+                                                  onChange={(e) => {
+                                                    const arr = [...(countryData?.infoCards || [])];
+                                                    arr[idx] = { ...arr[idx], text: e.target.value };
+                                                    setSections((s: any) => ({
+                                                      ...s,
+                                                      countryPages: {
+                                                        ...(s.countryPages || {}),
+                                                        [countrySlug]: {
+                                                          ...(s.countryPages?.[countrySlug] || {}),
+                                                          infoCards: arr
                                                         }
-                                                      }));
-                                                    }}
-                                                  />
-                                                </div>
+                                                      }
+                                                    }));
+                                                  }}
+                                                />
                                               </div>
                                             </div>
-                                          ))}
-                                        </div>
+                                          </div>
+                                        ))}
                                       </div>
+                                    </div>
                                     </div>
                                   </div>
                                   
