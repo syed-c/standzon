@@ -812,7 +812,11 @@ export default function AdminPagesEditor() {
                             <Label>Heading</Label>
                             <Input value={sections.readyStart?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, readyStart:{ ...(s.readyStart||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Paragraph</Label>
-                            <Textarea rows={3} value={sections.readyStart?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, readyStart:{ ...(s.readyStart||{}), paragraph:e.target.value } }))} />
+                            <RichTextEditor 
+                              value={sections.readyStart?.paragraph||''} 
+                              onChange={(value)=>setSections((s:any)=>({ ...s, readyStart:{ ...(s.readyStart||{}), paragraph:value } }))} 
+                              rows={3}
+                            />
                             <div className="mt-2">
                               <h5 className="font-semibold mb-2">Buttons</h5>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -841,7 +845,11 @@ export default function AdminPagesEditor() {
                             <Label>Section Heading</Label>
                             <Input value={sections.clientSay?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, clientSay:{ ...(s.clientSay||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Section Paragraph</Label>
-                            <Textarea rows={3} value={sections.clientSay?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, clientSay:{ ...(s.clientSay||{}), paragraph:e.target.value } }))} />
+                            <RichTextEditor 
+                              value={sections.clientSay?.paragraph||''} 
+                              onChange={(value)=>setSections((s:any)=>({ ...s, clientSay:{ ...(s.clientSay||{}), paragraph:value } }))} 
+                              rows={3}
+                            />
                             <div className="mt-3">
                               <h5 className="font-semibold mb-2">Reviews</h5>
                               {(sections.reviews||[]).map((r:any, idx:number)=> (
@@ -890,7 +898,11 @@ export default function AdminPagesEditor() {
                             <Label>Heading</Label>
                             <Input value={sections.finalCta?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, finalCta:{ ...(s.finalCta||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Paragraph</Label>
-                            <Textarea rows={3} value={sections.finalCta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, finalCta:{ ...(s.finalCta||{}), paragraph:e.target.value } }))} />
+                            <RichTextEditor 
+                              value={sections.finalCta?.paragraph||''} 
+                              onChange={(value)=>setSections((s:any)=>({ ...s, finalCta:{ ...(s.finalCta||{}), paragraph:value } }))} 
+                              rows={3}
+                            />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                               {(sections.finalCta?.buttons||[]).map((b:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3">
@@ -1244,7 +1256,11 @@ export default function AdminPagesEditor() {
                             <Label>Section Heading</Label>
                             <Input value={sections.customBoothCta?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Section Paragraph</Label>
-                            <Textarea rows={3} value={sections.customBoothCta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), paragraph:e.target.value } }))} />
+                            <RichTextEditor 
+                              value={sections.customBoothCta?.paragraph||''} 
+                              onChange={(value)=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), paragraph:value } }))} 
+                              rows={3}
+                            />
                             <div className="mt-3">
                               <h5 className="font-semibold mb-2">Buttons</h5>
                               {(sections.customBoothCta?.buttons||[]).map((button:any, idx:number)=> (
@@ -1273,7 +1289,11 @@ export default function AdminPagesEditor() {
                             <Label>Hero H1</Label>
                             <Input value={sections.boothRental?.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), hero:{ ...(s.boothRental?.hero||{}), heading:e.target.value } } }))} />
                             <Label className="mt-2 block">Hero Description</Label>
-                            <Textarea rows={3} value={sections.boothRental?.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), hero:{ ...(s.boothRental?.hero||{}), description:e.target.value } } }))} />
+                            <RichTextEditor 
+                              value={sections.boothRental?.hero?.description||''} 
+                              onChange={(value)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), hero:{ ...(s.boothRental?.hero||{}), description:value } } }))} 
+                              rows={3}
+                            />
                           </div>
                         </AccordionContent>
                       </AccordionItem>
@@ -1285,7 +1305,11 @@ export default function AdminPagesEditor() {
                             <Label>Section Heading</Label>
                             <Input value={sections.boothRental?.whyChoose?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), heading:e.target.value } } }))} />
                             <Label className="mt-2 block">Section Paragraph</Label>
-                            <Textarea rows={3} value={sections.boothRental?.whyChoose?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), paragraph:e.target.value } } }))} />
+                            <RichTextEditor 
+                              value={sections.boothRental?.whyChoose?.paragraph||''} 
+                              onChange={(value)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), paragraph:value } } }))} 
+                              rows={3}
+                            />
                             <div className="mt-3">
                               <h5 className="font-semibold mb-2">Features</h5>
                               {(sections.boothRental?.whyChoose?.features||[]).map((feature:any, idx:number)=> (
@@ -1312,7 +1336,11 @@ export default function AdminPagesEditor() {
                             <Label>Section Heading</Label>
                             <Input value={sections.boothRental?.process?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), process:{ ...(s.boothRental?.process||{}), heading:e.target.value } } }))} />
                             <Label className="mt-2 block">Section Paragraph</Label>
-                            <Textarea rows={3} value={sections.boothRental?.process?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), process:{ ...(s.boothRental?.process||{}), paragraph:e.target.value } } }))} />
+                            <RichTextEditor 
+                              value={sections.boothRental?.process?.paragraph||''} 
+                              onChange={(value)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), process:{ ...(s.boothRental?.process||{}), paragraph:value } } }))} 
+                              rows={3}
+                            />
                             <div className="mt-3">
                               <h5 className="font-semibold mb-2">Process Steps</h5>
                               {(sections.boothRental?.process?.steps||[]).map((step:any, idx:number)=> (
@@ -1644,20 +1672,19 @@ export default function AdminPagesEditor() {
                                       </div>
                                       <div>
                                         <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
-                                        <Textarea 
-                                          className="mt-1"
-                                          rows={3} 
+                                        <RichTextEditor 
                                           value={countryData?.whyChooseParagraph || ''} 
-                                          onChange={(e) => setSections((s: any) => ({
+                                          onChange={(value) => setSections((s: any) => ({
                                             ...s,
                                             countryPages: {
                                               ...(s.countryPages || {}),
                                               [countrySlug]: {
                                                 ...(s.countryPages?.[countrySlug] || {}),
-                                                whyChooseParagraph: e.target.value
+                                                whyChooseParagraph: value
                                               }
                                             }
                                           }))}
+                                          rows={3}
                                         />
                                       </div>
                                       
@@ -1835,20 +1862,19 @@ export default function AdminPagesEditor() {
                                     </h5>
                                     <div>
                                       <Label className="text-sm font-medium text-gray-600">Paragraph</Label>
-                                      <Textarea 
-                                        className="mt-1"
-                                        rows={3} 
+                                      <RichTextEditor 
                                         value={countryData?.quotesParagraph || ''} 
-                                        onChange={(e) => setSections((s: any) => ({
+                                        onChange={(value) => setSections((s: any) => ({
                                           ...s,
                                           countryPages: {
                                             ...(s.countryPages || {}),
                                             [countrySlug]: {
                                               ...(s.countryPages?.[countrySlug] || {}),
-                                              quotesParagraph: e.target.value
+                                              quotesParagraph: value
                                             }
                                           }
                                         }))}
+                                        rows={3}
                                       />
                                     </div>
                                   </div>
@@ -1879,20 +1905,19 @@ export default function AdminPagesEditor() {
                                       </div>
                                       <div>
                                         <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
-                                        <Textarea 
-                                          className="mt-1"
-                                          rows={4} 
+                                        <RichTextEditor 
                                           value={countryData?.servicesParagraph || ''} 
-                                          onChange={(e) => setSections((s: any) => ({
+                                          onChange={(value) => setSections((s: any) => ({
                                             ...s,
                                             countryPages: {
                                               ...(s.countryPages || {}),
                                               [countrySlug]: {
                                                 ...(s.countryPages?.[countrySlug] || {}),
-                                                servicesParagraph: e.target.value
+                                                servicesParagraph: value
                                               }
                                             }
                                           }))}
+                                          rows={4}
                                         />
                                       </div>
                                     </div>
@@ -1924,20 +1949,19 @@ export default function AdminPagesEditor() {
                                       </div>
                                       <div>
                                         <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
-                                        <Textarea 
-                                          className="mt-1"
-                                          rows={3} 
+                                        <RichTextEditor 
                                           value={countryData?.finalCtaParagraph || ''} 
-                                          onChange={(e) => setSections((s: any) => ({
+                                          onChange={(value) => setSections((s: any) => ({
                                             ...s,
                                             countryPages: {
                                               ...(s.countryPages || {}),
                                               [countrySlug]: {
                                                 ...(s.countryPages?.[countrySlug] || {}),
-                                                finalCtaParagraph: e.target.value
+                                                finalCtaParagraph: value
                                               }
                                             }
                                           }))}
+                                          rows={3}
                                         />
                                       </div>
                                       <div>
