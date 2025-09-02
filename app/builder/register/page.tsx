@@ -16,27 +16,27 @@ export default function BuilderRegisterPage() {
       <Navigation />
       
       {/* Header Section */}
-      <section className="pt-20 pb-12 bg-gradient-to-br from-russian-violet-600 to-russian-violet-800 text-white">
+      <section className="pt-20 pb-12 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
             Launch Your Builder Profile
           </h1>
-          <p className="text-lg text-russian-violet-100 mb-8">
+          <p className="text-lg text-blue-100 mb-8">
             Connect with clients worldwide and grow your exhibition stand building business with our unified platform
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
             <div className="bg-white/10 rounded-lg p-4">
               <div className="text-2xl font-bold mb-2">⚡</div>
-              <div className="text-russian-violet-100">Instant Profile Launch</div>
+              <div className="text-blue-100">Instant Profile Launch</div>
             </div>
             <div className="bg-white/10 rounded-lg p-4">
               <div className="text-2xl font-bold mb-2">🌍</div>
-              <div className="text-russian-violet-100">Global Visibility</div>
+              <div className="text-blue-100">Global Visibility</div>
             </div>
             <div className="bg-white/10 rounded-lg p-4">
               <div className="text-2xl font-bold mb-2">📊</div>
-              <div className="text-russian-violet-100">Unified Dashboard</div>
+              <div className="text-blue-100">Unified Dashboard</div>
             </div>
           </div>
         </div>
@@ -61,8 +61,8 @@ export default function BuilderRegisterPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-claret-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-claret-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
@@ -73,8 +73,8 @@ export default function BuilderRegisterPage() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-claret-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-claret-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>

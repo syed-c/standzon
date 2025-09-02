@@ -629,7 +629,7 @@ export default function BulkUploadSystem({ userRole, onUploadComplete }: BulkUpl
                           <span className="font-medium">{result.fileName}</span>
                         </div>
                         <Badge className={
-                          result.status === 'completed' ? 'bg-claret-100 text-claret-800' :
+                          result.status === 'completed' ? 'bg-green-100 text-green-800' :
                           result.status === 'failed' ? 'bg-red-100 text-red-800' :
                           'bg-yellow-100 text-yellow-800'
                         }>

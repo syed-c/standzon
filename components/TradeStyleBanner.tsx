@@ -31,17 +31,17 @@ export default function TradeStyleBanner({
 	searchPlaceholder = 'Search by show name, city, industry, or venue...'
 }: TradeStyleBannerProps) {
 	return (
-		<section className="pt-20 pb-16 bg-gradient-to-b from-russian-violet to-dark-purple text-white">
+		<section className="pt-20 pb-16 bg-gradient-to-b from-[#1a2b45] to-[#204e80] text-white">
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="text-center">
-					<div className="inline-flex items-center px-4 py-2 bg-dark-purple/50 rounded-full text-sm font-medium mb-6">
+					<div className="inline-flex items-center px-4 py-2 bg-[#2c3e55] rounded-full text-sm font-medium mb-6">
 						{badgeText}
 					</div>
 					<h1 className="text-4xl md:text-6xl font-bold mb-6">
 						{mainHeading}
-						<span className="block text-persian-orange">{highlightHeading}</span>
+						<span className="block" style={{ color: '#2ec4b6' }}>{highlightHeading}</span>
 					</h1>
-					<p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto">
+					<p className="text-xl md:text-2xl text-[#cfd8e3] mb-8 max-w-3xl mx-auto">
 						{description}
 					</p>
 
@@ -49,7 +49,7 @@ export default function TradeStyleBanner({
 						<div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-lg mb-8">
 							{stats.map((s, idx) => (
 								<div key={idx} className="flex flex-col items-center space-y-2">
-									<div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: (s.color || '#CE8964') + '20' }}>
+									<div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: (s.color || '#2ec4b6') + '20' }}>
 										{renderIcon(s.icon, s.color)}
 									</div>
 									<span className="font-semibold">{s.value}</span>
@@ -66,7 +66,7 @@ export default function TradeStyleBanner({
 								<Input
 									type="text"
 									placeholder={searchPlaceholder}
-									className="pl-12 pr-4 py-4 text-lg bg-white/95 backdrop-blur-sm border-0 text-russian-violet placeholder-gray-500 shadow-lg"
+									className="pl-12 pr-4 py-4 text-lg bg-white/95 backdrop-blur-sm border-0 text-[#1a2b45] placeholder-gray-500 shadow-lg"
 								/>
 							</div>
 						</div>

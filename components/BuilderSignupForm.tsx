@@ -473,7 +473,7 @@ export default function BuilderSignupForm() {
       <div className="max-w-2xl mx-auto p-6">
         <Card>
           <CardContent className="pt-6 text-center">
-            <div className="w-16 h-16 bg-claret-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -483,9 +483,9 @@ export default function BuilderSignupForm() {
               Thank you for joining our platform. Your application has been submitted for review.
               You'll receive an email confirmation within 24-48 hours.
             </p>
-            <div className="bg-russian-violet-50 border border-russian-violet-200 rounded-lg p-4 mb-6">
-              <h3 className="font-semibold text-russian-violet-900 mb-2">What happens next?</h3>
-              <ul className="text-sm text-russian-violet-800 space-y-1">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <h3 className="font-semibold text-blue-900 mb-2">What happens next?</h3>
+              <ul className="text-sm text-blue-800 space-y-1">
                 <li>• Our team will review your application within 24-48 hours</li>
                 <li>• You'll receive email confirmation once approved</li>
                 <li>• Access your builder dashboard to manage profile and quotes</li>
@@ -522,13 +522,13 @@ export default function BuilderSignupForm() {
             {[1, 2, 3, 4, 5].map((step) => (
               <div key={step} className="flex items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  step <= currentStep ? 'bg-russian-violet-600 text-white' : 'bg-gray-200 text-gray-600'
+                  step <= currentStep ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
                 }`}>
                   {step < currentStep ? <CheckCircle className="w-4 h-4" /> : step}
                 </div>
                 {step < 5 && (
                   <div className={`w-12 h-0.5 ${
-                    step < currentStep ? 'bg-russian-violet-600' : 'bg-gray-200'
+                    step < currentStep ? 'bg-blue-600' : 'bg-gray-200'
                   }`} />
                 )}
               </div>
@@ -1000,16 +1000,16 @@ export default function BuilderSignupForm() {
                 </div>
               </div>
 
-              <Card className="bg-russian-violet-50 border-russian-violet-200">
+              <Card className="bg-blue-50 border-blue-200">
                 <CardContent className="pt-6">
                   <div className="flex items-start space-x-3">
-                    <Mail className="w-5 h-5 text-russian-violet-600 mt-0.5" />
+                    <Mail className="w-5 h-5 text-blue-600 mt-0.5" />
                     <div>
-                      <h3 className="font-medium text-russian-violet-900 mb-2">Email Verification</h3>
-                      <p className="text-russian-violet-800 text-sm mb-2">
+                      <h3 className="font-medium text-blue-900 mb-2">Email Verification</h3>
+                      <p className="text-blue-800 text-sm mb-2">
                         After registration, we'll send a welcome email to <strong>{formData.primaryEmail}</strong> with a verification link.
                       </p>
-                      <p className="text-russian-violet-700 text-sm">
+                      <p className="text-blue-700 text-sm">
                         You can also verify your email later from your profile dashboard.
                       </p>
                     </div>
@@ -1065,7 +1065,7 @@ export default function BuilderSignupForm() {
               <Button 
                 onClick={handleSubmit} 
                 disabled={isSubmitting || !formData.agreeToTerms}
-                className="bg-claret-600 hover:bg-claret-700"
+                className="bg-green-600 hover:bg-green-700"
               >
                 {isSubmitting ? 'Submitting...' : 'Complete Registration'}
                 <CheckCircle className="w-4 h-4 ml-2" />

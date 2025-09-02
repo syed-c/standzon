@@ -448,24 +448,24 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
           title: "Admin Portal",
           description: "Manage the entire platform",
           icon: <Shield className="w-6 h-6" />,
-          color: "text-russian-violet-600",
-          bgColor: "bg-russian-violet-50 border-russian-violet-200",
+          color: "text-red-600",
+          bgColor: "bg-red-50 border-red-200",
         };
       case "builder":
         return {
           title: "Builder Portal",
           description: "Grow your exhibition business",
           icon: <Building className="w-6 h-6" />,
-          color: "text-russian-violet-600",
-          bgColor: "bg-russian-violet-50 border-russian-violet-200",
+          color: "text-blue-600",
+          bgColor: "bg-blue-50 border-blue-200",
         };
       case "client":
         return {
           title: "Client Portal",
           description: "Find the perfect exhibition stand",
           icon: <User className="w-6 h-6" />,
-          color: "text-russian-violet-600",
-          bgColor: "bg-russian-violet-50 border-russian-violet-200",
+          color: "text-green-600",
+          bgColor: "bg-green-50 border-green-200",
         };
       default:
         return {
@@ -578,7 +578,7 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
                         onChange={(e) =>
                           updateLoginForm("rememberMe", e.target.checked)
                         }
-                        className="h-4 w-4 text-russian-violet-600 rounded"
+                        className="h-4 w-4 text-blue-600 rounded"
                       />
                       <Label htmlFor="remember-me" className="ml-2 text-sm">
                         Remember me
@@ -595,9 +595,9 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
                 </div>
 
                 {errors.submit && (
-                  <Alert className="border-claret-200 bg-claret-50">
+                  <Alert className="border-red-200 bg-red-50">
                     <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription className="text-claret-800">
+                    <AlertDescription className="text-red-800">
                       {errors.submit}
                     </AlertDescription>
                   </Alert>
@@ -618,7 +618,7 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
                 {otpForm.step === "email" ? (
                   <div className="space-y-4">
                     <div className="text-center">
-                      <Clock className="w-12 h-12 text-russian-violet-600 mx-auto mb-3" />
+                      <Clock className="w-12 h-12 text-blue-600 mx-auto mb-3" />
                       <h3 className="font-medium text-gray-900">
                         Login with OTP
                       </h3>
@@ -654,18 +654,18 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
                     </div>
 
                     {errors.submit && (
-                      <Alert className="border-claret-200 bg-claret-50">
+                      <Alert className="border-red-200 bg-red-50">
                         <AlertTriangle className="h-4 w-4" />
-                        <AlertDescription className="text-claret-800">
+                        <AlertDescription className="text-red-800">
                           {errors.submit}
                         </AlertDescription>
                       </Alert>
                     )}
 
                     {successMessage && (
-                      <Alert className="border-claret-200 bg-claret-50">
+                      <Alert className="border-green-200 bg-green-50">
                         <CheckCircle className="h-4 w-4" />
-                        <AlertDescription className="text-claret-800">
+                        <AlertDescription className="text-green-800">
                           {successMessage}
                         </AlertDescription>
                       </Alert>
@@ -683,7 +683,7 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
                 ) : (
                   <div className="space-y-4">
                     <div className="text-center">
-                      <Mail className="w-12 h-12 text-russian-violet-600 mx-auto mb-3" />
+                      <Mail className="w-12 h-12 text-green-600 mx-auto mb-3" />
                       <h3 className="font-medium text-gray-900">Enter OTP</h3>
                       <p className="text-sm text-gray-600 mt-1">
                         We sent a 6-digit code to {otpForm.email}
@@ -720,9 +720,9 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
                     </div>
 
                     {errors.submit && (
-                      <Alert className="border-claret-200 bg-claret-50">
+                      <Alert className="border-red-200 bg-red-50">
                         <AlertTriangle className="h-4 w-4" />
-                        <AlertDescription className="text-claret-800">
+                        <AlertDescription className="text-red-800">
                           {errors.submit}
                         </AlertDescription>
                       </Alert>
@@ -768,7 +768,7 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
               <TabsContent value="register" className="space-y-6 mt-6">
                 {userType === "builder" ? (
                   <div className="text-center space-y-4">
-                    <Building className="w-16 h-16 text-russian-violet-600 mx-auto" />
+                    <Building className="w-16 h-16 text-blue-600 mx-auto" />
                     <div>
                       <h3 className="font-medium text-gray-900 mb-2">
                         Builder Registration
@@ -949,7 +949,7 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
                           onChange={(e) =>
                             updateRegisterForm("agreeToTerms", e.target.checked)
                           }
-                          className="mt-1 h-4 w-4 text-russian-violet-600 rounded"
+                          className="mt-1 h-4 w-4 text-blue-600 rounded"
                         />
                         <div>
                           <Label
@@ -990,7 +990,7 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
                               e.target.checked
                             )
                           }
-                          className="mt-1 h-4 w-4 text-russian-violet-600 rounded"
+                          className="mt-1 h-4 w-4 text-blue-600 rounded"
                         />
                         <Label
                           htmlFor="agree-marketing"
@@ -1003,18 +1003,18 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
                     </div>
 
                     {errors.submit && (
-                      <Alert className="border-claret-200 bg-claret-50">
+                      <Alert className="border-red-200 bg-red-50">
                         <AlertTriangle className="h-4 w-4" />
-                        <AlertDescription className="text-claret-800">
+                        <AlertDescription className="text-red-800">
                           {errors.submit}
                         </AlertDescription>
                       </Alert>
                     )}
 
                     {successMessage && (
-                      <Alert className="border-claret-200 bg-claret-50">
+                      <Alert className="border-green-200 bg-green-50">
                         <CheckCircle className="h-4 w-4" />
-                        <AlertDescription className="text-claret-800">
+                        <AlertDescription className="text-green-800">
                           {successMessage}
                         </AlertDescription>
                       </Alert>
@@ -1038,7 +1038,7 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
             {/* Security Notice */}
             <div className="text-center">
               <div className="flex items-center justify-center space-x-2 mb-3">
-                <Shield className="w-5 h-5 text-russian-violet-600" />
+                <Shield className="w-5 h-5 text-green-600" />
                 <h3 className="font-medium text-gray-900">
                   Enterprise Security
                 </h3>
@@ -1057,11 +1057,11 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
               </h3>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <Globe className="w-6 h-6 text-russian-violet-600 mx-auto mb-1" />
+                  <Globe className="w-6 h-6 text-blue-600 mx-auto mb-1" />
                   <p className="text-xs text-gray-600">Global Network</p>
                 </div>
                 <div>
-                  <Users className="w-6 h-6 text-russian-violet-600 mx-auto mb-1" />
+                  <Users className="w-6 h-6 text-green-600 mx-auto mb-1" />
                   <p className="text-xs text-gray-600">Verified Partners</p>
                 </div>
                 <div>
@@ -1076,7 +1076,7 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
               <div className="mt-6 text-center space-y-4">
                 <Separator />
                 <div>
-                  <User className="w-12 h-12 text-russian-violet-600 mx-auto mb-3" />
+                  <User className="w-12 h-12 text-green-600 mx-auto mb-3" />
                   <h3 className="font-medium text-gray-900 mb-2">
                     Looking for Exhibition Stands?
                   </h3>
@@ -1101,7 +1101,7 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
               <div className="mt-6 text-center space-y-4">
                 <Separator />
                 <div>
-                  <Building className="w-12 h-12 text-russian-violet-600 mx-auto mb-3" />
+                  <Building className="w-12 h-12 text-blue-600 mx-auto mb-3" />
                   <h3 className="font-medium text-gray-900 mb-2">
                     New Builder?
                   </h3>

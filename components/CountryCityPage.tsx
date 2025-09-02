@@ -643,7 +643,6 @@ export function CountryCityPage({
         initialBuilders={filteredBuilders}
         exhibitions={generateExhibitions(country, city)}
         venues={generateVenues(country, city)}
-        cities={cities}
         pageContent={savedPageContent || {
           seo: {
             metaTitle: pageContent.metaTitle,
@@ -763,7 +762,32 @@ export function CountryCityPage({
         </section>
       )}
 
-
+      {/* Cities Section placed after Verified Builders */}
+      {cities && cities.length > 0 && (
+        <section className="py-12 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-8 text-center">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Cities in {country}</h2>
+              <p className="text-gray-600 mt-2">Browse local pages for major cities across {country}</p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {cities.map((c) => {
+                const countrySlug = country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                return (
+                  <a key={c.slug} href={`/exhibition-stands/${countrySlug}/${c.slug}`} className="group">
+                    <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-all">
+                      <div className="flex items-center justify-between">
+                        <div className="font-semibold text-gray-900 group-hover:text-blue-700">{c.name}</div>
+                        <span className="text-xs text-gray-500">{c.builderCount || 0} builders</span>
+                      </div>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 

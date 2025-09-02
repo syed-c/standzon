@@ -184,10 +184,10 @@ export default function ManageBuildersPage() {
                   </div>
                   <div className="flex items-center space-x-1">
                     {builder.verified && (
-                                        <Badge className="bg-claret-100 text-claret-800">
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Verified
-                  </Badge>
+                      <Badge className="bg-green-100 text-green-800">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Verified
+                      </Badge>
                     )}
                     {builder.premiumMember && (
                       <Badge className="bg-yellow-100 text-yellow-800">
@@ -269,7 +269,7 @@ export default function ManageBuildersPage() {
                     size="sm"
                     variant="outline"
                     onClick={() => toggleBuilderStatus(builder, 'verified')}
-                    className={builder.verified ? 'text-red-600' : 'text-claret-600'}
+                    className={builder.verified ? 'text-red-600' : 'text-green-600'}
                   >
                     {builder.verified ? <XCircle className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />}
                   </Button>
@@ -316,7 +316,7 @@ export default function ManageBuildersPage() {
                 <Building2 className="w-5 h-5" />
                 <span>{selectedBuilder.companyName}</span>
                 {selectedBuilder.verified && (
-                  <Badge className="bg-claret-100 text-claret-800">
+                  <Badge className="bg-green-100 text-green-800">
                     <CheckCircle className="w-3 h-3 mr-1" />
                     Verified
                   </Badge>

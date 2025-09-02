@@ -140,7 +140,7 @@ export default function AdvancedAnalytics({
       change: '+12.5%',
       trend: 'up',
       icon: DollarSign,
-      color: 'text-claret-600'
+      color: 'text-green-600'
     },
     {
       title: 'Active Builders',
@@ -148,7 +148,7 @@ export default function AdvancedAnalytics({
       change: '+8.2%',
       trend: 'up',
       icon: Building,
-      color: 'text-russian-violet-600'
+      color: 'text-blue-600'
     },
     {
       title: 'Lead Conversion',
@@ -156,7 +156,7 @@ export default function AdvancedAnalytics({
       change: '+2.3%',
       trend: 'up',
       icon: Target,
-      color: 'text-russian-violet-600'
+      color: 'text-purple-600'
     },
     {
       title: 'Platform Rating',
@@ -175,7 +175,7 @@ export default function AdvancedAnalytics({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-russian-violet-600" />
+              <BarChart3 className="h-5 w-5 text-blue-600" />
               <span>Advanced Analytics & Reporting</span>
             </CardTitle>
             <div className="flex items-center gap-2">
@@ -227,7 +227,7 @@ export default function AdvancedAnalytics({
                   </div>
                   <div className="text-right">
                     <div className={`flex items-center gap-1 ${
-                      kpi.trend === 'up' ? 'text-claret-600' : 'text-red-600'
+                      kpi.trend === 'up' ? 'text-green-600' : 'text-red-600'
                     }`}>
                       {kpi.trend === 'up' ? (
                         <TrendingUp className="h-4 w-4" />
@@ -415,7 +415,7 @@ export default function AdvancedAnalytics({
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium">{metric.metric}</h4>
                         <div className={`flex items-center gap-1 ${
-                          metric.trend > 0 ? 'text-claret-600' : 'text-red-600'
+                          metric.trend > 0 ? 'text-green-600' : 'text-red-600'
                         }`}>
                           {metric.trend > 0 ? (
                             <TrendingUp className="h-4 w-4" />
@@ -432,7 +432,7 @@ export default function AdvancedAnalytics({
                       <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full ${
-                            metric.current >= metric.target ? 'bg-claret-500' : 'bg-yellow-500'
+                            metric.current >= metric.target ? 'bg-green-500' : 'bg-yellow-500'
                           }`}
                           style={{ width: `${Math.min((metric.current / metric.target) * 100, 100)}%` }}
                         />
@@ -472,7 +472,7 @@ export default function AdvancedAnalytics({
                         <td className="text-right py-3">${city.revenue.toLocaleString()}</td>
                         <td className="text-right py-3">
                           <Badge className={`${
-                            city.growth > 15 ? 'bg-claret-100 text-claret-800' :
+                            city.growth > 15 ? 'bg-green-100 text-green-800' :
                             city.growth > 10 ? 'bg-yellow-100 text-yellow-800' :
                             'bg-gray-100 text-gray-800'
                           }`}>
@@ -511,7 +511,7 @@ export default function AdvancedAnalytics({
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
                           className={`h-2 rounded-full ${
-                            metric.current >= metric.target ? 'bg-claret-500' : 'bg-orange-500'
+                            metric.current >= metric.target ? 'bg-green-500' : 'bg-orange-500'
                           }`}
                           style={{ width: `${Math.min((metric.current / metric.target) * 100, 100)}%` }}
                         />
@@ -531,24 +531,24 @@ export default function AdvancedAnalytics({
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="p-4 bg-russian-violet-50 border border-russian-violet-200 rounded-lg">
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <div className="flex items-start gap-3">
-                      <Zap className="h-5 w-5 text-russian-violet-600 mt-0.5" />
+                      <Zap className="h-5 w-5 text-blue-600 mt-0.5" />
                       <div>
-                        <h4 className="font-medium text-russian-violet-800">Optimization Opportunity</h4>
-                        <p className="text-sm text-russian-violet-700 mt-1">
+                        <h4 className="font-medium text-blue-800">Optimization Opportunity</h4>
+                        <p className="text-sm text-blue-700 mt-1">
                           UAE region shows 22% growth potential. Consider increasing marketing spend.
                         </p>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="p-4 bg-claret-50 border border-claret-200 rounded-lg">
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                     <div className="flex items-start gap-3">
-                      <TrendingUp className="h-5 w-5 text-claret-600 mt-0.5" />
+                      <TrendingUp className="h-5 w-5 text-green-600 mt-0.5" />
                       <div>
-                        <h4 className="font-medium text-claret-800">Strong Performance</h4>
-                        <p className="text-sm text-claret-700 mt-1">
+                        <h4 className="font-medium text-green-800">Strong Performance</h4>
+                        <p className="text-sm text-green-700 mt-1">
                           Builder verification time improved by 35% this quarter.
                         </p>
                       </div>

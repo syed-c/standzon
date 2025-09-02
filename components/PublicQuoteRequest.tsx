@@ -380,7 +380,7 @@ export function PublicQuoteRequest({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button 
-          className={`bg-gradient-to-r from-claret to-russian-violet hover:from-dark-purple hover:to-claret text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl ${className}`}
+          className={`bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl ${className}`}
           size="lg"
         >
           <Quote className="w-4 h-4 mr-2" />
@@ -391,7 +391,7 @@ export function PublicQuoteRequest({
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Quote className="w-5 h-5 text-claret" />
+            <Quote className="w-5 h-5 text-pink-600" />
             Get Free Exhibition Stand Quotes
           </DialogTitle>
           <DialogDescription>
@@ -406,7 +406,7 @@ export function PublicQuoteRequest({
         {/* Progress Bar */}
         <div className="w-full bg-gray-200 rounded-full h-2 mb-6">
           <div 
-            className="bg-gradient-to-r from-claret to-russian-violet h-2 rounded-full transition-all duration-300"
+            className="bg-gradient-to-r from-pink-600 to-purple-600 h-2 rounded-full transition-all duration-300"
             style={{ width: `${(currentStep / totalSteps) * 100}%` }}
           ></div>
         </div>

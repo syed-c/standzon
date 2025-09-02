@@ -247,8 +247,8 @@ export default function AdminManagementSystem({ adminId, permissions }: AdminMan
   const getRoleColor = (role: string) => {
     switch (role) {
       case 'Super Admin': return 'bg-red-100 text-red-800';
-      case 'Platform Manager': return 'bg-russian-violet-100 text-russian-violet-800';
-      case 'Data Manager': return 'bg-claret-100 text-claret-800';
+      case 'Platform Manager': return 'bg-blue-100 text-blue-800';
+      case 'Data Manager': return 'bg-green-100 text-green-800';
       case 'Content Manager': return 'bg-purple-100 text-purple-800';
       case 'Junior Admin': return 'bg-yellow-100 text-yellow-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -257,7 +257,7 @@ export default function AdminManagementSystem({ adminId, permissions }: AdminMan
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-claret-100 text-claret-800';
+      case 'active': return 'bg-green-100 text-green-800';
       case 'suspended': return 'bg-red-100 text-red-800';
       case 'pending': return 'bg-yellow-100 text-yellow-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -268,28 +268,28 @@ export default function AdminManagementSystem({ adminId, permissions }: AdminMan
     <div className="space-y-6">
       {/* Header Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-russian-violet-50 to-russian-violet-100">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-russian-violet-600 font-medium">Total Admins</p>
-                <p className="text-3xl font-bold text-russian-violet-900">{adminUsers.length}</p>
+                <p className="text-sm text-blue-600 font-medium">Total Admins</p>
+                <p className="text-3xl font-bold text-blue-900">{adminUsers.length}</p>
               </div>
-              <Users className="h-8 w-8 text-russian-violet-600" />
+              <Users className="h-8 w-8 text-blue-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-claret-50 to-claret-100">
+        <Card className="bg-gradient-to-br from-green-50 to-green-100">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-claret-600 font-medium">Active Admins</p>
-                <p className="text-3xl font-bold text-claret-900">
+                <p className="text-sm text-green-600 font-medium">Active Admins</p>
+                <p className="text-3xl font-bold text-green-900">
                   {adminUsers.filter(a => a.status === 'active').length}
                 </p>
               </div>
-              <Shield className="h-8 w-8 text-claret-600" />
+              <Shield className="h-8 w-8 text-green-600" />
             </div>
           </CardContent>
         </Card>
@@ -327,7 +327,7 @@ export default function AdminManagementSystem({ adminId, permissions }: AdminMan
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center space-x-2">
-                <Users className="h-5 w-5 text-russian-violet-600" />
+                <Users className="h-5 w-5 text-blue-600" />
                 <span>Admin Management</span>
               </CardTitle>
               <CardDescription>Manage admin users and assign role-based permissions</CardDescription>
@@ -338,7 +338,7 @@ export default function AdminManagementSystem({ adminId, permissions }: AdminMan
                 setEditingAdmin(null);
                 setNewAdmin({ name: '', email: '', role: '', permissions: [] });
               }}
-              className="bg-russian-violet-600 hover:bg-russian-violet-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               <UserPlus className="h-4 w-4 mr-2" />
               Add Admin
@@ -399,7 +399,7 @@ export default function AdminManagementSystem({ adminId, permissions }: AdminMan
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
                         <Avatar className="h-10 w-10">
-                          <AvatarFallback className="bg-russian-violet-100 text-russian-violet-600">
+                          <AvatarFallback className="bg-blue-100 text-blue-600">
                             {admin.name.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
@@ -444,7 +444,7 @@ export default function AdminManagementSystem({ adminId, permissions }: AdminMan
                           {admin.status === 'active' ? (
                             <Lock className="h-4 w-4 text-red-500" />
                           ) : (
-                            <Unlock className="h-4 w-4 text-claret-500" />
+                            <Unlock className="h-4 w-4 text-green-500" />
                           )}
                         </Button>
                         <Button
@@ -589,7 +589,7 @@ export default function AdminManagementSystem({ adminId, permissions }: AdminMan
                 </Button>
                 <Button
                   onClick={editingAdmin ? handleUpdateAdmin : handleAddAdmin}
-                  className="bg-russian-violet-600 hover:bg-russian-violet-700 text-white"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {editingAdmin ? 'Update Admin' : 'Add Admin'}
                 </Button>

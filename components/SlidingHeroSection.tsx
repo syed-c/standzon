@@ -31,7 +31,7 @@ export function SlidingHeroSection({
   description,
   stats,
   buttons = [],
-  backgroundGradient = 'linear-gradient(135deg, #0B0033 0%, #370031 50%, #832232 100%)',
+  backgroundGradient = 'linear-gradient(135deg, #7c2d92 0%, #db2777 50%, #ec4899 100%)',
   location,
   className = ''
 }: SlidingHeroSectionProps) {
@@ -76,16 +76,18 @@ export function SlidingHeroSection({
           >
             {headings[currentHeadingIndex]}
             <br />
-            <span className="bg-gradient-to-r from-persian-orange to-claret bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-pink-300 to-rose-300 bg-clip-text text-transparent">
               {subtitle}
             </span>
           </h1>
         </div>
 
-        {/* Description */}
-        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-100 mb-6 md:mb-10 max-w-4xl mx-auto leading-relaxed px-4" data-macaly="hero-description">
-          {description}
-        </p>
+        {/* Description - render formatted HTML */}
+        <p
+          className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-100 mb-6 md:mb-10 max-w-4xl mx-auto leading-relaxed px-4"
+          data-macaly="hero-description"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
 
         {/* Stats Section */}
         {stats && stats.length > 0 && (
@@ -112,7 +114,7 @@ export function SlidingHeroSection({
                 key={index}
                 buttonText={button.text}
                 location={location}
-                className={button.className || "bg-gradient-to-r from-claret to-russian-violet hover:from-dark-purple hover:to-claret text-white px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold rounded-xl border-2 border-transparent transition-all duration-300 hover:shadow-2xl transform hover:scale-105 shadow-lg w-full sm:w-auto min-h-[56px] flex items-center justify-center opacity-100 visible"}
+                className={button.className || "bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold rounded-xl border-2 border-transparent transition-all duration-300 hover:shadow-2xl transform hover:scale-105 shadow-lg w-full sm:w-auto min-h-[56px] flex items-center justify-center opacity-100 visible"}
               />
             ) : button.href ? (
               <Link key={index} href={button.href}>

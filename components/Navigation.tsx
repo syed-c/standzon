@@ -176,8 +176,8 @@ export default function Navigation() {
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${ 
       isScrolled 
-        ? 'bg-russian-violet/95 backdrop-blur-xl shadow-lg border-b border-dark-purple/50' 
-        : 'bg-russian-violet/90 backdrop-blur-md shadow-md border-b border-dark-purple/30'
+        ? 'bg-black/95 backdrop-blur-xl shadow-lg border-b border-gray-800/50' 
+        : 'bg-black/90 backdrop-blur-md shadow-md border-b border-gray-700/30'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 lg:h-18">
@@ -185,7 +185,7 @@ export default function Navigation() {
           <div className="flex-shrink-0">
             <Link href="/" className="group">
               <h1 className="text-xl lg:text-2xl font-bold font-inter transition-all duration-300 group-hover:scale-105">
-                <span className="bg-gradient-to-r from-gray-200 via-white to-gray-300 bg-clip-text text-transparent">Stands</span><span className="bg-gradient-to-r from-persian-orange via-claret to-dark-purple bg-clip-text text-transparent">Zone</span>
+                <span className="bg-gradient-to-r from-gray-200 via-white to-gray-300 bg-clip-text text-transparent">Stands</span><span className="bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 bg-clip-text text-transparent">Zone</span>
               </h1>
             </Link>
           </div>
@@ -202,7 +202,7 @@ export default function Navigation() {
                       className="relative"
                     >
                       <button
-                        className="flex items-center space-x-1 px-3 py-2 rounded-lg font-medium text-sm transition-all duration-300 text-white hover:text-persian-orange hover:bg-dark-purple/80 border border-transparent hover:border-persian-orange/30 whitespace-nowrap"
+                        className="flex items-center space-x-1 px-3 py-2 rounded-lg font-medium text-sm transition-all duration-300 text-white hover:text-pink-400 hover:bg-gray-800/80 border border-transparent hover:border-pink-500/30 whitespace-nowrap"
                         onClick={() => handleDropdownClick(item.label)}
                         style={{ color: 'white' }}
                       >
@@ -213,7 +213,7 @@ export default function Navigation() {
                       </button>
                       {activeDropdown === item.label && (
                         <div 
-                          className="absolute top-full left-0 mt-2 w-64 bg-russian-violet/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-dark-purple py-2 z-[9999] animate-in fade-in slide-in-from-top-3 duration-300 dropdown-menu"
+                          className="absolute top-full left-0 mt-2 w-64 bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700 py-2 z-[9999] animate-in fade-in slide-in-from-top-3 duration-300 dropdown-menu"
                           onMouseEnter={handleDropdownMouseEnter}
                           onMouseLeave={handleDropdownMouseLeave}
                         >
@@ -221,7 +221,7 @@ export default function Navigation() {
                             <Link
                               key={subItem.label}
                               href={subItem.href}
-                              className="block px-6 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-dark-purple hover:to-claret hover:text-persian-orange transition-all duration-200 border-l-4 border-transparent hover:border-persian-orange first:rounded-t-2xl last:rounded-b-2xl"
+                              className="block px-6 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 hover:text-pink-400 transition-all duration-200 border-l-4 border-transparent hover:border-pink-500 first:rounded-t-2xl last:rounded-b-2xl"
                               onClick={() => setActiveDropdown(null)}
                               style={{ color: '#d1d5db' }}
                             >
@@ -234,7 +234,7 @@ export default function Navigation() {
                   ) : (
                     <Link
                       href={item.href}
-                      className="px-3 py-2 rounded-lg font-medium text-sm transition-all duration-300 text-white hover:text-persian-orange hover:bg-dark-purple/80 border border-transparent hover:border-persian-orange/30 whitespace-nowrap"
+                      className="px-3 py-2 rounded-lg font-medium text-sm transition-all duration-300 text-white hover:text-pink-400 hover:bg-gray-800/80 border border-transparent hover:border-pink-500/30 whitespace-nowrap"
                       style={{ color: 'white' }}
                     >
                       <span style={{ color: 'white' }}>{item.label}</span>
@@ -251,14 +251,14 @@ export default function Navigation() {
             {!currentUser ? (
               <div className="flex items-center space-x-2">
                 <Link href="/auth/login?type=builder">
-                  <Button variant="ghost" size="sm" className="text-white hover:text-persian-orange hover:bg-dark-purple/50 border-dark-purple" style={{ color: 'white' }}>
+                  <Button variant="ghost" size="sm" className="text-white hover:text-pink-400 hover:bg-gray-800/50 border-gray-700" style={{ color: 'white' }}>
                     <FiUser className="w-4 h-4 mr-1 text-white" />
                     <span style={{ color: 'white' }}>Builder Login</span>
                   </Button>
                 </Link>
                 <span className="text-gray-600">|</span>
                 <Link href="/builder/register">
-                  <Button variant="ghost" size="sm" className="text-white hover:text-persian-orange hover:bg-dark-purple/50 border-dark-purple" style={{ color: 'white' }}>
+                  <Button variant="ghost" size="sm" className="text-white hover:text-pink-400 hover:bg-gray-800/50 border-gray-700" style={{ color: 'white' }}>
                     <span style={{ color: 'white' }}>Join as Builder</span>
                   </Button>
                 </Link>
@@ -270,7 +270,7 @@ export default function Navigation() {
                 onMouseLeave={handleMouseLeave}
               >
                 <button
-                  className="flex items-center space-x-1 px-3 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-all duration-300 text-white hover:text-persian-orange hover:bg-dark-purple/80 border border-transparent hover:border-persian-orange/30"
+                  className="flex items-center space-x-1 px-3 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-all duration-300 text-white hover:text-pink-400 hover:bg-gray-800/80 border border-transparent hover:border-pink-500/30"
                   onClick={() => handleDropdownClick('Account')}
                   style={{ color: 'white' }}
                 >
@@ -282,7 +282,7 @@ export default function Navigation() {
                 </button>
                 {activeDropdown === 'Account' && (
                   <div 
-                    className="absolute top-full right-0 mt-2 w-64 bg-russian-violet/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-dark-purple py-2 z-[9999] animate-in fade-in slide-in-from-top-3 duration-300"
+                    className="absolute top-full right-0 mt-2 w-64 bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700 py-2 z-[9999] animate-in fade-in slide-in-from-top-3 duration-300"
                     onMouseEnter={handleDropdownMouseEnter}
                     onMouseLeave={handleDropdownMouseLeave}
                   >
@@ -320,7 +320,7 @@ export default function Navigation() {
 
             {/* Get Free Quote CTA Button - Updated with pink theme */}
             <Link href="/quote">
-              <Button className="bg-gradient-to-r from-claret via-dark-purple to-russian-violet hover:from-dark-purple hover:via-russian-violet hover:to-claret text-white px-6 py-2.5 font-semibold text-sm rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-persian-orange/50 whitespace-nowrap" style={{ color: 'white' }}>
+              <Button className="bg-gradient-to-r from-pink-600 via-pink-700 to-pink-800 hover:from-pink-700 hover:via-pink-800 hover:to-pink-900 text-white px-6 py-2.5 font-semibold text-sm rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-pink-500/50 whitespace-nowrap" style={{ color: 'white' }}>
                 <FiZap className="w-4 h-4 mr-2 text-white" />
                 <span style={{ color: 'white' }}>Get Free Quote</span>
               </Button>
@@ -331,14 +331,14 @@ export default function Navigation() {
           <div className="lg:hidden flex items-center space-x-3">
             {/* Mobile Get Quote Button */}
             <Link href="/quote">
-              <Button size="sm" className="bg-gradient-to-r from-claret to-russian-violet text-white px-4 py-2 rounded-xl shadow-lg">
+              <Button size="sm" className="bg-gradient-to-r from-pink-600 to-pink-800 text-white px-4 py-2 rounded-xl shadow-lg">
                 <FiZap className="w-3 h-3 mr-1" />
                 Quote
               </Button>
             </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-xl transition-all duration-300 text-white hover:bg-dark-purple hover:text-persian-orange border border-dark-purple"
+              className="p-2 rounded-xl transition-all duration-300 text-white hover:bg-gray-800 hover:text-pink-400 border border-gray-700"
             >
               {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </button>

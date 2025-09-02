@@ -213,7 +213,7 @@ export default function Phase2CompleteSummaryPage() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle className="h-5 w-5 text-claret-600" />;
+      case 'completed': return <CheckCircle className="h-5 w-5 text-green-600" />;
       case 'enhanced': return <Zap className="h-5 w-5 text-blue-600" />;
       case 'new': return <Star className="h-5 w-5 text-purple-600" />;
       default: return <Clock className="h-5 w-5 text-gray-600" />;
@@ -224,7 +224,7 @@ export default function Phase2CompleteSummaryPage() {
     switch (impact) {
       case 'high': return 'bg-red-100 text-red-800';
       case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-claret-100 text-claret-800';
+      case 'low': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -290,9 +290,9 @@ export default function Phase2CompleteSummaryPage() {
                 <div className="text-3xl font-bold text-blue-600 mb-2">{overallMetrics.totalFeatures}</div>
                 <div className="text-sm text-blue-600">Features Delivered</div>
               </div>
-              <div className="text-center p-4 bg-claret-50 rounded-lg">
-                <div className="text-3xl font-bold text-claret-600 mb-2">{overallMetrics.averageCompletion.toFixed(1)}%</div>
-                <div className="text-sm text-claret-600">Completion Rate</div>
+              <div className="text-center p-4 bg-green-50 rounded-lg">
+                <div className="text-3xl font-bold text-green-600 mb-2">{overallMetrics.averageCompletion.toFixed(1)}%</div>
+                <div className="text-sm text-green-600">Completion Rate</div>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg">
                 <div className="text-3xl font-bold text-purple-600 mb-2">{overallMetrics.performanceImprovement}%</div>
@@ -378,13 +378,13 @@ export default function Phase2CompleteSummaryPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-claret-600" />
+                    <BarChart3 className="h-5 w-5 text-green-600" />
                     Success Metrics
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {[
-                    { label: 'Feature Completion Rate', value: 100, color: 'bg-claret-500' },
+                    { label: 'Feature Completion Rate', value: 100, color: 'bg-green-500' },
                     { label: 'User Adoption Rate', value: 89, color: 'bg-blue-500' },
                     { label: 'System Performance', value: 96, color: 'bg-purple-500' },
                     { label: 'Mobile Optimization', value: 94, color: 'bg-orange-500' }
@@ -438,7 +438,7 @@ export default function Phase2CompleteSummaryPage() {
                         <div className="grid grid-cols-1 gap-1">
                           {feature.keyFeatures.slice(0, 4).map((keyFeature, index) => (
                             <div key={index} className="flex items-center gap-2 text-xs">
-                              <CheckCircle className="h-3 w-3 text-claret-600" />
+                              <CheckCircle className="h-3 w-3 text-green-600" />
                               <span>{keyFeature}</span>
                             </div>
                           ))}
@@ -455,7 +455,7 @@ export default function Phase2CompleteSummaryPage() {
                         <div className="grid grid-cols-1 gap-2 text-xs">
                           <div className="flex justify-between">
                             <span>Performance:</span>
-                            <span className="font-medium text-claret-600">{feature.metrics.performance}</span>
+                            <span className="font-medium text-green-600">{feature.metrics.performance}</span>
                           </div>
                           <div className="flex justify-between">
                             <span>Adoption:</span>
@@ -480,15 +480,15 @@ export default function Phase2CompleteSummaryPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-claret-600" />
+                    <TrendingUp className="h-5 w-5 text-green-600" />
                     Business Impact
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-claret-50 rounded-lg">
-                      <div className="text-2xl font-bold text-claret-600">2,300+</div>
-                      <div className="text-sm text-claret-600">New Businesses</div>
+                    <div className="text-center p-4 bg-green-50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">2,300+</div>
+                      <div className="text-sm text-green-600">New Businesses</div>
                     </div>
                     <div className="text-center p-4 bg-blue-50 rounded-lg">
                       <div className="text-2xl font-bold text-blue-600">850%</div>
@@ -514,7 +514,7 @@ export default function Phase2CompleteSummaryPage() {
                       'System uptime maintained at 99.8%'
                     ].map((achievement, index) => (
                       <div key={index} className="flex items-center gap-2">
-                        <ThumbsUp className="h-4 w-4 text-claret-600" />
+                        <ThumbsUp className="h-4 w-4 text-green-600" />
                         <span className="text-sm">{achievement}</span>
                       </div>
                     ))}
@@ -634,9 +634,9 @@ export default function Phase2CompleteSummaryPage() {
                           and comprehensive business intelligence.
                         </p>
                       </div>
-                      <div className="p-4 bg-claret-50 rounded-lg">
-                        <h5 className="font-medium text-claret-800 mb-2">Ecosystem Integration</h5>
-                        <p className="text-sm text-claret-700">
+                      <div className="p-4 bg-green-50 rounded-lg">
+                        <h5 className="font-medium text-green-800 mb-2">Ecosystem Integration</h5>
+                        <p className="text-sm text-green-700">
                           Connect with major CRM, ERP, and event management systems for 
                           seamless business operations.
                         </p>

@@ -21,22 +21,18 @@ import {
   Send,
   Code,
   Copy,
-  Lock,
-  Eye,
-  EyeOff,
 } from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("admin@exhibitbay.com"); // Updated to match .env.local
   const [otp, setOtp] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginMethod, setLoginMethod] = useState<"otp" | "password">("otp");
   const [step, setStep] = useState<"email" | "verify">("email");
+  const [loginMethod, setLoginMethod] = useState<"otp" | "password">("otp");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleSendOTP = async () => {
     if (!email) {
@@ -140,72 +136,35 @@ export default function AdminLoginPage() {
   };
 
   const handlePasswordLogin = async () => {
-    if (!email || !password) {
-      setError("Email and password are required");
-      return;
-    }
-
-    // Check if credentials match the hardcoded admin credentials
-    if (email !== "sadiqzaidi123456@gmail.com" || password !== "aDMIN@8899") {
-      setError("Invalid email or password");
-      return;
-    }
-
     setIsLoading(true);
     setError("");
-
     try {
-      console.log("🔐 Password login for admin:", email);
-
-      // Simulate admin user data
-      const adminUser = {
-        id: "admin-001",
-        email: "sadiqzaidi123456@gmail.com",
-        name: "Super Admin",
-        role: "super_admin",
-        isAdmin: true,
-        verified: true,
-        loginMethod: "password"
-      };
-
-      console.log("✅ Admin password login successful:", adminUser);
-
-      // Store admin session
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify({
-          ...adminUser,
-          isLoggedIn: true,
-          loginMethod: "password",
-        })
-      );
-
-      // Set HTTP-only-ish cookie substitute (client-side set via document.cookie)
-      try {
-        document.cookie = `admin_auth=1; path=/; max-age=${60*60*8}`;
-      } catch {}
-
-      // Redirect to admin dashboard
-      router.push("/admin/dashboard");
-    } catch (error) {
-      console.error("❌ Admin password login failed:", error);
-      setError("Login failed. Please try again.");
+      const allowedEmail = "sadiqzaidi123456@gmail.com";
+      const allowedPassword = "aDMIN@8899";
+      if (email.trim().toLowerCase() === allowedEmail && password === allowedPassword) {
+        const user = { id: "super-admin", email: allowedEmail, role: "super_admin" } as const;
+        localStorage.setItem("currentUser", JSON.stringify({ ...user, isLoggedIn: true, loginMethod: "password" }));
+        try { document.cookie = `admin_auth=1; path=/; max-age=${60*60*8}`; } catch {}
+        router.push("/admin/dashboard");
+      } else {
+        setError("Invalid email or password");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-russian-violet-50 to-dark-purple-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
-          <div className="mx-auto w-16 h-16 bg-russian-violet-100 rounded-full flex items-center justify-center mb-4">
-            <Shield className="w-8 h-8 text-russian-violet-600" />
+          <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <Shield className="w-8 h-8 text-red-600" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">StandsZone</h1>
-          <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full border bg-russian-violet-50 border-russian-violet-200">
-            <Shield className="w-5 h-5 text-russian-violet-600" />
-            <span className="font-medium text-russian-violet-600">Super Admin Portal</span>
+          <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full border bg-red-50 border-red-200">
+            <Shield className="w-5 h-5 text-red-600" />
+            <span className="font-medium text-red-600">Super Admin Portal</span>
           </div>
           <p className="text-gray-600 mt-2">
             Secure access to platform management
@@ -217,58 +176,24 @@ export default function AdminLoginPage() {
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-xl font-semibold text-gray-900">
-              {step === "email" ? "Admin Login" : "Enter OTP Code"}
+              {loginMethod === "otp" ? (step === "email" ? "Admin Login" : "Enter OTP Code") : "Admin Password Login"}
             </CardTitle>
             <CardDescription>
-              {step === "email"
-                ? loginMethod === "otp" 
-                  ? "Enter your admin email to receive a secure OTP"
-                  : "Enter your admin credentials to login"
-                : `We sent a 6-digit code to ${email}`}
+              {loginMethod === "otp"
+                ? (step === "email" ? "Enter your admin email to receive a secure OTP" : `We sent a 6-digit code to ${email}`)
+                : "Sign in with admin email and password"}
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
-            {step === "email" ? (
-              <div className="space-y-4">
-                {/* Login Method Selection */}
-                <div className="flex space-x-2 p-1 bg-gray-100 rounded-lg">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLoginMethod("otp");
-                      setEmail("admin@exhibitbay.com");
-                      setPassword("");
-                      setError("");
-                    }}
-                    className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
-                      loginMethod === "otp"
-                        ? "bg-white text-russian-violet-600 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
-                    }`}
-                  >
-                    <Code className="w-4 h-4 inline mr-1" />
-                    OTP Login
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLoginMethod("password");
-                      setEmail("sadiqzaidi123456@gmail.com");
-                      setPassword("");
-                      setError("");
-                    }}
-                    className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
-                      loginMethod === "password"
-                        ? "bg-white text-russian-violet-600 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
-                    }`}
-                  >
-                    <Lock className="w-4 h-4 inline mr-1" />
-                    Password
-                  </button>
-                </div>
+            {/* Method Switcher */}
+            <div className="flex justify-center gap-2">
+              <Button variant={loginMethod === "otp" ? "default" : "outline"} size="sm" onClick={() => setLoginMethod("otp")}>OTP Login</Button>
+              <Button variant={loginMethod === "password" ? "default" : "outline"} size="sm" onClick={() => setLoginMethod("password")}>Password</Button>
+            </div>
 
+            {loginMethod === "otp" && step === "email" ? (
+              <div className="space-y-4">
                 <div>
                   <Label htmlFor="admin-email">Admin Email</Label>
                   <div className="relative mt-1">
@@ -278,38 +203,12 @@ export default function AdminLoginPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder={loginMethod === "otp" ? "admin@exhibitbay.com" : "sadiqzaidi123456@gmail.com"}
+                      placeholder="admin@exhibitbay.com"
                       className="pl-10"
                       disabled={isLoading}
                     />
                   </div>
                 </div>
-
-                {/* Password field for password login */}
-                {loginMethod === "password" && (
-                  <div>
-                    <Label htmlFor="admin-password">Password</Label>
-                    <div className="relative mt-1">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <Input
-                        id="admin-password"
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password"
-                        className="pl-10 pr-10"
-                        disabled={isLoading}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  </div>
-                )}
 
                 {error && (
                   <Alert className="border-red-200 bg-red-50">
@@ -321,27 +220,20 @@ export default function AdminLoginPage() {
                 )}
 
                 {success && (
-                  <Alert className="border-claret-200 bg-claret-50">
+                  <Alert className="border-green-200 bg-green-50">
                     <CheckCircle className="h-4 w-4" />
-                    <AlertDescription className="text-claret-800">
+                    <AlertDescription className="text-green-800">
                       {success}
                     </AlertDescription>
                   </Alert>
                 )}
 
-                <Button
-                  onClick={loginMethod === "otp" ? handleSendOTP : handlePasswordLogin}
-                  disabled={isLoading || (loginMethod === "password" && (!email || !password))}
-                  className="w-full bg-russian-violet-600 hover:bg-russian-violet-700"
-                >
-                  {isLoading 
-                    ? (loginMethod === "otp" ? "Sending OTP..." : "Logging in...")
-                    : (loginMethod === "otp" ? "Send OTP" : "Login")
-                  }
-                  {!isLoading && (loginMethod === "otp" ? <Send className="w-4 h-4 ml-2" /> : <Lock className="w-4 h-4 ml-2" />)}
+                <Button onClick={handleSendOTP} disabled={isLoading} className="w-full bg-red-600 hover:bg-red-700">
+                  {isLoading ? "Sending OTP..." : "Send OTP"}
+                  {!isLoading && <Send className="w-4 h-4 ml-2" />}
                 </Button>
               </div>
-            ) : (
+            ) : loginMethod === "otp" ? (
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="otp-code">6-Digit OTP Code</Label>
@@ -386,7 +278,7 @@ export default function AdminLoginPage() {
                   <Button
                     onClick={handleVerifyOTP}
                     disabled={isLoading || otp.length !== 6}
-                    className="bg-russian-violet-600 hover:bg-russian-violet-700"
+                    className="bg-red-600 hover:bg-red-700"
                   >
                     {isLoading ? "Verifying..." : "Login"}
                   </Button>
@@ -401,12 +293,54 @@ export default function AdminLoginPage() {
                   Resend OTP
                 </Button>
               </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="admin-email">Admin Email</Label>
+                  <div className="relative mt-1">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input
+                      id="admin-email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="sadiqzaidi123456@gmail.com"
+                      className="pl-10"
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="admin-password">Password</Label>
+                  <Input
+                    id="admin-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    disabled={isLoading}
+                  />
+                </div>
+
+                {error && (
+                  <Alert className="border-red-200 bg-red-50">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription className="text-red-800">
+                      {error}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <Button onClick={handlePasswordLogin} disabled={isLoading} className="w-full bg-red-600 hover:bg-red-700">
+                  {isLoading ? "Signing in..." : "Login"}
+                </Button>
+              </div>
             )}
 
             {/* Security Notice */}
             <div className="pt-4 border-t">
               <div className="flex items-center justify-center space-x-2 mb-2">
-                <Shield className="w-4 h-4 text-claret-600" />
+                <Shield className="w-4 h-4 text-green-600" />
                 <span className="text-sm font-medium text-gray-900">
                   Secure Access
                 </span>
@@ -422,28 +356,20 @@ export default function AdminLoginPage() {
         {/* Quick Access Info */}
         <div className="mt-6 text-center">
           <div className="bg-white rounded-lg p-4 shadow-sm border">
-            <h3 className="font-medium text-gray-900 mb-3">
-              Admin Access Methods
+            <h3 className="font-medium text-gray-900 mb-2">
+              Quick Access Credentials
             </h3>
-            <div className="text-sm text-gray-600 space-y-3">
-              {/* OTP Method */}
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="font-medium text-gray-900 mb-1">OTP Method</p>
-                <p><strong>Email:</strong> admin@exhibitbay.com</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  Use OTP sent to your email
-                </p>
-              </div>
+            <div className="text-sm text-gray-600 space-y-1">
+              <p>
+                <strong>Email:</strong> admin@exhibitbay.com
+              </p>
+              <p>
+                <strong>Method:</strong> OTP via Email
+              </p>
 
-              {/* Password Method */}
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="font-medium text-gray-900 mb-1">Password Method</p>
-                <p><strong>Email:</strong> sadiqzaidi123456@gmail.com</p>
-                <p><strong>Password:</strong> aDMIN@8899</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  Direct login with credentials
-                </p>
-              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Use the OTP sent to your email to access the admin dashboard
+              </p>
             </div>
           </div>
         </div>

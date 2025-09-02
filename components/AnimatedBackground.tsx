@@ -128,7 +128,7 @@ export default function AnimatedBackground() {
       
       {/* Additional animated elements */}
       <motion.div
-        className="absolute top-20 left-10 w-32 h-32 bg-russian-violet-500/10 rounded-full blur-xl"
+        className="absolute top-20 left-10 w-32 h-32 bg-blue-primary/10 rounded-full blur-xl"
         animate={{
           x: [0, 30, 0],
           y: [0, -20, 0],

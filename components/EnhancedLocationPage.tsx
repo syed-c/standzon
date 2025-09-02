@@ -195,7 +195,7 @@ export function EnhancedLocationPage({
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-russian-violet via-dark-purple to-claret text-white py-20">
+      <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-20">
         <div className="absolute inset-0 opacity-20">
           <div className="w-full h-full bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-pink-500/10"></div>
         </div>
@@ -203,7 +203,7 @@ export function EnhancedLocationPage({
         <div className="relative container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex justify-center mb-6">
-              <Badge className="bg-persian-orange/20 text-persian-orange border-persian-orange/30 text-lg px-4 py-2">
+              <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-lg px-4 py-2">
                 <MapPin className="w-5 h-5 mr-2" />
                 {displayLocation}
               </Badge>
@@ -211,12 +211,12 @@ export function EnhancedLocationPage({
             
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               <span className="block">Exhibition Stand Builders</span>
-              <span className="block text-location-highlight drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]">
+              <span className="block bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
                 in {displayLocation}
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-200 mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
               Connect with {stats.totalBuilders}+ verified exhibition stand builders in {displayLocation}. 
               Get competitive quotes from local experts who understand your market.
             </p>
@@ -226,7 +226,7 @@ export function EnhancedLocationPage({
               <PublicQuoteRequest 
                 location={displayLocation}
                 buttonText={`Get Quotes from ${displayLocation} Builders`}
-                className="text-lg px-8 py-4 border-2 border-persian-orange bg-white text-white hover:bg-persian-orange/10"
+                className="text-lg px-8 py-4"
               />
               <Button 
                 variant="outline" 
@@ -276,33 +276,6 @@ export function EnhancedLocationPage({
           </div>
         </div>
       </section>
-
-      {/* Cities Section - Moved to top */}
-      {props.cities && props.cities.length > 0 && !isCity && props.locationType === 'country' && (
-        <section className="py-12 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-8 text-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Cities in {displayLocation}</h2>
-              <p className="text-gray-600 mt-2">Browse local pages for major cities across {displayLocation}</p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {props.cities.map((c: any) => {
-                const countrySlug = displayLocation.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-                return (
-                  <a key={c.slug} href={`/exhibition-stands/${countrySlug}/${c.slug}`} className="group">
-                    <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-all">
-                      <div className="flex items-center justify-between">
-                        <div className="font-semibold text-gray-900 group-hover:text-blue-700">{c.name}</div>
-                        <span className="text-xs text-gray-500">{c.builderCount || 0} builders</span>
-                      </div>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Why Choose Local Builders */}
       <section className="py-16">
@@ -363,7 +336,7 @@ export function EnhancedLocationPage({
               <PublicQuoteRequest 
                 location={displayLocation}
                 buttonText="Get Local Quotes Now"
-                className="bg-white text-white hover:bg-gray-100 text-lg px-8 py-4 border-2 border-persian-orange"
+                className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 py-4"
               />
             </div>
           </div>
@@ -399,7 +372,7 @@ export function EnhancedLocationPage({
                       <PublicQuoteRequest 
                         location={displayLocation}
                         buttonText="Get Quote for This Event"
-                        className="w-full border-2 border-persian-orange"
+                        className="w-full"
                       />
                     </CardContent>
                   </Card>
@@ -475,7 +448,7 @@ export function EnhancedLocationPage({
                 <PublicQuoteRequest 
                   location={displayLocation}
                   buttonText="Get Quotes from Global Builders"
-                  className="border-2 border-persian-orange text-dark-purple bg-white hover:bg-persian-orange/10"
+                  className="bg-blue-600 hover:bg-blue-700"
                 />
               </div>
             )}
@@ -515,7 +488,7 @@ export function EnhancedLocationPage({
               <PublicQuoteRequest 
                 location={displayLocation}
                 buttonText={cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaButtonText || "Start Getting Quotes"}
-                className="text-lg px-8 py-4 border-2 border-persian-orange bg-white text-white hover:bg-persian-orange/10"
+                className="text-lg px-8 py-4"
               />
               <Button 
                 variant="outline" 

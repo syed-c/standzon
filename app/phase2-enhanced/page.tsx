@@ -84,7 +84,7 @@ export default function Phase2EnhancedPage() {
       description: 'Comprehensive bulk management with real-time monitoring, operation history, CSV import/export, and automated workflows.',
       status: 'new',
       icon: Users,
-              color: 'text-claret-600',
+      color: 'text-green-600',
       metrics: {
         improvement: '+850% operation speed',
         users: 134,
@@ -179,7 +179,7 @@ export default function Phase2EnhancedPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-claret-100 text-claret-800';
+      case 'completed': return 'bg-green-100 text-green-800';
       case 'enhanced': return 'bg-blue-100 text-blue-800';
       case 'new': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -202,7 +202,7 @@ export default function Phase2EnhancedPage() {
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-claret-400 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-sm text-gray-600">Live System</span>
               </div>
               <Button
@@ -280,7 +280,7 @@ export default function Phase2EnhancedPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-500">Performance</span>
-                                            <span className="font-medium text-claret-600">{feature.metrics.improvement}</span>
+                    <span className="font-medium text-green-600">{feature.metrics.improvement}</span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-500">Active Users</span>
@@ -335,8 +335,8 @@ export default function Phase2EnhancedPage() {
                         <h4 className="font-semibold">AI-Powered</h4>
                         <p className="text-sm text-gray-600">Smart automation and intelligent insights</p>
                       </div>
-                              <div className="p-4 bg-claret-50 rounded-lg">
-          <Activity className="h-8 w-8 text-claret-600 mx-auto mb-2" />
+                      <div className="p-4 bg-green-50 rounded-lg">
+                        <Activity className="h-8 w-8 text-green-600 mx-auto mb-2" />
                         <h4 className="font-semibold">Real-Time</h4>
                         <p className="text-sm text-gray-600">Live updates and instant notifications</p>
                       </div>
@@ -376,7 +376,7 @@ export default function Phase2EnhancedPage() {
               <TabsContent value="advanced-bulk-ops" className="space-y-6">
                 <div className="bg-gray-50 rounded-lg p-4 mb-4">
                   <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <Users className="h-5 w-5 text-claret-600" />
+                    <Users className="h-5 w-5 text-green-600" />
                     Advanced Bulk Operations System
                   </h4>
                   <p className="text-sm text-gray-600 mb-4">
@@ -415,7 +415,7 @@ export default function Phase2EnhancedPage() {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <span className="text-sm">API Connection</span>
-                          <Badge className="bg-claret-100 text-claret-800">Active</Badge>
+                          <Badge className="bg-green-100 text-green-800">Active</Badge>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-sm">Businesses Imported</span>
@@ -423,7 +423,7 @@ export default function Phase2EnhancedPage() {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-sm">Auto-Approval Rate</span>
-                          <span className="font-semibold text-claret-600">92%</span>
+                          <span className="font-semibold text-green-600">92%</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-sm">Coverage</span>
@@ -452,7 +452,7 @@ export default function Phase2EnhancedPage() {
                             <div className="flex items-center gap-2">
                               <span className="text-sm">{item.count} businesses</span>
                               <Badge className={
-                                item.status === 'completed' ? 'bg-claret-100 text-claret-800' :
+                                item.status === 'completed' ? 'bg-green-100 text-green-800' :
                                 item.status === 'processing' ? 'bg-blue-100 text-blue-800' :
                                 'bg-yellow-100 text-yellow-800'
                               }>
@@ -487,7 +487,7 @@ export default function Phase2EnhancedPage() {
                       <div className="space-y-3">
                         {[
                           { type: 'New Leads', count: 23, icon: Mail, color: 'text-blue-600' },
-                          { type: 'Builder Approvals', count: 8, icon: CheckCircle, color: 'text-claret-600' },
+                          { type: 'Builder Approvals', count: 8, icon: CheckCircle, color: 'text-green-600' },
                           { type: 'System Alerts', count: 3, icon: Settings, color: 'text-orange-600' },
                           { type: 'Revenue Updates', count: 12, icon: TrendingUp, color: 'text-purple-600' }
                         ].map((item, index) => (
@@ -559,7 +559,7 @@ export default function Phase2EnhancedPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-claret-600" />
+              <CheckCircle className="h-5 w-5 text-green-600" />
               Phase 2 Implementation Status
             </CardTitle>
           </CardHeader>
@@ -569,8 +569,8 @@ export default function Phase2EnhancedPage() {
                 <h4 className="font-semibold mb-4">Completed Features ✅</h4>
                 <div className="space-y-2">
                   {phase2Features.filter(f => f.status === 'completed').map(feature => (
-                            <div key={feature.id} className="flex items-center gap-3 p-2 bg-claret-50 rounded">
-          <CheckCircle className="h-4 w-4 text-claret-600" />
+                    <div key={feature.id} className="flex items-center gap-3 p-2 bg-green-50 rounded">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
                       <span className="text-sm">{feature.title}</span>
                     </div>
                   ))}

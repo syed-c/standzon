@@ -220,16 +220,16 @@ export default function GlobalExhibitionDirectory() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-russian-violet via-dark-purple to-claret text-white py-20">
+      <section className="bg-gradient-to-r from-pink-600 via-rose-600 to-pink-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center mb-6">
-              <Globe className="h-16 w-16 text-persian-orange mr-4" />
+              <Globe className="h-16 w-16 text-pink-300 mr-4" />
               <div>
-                <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white to-persian-orange bg-clip-text text-transparent">
+                <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white to-pink-200 bg-clip-text text-transparent">
                   Global Exhibition Directory
                 </h1>
-                <p className="text-xl md:text-2xl text-gray-200 mt-4">
+                <p className="text-xl md:text-2xl text-pink-100 mt-4">
                   Discover {allExhibitions.length}+ exhibitions across {uniqueCountries.length} countries worldwide
                 </p>
               </div>
@@ -892,23 +892,23 @@ export default function GlobalExhibitionDirectory() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-gradient-to-r from-claret to-russian-violet text-white">
+      <section className="py-16 bg-gradient-to-r from-pink-600 to-rose-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to Exhibit at Your Next Trade Show?
           </h2>
-          <p className="text-xl mb-8 text-gray-200">
+          <p className="text-xl mb-8 text-pink-100">
             Find verified exhibition stand builders worldwide. Professional displays, local expertise, global reach.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-white text-claret hover:bg-gray-100">
+            <Button asChild size="lg" className="bg-white text-pink-600 hover:bg-gray-100">
               <a href="/builders">
                 <Building2 className="h-5 w-5 mr-2" />
                 Find Booth Builders
               </a>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-claret">
+            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-pink-600">
               <a href="/quote">
                 <Calendar className="h-5 w-5 mr-2" />
                 Plan Your Exhibition

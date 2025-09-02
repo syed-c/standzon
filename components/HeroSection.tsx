@@ -15,7 +15,7 @@ import {
 export function HeroSection() {
   return (
     <section className="relative h-[80vh] flex items-center justify-center overflow-hidden pt-20" style={{
-      background: 'linear-gradient(135deg, #0B0033 0%, #370031 50%, #832232 100%)'
+      background: 'linear-gradient(135deg, #7c2d92 0%, #db2777 50%, #ec4899 100%)'
     }}>
       {/* Animated Background Elements */}
       <div className="absolute inset-0 opacity-10">
@@ -29,7 +29,7 @@ export function HeroSection() {
         <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight" data-macaly="hero-title">
           We Build Your Stand in 
           <br />
-          <span className="bg-gradient-to-r from-persian-orange to-claret bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-pink-300 to-rose-300 bg-clip-text text-transparent">
             Any Corner of the World
           </span>
         </h1>
@@ -62,7 +62,7 @@ export function HeroSection() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <PublicQuoteRequest 
             buttonText="Get Free Quote →"
-            className="bg-gradient-to-r from-claret to-russian-violet hover:from-dark-purple hover:to-claret text-white px-8 py-4 text-lg font-semibold rounded-xl border-2 border-transparent transition-all duration-300 hover:shadow-2xl transform hover:scale-105 shadow-lg"
+            className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white px-8 py-4 text-lg font-semibold rounded-xl border-2 border-transparent transition-all duration-300 hover:shadow-2xl transform hover:scale-105 shadow-lg"
           />
           <Link href="/exhibition-stands">
             <Button 

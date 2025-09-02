@@ -36,11 +36,11 @@ export default function TermsOfServicePage() {
               <h3 className="font-semibold text-blue-900">Clear Terms</h3>
               <p className="text-sm text-blue-700">Simple, understandable conditions</p>
             </div>
-                          <div className="text-center p-4 bg-claret-50 rounded-lg">
-                <Shield className="h-8 w-8 text-claret-600 mx-auto mb-2" />
-                <h3 className="font-semibold text-claret-900">User Protection</h3>
-                <p className="text-sm text-claret-700">Fair policies for all users</p>
-              </div>
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <Shield className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <h3 className="font-semibold text-green-900">User Protection</h3>
+              <p className="text-sm text-green-700">Fair policies for all users</p>
+            </div>
             <div className="text-center p-4 bg-purple-50 rounded-lg">
               <Globe className="h-8 w-8 text-purple-600 mx-auto mb-2" />
               <h3 className="font-semibold text-purple-900">Global Platform</h3>
@@ -66,9 +66,9 @@ export default function TermsOfServicePage() {
           </div>
 
           <h3>For Exhibition Builders</h3>
-                      <div className="bg-claret-50 p-6 rounded-lg not-prose mb-6">
-              <h4 className="font-semibold text-claret-900 mb-3">Membership Benefits</h4>
-              <ul className="space-y-2 text-claret-800">
+          <div className="bg-green-50 p-6 rounded-lg not-prose mb-6">
+            <h4 className="font-semibold text-green-900 mb-3">Membership Benefits</h4>
+            <ul className="space-y-2 text-green-800">
               <li>✅ <strong>Profile Creation:</strong> Showcase your services and portfolio</li>
               <li>✅ <strong>Lead Generation:</strong> Receive qualified project inquiries</li>
               <li>✅ <strong>Premium Features:</strong> Enhanced visibility and marketing tools</li>

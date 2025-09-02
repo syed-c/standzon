@@ -178,10 +178,10 @@ export default function AdvancedFilterPanel({
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5 text-russian-violet-600" />
+            <Filter className="h-5 w-5 text-blue-600" />
             <span>Advanced Filters</span>
             {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="bg-russian-violet-100 text-russian-violet-800">
+              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                 {activeFilterCount} active
               </Badge>
             )}
@@ -194,7 +194,7 @@ export default function AdvancedFilterPanel({
               variant="ghost"
               size="sm"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="text-russian-violet-600"
+              className="text-blue-600"
             >
               {isExpanded ? 'Collapse' : 'Expand'}
             </Button>
@@ -440,7 +440,7 @@ export default function AdvancedFilterPanel({
               <Label>Verification Status</Label>
               <div className="flex gap-4 mt-2">
                 {[
-                  { value: 'verified', label: 'Verified', icon: CheckCircle, color: 'text-claret-600' },
+                  { value: 'verified', label: 'Verified', icon: CheckCircle, color: 'text-green-600' },
                   { value: 'pending', label: 'Pending Review', icon: Clock, color: 'text-yellow-600' },
                   { value: 'unverified', label: 'Unverified', icon: AlertCircle, color: 'text-red-600' }
                 ].map(({ value, label, icon: Icon, color }) => (
@@ -464,7 +464,7 @@ export default function AdvancedFilterPanel({
         {/* Filter Actions */}
         <div className="flex items-center justify-between pt-4 border-t">
           <div className="flex items-center gap-2">
-            <Zap className="h-4 w-4 text-russian-violet-600" />
+            <Zap className="h-4 w-4 text-blue-600" />
             <span className="text-sm text-gray-600">Smart filtering enabled</span>
           </div>
           <div className="flex gap-2">
@@ -479,7 +479,7 @@ export default function AdvancedFilterPanel({
             <Button
               size="sm"
               disabled={isLoading}
-              className="bg-russian-violet-600 hover:bg-russian-violet-700"
+              className="bg-blue-600 hover:bg-blue-700"
             >
               {isLoading ? (
                 <>

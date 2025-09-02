@@ -255,7 +255,7 @@ export default function BuilderLeadFlow({ onSendEmail, onUpdateLeadAccess }: Bui
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'new': return 'bg-claret-100 text-claret-800';
+      case 'new': return 'bg-green-100 text-green-800';
       case 'viewed': return 'bg-blue-100 text-blue-800';
       case 'quoted': return 'bg-yellow-100 text-yellow-800';
       case 'won': return 'bg-purple-100 text-purple-800';
@@ -301,16 +301,16 @@ export default function BuilderLeadFlow({ onSendEmail, onUpdateLeadAccess }: Bui
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-claret-500 to-claret-600 text-white">
+        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-claret-100 text-sm font-medium">Premium Subscribers</p>
+                <p className="text-green-100 text-sm font-medium">Premium Subscribers</p>
                 <p className="text-3xl font-bold">
                   {builders.filter(b => b.subscriptionPlan !== 'free').length}
                 </p>
               </div>
-              <Crown className="h-8 h-8 text-claret-200" />
+              <Crown className="h-8 w-8 text-green-200" />
             </div>
           </CardContent>
         </Card>
@@ -549,7 +549,7 @@ export default function BuilderLeadFlow({ onSendEmail, onUpdateLeadAccess }: Bui
                           </div>
                           <div>
                             <p className="text-gray-500 font-medium">Revenue</p>
-                            <p className="font-semibold text-claret-600">${builder.revenue}</p>
+                            <p className="font-semibold text-green-600">${builder.revenue}</p>
                             <p className="text-xs">Plan expires: {new Date(builder.planExpiry).toLocaleDateString()}</p>
                           </div>
                         </div>
@@ -616,11 +616,11 @@ export default function BuilderLeadFlow({ onSendEmail, onUpdateLeadAccess }: Bui
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-claret-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Basic profile listing</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-claret-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Lead notifications</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -643,25 +643,25 @@ export default function BuilderLeadFlow({ onSendEmail, onUpdateLeadAccess }: Bui
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Badge className="bg-russian-violet-100 text-russian-violet-800 mr-2">Professional</Badge>
+                  <Badge className="bg-blue-100 text-blue-800 mr-2">Professional</Badge>
                   Plan Features
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-claret-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Featured listing</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-claret-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Full lead access</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-claret-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Client contact details</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-claret-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Priority notifications</span>
                 </div>
                 <div className="pt-3 border-t">
@@ -683,19 +683,19 @@ export default function BuilderLeadFlow({ onSendEmail, onUpdateLeadAccess }: Bui
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-claret-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Premium placement</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-claret-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Unlimited lead access</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-claret-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Advanced analytics</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-claret-500" />
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span className="text-sm">Dedicated account manager</span>
                 </div>
                 <div className="pt-3 border-t">

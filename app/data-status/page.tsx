@@ -109,7 +109,7 @@ export default function DataStatusPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-2 bg-white/60 rounded">
                     <span className="font-medium">South Korea</span>
-                    <Badge className="bg-claret-100 text-claret-800">90% Complete</Badge>
+                    <Badge className="bg-green-100 text-green-800">90% Complete</Badge>
                   </div>
                   <div className="flex items-center justify-between p-2 bg-white/60 rounded">
                     <span className="font-medium">Mexico</span>
@@ -124,14 +124,14 @@ export default function DataStatusPage() {
             </Card>
 
             {/* Emerging Markets */}
-            <Card className="border-0 shadow-xl bg-gradient-to-br from-claret-50 to-claret-100">
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-green-50 to-emerald-100">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center">
-                    <TrendingUp className="h-6 w-6 text-claret-600 mr-2" />
+                    <TrendingUp className="h-6 w-6 text-green-600 mr-2" />
                     Emerging Markets
                   </CardTitle>
-                  <Badge className="bg-claret-500 text-white">Growing</Badge>
+                  <Badge className="bg-green-500 text-white">Growing</Badge>
                 </div>
                 <CardDescription>
                   Fast-growing exhibition markets
@@ -204,7 +204,7 @@ export default function DataStatusPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 text-center">
-              <div className="w-12 h-12 bg-claret-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-6 w-6 text-white" />
               </div>
               <div className="text-2xl font-bold mb-2">24</div>

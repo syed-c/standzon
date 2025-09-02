@@ -13,7 +13,6 @@ import {
   Shield, Award, CheckCircle2,
   ArrowRight, Zap, Target, AlertCircle
 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface Builder {
   id: string;
@@ -30,7 +29,10 @@ interface Builder {
   verified: boolean;
   premiumMember: boolean;
   planType: 'free' | 'basic' | 'professional' | 'enterprise';
-  services: Array<string>;
+  services: Array<{
+    name: string;
+    description: string;
+  }>;
   specializations: Array<{
     id: string;
     name: string;
@@ -39,12 +41,6 @@ interface Builder {
   }>;
   companyDescription: string;
   keyStrengths: string[];
-  logo?: string;
-  companyLogo?: string;
-  location?: string;
-  experience?: string;
-  projects?: string;
-  description?: string;
 }
 
 interface BuilderCardProps {
@@ -56,7 +52,7 @@ interface BuilderCardProps {
 function getBuilderPlanBadge(planType: string, premiumMember: boolean) {
   if (premiumMember) {
     return (
-      <Badge className="bg-gradient-to-r from-russian-violet-500 to-dark-purple-500 text-white">
+      <Badge className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-yellow-900">
         <Award className="w-3 h-3 mr-1" />
         Premium
       </Badge>
@@ -66,21 +62,21 @@ function getBuilderPlanBadge(planType: string, premiumMember: boolean) {
   switch (planType) {
     case 'enterprise':
       return (
-        <Badge className="bg-gradient-to-r from-claret-500 to-persian-orange-500 text-white">
+        <Badge className="bg-gradient-to-r from-purple-500 to-purple-700 text-white">
           <Zap className="w-3 h-3 mr-1" />
           Enterprise
         </Badge>
       );
     case 'professional':
       return (
-        <Badge className="bg-gradient-to-r from-russian-violet-500 to-russian-violet-700 text-white">
+        <Badge className="bg-gradient-to-r from-blue-500 to-blue-700 text-white">
           <Target className="w-3 h-3 mr-1" />
           Professional
         </Badge>
       );
     case 'basic':
       return (
-        <Badge className="bg-gradient-to-r from-claret-500 to-persian-orange-700 text-white">
+        <Badge className="bg-gradient-to-r from-green-500 to-green-700 text-white">
           <CheckCircle2 className="w-3 h-3 mr-1" />
           Basic
         </Badge>
@@ -100,7 +96,7 @@ function getClaimStatusBadge(builder: any) {
   
   if (claimed && claimStatus === 'verified') {
     return (
-      <Badge className="bg-claret-100 text-claret-800 border-claret-200 text-xs">
+      <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
         <CheckCircle2 className="w-3 h-3 mr-1" />
         Claimed & Verified
       </Badge>
@@ -118,25 +114,13 @@ function getClaimStatusBadge(builder: any) {
   
   if (!claimed || claimStatus === 'unclaimed') {
     return (
-      <Badge className="bg-russian-violet-100 text-russian-violet-800 text-xs">
+      <Badge className="bg-orange-100 text-orange-800 border-orange-200 text-xs">
         <AlertCircle className="w-3 h-3 mr-1" />
         Unclaimed
       </Badge>
     );
   }
   
-  return null;
-}
-
-function getMembershipBadge(premiumMember: boolean) {
-  if (premiumMember) {
-    return (
-      <Badge className="bg-gradient-to-r from-russian-violet-500 to-dark-purple-500 text-white">
-        <Award className="w-3 h-3 mr-1" />
-        Premium
-      </Badge>
-    );
-  }
   return null;
 }
 
@@ -191,99 +175,92 @@ function BuilderContactControls({ builder, location }: { builder: Builder; locat
 
 export function BuilderCard({ builder, showLeadForm = true, location }: BuilderCardProps) {
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 border-0 shadow-sm">
-      <CardContent className="p-4">
-        {/* Header with Company Info */}
+    <Card className="h-full hover:shadow-lg transition-all duration-300 border-0 shadow-md">
+      <CardHeader className="pb-4">
         <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center space-x-3">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={builder.logo || builder.companyLogo} alt={builder.companyName} />
-              <AvatarFallback className="bg-russian-violet-100 text-russian-violet-800 font-semibold">
-                {builder.companyName?.split(' ').map((n: string) => n[0]).join('').substring(0, 2) || 'BB'}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h3 className="font-semibold text-gray-900 group-hover:text-russian-violet-600 transition-colors line-clamp-1">
-                {builder.companyName}
-              </h3>
-              <p className="text-sm text-gray-600 line-clamp-1">{builder.location}</p>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Star className="w-4 h-4 text-yellow-500 fill-current" />
+              <span className="font-semibold">{(builder.rating || 4.5).toFixed(1)}</span>
+              <span className="text-sm text-gray-500">({builder.reviewCount})</span>
             </div>
           </div>
-          <div className="flex flex-col items-end space-y-1">
-            {getMembershipBadge(builder.premiumMember)}
+          
+          <div className="flex gap-1 flex-wrap">
+            {builder.verified && !(builder as any).claimed && (
+              <Badge className="bg-blue-100 text-blue-800 text-xs">
+                <Shield className="w-3 h-3 mr-1" />
+                Verified
+              </Badge>
+            )}
             {getClaimStatusBadge(builder)}
+            {getBuilderPlanBadge(builder.planType, builder.premiumMember)}
           </div>
         </div>
 
-        {/* Company Description */}
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
-          {builder.description || builder.companyDescription || "Professional exhibition stand builder with years of experience in creating stunning displays."}
+        <CardTitle className="text-lg leading-tight">
+          {builder.companyName}
+        </CardTitle>
+        
+        <div className="space-y-2 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
+            <MapPin className="w-3 h-3" />
+            <span>{builder.headquarters.city}, {builder.headquarters.country}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Users className="w-3 h-3" />
+            <span>{builder.projectsCompleted} projects completed</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="w-3 h-3" />
+            <span>Response: {builder.responseTime}</span>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="pt-0">
+        <p className="text-gray-700 text-sm mb-4 line-clamp-2">
+          {builder.companyDescription}
         </p>
 
-        {/* Key Information */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
-          <div className="text-center p-2 bg-gray-50 rounded-lg">
-            <div className="text-lg font-semibold text-gray-900">{builder.experience || '5'}+</div>
-            <div className="text-xs text-gray-600">Years</div>
-          </div>
-          <div className="text-center p-2 bg-gray-50 rounded-lg">
-            <div className="text-lg font-semibold text-gray-900">{builder.projects || '50'}+</div>
-            <div className="text-xs text-gray-600">Projects</div>
-          </div>
+        {/* Specializations */}
+        <div className="flex flex-wrap gap-1 mb-4">
+          {builder.specializations.slice(0, 2).map((spec) => (
+            <Badge 
+              key={spec.id} 
+              variant="secondary" 
+              className="text-xs"
+              style={{ backgroundColor: spec.color + '20', color: spec.color }}
+            >
+              {spec.icon} {spec.name}
+            </Badge>
+          ))}
+          {builder.specializations.length > 2 && (
+            <Badge variant="outline" className="text-xs">
+              +{builder.specializations.length - 2} more
+            </Badge>
+          )}
         </div>
 
-        {/* Services */}
-        {builder.services && builder.services.length > 0 && (
-          <div className="mb-3">
-            <div className="flex flex-wrap gap-1">
-              {builder.services.slice(0, 3).map((service: string, index: number) => (
-                <Badge key={index} variant="secondary" className="text-xs bg-russian-violet-50 text-russian-violet-700">
-                  {service}
-                </Badge>
-              ))}
-              {builder.services.length > 3 && (
-                <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600">
-                  +{builder.services.length - 3} more
-                </Badge>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* Key Strengths */}
-        {builder.keyStrengths && builder.keyStrengths.length > 0 && (
-          <div className="mb-3">
-            <ul className="space-y-1">
+        {builder.keyStrengths.length > 0 && (
+          <div className="mb-4">
+            <h5 className="font-medium text-gray-900 text-sm mb-2">Key Strengths:</h5>
+            <ul className="text-xs text-gray-600 space-y-1">
               {builder.keyStrengths.slice(0, 3).map((strength, index) => (
-                <li key={index} className="flex items-center gap-1 text-xs text-gray-600">
-                  <CheckCircle2 className="w-3 h-3 text-claret-500 flex-shrink-0" />
-                  <span className="line-clamp-1">{strength}</span>
+                <li key={index} className="flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-green-500" />
+                  {strength}
                 </li>
               ))}
             </ul>
           </div>
         )}
 
-        {/* Footer Actions */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-          <div className="flex items-center space-x-2">
-            {builder.verified && !(builder as any).claimed && (
-              <Badge className="bg-russian-violet-100 text-russian-violet-800 text-xs">
-                <Shield className="w-3 h-3 mr-1" />
-                Verified
-              </Badge>
-            )}
-            {builder.rating && (
-              <div className="flex items-center space-x-1 text-xs text-gray-600">
-                <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                <span>{builder.rating}</span>
-              </div>
-            )}
-          </div>
-          <Button size="sm" className="bg-russian-violet-600 hover:bg-russian-violet-700 text-white">
-            View Profile
-          </Button>
-        </div>
+        {/* Contact Controls */}
+        {showLeadForm && (
+          <BuilderContactControls builder={builder} location={location} />
+        )}
       </CardContent>
     </Card>
   );

@@ -48,7 +48,7 @@ export default function BulkImportPage() {
             <div className="flex items-center gap-2">
               <div className="text-right">
                 <div className="text-sm text-gray-500">System Status</div>
-                <div className="flex items-center gap-1 text-claret-600">
+                <div className="flex items-center gap-1 text-green-600">
                   <CheckCircle className="h-4 w-4" />
                   <span className="font-medium">Operational</span>
                 </div>
@@ -122,7 +122,7 @@ export default function BulkImportPage() {
           
           <Card>
             <CardContent className="p-6 text-center">
-              <Building2 className="h-8 w-8 text-claret-500 mx-auto mb-2" />
+              <Building2 className="h-8 w-8 text-green-500 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">15</div>
               <div className="text-sm text-gray-600">UAE Builders</div>
             </CardContent>
@@ -162,19 +162,19 @@ export default function BulkImportPage() {
                 <h4 className="font-medium text-gray-900 mb-3">Immediate Effects</h4>
                 <ul className="text-sm text-gray-700 space-y-2">
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-claret-500" />
+                    <CheckCircle className="h-4 w-4 text-green-500" />
                     Builders appear on country and city pages
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-claret-500" />
+                    <CheckCircle className="h-4 w-4 text-green-500" />
                     Admin dashboard shows updated counts
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-claret-500" />
+                    <CheckCircle className="h-4 w-4 text-green-500" />
                     Exhibition Stands page shows active countries
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-claret-500" />
+                    <CheckCircle className="h-4 w-4 text-green-500" />
                     Quote request forms connect to builders
                   </li>
                 </ul>

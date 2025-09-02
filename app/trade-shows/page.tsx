@@ -187,7 +187,7 @@ export default function TradeShowsDirectory() {
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6" data-macaly="hero-title">
               Global Trade Shows
-              <span className="block text-location-highlight drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]">
+              <span className="block text-primary-blue bg-gradient-to-r from-primary-blue to-industry-green bg-clip-text text-transparent">
                 &amp; Exhibitions Directory
               </span>
             </h1>
@@ -197,15 +197,15 @@ export default function TradeShowsDirectory() {
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-lg mb-8">
               <div className="flex flex-col items-center space-y-2">
-                <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center">
-                  <FiCalendar className="text-red-500 w-6 h-6" />
+                <div className="w-12 h-12 bg-primary-blue/20 rounded-full flex items-center justify-center">
+                  <FiCalendar className="text-primary-blue w-6 h-6" />
                 </div>
                 <span className="font-semibold">{enhancedStats.totalShows}+</span>
                 <span className="text-gray-300 text-sm">Trade Shows</span>
               </div>
               <div className="flex flex-col items-center space-y-2">
-                <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
-                  <FiMapPin className="text-green-500 w-6 h-6" />
+                <div className="w-12 h-12 bg-industry-green/20 rounded-full flex items-center justify-center">
+                  <FiMapPin className="text-industry-green w-6 h-6" />
                 </div>
                 <span className="font-semibold">{enhancedStats.totalCountries}</span>
                 <span className="text-gray-300 text-sm">Countries</span>
@@ -272,12 +272,12 @@ export default function TradeShowsDirectory() {
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-primary-blue"
+                className="flex items-center gap-2 border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-white"
               >
                 <FiFilter className="w-4 h-4" />
                 Advanced Filters
                 {(selectedCountry !== 'all' || selectedIndustry !== 'all' || selectedYear !== 'all') && (
-                  <span className="bg-primary-blue text-primary-blue px-2 py-1 rounded-full ml-1">
+                  <span className="bg-primary-blue text-white text-xs px-2 py-1 rounded-full ml-1">
                     {[selectedCountry, selectedIndustry, selectedYear].filter(f => f !== 'all').length}
                   </span>
                 )}
@@ -436,7 +436,7 @@ export default function TradeShowsDirectory() {
                           </div>
                         )}
                         <div className="pt-3">
-                          <Button variant="outline" size="sm" className="w-full group-hover:bg-primary-blue group-hover:text-primary-blue group-hover:border-primary-blue transition-all">
+                          <Button variant="outline" size="sm" className="w-full group-hover:bg-primary-blue group-hover:text-white group-hover:border-primary-blue transition-all">
                             View Exhibition Details
                             <FiArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                           </Button>
@@ -449,7 +449,7 @@ export default function TradeShowsDirectory() {
             </div>
             {majorShows.length > 6 && (
               <div className="text-center mt-12">
-                <Button variant="outline" onClick={() => setSelectedCountry('all')} className="border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-primary-blue">
+                <Button variant="outline" onClick={() => setSelectedCountry('all')} className="border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-white">
                   View All {majorShows.length} Major Exhibitions
                   <FiArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -544,7 +544,7 @@ export default function TradeShowsDirectory() {
                               {show.description}
                             </p>
                             <div className="pt-2">
-                              <Button variant="outline" size="sm" className="w-full text-xs group-hover:bg-primary-blue group-hover:text-primary-blue transition-all">
+                              <Button variant="outline" size="sm" className="w-full text-xs group-hover:bg-primary-blue group-hover:text-white transition-all">
                                 View Details
                               </Button>
                             </div>
@@ -562,7 +562,7 @@ export default function TradeShowsDirectory() {
                   <p className="text-gray-600 mb-4 font-medium">
                     Showing {Math.min(20, filteredShows.length)} of {filteredShows.length} exhibitions
                   </p>
-                  <Button variant="outline" className="border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-primary-blue">
+                  <Button variant="outline" className="border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-white">
                     Load More Exhibitions
                     <FiArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -656,7 +656,7 @@ export default function TradeShowsDirectory() {
                         </div>
                       </div>
                       <div className="mt-4 pt-3 border-t border-gray-200">
-                        <Button variant="outline" size="sm" className="w-full text-xs hover:bg-primary-blue hover:text-primary-blue hover:border-primary-blue transition-all">
+                        <Button variant="outline" size="sm" className="w-full text-xs hover:bg-primary-blue hover:text-white hover:border-primary-blue transition-all">
                           View {industryShows.length} {industry.name} Shows
                         </Button>
                       </div>

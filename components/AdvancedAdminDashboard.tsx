@@ -28,8 +28,8 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
       description: 'Add, edit, and manage exhibition stand builders',
       icon: Building2,
       actions: [
-        { label: 'Add New Builder', href: '/admin/builders/add', color: 'bg-russian-violet-500' },
-        { label: 'Bulk Import Builders', href: '/admin/builders/bulk-import', color: 'bg-claret-500' },
+        { label: 'Add New Builder', href: '/admin/builders/add', color: 'bg-blue-500' },
+        { label: 'Bulk Import Builders', href: '/admin/builders/bulk-import', color: 'bg-green-500' },
         { label: 'Edit Existing Builders', href: '/admin/builders/manage', color: 'bg-orange-500' },
         { label: 'Export Builder Database', href: '/admin/builders/export', color: 'bg-purple-500' }
       ],
@@ -41,8 +41,8 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
       description: 'Manage countries, cities, and all platform content',
       icon: Globe,
       actions: [
-        { label: 'Manage Countries', href: '/admin/content/countries', color: 'bg-russian-violet-500' },
-        { label: 'Manage Cities', href: '/admin/content/cities', color: 'bg-claret-500' },
+        { label: 'Manage Countries', href: '/admin/content/countries', color: 'bg-blue-500' },
+        { label: 'Manage Cities', href: '/admin/content/cities', color: 'bg-green-500' },
         { label: 'Add Global Cities', href: '/admin/content/cities/bulk-add', color: 'bg-orange-500' },
         { label: 'Content Editor', href: '/admin/content/editor', color: 'bg-purple-500' }
       ],
@@ -54,8 +54,8 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
       description: 'Comprehensive trade show and exhibition management',
       icon: Calendar,
       actions: [
-        { label: 'Add New Trade Show', href: '/admin/tradeshows/add', color: 'bg-russian-violet-500' },
-        { label: 'Bulk Import Shows', href: '/admin/tradeshows/bulk-import', color: 'bg-claret-500' },
+        { label: 'Add New Trade Show', href: '/admin/tradeshows/add', color: 'bg-blue-500' },
+        { label: 'Bulk Import Shows', href: '/admin/tradeshows/bulk-import', color: 'bg-green-500' },
         { label: 'Manage Existing Shows', href: '/admin/tradeshows/manage', color: 'bg-orange-500' },
         { label: 'Industry Categories', href: '/admin/tradeshows/categories', color: 'bg-purple-500' }
       ],
@@ -67,8 +67,8 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
       description: 'Worldwide exhibition venues and locations',
       icon: MapPin,
       actions: [
-        { label: 'Add Exhibition Venues', href: '/admin/locations/venues', color: 'bg-russian-violet-500' },
-        { label: 'City Database Manager', href: '/admin/locations/cities', color: 'bg-claret-500' },
+        { label: 'Add Exhibition Venues', href: '/admin/locations/venues', color: 'bg-blue-500' },
+        { label: 'City Database Manager', href: '/admin/locations/cities', color: 'bg-green-500' },
         { label: 'Import Global Data', href: '/admin/locations/import', color: 'bg-orange-500' },
         { label: 'Venue Categories', href: '/admin/locations/categories', color: 'bg-purple-500' }
       ],
@@ -80,8 +80,8 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
       description: 'Platform users, permissions, and access control',
       icon: Users,
       actions: [
-        { label: 'User Accounts', href: '/admin/users/accounts', color: 'bg-russian-violet-500' },
-        { label: 'Role Management', href: '/admin/users/roles', color: 'bg-claret-500' },
+        { label: 'User Accounts', href: '/admin/users/accounts', color: 'bg-blue-500' },
+        { label: 'Role Management', href: '/admin/users/roles', color: 'bg-green-500' },
         { label: 'Bulk User Import', href: '/admin/users/import', color: 'bg-orange-500' },
         { label: 'Access Logs', href: '/admin/users/logs', color: 'bg-purple-500' }
       ],
@@ -93,8 +93,8 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
       description: 'Advanced system settings and configuration',
       icon: Settings,
       actions: [
-        { label: 'Database Management', href: '/admin/system/database', color: 'bg-russian-violet-500' },
-        { label: 'API Configuration', href: '/admin/system/api', color: 'bg-claret-500' },
+        { label: 'Database Management', href: '/admin/system/database', color: 'bg-blue-500' },
+        { label: 'API Configuration', href: '/admin/system/api', color: 'bg-green-500' },
         { label: 'Performance Monitor', href: '/admin/system/performance', color: 'bg-orange-500' },
         { label: 'Backup & Security', href: '/admin/system/security', color: 'bg-purple-500' }
       ],
@@ -106,8 +106,8 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
     <Card className="hover:shadow-lg transition-all duration-300">
       <CardHeader>
         <CardTitle className="flex items-center space-x-3">
-          <div className="p-2 bg-russian-violet-100 rounded-lg">
-            <module.icon className="w-6 h-6 text-russian-violet-600" />
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <module.icon className="w-6 h-6 text-blue-600" />
           </div>
           <div>
             <h3 className="font-semibold text-lg">{module.title}</h3>
@@ -152,7 +152,7 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
             <p className="text-gray-600 mt-1">Complete platform administration and management tools</p>
           </div>
           <div className="flex items-center space-x-4">
-            <Badge className="bg-claret-100 text-claret-800">
+            <Badge className="bg-green-100 text-green-800">
               <Zap className="w-3 h-3 mr-1" />
               System Operational
             </Badge>
@@ -210,7 +210,7 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Link href="/admin/builders/bulk-import">
-                    <Button className="w-full bg-russian-violet-600 hover:bg-russian-violet-700 text-white">
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                       <Upload className="w-4 h-4 mr-2" />
                       Import Builders (CSV)
                     </Button>
@@ -240,7 +240,7 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Link href="/admin/tradeshows/bulk-import">
-                    <Button className="w-full bg-claret-600 hover:bg-claret-700 text-white">
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
                       <Upload className="w-4 h-4 mr-2" />
                       Import Trade Shows (CSV)
                     </Button>

@@ -125,9 +125,9 @@ const recentArticles = [
 ];
 
 const categories = [
-  { name: "City Guides", count: 8, color: "bg-russian-violet-100 text-russian-violet-800" },
+  { name: "City Guides", count: 8, color: "bg-blue-100 text-blue-800" },
   { name: "Design Trends", count: 12, color: "bg-purple-100 text-purple-800" },
-  { name: "Business Strategy", count: 6, color: "bg-claret-100 text-claret-800" },
+  { name: "Business Strategy", count: 6, color: "bg-green-100 text-green-800" },
   { name: "Technology", count: 9, color: "bg-orange-100 text-orange-800" },
   { name: "Sustainability", count: 4, color: "bg-emerald-100 text-emerald-800" },
   { name: "How-To Guides", count: 15, color: "bg-indigo-100 text-indigo-800" }
@@ -141,28 +141,30 @@ export default function BlogPage() {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-16 pb-12 bg-gradient-to-br from-russian-violet-900 via-dark-purple-800 to-russian-violet-900 text-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-            Exhibition Industry
-            <span className="block text-russian-violet-500">Insights & Trends</span>
-          </h1>
-          <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Stay ahead of the curve with expert analysis, industry updates, and actionable insights 
-            from the world of exhibition stands and trade shows.
-          </p>
-          <div className="flex flex-wrap justify-center gap-6 text-base">
-            <div className="flex items-center space-x-2">
-              <FiTrendingUp className="text-russian-violet-500" />
-              <span>Industry Trends</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <FiMapPin className="text-russian-violet-500" />
-              <span>City Guides</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <FiUser className="text-russian-violet-500" />
-              <span>Expert Tips</span>
+      <section className="pt-20 pb-16 bg-gradient-to-br from-navy-900 via-navy-800 to-blue-dark text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              Exhibition Industry
+              <span className="block text-blue-primary">Insights & Trends</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto">
+              Stay ahead of the curve with expert insights, industry trends, and practical guides 
+              for exhibition professionals and trade show participants.
+            </p>
+            <div className="flex flex-wrap justify-center gap-8 text-lg">
+              <div className="flex items-center space-x-2">
+                <FiTrendingUp className="text-blue-primary" />
+                <span>Industry Trends</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <FiMapPin className="text-blue-primary" />
+                <span>City Guides</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <FiUser className="text-blue-primary" />
+                <span>Expert Tips</span>
+              </div>
             </div>
           </div>
         </div>
@@ -191,40 +193,65 @@ export default function BlogPage() {
       </section>
 
       {/* Featured Articles */}
-      <section className="py-12 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Articles</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover the latest insights and trends shaping the exhibition industry
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-navy-900">
+            Featured Articles
+          </h2>
+          <div className="grid lg:grid-cols-3 gap-8">
             {featuredArticles.map((article) => (
-              <Card key={article.slug} className="group hover:shadow-lg transition-all duration-300 overflow-hidden border-0 shadow-sm">
-                <div className="h-40 bg-gradient-to-br from-russian-violet-500 to-russian-violet-900 flex items-center justify-center relative">
-                  <div className="text-center text-white p-4">
-                    <div className="text-3xl mb-2">📝</div>
-                    <div className="text-sm opacity-90">{article.category}</div>
+              <Card key={article.slug} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <div className="h-48 bg-gradient-to-br from-blue-primary to-blue-dark flex items-center justify-center relative">
+                  <div className="text-center text-white p-6">
+                    <div className="text-4xl mb-2">📝</div>
+                    <Badge className="bg-white/20 text-white border-white/30">
+                      {article.category}
+                    </Badge>
+                  </div>
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-yellow-500 text-yellow-900">
+                      Featured
+                    </Badge>
                   </div>
                 </div>
-                <CardContent className="p-5">
-                  <div className="mb-3">
-                    <h3 className="text-lg font-bold text-russian-violet-900 mb-2 group-hover:text-russian-violet-500 transition-colors line-clamp-2">
-                      {article.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                      {article.excerpt}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs text-gray-500">
-                      {article.readTime} min read
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-1">
+                        <FiCalendar className="w-4 h-4" />
+                        <span>{new Date(article.date).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <FiEye className="w-4 h-4" />
+                        <span>{article.views}</span>
+                      </div>
                     </div>
-                    <Link href={`/blog/${article.slug}`} className="text-russian-violet-500 hover:text-russian-violet-900 font-medium text-sm flex items-center">
-                      Read Full Article <FiArrowRight className="ml-1 w-4 h-4" />
-                    </Link>
+                    <span>{article.readTime}</span>
                   </div>
+                  
+                  <h3 className="text-xl font-bold text-navy-900 mb-3 group-hover:text-blue-primary transition-colors">
+                    {article.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">{article.excerpt}</p>
+                  
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-2">
+                      <FiUser className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm text-gray-600">{article.author}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-1 mb-4">
+                    {article.tags.slice(0, 3).map((tag) => (
+                      <Badge key={tag} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  
+                  <Link href={`/blog/${article.slug}`} className="text-blue-primary hover:text-blue-dark font-medium text-sm flex items-center">
+                    Read Full Article <FiArrowRight className="ml-1 w-4 h-4" />
+                  </Link>
                 </CardContent>
               </Card>
             ))}
@@ -233,41 +260,62 @@ export default function BlogPage() {
       </section>
 
       {/* Recent Articles */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest Articles</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Fresh content and insights delivered weekly
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-navy-900">
+            Recent Articles
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {recentArticles.map((article) => (
-              <Card key={article.slug} className="group hover:shadow-lg transition-all duration-300 overflow-hidden border-0 shadow-sm">
-                <CardContent className="p-5">
-                  <div className="mb-3">
-                    <h3 className="text-lg font-bold text-russian-violet-900 mb-2 group-hover:text-russian-violet-500 transition-colors line-clamp-2">
-                      {article.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                      {article.excerpt}
-                    </p>
+              <Card key={article.slug} className="group hover:shadow-lg transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                    <Badge className="bg-gray-100 text-gray-700 text-xs">
+                      {article.category}
+                    </Badge>
+                    <span>{article.readTime}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs text-gray-500">
-                      {article.readTime} min read
+                  
+                  <h3 className="text-lg font-bold text-navy-900 mb-3 group-hover:text-blue-primary transition-colors">
+                    {article.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">{article.excerpt}</p>
+                  
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-1">
+                        <FiUser className="w-4 h-4" />
+                        <span>{article.author}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <FiCalendar className="w-4 h-4" />
+                        <span>{new Date(article.date).toLocaleDateString()}</span>
+                      </div>
                     </div>
-                    <Link href={`/blog/${article.slug}`} className="text-russian-violet-500 hover:text-russian-violet-900 font-medium text-sm flex items-center">
-                      Read More <FiArrowRight className="ml-1 w-4 h-4" />
-                    </Link>
+                    <div className="flex items-center space-x-1">
+                      <FiEye className="w-4 h-4" />
+                      <span>{article.views}</span>
+                    </div>
                   </div>
+                  
+                  <div className="flex flex-wrap gap-1 mb-4">
+                    {article.tags.slice(0, 2).map((tag) => (
+                      <Badge key={tag} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  
+                  <Link href={`/blog/${article.slug}`} className="text-blue-primary hover:text-blue-dark font-medium text-sm flex items-center">
+                    Read More <FiArrowRight className="ml-1 w-4 h-4" />
+                  </Link>
                 </CardContent>
               </Card>
             ))}
           </div>
           
-          <div className="text-center mt-10">
-            <Button className="bg-russian-violet-500 hover:bg-russian-violet-900 text-white px-8 py-3">
+          <div className="text-center mt-12">
+            <Button className="bg-blue-primary hover:bg-blue-dark text-white px-8 py-3">
               Load More Articles
             </Button>
           </div>
@@ -275,26 +323,26 @@ export default function BlogPage() {
       </section>
 
       {/* Newsletter CTA */}
-      <section className="py-12 bg-russian-violet-500 text-white">
+      <section className="py-16 bg-blue-primary text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Stay Updated with Industry Insights
           </h2>
-          <p className="text-lg mb-8 text-russian-violet-100 leading-relaxed">
+          <p className="text-xl mb-8 text-blue-100">
             Subscribe to our newsletter and never miss the latest exhibition industry trends, 
             trade show updates, and expert tips delivered straight to your inbox.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto">
             <input 
               type="email" 
               placeholder="Enter your email address"
-              className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-russian-violet-300"
+              className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-light"
             />
-            <Button className="bg-white text-russian-violet-500 hover:bg-gray-100 px-8 py-3">
+            <Button className="bg-white text-blue-primary hover:bg-gray-100 px-8 py-3">
               Subscribe
             </Button>
           </div>
-          <p className="text-sm text-russian-violet-100 mt-4">
+          <p className="text-sm text-blue-100 mt-4">
             Join 5,000+ industry professionals. Unsubscribe anytime.
           </p>
         </div>

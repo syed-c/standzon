@@ -371,7 +371,7 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
 
               <div className="flex flex-wrap gap-3">
                 {builder.verified && (
-                  <Badge className="bg-claret-500 text-white">
+                  <Badge className="bg-green-500 text-white">
                     <Shield className="w-3 h-3 mr-1" />
                     Verified Builder
                   </Badge>
@@ -536,7 +536,7 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
                         <ul className="space-y-1">
                           {builder.keyStrengths.map((strength: string, index: number) => (
                             <li key={index} className="flex items-center gap-2 text-gray-700">
-                              <CheckCircle className="w-4 h-4 text-claret-500" />
+                              <CheckCircle className="w-4 h-4 text-green-500" />
                               {strength}
                             </li>
                           ))}

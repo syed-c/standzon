@@ -580,7 +580,7 @@ export default function EnhancedBulkUploadPage() {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Badge className="bg-claret-100 text-claret-800">
+            <Badge className="bg-green-100 text-green-800">
               <Shield className="h-3 w-3 mr-1" />
               Secure Upload
             </Badge>
@@ -607,13 +607,13 @@ export default function EnhancedBulkUploadPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-claret-50 to-claret-100">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-green-50 to-green-100">
             <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 bg-claret-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FileText className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-claret-900 mb-2">2. Fill Required Data</h3>
-              <p className="text-claret-700">Complete all mandatory fields with real builder information</p>
+              <h3 className="text-xl font-semibold text-green-900 mb-2">2. Fill Required Data</h3>
+              <p className="text-green-700">Complete all mandatory fields with real builder information</p>
             </CardContent>
           </Card>
 
@@ -676,7 +676,7 @@ export default function EnhancedBulkUploadPage() {
                     '✨ 5 realistic sample builders with real data'
                   ].map((item, index) => (
                     <div key={index} className="flex items-center text-sm text-gray-600">
-                      <CheckCircle className="h-4 w-4 text-claret-500 mr-2" />
+                      <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
                       {item}
                     </div>
                   ))}
@@ -694,12 +694,12 @@ export default function EnhancedBulkUploadPage() {
 
           {/* Enhanced File Upload */}
           <Card className="shadow-xl border-0">
-            <CardHeader className="bg-gradient-to-r from-claret-500 to-claret-600 text-white rounded-t-lg">
+            <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-t-lg">
               <CardTitle className="text-2xl flex items-center">
                 <Upload className="h-6 w-6 mr-3" />
                 Smart File Upload
               </CardTitle>
-              <CardDescription className="text-claret-100">
+              <CardDescription className="text-green-100">
                 Drag & drop with instant preview and validation
               </CardDescription>
             </CardHeader>
@@ -708,8 +708,8 @@ export default function EnhancedBulkUploadPage() {
               <div
                 className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${ 
                   dragActive 
-                    ? 'border-claret-500 bg-claret-50' 
-                    : 'border-gray-300 hover:border-claret-400 hover:bg-gray-50'
+                    ? 'border-green-500 bg-green-50' 
+                    : 'border-gray-300 hover:border-green-400 hover:bg-gray-50'
                 }`}
                 onDrop={handleDrop}
                 onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
@@ -722,7 +722,7 @@ export default function EnhancedBulkUploadPage() {
                   
                   {uploadFile ? (
                     <div className="space-y-2">
-                      <p className="text-claret-600 font-medium">✓ {uploadFile.name}</p>
+                      <p className="text-green-600 font-medium">✓ {uploadFile.name}</p>
                       <p className="text-sm text-gray-500">{(uploadFile.size / 1024).toFixed(1)} KB</p>
                       {showPreview && (
                         <Badge className="bg-blue-100 text-blue-800">
@@ -805,7 +805,7 @@ export default function EnhancedBulkUploadPage() {
               <Button 
                 onClick={processUpload}
                 disabled={!uploadFile || isUploading}
-                className="w-full bg-gradient-to-r from-claret-500 to-claret-600 hover:from-claret-600 hover:to-claret-700 text-white text-lg py-6"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-lg py-6"
                 size="lg"
               >
                 {isUploading ? (
@@ -829,7 +829,7 @@ export default function EnhancedBulkUploadPage() {
           <Card className="shadow-xl border-0">
             <CardHeader className={`rounded-t-lg ${ 
               uploadResult.success 
-                ? 'bg-gradient-to-r from-claret-500 to-claret-600 text-white' 
+                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' 
                 : 'bg-gradient-to-r from-red-500 to-red-600 text-white'
             }`}>
               <CardTitle className="text-2xl flex items-center">
@@ -845,7 +845,7 @@ export default function EnhancedBulkUploadPage() {
                   </>
                 )}
               </CardTitle>
-              <CardDescription className={uploadResult.success ? 'text-claret-100' : 'text-red-100'}>
+              <CardDescription className={uploadResult.success ? 'text-green-100' : 'text-red-100'}>
                 {uploadResult.success 
                   ? 'Builder profiles created and synced across the entire platform'
                   : 'Please fix the validation errors below and try again'
@@ -857,9 +857,9 @@ export default function EnhancedBulkUploadPage() {
                 <div className="space-y-6">
                   {/* Success Statistics */}
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="text-center p-6 bg-claret-50 rounded-xl">
-                      <div className="text-3xl font-bold text-claret-600">{uploadResult.created}</div>
-                      <div className="text-claret-700 font-medium">Builders Created</div>
+                    <div className="text-center p-6 bg-green-50 rounded-xl">
+                      <div className="text-3xl font-bold text-green-600">{uploadResult.created}</div>
+                      <div className="text-green-700 font-medium">Builders Created</div>
                     </div>
                     {uploadResult.duplicates > 0 && (
                       <div className="text-center p-6 bg-yellow-50 rounded-xl">
@@ -895,7 +895,7 @@ export default function EnhancedBulkUploadPage() {
                               <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
                                   <h5 className="font-semibold text-gray-900">{builder.companyName}</h5>
-                                  <Badge className="bg-claret-100 text-claret-800">Active</Badge>
+                                  <Badge className="bg-green-100 text-green-800">Active</Badge>
                                   <Badge variant="outline">{builder.serviceLocations.length} cities</Badge>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -938,9 +938,9 @@ export default function EnhancedBulkUploadPage() {
                     </div>
                   )}
                   
-                          <Alert className="border-claret-200 bg-claret-50">
-          <CheckCircle className="h-4 w-4 text-claret-600" />
-          <AlertDescription className="text-claret-800">
+                  <Alert className="border-green-200 bg-green-50">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertDescription className="text-green-800">
                       <strong>Integration Complete!</strong> All builders have been automatically:
                       <ul className="list-disc list-inside mt-2 space-y-1">
                         <li>Added to their respective country and city pages</li>

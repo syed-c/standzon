@@ -472,7 +472,7 @@ export default function SimpleQuoteRequestForm({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full bg-blue-600 hover:bg-blue-700"
             >
               {isSubmitting ? (
                 <>
@@ -481,7 +481,7 @@ export default function SimpleQuoteRequestForm({
                 </>
               ) : (
                 <>
-                  <MessageSquare className="w-4 h-4 mr-2 text-white" />
+                  <MessageSquare className="w-4 h-4 mr-2" />
                   Submit Quote Request
                 </>
               )}

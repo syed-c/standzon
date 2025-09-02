@@ -255,7 +255,7 @@ export default function GraphicsPrintingPageContent() {
 
                 <Link href={card.buttonLink || "/quote"}>
                   <Button 
-                    className="w-full bg-white text-red-600 border-2 border-red-600 hover:bg-red-600 hover:text-primary-blue transition-all duration-300 font-semibold py-3 rounded-lg" 
+                    className="w-full bg-white text-red-600 border-2 border-red-600 hover:bg-red-600 hover:text-white transition-all duration-300 font-semibold py-3 rounded-lg" 
                     variant="outline"
                   >
                     {card.buttonText || "Get Quote"}
@@ -268,7 +268,7 @@ export default function GraphicsPrintingPageContent() {
         </section>
 
         {/* Final CTA Section */}
-        <section className="bg-gradient-to-r from-claret to-persian-orange rounded-2xl p-8 md:p-12 text-white text-center">
+        <section className="bg-gradient-to-r from-red-600 to-pink-700 rounded-2xl p-8 md:p-12 text-white text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             {saved?.sections?.graphicsPrinting?.cta?.heading || "Ready for Professional Graphics & Printing?"}
           </h2>
@@ -280,7 +280,7 @@ export default function GraphicsPrintingPageContent() {
               <Link key={index} href={button.href || "/quote"}>
                 <Button
                   size="lg"
-                  className={index === 0 ? "bg-white text-claret hover:bg-gray-100" : "border-white text-white hover:bg-white hover:text-claret"}
+                  className={index === 0 ? "bg-white text-red-600 hover:bg-gray-100" : "border-white text-white hover:bg-white hover:text-red-600"}
                   variant={index === 0 ? "default" : "outline"}
                 >
                   {button.text || "Get Started"}

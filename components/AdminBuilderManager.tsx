@@ -230,7 +230,7 @@ export default function AdminBuilderManager() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-claret-100 text-claret-800';
+      case 'active': return 'bg-green-100 text-green-800';
       case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'suspended': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -261,7 +261,7 @@ export default function AdminBuilderManager() {
           </Button>
           <Dialog open={isBulkUploadOpen} onOpenChange={setIsBulkUploadOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-russian-violet-600 hover:bg-russian-violet-700 text-white">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Upload className="w-4 h-4 mr-2" />
                 Bulk Upload
               </Button>
@@ -379,7 +379,7 @@ export default function AdminBuilderManager() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Building2 className="w-5 h-5 text-russian-violet-600" />
+              <Building2 className="w-5 h-5 text-blue-600" />
               <div>
                 <p className="text-2xl font-bold">{builders.length}</p>
                 <p className="text-sm text-gray-600">Total Builders</p>
@@ -390,7 +390,7 @@ export default function AdminBuilderManager() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <CheckCircle className="w-5 h-5 text-russian-violet-600" />
+              <CheckCircle className="w-5 h-5 text-green-600" />
               <div>
                 <p className="text-2xl font-bold">{builders.filter(b => b.status === 'active').length}</p>
                 <p className="text-sm text-gray-600">Active</p>
@@ -412,7 +412,7 @@ export default function AdminBuilderManager() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <CheckCircle className="w-5 h-5 text-russian-violet-600" />
+              <CheckCircle className="w-5 h-5 text-blue-600" />
               <div>
                 <p className="text-2xl font-bold">{builders.filter(b => b.verified).length}</p>
                 <p className="text-sm text-gray-600">Verified</p>
@@ -447,7 +447,7 @@ export default function AdminBuilderManager() {
                           <span className="ml-1 capitalize">{builder.status}</span>
                         </Badge>
                         {builder.verified && (
-                          <Badge className="bg-russian-violet-100 text-russian-violet-800">
+                          <Badge className="bg-blue-100 text-blue-800">
                             <CheckCircle className="w-3 h-3 mr-1" />
                             Verified
                           </Badge>
@@ -621,7 +621,7 @@ export default function AdminBuilderManager() {
                 <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={saveBuilderChanges} className="bg-russian-violet-600 hover:bg-russian-violet-700 text-white">
+                <Button onClick={saveBuilderChanges} className="bg-blue-600 hover:bg-blue-700 text-white">
                   Save Changes
                 </Button>
               </div>

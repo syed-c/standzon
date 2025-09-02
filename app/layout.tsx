@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth h-full m-0 p-0" suppressHydrationWarning>
-        <body className={`${inter.className} font-body antialiased`}>
+        <body className={`${inter.className} h-full m-0 p-0`} suppressHydrationWarning>
           <ConvexClientProvider>
             {children}
             <Toaster />

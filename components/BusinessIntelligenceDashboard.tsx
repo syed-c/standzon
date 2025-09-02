@@ -215,7 +215,7 @@ export default function BusinessIntelligenceDashboard() {
             <div className="text-2xl font-bold">
               ${(data.overview.revenue / 1000000).toFixed(1)}M
             </div>
-            <p className="text-xs text-claret-600">
+            <p className="text-xs text-green-600">
               +{data.overview.growth}% from last period
             </p>
           </CardContent>

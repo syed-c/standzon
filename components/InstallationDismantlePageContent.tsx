@@ -255,7 +255,7 @@ export default function InstallationDismantlePageContent() {
 
                 <Link href={card.buttonLink || "/quote"}>
                   <Button 
-                    className="w-full bg-white text-orange-600 border-2 border-orange-600 hover:bg-orange-600 hover:text-primary-blue transition-all duration-300 font-semibold py-3 rounded-lg" 
+                    className="w-full bg-white text-orange-600 border-2 border-orange-600 hover:bg-orange-600 hover:text-white transition-all duration-300 font-semibold py-3 rounded-lg" 
                     variant="outline"
                   >
                     {card.buttonText || "Get Quote"}

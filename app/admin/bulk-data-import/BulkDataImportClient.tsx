@@ -69,9 +69,9 @@ export default function BulkDataImportClient() {
                 <div className="text-2xl font-bold text-blue-600">{builderStats.totalBuilders}</div>
                 <div className="text-sm text-blue-700">Total Builders</div>
               </div>
-              <div className="text-center p-4 bg-claret-50 rounded-lg">
-                <div className="text-2xl font-bold text-claret-600">{builderStats.verifiedBuilders}</div>
-                <div className="text-sm text-claret-700">Verified Builders</div>
+              <div className="text-center p-4 bg-green-50 rounded-lg">
+                <div className="text-2xl font-bold text-green-600">{builderStats.verifiedBuilders}</div>
+                <div className="text-sm text-green-700">Verified Builders</div>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg">
                 <div className="text-2xl font-bold text-purple-600">{builderStats.totalCountries}</div>
@@ -115,7 +115,7 @@ export default function BulkDataImportClient() {
                 </div>
               </div>
               <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
-                <MapPin className="w-5 h-5 text-claret-500 mt-0.5" />
+                <MapPin className="w-5 h-5 text-green-500 mt-0.5" />
                 <div>
                   <div className="font-medium">45+ Service Locations</div>
                   <div className="text-sm text-gray-600">Major cities across US, Europe, Asia, and Australia</div>
@@ -211,7 +211,7 @@ export default function BulkDataImportClient() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               {importResult.success ? (
-                <CheckCircle className="w-5 h-5 text-claret-500" />
+                <CheckCircle className="w-5 h-5 text-green-500" />
               ) : (
                 <AlertCircle className="w-5 h-5 text-red-500" />
               )}
@@ -219,8 +219,8 @@ export default function BulkDataImportClient() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Alert className={importResult.success ? "border-claret-200 bg-claret-50" : "border-red-200 bg-red-50"}>
-              <AlertDescription className={importResult.success ? "text-claret-800" : "text-red-800"}>
+            <Alert className={importResult.success ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
+              <AlertDescription className={importResult.success ? "text-green-800" : "text-red-800"}>
                 {importResult.message}
               </AlertDescription>
             </Alert>
@@ -231,9 +231,9 @@ export default function BulkDataImportClient() {
                   <div className="text-xl font-bold text-blue-600">{importResult.imported.builders}</div>
                   <div className="text-sm text-blue-700">Builders</div>
                 </div>
-                <div className="text-center p-3 bg-claret-50 rounded-lg">
-                  <div className="text-xl font-bold text-claret-600">{importResult.imported.serviceLocations}</div>
-                  <div className="text-sm text-claret-700">Locations</div>
+                <div className="text-center p-3 bg-green-50 rounded-lg">
+                  <div className="text-xl font-bold text-green-600">{importResult.imported.serviceLocations}</div>
+                  <div className="text-sm text-green-700">Locations</div>
                 </div>
                 <div className="text-center p-3 bg-purple-50 rounded-lg">
                   <div className="text-xl font-bold text-purple-600">{importResult.imported.services}</div>
