@@ -162,7 +162,7 @@ export default function SuperAdminDashboard({
 
         // Load builders data with better error handling
         try {
-          const buildersResponse = await fetch("/api/admin/builders", {
+          const buildersResponse = await fetch("/api/admin/builders?limit=1000&prioritize_real=true", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",

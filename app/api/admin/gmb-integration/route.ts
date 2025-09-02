@@ -350,11 +350,39 @@ export async function POST(request: NextRequest) {
           `🔄 Transformed ${convexBuilders.length} listings to Convex format`
         );
 
+        // De-duplicate within this batch by gmbPlaceId or name+location
+        const seenKeys = new Set<string>();
+        const uniqueConvexBuilders = convexBuilders.filter((b: any) => {
+          const bd = b.builderData || {};
+          const key = `${bd.gmbPlaceId || ''}|${(bd.companyName || '').toLowerCase()}|${(bd.headquartersCity || '').toLowerCase()}|${(bd.headquartersCountry || '').toLowerCase()}`;
+          if (seenKeys.has(key)) return false;
+          seenKeys.add(key);
+          return true;
+        });
+
+        // Filter out duplicates already existing in Convex
+        const existingData = await convex.query(api.builders.getAllBuilders, { limit: 10000, offset: 0 });
+        const existing = Array.isArray(existingData?.builders) ? existingData.builders : [];
+        const existingGmbSet = new Set(
+          existing.map((eb: any) => (eb.gmbPlaceId || '').toString())
+        );
+        const existingNameLoc = new Set(
+          existing.map((eb: any) => `${(eb.companyName || '').toLowerCase()}|${(eb.headquartersCity || '').toLowerCase()}|${(eb.headquartersCountry || '').toLowerCase()}`)
+        );
+
+        const toImport = uniqueConvexBuilders.filter((b: any) => {
+          const bd = b.builderData || {};
+          if (bd.gmbPlaceId && existingGmbSet.has(bd.gmbPlaceId)) return false;
+          const key = `${(bd.companyName || '').toLowerCase()}|${(bd.headquartersCity || '').toLowerCase()}|${(bd.headquartersCountry || '').toLowerCase()}`;
+          if (existingNameLoc.has(key)) return false;
+          return true;
+        });
+
         // Use Convex bulk import mutation
         const result = await convex.mutation(
           api.builders.bulkImportGMBBuilders,
           {
-            builders: convexBuilders,
+            builders: toImport,
           }
         );
 
