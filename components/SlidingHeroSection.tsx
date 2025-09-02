@@ -82,10 +82,12 @@ export function SlidingHeroSection({
           </h1>
         </div>
 
-        {/* Description */}
-        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-100 mb-6 md:mb-10 max-w-4xl mx-auto leading-relaxed px-4" data-macaly="hero-description">
-          {description}
-        </p>
+        {/* Description (render formatted HTML) */}
+        <p
+          className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-100 mb-6 md:mb-10 max-w-4xl mx-auto leading-relaxed px-4"
+          data-macaly="hero-description"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
 
         {/* Stats Section */}
         {stats && stats.length > 0 && (
