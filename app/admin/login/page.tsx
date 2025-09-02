@@ -140,22 +140,56 @@ export default function AdminLoginPage() {
   };
 
   const handlePasswordLogin = async () => {
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
+
+    // Check if credentials match the hardcoded admin credentials
+    if (email !== "sadiqzaidi123456@gmail.com" || password !== "aDMIN@8899") {
+      setError("Invalid email or password");
+      return;
+    }
+
     setIsLoading(true);
     setError("");
+
     try {
-      const allowedEmail = "sadiqzaidi123456@gmail.com";
-      const allowedPassword = "aDMIN@8899";
-      if (email.trim().toLowerCase() === allowedEmail && password === allowedPassword) {
-        const user = { id: "super-admin", email: allowedEmail, role: "super_admin" };
-        localStorage.setItem(
-          "currentUser",
-          JSON.stringify({ ...user, isLoggedIn: true, loginMethod: "password" })
-        );
-        try { document.cookie = `admin_auth=1; path=/; max-age=${60*60*8}`; } catch {}
-        router.push("/admin/dashboard");
-      } else {
-        setError("Invalid email or password");
-      }
+      console.log("🔐 Password login for admin:", email);
+
+      // Simulate admin user data
+      const adminUser = {
+        id: "admin-001",
+        email: "sadiqzaidi123456@gmail.com",
+        name: "Super Admin",
+        role: "super_admin",
+        isAdmin: true,
+        verified: true,
+        loginMethod: "password"
+      };
+
+      console.log("✅ Admin password login successful:", adminUser);
+
+      // Store admin session
+      localStorage.setItem(
+        "currentUser",
+        JSON.stringify({
+          ...adminUser,
+          isLoggedIn: true,
+          loginMethod: "password",
+        })
+      );
+
+      // Set HTTP-only-ish cookie substitute (client-side set via document.cookie)
+      try {
+        document.cookie = `admin_auth=1; path=/; max-age=${60*60*8}`;
+      } catch {}
+
+      // Redirect to admin dashboard
+      router.push("/admin/dashboard");
+    } catch (error) {
+      console.error("❌ Admin password login failed:", error);
+      setError("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -183,23 +217,19 @@ export default function AdminLoginPage() {
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-xl font-semibold text-gray-900">
-              {loginMethod === "otp" ? (step === "email" ? "Admin Login" : "Enter OTP Code") : "Admin Password Login"}
+              {step === "email" ? "Admin Login" : "Enter OTP Code"}
             </CardTitle>
             <CardDescription>
-              {loginMethod === "otp"
-                ? (step === "email" ? "Enter your admin email to receive a secure OTP" : `We sent a 6-digit code to ${email}`)
-                : "Sign in with admin email and password"}
+              {step === "email"
+                ? loginMethod === "otp" 
+                  ? "Enter your admin email to receive a secure OTP"
+                  : "Enter your admin credentials to login"
+                : `We sent a 6-digit code to ${email}`}
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
-            {/* Method Switcher */}
-            <div className="flex justify-center gap-2">
-              <Button variant={loginMethod === "otp" ? "default" : "outline"} size="sm" onClick={() => setLoginMethod("otp")}>OTP Login</Button>
-              <Button variant={loginMethod === "password" ? "default" : "outline"} size="sm" onClick={() => setLoginMethod("password")}>Password</Button>
-            </div>
-
-            {loginMethod === "otp" && step === "email" ? (
+            {step === "email" ? (
               <div className="space-y-4">
                 {/* Login Method Selection */}
                 <div className="flex space-x-2 p-1 bg-gray-100 rounded-lg">
@@ -311,7 +341,7 @@ export default function AdminLoginPage() {
                   {!isLoading && (loginMethod === "otp" ? <Send className="w-4 h-4 ml-2" /> : <Lock className="w-4 h-4 ml-2" />)}
                 </Button>
               </div>
-            ) : loginMethod === "otp" ? (
+            ) : (
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="otp-code">6-Digit OTP Code</Label>
@@ -369,48 +399,6 @@ export default function AdminLoginPage() {
                   disabled={isLoading}
                 >
                   Resend OTP
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="admin-email">Admin Email</Label>
-                  <div className="relative mt-1">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <Input
-                      id="admin-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="sadiqzaidi123456@gmail.com"
-                      className="pl-10"
-                      disabled={isLoading}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="admin-password">Password</Label>
-                  <Input
-                    id="admin-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    disabled={isLoading}
-                  />
-                </div>
-
-                {error && (
-                  <Alert className="border-red-200 bg-red-50">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription className="text-red-800">
-                      {error}
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                <Button onClick={handlePasswordLogin} disabled={isLoading} className="w-full bg-red-600 hover:bg-red-700">
-                  {isLoading ? "Signing in..." : "Login"}
                 </Button>
               </div>
             )}
