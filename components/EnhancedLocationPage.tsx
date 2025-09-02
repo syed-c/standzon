@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -53,6 +54,10 @@ export function EnhancedLocationPage({
     upcomingEvents = [],
     serverCmsContent
   } = props;
+  // Optional UI control props from parent
+  const searchTerm: string | undefined = props.searchTerm;
+  const onSearchTermChange: ((value: string) => void) | undefined = props.onSearchTermChange;
+  const suppressPostBuildersContent: boolean = Boolean(props.suppressPostBuildersContent);
   // Use new props if available, fallback to legacy props
   const finalBuilders = initialBuilders.length > 0 ? initialBuilders : builders;
   const finalLocationName = locationName || city || country || 'Unknown Location';
@@ -104,7 +109,37 @@ export function EnhancedLocationPage({
   }, [finalCountryName, finalLocationName]);
 
   useEffect(() => {
-    let sorted = [...finalBuilders];
+    // De-duplicate builders by normalized key (prefer verified, higher reviews)
+    const pickPreferred = (a: any, b: any) => {
+      if ((a.verified ? 1 : 0) !== (b.verified ? 1 : 0)) return (a.verified ? -1 : 1);
+      if ((a.reviewCount || 0) !== (b.reviewCount || 0)) return (b.reviewCount || 0) - (a.reviewCount || 0);
+      if ((a.rating || 0) !== (b.rating || 0)) return (b.rating || 0) - (a.rating || 0);
+      return (a.createdAt || 0) - (b.createdAt || 0);
+    };
+    const normalizeCompany = (name: string) =>
+      (name || '')
+        .toLowerCase()
+        .replace(/[,./|!@#$%^&*()_+\-]+/g, ' ')
+        .replace(/\b(ltd|limited|llc|l\.l\.c\.|inc|inc\.|gmbh|co\.|company|srl|s\.r\.l\.|ag|se)\b/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    const map = new Map<string, any>();
+    (finalBuilders || []).forEach((b: any) => {
+      const normalizedName = normalizeCompany(b.companyName || '');
+      const cityKey = (b.headquarters?.city || '').toLowerCase().trim();
+      const countryKey = (b.headquarters?.country || '').toLowerCase().trim();
+      // Country pages: collapse by name+country; City pages: keep city in the key
+      const key = isCity
+        ? `${normalizedName}|${cityKey}|${countryKey}`
+        : `${normalizedName}|${countryKey}`;
+      if (!map.has(key)) {
+        map.set(key, b);
+      } else {
+        const existing = map.get(key);
+        map.set(key, pickPreferred(existing, b) <= 0 ? existing : b);
+      }
+    });
+    let sorted = Array.from(map.values());
     switch (sortBy) {
       case 'rating':
         sorted.sort((a, b) => (b.rating || 4.5) - (a.rating || 4.5));
@@ -387,7 +422,7 @@ export function EnhancedLocationPage({
       <section id="builders-grid" className="py-16 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-center mb-12">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-4">
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">
                   Verified Builders in {displayLocation}
@@ -396,8 +431,16 @@ export function EnhancedLocationPage({
                   {filteredBuilders.length} professional exhibition stand builders available
                 </p>
               </div>
-              
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+                {/* Search box placed before filters */}
+                <div className="w-full sm:w-64">
+                  <Input
+                    value={searchTerm ?? ''}
+                    onChange={(e) => onSearchTermChange && onSearchTermChange(e.target.value)}
+                    placeholder={`Search builders in ${displayLocation}...`}
+                    className="bg-white border-gray-300"
+                  />
+                </div>
                 <Button 
                   variant={sortBy === 'rating' ? 'default' : 'outline'}
                   onClick={() => setSortBy('rating')}
@@ -456,53 +499,60 @@ export function EnhancedLocationPage({
         </div>
       </section>
 
-      {/* SEO Content Section (between builders grid and bottom CTA) */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto prose prose-slate">
-            <h2 className="text-2xl md:text-3xl font-bold !mb-4">
-              {cmsData?.sections?.countryPages?.[countrySlug]?.servicesHeading || 
-               `Exhibition Stand Builders in ${displayLocation}: Services, Costs, and Tips`}
-            </h2>
-            <p>
-              {cmsData?.sections?.countryPages?.[countrySlug]?.servicesParagraph || 
-               `Finding the right exhibition stand partner in ${displayLocation} can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.`}
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* Slot for Cities section rendered by parent directly after builders */}
 
-      {/* Bottom CTA */}
-      <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
-        <div className="container mx-auto px-6 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaHeading || 
-               `Ready to Find Your Perfect Builder in ${displayLocation}?`}
-            </h2>
-            <p className="text-xl text-slate-300 mb-8">
-              {cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaParagraph || 
-               `Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.`}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <PublicQuoteRequest 
-                location={displayLocation}
-                buttonText={cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaButtonText || "Start Getting Quotes"}
-                className="text-lg px-8 py-4"
-              />
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="border-white/20 text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-4"
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              >
-                {cmsData?.sections?.countryPages?.[countrySlug]?.backToTopButtonText || "Back to Top"}
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
+      {/* Post-builders content is optionally suppressed; parent may render sections in custom order */}
+      {!suppressPostBuildersContent && (
+        <>
+          {/* SEO Content Section (between builders grid and bottom CTA) */}
+          <section className="py-16 bg-white">
+            <div className="container mx-auto px-6">
+              <div className="max-w-4xl mx-auto prose prose-slate">
+                <h2 className="text-2xl md:text-3xl font-bold !mb-4">
+                  {cmsData?.sections?.countryPages?.[countrySlug]?.servicesHeading || 
+                   `Exhibition Stand Builders in ${displayLocation}: Services, Costs, and Tips`}
+                </h2>
+                <p>
+                  {cmsData?.sections?.countryPages?.[countrySlug]?.servicesParagraph || 
+                   `Finding the right exhibition stand partner in ${displayLocation} can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.`}
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
+
+          {/* Bottom CTA */}
+          <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
+            <div className="container mx-auto px-6 text-center">
+              <div className="max-w-3xl mx-auto">
+                <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                  {cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaHeading || 
+                   `Ready to Find Your Perfect Builder in ${displayLocation}?`}
+                </h2>
+                <p className="text-xl text-slate-300 mb-8">
+                  {cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaParagraph || 
+                   `Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.`}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <PublicQuoteRequest 
+                    location={displayLocation}
+                    buttonText={cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaButtonText || "Start Getting Quotes"}
+                    className="text-lg px-8 py-4"
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    className="border-white/20 text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-4"
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  >
+                    {cmsData?.sections?.countryPages?.[countrySlug]?.backToTopButtonText || "Back to Top"}
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </>
+      )}
     </div>
   );
 }

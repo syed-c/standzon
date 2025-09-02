@@ -749,14 +749,13 @@ export default function BuildersDirectoryContent() {
                         >
                           View Profile
                         </Button>
-                        <Link href="/contact">
-                          <Button
-                            size="sm"
-                            className="bg-blue-primary hover:bg-blue-dark text-white px-3"
-                          >
-                            Request Quote
-                          </Button>
-                        </Link>
+                        <Button
+                          size="sm"
+                          className="bg-blue-primary hover:bg-blue-dark text-white px-3"
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.location.href = '/contact'; }}
+                        >
+                          Request Quote
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>

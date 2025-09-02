@@ -225,7 +225,7 @@ export function BuilderCard({ builder, showLeadForm = true, location }: BuilderC
 
         {/* Specializations */}
         <div className="flex flex-wrap gap-1 mb-4">
-          {builder.specializations.slice(0, 2).map((spec) => (
+          {(builder.specializations || []).slice(0, 2).map((spec) => (
             <Badge 
               key={spec.id} 
               variant="secondary" 
@@ -235,19 +235,19 @@ export function BuilderCard({ builder, showLeadForm = true, location }: BuilderC
               {spec.icon} {spec.name}
             </Badge>
           ))}
-          {builder.specializations.length > 2 && (
+          {(builder.specializations || []).length > 2 && (
             <Badge variant="outline" className="text-xs">
-              +{builder.specializations.length - 2} more
+              +{(builder.specializations || []).length - 2} more
             </Badge>
           )}
         </div>
 
         {/* Key Strengths */}
-        {builder.keyStrengths.length > 0 && (
+        {(builder.keyStrengths || []).length > 0 && (
           <div className="mb-4">
             <h5 className="font-medium text-gray-900 text-sm mb-2">Key Strengths:</h5>
             <ul className="text-xs text-gray-600 space-y-1">
-              {builder.keyStrengths.slice(0, 3).map((strength, index) => (
+              {(builder.keyStrengths || []).slice(0, 3).map((strength, index) => (
                 <li key={index} className="flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3 text-green-500" />
                   {strength}

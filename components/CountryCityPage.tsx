@@ -77,7 +77,7 @@ interface CountryCityPageProps {
   cmsContent?: any;
 }
 
-const BUILDERS_PER_PAGE = 9;
+const BUILDERS_PER_PAGE = 6;
 
 export function CountryCityPage({ 
   country, 
@@ -354,7 +354,7 @@ export function CountryCityPage({
         console.log(`🔍 Loading builders for ${city ? `${city}, ` : ''}${country} from persistent storage...`);
         
         // Load from persistent storage API
-        const response = await fetch('/api/admin/builders');
+        const response = await fetch('/api/admin/builders?limit=1000&prioritize_real=true');
         const data = await response.json();
         
         if (data.success && data.data && data.data.builders) {
@@ -524,11 +524,15 @@ export function CountryCityPage({
     // Filter and sort builders (only for search and sorting, not for city filtering)
     let filtered = builders.filter(builder => {
       // Text search filter
-      const matchesSearch = builder.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        builder.companyDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        builder.specializations.some(spec => 
-          spec.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+      const search = (searchTerm || '').toLowerCase();
+      const nameText = (builder.companyName || '').toLowerCase();
+      const descText = (builder.companyDescription || '').toLowerCase();
+      const specs = (builder.specializations || []);
+      const matchesSearch = !search ? true : (
+        nameText.includes(search) ||
+        descText.includes(search) ||
+        specs.some(spec => (spec?.name || '').toLowerCase().includes(search))
+      );
       
       // City filter (only applies when selectedCity is different from the page city)
       let matchesCity = true;
@@ -627,6 +631,7 @@ export function CountryCityPage({
 
   return (
     <>
+      {/* Cities section will be rendered after EnhancedLocationPage */}
       {isLoadingContent && (
         <div className="fixed top-4 right-4 z-50">
           <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
@@ -640,7 +645,12 @@ export function CountryCityPage({
         locationType={city ? 'city' : 'country'}
         locationName={city || country}
         countryName={city ? country : undefined}
-        initialBuilders={filteredBuilders}
+        initialBuilders={currentBuilders}
+        // pass search value to inner toolbar search next to Rating
+        searchTerm={searchTerm}
+        onSearchTermChange={(val: string) => setSearchTerm(val)}
+        // we will render Cities + SEO + CTA in this parent below pagination
+        suppressPostBuildersContent
         exhibitions={generateExhibitions(country, city)}
         venues={generateVenues(country, city)}
         pageContent={savedPageContent || {
@@ -745,24 +755,46 @@ export function CountryCityPage({
         }}
       />
 
-      {/* Personalized/Raw Content Section (renders saved HTML) */}
-      {(savedPageContent?.content?.extra?.personalizedHtml || savedPageContent?.content?.extra?.rawHtml || savedPageContent?.content?.introduction) && (
-        <section className="py-12">
+      {/* Pagination Controls (immediately after builders) */}
+      {totalPages > 1 && (
+        <section className="py-6 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {savedPageContent?.content?.extra?.sectionHeading && (
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                {savedPageContent.content.extra.sectionHeading}
-              </h2>
-            )}
-            <div
-              className="prose max-w-none"
-              dangerouslySetInnerHTML={{ __html: savedPageContent.content.extra?.personalizedHtml || savedPageContent.content.extra?.rawHtml || savedPageContent.content.introduction }}
-            />
+            <div className="flex items-center justify-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-gray-900 border-gray-300"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              >
+                Previous
+              </Button>
+              {[...Array(totalPages)].map((_, i) => (
+                <Button
+                  key={i}
+                  variant={currentPage === i + 1 ? 'default' : 'outline'}
+                  size="sm"
+                  className={currentPage === i + 1 ? '' : 'text-gray-900 border-gray-300'}
+                  onClick={() => setCurrentPage(i + 1)}
+                >
+                  {i + 1}
+                </Button>
+              ))}
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-gray-900 border-gray-300"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </section>
       )}
 
-      {/* Cities Section placed after Verified Builders */}
+      {/* Cities Section placed after builders + pagination */}
       {cities && cities.length > 0 && (
         <section className="py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -788,6 +820,67 @@ export function CountryCityPage({
           </div>
         </section>
       )}
+
+      {/* SEO Content Section after Cities */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto prose prose-slate">
+            <h2 className="text-2xl md:text-3xl font-bold !mb-4">
+              {savedPageContent?.content?.extra?.sectionHeading || `Exhibition Stand Builders in ${city || country}: Services, Costs, and Tips`}
+            </h2>
+            <p>
+              {savedPageContent?.content?.extra?.rawHtml ? '' : `Finding the right exhibition stand partner in ${city || country} can dramatically improve your event ROI. Local builders offer end‑to‑end services including custom design, fabrication, graphics, logistics, and on‑site installation.`}
+            </p>
+            {savedPageContent?.content?.extra?.rawHtml && (
+              <div dangerouslySetInnerHTML={{ __html: savedPageContent.content.extra.rawHtml }} />
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Bottom CTA after SEO section */}
+      <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
+        <div className="container mx-auto px-6 text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              {`Ready to Find Your Perfect Builder in ${city || country}?`}
+            </h2>
+            <p className="text-xl text-slate-300 mb-8">
+              {'Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.'}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button className="text-lg px-8 py-4">Start Getting Quotes</Button>
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-white/20 text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-4"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              >
+                Back to Top
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Personalized/Raw Content Section (renders saved HTML) */}
+      {(savedPageContent?.content?.extra?.personalizedHtml || savedPageContent?.content?.extra?.rawHtml || savedPageContent?.content?.introduction) && (
+        <section className="py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {savedPageContent?.content?.extra?.sectionHeading && (
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                {savedPageContent.content.extra.sectionHeading}
+              </h2>
+            )}
+            <div
+              className="prose max-w-none"
+              dangerouslySetInnerHTML={{ __html: savedPageContent.content.extra?.personalizedHtml || savedPageContent.content.extra?.rawHtml || savedPageContent.content.introduction }}
+            />
+          </div>
+        </section>
+      )}
+
+      {/* Cities section was moved to top */}
     </>
   );
 
