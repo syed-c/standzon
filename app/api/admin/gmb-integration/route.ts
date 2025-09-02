@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
+import { getServerSupabase } from "@/lib/supabase";
 
 // Initialize Convex client for server-side operations (guarded)
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
@@ -173,11 +174,14 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // Get current platform data to see what's been saved
-        const platformStats = unifiedPlatformAPI.getStats();
-        const allBuilders = unifiedPlatformAPI.getBuilders();
+        // Get current platform data from Convex
+        const buildersData = await (convex as NonNullable<typeof convex>).query(api.builders.getAllBuilders, {
+          limit: 10000,
+          offset: 0,
+        });
+        const allBuilders = (buildersData?.builders || []) as any[];
         const gmbBuilders = allBuilders.filter(
-          (b) =>
+          (b: any) =>
             b.gmbImported ||
             b.importedFromGMB ||
             b.source === "google_places_api"
@@ -356,6 +360,60 @@ export async function POST(request: NextRequest) {
 
         console.log("📊 Convex bulk import result:", result);
 
+        // Attempt to mirror into Supabase (best-effort)
+        try {
+          const supabase = getServerSupabase();
+          if (supabase) {
+            const now = new Date().toISOString();
+            // Flatten minimal builder rows for Supabase `builders` table
+            const supabaseRows = convexBuilders.map((b: any) => {
+              const bd = b.builderData || {};
+              const baseSlug = (bd.companyName || "").toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, "")
+                .replace(/\s+/g, "-")
+                .replace(/-+/g, "-")
+                .trim();
+              return {
+                company_name: bd.companyName || null,
+                slug: baseSlug || null,
+                primary_email: bd.primaryEmail || "",
+                phone: bd.phone || "",
+                website: bd.website || "",
+                headquarters_city: bd.headquartersCity || null,
+                headquarters_country: bd.headquartersCountry || null,
+                headquarters_country_code: bd.headquartersCountryCode || null,
+                headquarters_address: bd.headquartersAddress || "",
+                rating: bd.rating ?? null,
+                review_count: bd.reviewCount ?? null,
+                verified: bd.verified ?? false,
+                claimed: bd.claimed ?? false,
+                claim_status: bd.claimStatus || "unclaimed",
+                gmb_place_id: bd.gmbPlaceId || null,
+                source: bd.source || "GMB_API",
+                imported_from_gmb: true,
+                imported_at: new Date(bd.importedAt || Date.now()).toISOString(),
+                last_updated: new Date(bd.lastUpdated || Date.now()).toISOString(),
+                created_at: now,
+                updated_at: now,
+              };
+            });
+
+            // Upsert with conflict on gmb_place_id if the column/constraint exists
+            const { error: supaErr } = await supabase
+              .from("builders")
+              .upsert(supabaseRows, { onConflict: "gmb_place_id" });
+            if (supaErr) {
+              console.warn("⚠️ Supabase mirror upsert failed:", supaErr.message);
+            } else {
+              console.log(`✅ Mirrored ${supabaseRows.length} builders into Supabase`);
+            }
+          } else {
+            console.log("ℹ️ Supabase not configured; skipping mirror upsert");
+          }
+        } catch (mirrorErr) {
+          console.warn("⚠️ Supabase mirror step errored:", mirrorErr);
+        }
+
         return NextResponse.json({
           success: true,
           message: `Processing complete: ${result.created} builders created, ${result.duplicates} duplicates, ${result.failed} failed`,
@@ -387,8 +445,8 @@ export async function POST(request: NextRequest) {
           `📝 Generated ${dubaiBuilders.length} Dubai builders for recovery`
         );
 
-        // Add them to the platform
-        const results = {
+        // Add them to Convex
+        const results: { recovered: number; failed: number; errors: string[] } = {
           recovered: 0,
           failed: 0,
           errors: [],
@@ -396,18 +454,54 @@ export async function POST(request: NextRequest) {
 
         for (const builder of dubaiBuilders) {
           try {
-            const result = unifiedPlatformAPI.addBuilder(builder, "admin");
-            if (result.success) {
-              results.recovered++;
-            } else {
-              results.failed++;
-              results.errors.push(result.error);
-            }
+            const slug = builder.companyName
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, "")
+              .replace(/\s+/g, "-")
+              .replace(/-+/g, "-")
+              .trim();
+
+            await convex.mutation(api.builders.createBuilder, {
+              companyName: builder.companyName,
+              slug,
+              primaryEmail: builder.contactInfo?.primaryEmail || "",
+              logo: builder.logo || undefined,
+              establishedYear: builder.establishedYear || undefined,
+              headquartersCity: builder.headquarters?.city || "Dubai",
+              headquartersCountry: builder.headquarters?.country || "UAE",
+              headquartersCountryCode: builder.headquarters?.countryCode || "AE",
+              headquartersAddress: builder.headquarters?.address || "",
+              phone: builder.contactInfo?.phone || "",
+              website: builder.contactInfo?.website || "",
+              contactPerson: builder.contactInfo?.contactPerson || "Contact Person",
+              position: builder.contactInfo?.position || "Manager",
+              companyDescription: builder.companyDescription || undefined,
+              teamSize: builder.teamSize || undefined,
+              projectsCompleted: builder.projectsCompleted || undefined,
+              rating: builder.rating || undefined,
+              reviewCount: builder.reviewCount || undefined,
+              responseTime: builder.responseTime || undefined,
+              languages: builder.languages || undefined,
+              verified: builder.verified || false,
+              premiumMember: builder.premiumMember || false,
+              businessLicense: builder.businessLicense || undefined,
+              currency: builder.priceRange?.currency || undefined,
+              basicStandMin: builder.priceRange?.basicStand?.min || undefined,
+              basicStandMax: builder.priceRange?.basicStand?.max || undefined,
+              customStandMin: builder.priceRange?.customStand?.min || undefined,
+              customStandMax: builder.priceRange?.customStand?.max || undefined,
+              premiumStandMin: builder.priceRange?.premiumStand?.min || undefined,
+              premiumStandMax: builder.priceRange?.premiumStand?.max || undefined,
+              averageProject: builder.priceRange?.averageProject || undefined,
+              gmbImported: true,
+              importedFromGMB: true,
+              source: "google_places_api",
+            });
+
+            results.recovered++;
           } catch (error) {
             results.failed++;
-            results.errors.push(
-              error instanceof Error ? error.message : "Unknown error"
-            );
+            results.errors.push(error instanceof Error ? error.message : "Unknown error");
           }
         }
 
@@ -1242,12 +1336,12 @@ async function addEventPlannerToPlatform(plannerData: any) {
     // For now, we'll store in a global variable similar to how builders are handled
     // In a real implementation, you'd want to integrate with your event planners data store
 
-    if (!global.eventPlanners) {
-      global.eventPlanners = [];
+    if (!(globalThis as any).eventPlanners) {
+      (globalThis as any).eventPlanners = [];
     }
 
     // Check for duplicates
-    const existingPlanner = global.eventPlanners.find(
+    const existingPlanner = (globalThis as any).eventPlanners.find(
       (p: any) =>
         p.companyName === plannerData.companyName &&
         p.headquarters.city === plannerData.headquarters.city &&
@@ -1262,12 +1356,12 @@ async function addEventPlannerToPlatform(plannerData: any) {
     }
 
     // Add to global storage
-    global.eventPlanners.push(plannerData);
+    (globalThis as any).eventPlanners.push(plannerData);
 
     console.log(
       `✅ Added event planner to platform: ${plannerData.companyName}`
     );
-    console.log(`📊 Total event planners now: ${global.eventPlanners.length}`);
+    console.log(`📊 Total event planners now: ${(globalThis as any).eventPlanners.length}`);
 
     return {
       success: true,
@@ -1588,14 +1682,24 @@ export async function GET(request: NextRequest) {
       console.log("📥 Fetching GMB imported builders...");
 
       try {
-        // Get builders from unified platform
-        const allBuilders = unifiedPlatformAPI.getBuilders();
+        // Get builders from Convex
+        if (!convex) {
+          return NextResponse.json({
+            success: false,
+            error: "Convex URL not configured. Set NEXT_PUBLIC_CONVEX_URL in environment variables.",
+          }, { status: 500 });
+        }
+        const buildersData = await convex.query(api.builders.getAllBuilders, {
+          limit: 10000,
+          offset: 0,
+        });
+        const allBuilders = (buildersData?.builders || []) as any[];
         const gmbBuilders = allBuilders.filter(
-          (builder) =>
+          (builder: any) =>
             builder.gmbImported ||
             builder.importedFromGMB ||
             builder.source === "google_places_api" ||
-            (builder.id && builder.id.startsWith("gmb_"))
+            (builder._id && String(builder._id).startsWith("gmb_"))
         );
 
         console.log(
@@ -1606,11 +1710,11 @@ export async function GET(request: NextRequest) {
           success: true,
           message: `Found ${gmbBuilders.length} GMB imported builders`,
           data: {
-            builders: gmbBuilders.map((builder) => ({
-              id: builder.id,
+            builders: gmbBuilders.map((builder: any) => ({
+              id: builder._id,
               companyName: builder.companyName,
-              city: builder.headquarters?.city || "Unknown",
-              country: builder.headquarters?.country || "Unknown",
+              city: builder.headquartersCity || "Unknown",
+              country: builder.headquartersCountry || "Unknown",
               rating: builder.rating || 0,
               reviewCount: builder.reviewCount || 0,
               verified: builder.verified || false,
@@ -1622,9 +1726,9 @@ export async function GET(request: NextRequest) {
             totalBuilders: allBuilders.length,
             importStats: {
               total: gmbBuilders.length,
-              claimed: gmbBuilders.filter((b) => b.claimed).length,
-              verified: gmbBuilders.filter((b) => b.verified).length,
-              unclaimed: gmbBuilders.filter((b) => !b.claimed).length,
+              claimed: gmbBuilders.filter((b: any) => b.claimed).length,
+              verified: gmbBuilders.filter((b: any) => b.verified).length,
+              unclaimed: gmbBuilders.filter((b: any) => !b.claimed).length,
             },
           },
         });

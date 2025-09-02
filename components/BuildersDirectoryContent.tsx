@@ -293,15 +293,8 @@ export default function BuildersDirectoryContent() {
 
           setRealTimeStats(calculatedStats);
           console.log("✅ Real-time stats calculated:", calculatedStats);
-          setRealTimeBuilders([]);
-          setRealTimeStats({
-            ...builderStats,
-            totalBuilders: 0,
-            verifiedBuilders: 0,
-            totalCountries: 0,
-            totalCities: 0,
-            averageRating: 0,
-          });
+          // Use the converted builders for display
+          setRealTimeBuilders(publicBuilders);
           console.log(
             `🎉 SUCCESS: Public builders page loaded with ${publicBuilders.length} total builders from Convex (${calculatedStats.importedFromGMB} from GMB)`
           );

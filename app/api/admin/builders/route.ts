@@ -2,6 +2,8 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
 import { adminAPI } from "@/lib/api/admin";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import {
@@ -164,24 +166,70 @@ export async function GET(request: Request) {
       });
     }
 
-    // Default: Load all builders from persistent storage (safe fallback on error)
-    let allBuilders: any[] = [];
+    // Try Convex first for real builders
+    let buildersSource: any[] = [];
     try {
-      allBuilders = await builderAPI.getAllBuilders();
-      if (isVerbose) {
-        console.log(`📊 Retrieved ${allBuilders.length} builders from persistent storage`);
+      const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+      if (convexUrl) {
+        const convex = new ConvexHttpClient(convexUrl);
+        const convexData = await convex.query(api.builders.getAllBuilders, { limit: 10000, offset: 0 });
+        const convexBuilders = Array.isArray(convexData?.builders) ? convexData.builders : [];
+        if (isVerbose) {
+          console.log(`📡 Convex returned ${convexBuilders.length} builders`);
+        }
+        if (convexBuilders.length > 0) {
+          // Map Convex format to unified shape expected by clients of this endpoint
+          buildersSource = convexBuilders.map((b: any) => ({
+            id: b._id,
+            companyName: b.companyName,
+            slug: b.slug || b.companyName?.toLowerCase()?.replace(/[^a-z0-9]/g, "-") || "",
+            rating: b.rating || 0,
+            reviewCount: b.reviewCount || 0,
+            verified: !!b.verified,
+            claimed: !!b.claimed,
+            premiumMember: !!b.premiumMember,
+            projectsCompleted: b.projectsCompleted || 0,
+            responseTime: b.responseTime || "Within 24 hours",
+            languages: b.languages || ["English"],
+            createdAt: b.createdAt,
+            source: b.source,
+            gmbImported: !!(b.gmbImported || b.importedFromGMB || b.source === "GMB_API"),
+            headquarters: {
+              city: b.headquartersCity || "Unknown",
+              country: b.headquartersCountry || "Unknown",
+              countryCode: b.headquartersCountryCode || "XX",
+              address: b.headquartersAddress || "",
+            },
+          }));
+        }
       }
-    } catch (err) {
-      if (isVerbose) {
-        console.error('⚠️ Failed to read persistent builders, falling back to static set:', err);
-      }
-      allBuilders = [];
+    } catch (e) {
+      if (isVerbose) console.warn("⚠️ Convex builders fetch failed, falling back", e);
+      buildersSource = [];
     }
 
-    // Fallback: if none or error, serve static builders automatically
-    const buildersSource = (allBuilders && allBuilders.length > 0) ? allBuilders : getExhibitionBuilders();
-    if ((!allBuilders || allBuilders.length === 0) && isVerbose) {
-      console.log(`📂 Using ${buildersSource.length} static builders as fallback (auto)`);
+    // If Convex had no data, load from persistent storage
+    if (buildersSource.length === 0) {
+      try {
+        const persistentBuilders = await builderAPI.getAllBuilders();
+        if (isVerbose) {
+          console.log(`📊 Retrieved ${persistentBuilders.length} builders from persistent storage`);
+        }
+        buildersSource = persistentBuilders;
+      } catch (err) {
+        if (isVerbose) {
+          console.error('⚠️ Failed to read persistent builders, falling back to static set:', err);
+        }
+        buildersSource = [];
+      }
+
+      // Fallback to static if still empty
+      if (buildersSource.length === 0) {
+        buildersSource = getExhibitionBuilders();
+        if (isVerbose) {
+          console.log(`📂 Using ${buildersSource.length} static builders as fallback (auto)`);
+        }
+      }
     }
 
     // Apply filters
