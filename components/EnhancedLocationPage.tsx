@@ -211,7 +211,7 @@ export function EnhancedLocationPage({
             
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               <span className="block">Exhibition Stand Builders</span>
-              <span className="block bg-gradient-to-r from-persian-orange via-claret to-dark-purple bg-clip-text text-transparent">
+              <span className="block text-location-highlight drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]">
                 in {displayLocation}
               </span>
             </h1>
@@ -226,7 +226,7 @@ export function EnhancedLocationPage({
               <PublicQuoteRequest 
                 location={displayLocation}
                 buttonText={`Get Quotes from ${displayLocation} Builders`}
-                className="text-lg px-8 py-4"
+                className="text-lg px-8 py-4 border-2 border-persian-orange bg-white text-white hover:bg-persian-orange/10"
               />
               <Button 
                 variant="outline" 
@@ -363,7 +363,7 @@ export function EnhancedLocationPage({
               <PublicQuoteRequest 
                 location={displayLocation}
                 buttonText="Get Local Quotes Now"
-                className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 py-4"
+                className="bg-white text-white hover:bg-gray-100 text-lg px-8 py-4 border-2 border-persian-orange"
               />
             </div>
           </div>
@@ -399,7 +399,7 @@ export function EnhancedLocationPage({
                       <PublicQuoteRequest 
                         location={displayLocation}
                         buttonText="Get Quote for This Event"
-                        className="w-full"
+                        className="w-full border-2 border-persian-orange"
                       />
                     </CardContent>
                   </Card>
@@ -475,7 +475,7 @@ export function EnhancedLocationPage({
                 <PublicQuoteRequest 
                   location={displayLocation}
                   buttonText="Get Quotes from Global Builders"
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="border-2 border-persian-orange text-dark-purple bg-white hover:bg-persian-orange/10"
                 />
               </div>
             )}
@@ -515,7 +515,7 @@ export function EnhancedLocationPage({
               <PublicQuoteRequest 
                 location={displayLocation}
                 buttonText={cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaButtonText || "Start Getting Quotes"}
-                className="text-lg px-8 py-4"
+                className="text-lg px-8 py-4 border-2 border-persian-orange bg-white text-white hover:bg-persian-orange/10"
               />
               <Button 
                 variant="outline" 

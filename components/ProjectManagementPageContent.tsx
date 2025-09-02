@@ -255,7 +255,7 @@ export default function ProjectManagementPageContent() {
 
                 <Link href={card.buttonLink || "/quote"}>
                   <Button 
-                    className="w-full bg-white text-purple-600 border-2 border-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300 font-semibold py-3 rounded-lg" 
+                    className="w-full bg-white text-purple-600 border-2 border-purple-600 hover:bg-purple-600 hover:text-primary-blue transition-all duration-300 font-semibold py-3 rounded-lg" 
                     variant="outline"
                   >
                     {card.buttonText || "Get Quote"}

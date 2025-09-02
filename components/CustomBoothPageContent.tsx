@@ -273,7 +273,7 @@ export default function CustomBoothPageContent() {
 
                 <Link href={card.buttonLink || "/quote"}>
                   <Button 
-                    className="w-full bg-white text-claret border-2 border-claret hover:bg-claret hover:text-white transition-all duration-300 font-semibold py-3 rounded-lg" 
+                    className="w-full bg-white text-claret border-2 border-claret hover:bg-claret hover:text-primary-blue transition-all duration-300 font-semibold py-3 rounded-lg" 
                     variant="outline"
                   >
                     {card.buttonText || "Get Quote"}

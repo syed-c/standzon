@@ -194,7 +194,7 @@ export default function HomePageContent() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {((finalButtonsFromTop.length>0 ? finalButtonsFromTop : finalCta.buttons) || []).map((b: any, i: number) => (
                 <a key={i} href={b.href || "#"}>
-                  <button className={i === 0 ? "bg-transparent text-persian-orange hover:bg-gray-100 px-8 py-4 text-lg rounded" : "border-white text-white hover:bg-white hover:text-russian-violet px-8 py-4 text-lg rounded border"}>
+                  <button className={i === 0 ? "bg-transparent text-persian-orange hover:bg-gray-100 px-8 py-4 text-lg rounded border-2 border-persian-orange" : "border-white text-white hover:bg-white hover:text-russian-violet px-8 py-4 text-lg rounded border-2 border-white"}>
                     {b.text || (i === 0 ? "Get Free Quotes Now" : "Learn More")}
                   </button>
                 </a>

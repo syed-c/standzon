@@ -88,7 +88,7 @@ export function EnhancedCityPage({
             
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               <span className="block">Exhibition Stand Builders</span>
-              <span className="block bg-gradient-to-r from-persian-orange via-claret to-dark-purple bg-clip-text text-transparent">
+              <span className="block text-location-highlight drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]">
                 in {cityName}, {countryName}
               </span>
             </h1>
@@ -100,7 +100,7 @@ export function EnhancedCityPage({
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-4">
+              <Button size="lg" className="text-lg px-8 py-4 border-2 border-persian-orange bg-white text-white hover:bg-persian-orange/10">
                 Get Quotes from {cityName} Builders
               </Button>
               <Button 
@@ -377,7 +377,7 @@ export function EnhancedCityPage({
             Get quotes from multiple verified builders and compare prices instantly
           </p>
           <Link href="/quote">
-            <Button size="lg" variant="secondary">
+            <Button size="lg" variant="secondary" className="text-lg px-8 py-4 border-2 border-persian-orange bg-white text-white hover:bg-persian-orange/10">
               Get Free Quotes
             </Button>
           </Link>
