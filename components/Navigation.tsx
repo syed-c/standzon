@@ -136,10 +136,11 @@ export default function Navigation() {
           baseItems.push({ label: '📊 My Profile', href: `/builders/${currentUser.id || 'profile'}`, isGreeting: false });
           break;
         default:
-          baseItems.push({ label: '📋 Dashboard', href: '/dashboard', isGreeting: false });
+          // Redirect generic dashboard to admin dashboard as requested
+          baseItems.push({ label: '📋 Dashboard', href: '/admin/dashboard', isGreeting: false });
       }
-
-      baseItems.push({ label: '📧 Messages', href: '/messaging', isGreeting: false });
+      // Remove messaging link from account menu
+      // baseItems.push({ label: '📧 Messages', href: '/messaging', isGreeting: false });
       
       return baseItems;
     } else {

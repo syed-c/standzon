@@ -183,8 +183,7 @@ export async function POST(request: NextRequest) {
       );
 
       // Send notifications to qualified builders
-      for (const builder of buildersWithCredits.slice(0, 5)) {
-        // Limit to top 5 builders
+      for (const builder of buildersWithCredits) {
         try {
           // In a real implementation, you would:
           // 1. Send email notification
@@ -213,7 +212,7 @@ export async function POST(request: NextRequest) {
       // Update lead with notification status
       await convex.mutation(api.leads.updateLeadNotifications, {
         leadId,
-        notifiedBuilders: buildersWithCredits.slice(0, 5).map((b) => b._id),
+        notifiedBuilders: buildersWithCredits.map((b) => b._id),
         notificationsSent,
         emailsSent,
       });

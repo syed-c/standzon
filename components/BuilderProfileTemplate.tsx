@@ -223,8 +223,8 @@ export default function BuilderProfileTemplate({ builder, isGmbImported, display
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 gap-3">
-                      {builder.specializations.map((spec: any) => (
-                        <div key={spec.id} className="flex items-center gap-3 p-3 rounded-lg border" style={{ backgroundColor: spec.color + '10', borderColor: spec.color + '30' }}>
+                      {(builder.specializations || []).map((spec: any, index: number) => (
+                        <div key={spec?.id || spec?.slug || spec?.name || index} className="flex items-center gap-3 p-3 rounded-lg border" style={{ backgroundColor: spec.color + '10', borderColor: spec.color + '30' }}>
                           <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg" style={{ backgroundColor: spec.color + '20', color: spec.color }}>
                             {spec.icon}
                           </div>

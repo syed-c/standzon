@@ -1,7 +1,8 @@
 
 "use client";
 
-import { FiPhone, FiMail, FiMapPin, FiLinkedin, FiTwitter, FiInstagram, FiFacebook } from 'react-icons/fi';
+import React from 'react';
+import { FiPhone, FiMail, FiMapPin, FiLinkedin, FiTwitter, FiInstagram, FiFacebook, FiExternalLink } from 'react-icons/fi';
 // import { useQuery } from 'convex/react';
 // import { api } from '@/convex/_generated/api';
 
@@ -30,34 +31,45 @@ export default function Footer() {
     }
   };
 
+  // Fetch CMS footer settings from API (client-side)
+  const [footerData, setFooterData] = React.useState<any | null>(null);
+  React.useEffect(() => {
+    let mounted = true;
+    fetch('/api/admin/footer')
+      .then(r => r.json())
+      .then(json => { if (mounted) setFooterData(json?.data || null); })
+      .catch(() => {});
+    return () => { mounted = false; };
+  }, []);
+
   // Use settings data or fallback
-  const siteData = fallbackData; // settings || fallbackData;
+  const siteData = fallbackData; // reserved for other global settings
 
-  const services = [
-    "Custom Stand Design",
-    "Build & Installation", 
-    "Global Services",
-    "Event Management",
-    "Marketing Integration",
-    "Premium Experiences"
+  const services = footerData?.columns?.services?.items || [
+    { label: "Custom Stand Design", href: "#" },
+    { label: "Build & Installation", href: "#" },
+    { label: "Global Services", href: "#" },
+    { label: "Event Management", href: "#" },
+    { label: "Marketing Integration", href: "#" },
+    { label: "Premium Experiences", href: "#" }
   ];
 
-  const locations = [
-    "United States",
-    "Germany", 
-    "United Kingdom",
-    "UAE",
-    "China",
-    "Singapore"
+  const locations = footerData?.columns?.locations?.items || [
+    { label: "United States", href: "#" },
+    { label: "Germany", href: "#" },
+    { label: "United Kingdom", href: "#" },
+    { label: "UAE", href: "#" },
+    { label: "China", href: "#" },
+    { label: "Singapore", href: "#" }
   ];
 
-  const resources = [
-    "Portfolio",
-    "Case Studies",
-    "Industry Insights",
-    "Exhibition Calendar",
-    "Design Trends",
-    "Contact Us"
+  const resources = footerData?.columns?.resources?.items || [
+    { label: "Portfolio", href: "#" },
+    { label: "Case Studies", href: "#" },
+    { label: "Industry Insights", href: "#" },
+    { label: "Exhibition Calendar", href: "#" },
+    { label: "Design Trends", href: "#" },
+    { label: "Contact Us", href: "#" }
   ];
 
   const socialLinks = [
@@ -78,33 +90,54 @@ export default function Footer() {
               {siteData.companyName}<span className="text-pink-500">Zone</span>
             </h3>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              {siteData.pages?.footerText || fallbackData.pages.footerText}
+              {footerData?.paragraph || siteData.pages?.footerText || fallbackData.pages.footerText}
             </p>
             
             <div className="space-y-3">
               <div className="flex items-center">
                 <FiPhone className="w-4 h-4 text-pink-400 mr-3" />
-                <span className="text-gray-300">{siteData.contact?.phone || fallbackData.contact.phone}</span>
+                {footerData?.contact?.phoneLink ? (
+                  <a href={footerData.contact.phoneLink} className="text-gray-300 hover:text-pink-400 transition-colors flex items-center">
+                    {footerData.contact.phone}
+                    <FiExternalLink className="w-3 h-3 ml-1 opacity-60" />
+                  </a>
+                ) : (
+                  <span className="text-gray-300">{footerData?.contact?.phone || siteData.contact?.phone || fallbackData.contact.phone}</span>
+                )}
               </div>
               <div className="flex items-center">
                 <FiMail className="w-4 h-4 text-pink-400 mr-3" />
-                <span className="text-gray-300">{siteData.contact?.email || fallbackData.contact.email}</span>
+                {footerData?.contact?.emailLink ? (
+                  <a href={footerData.contact.emailLink} className="text-gray-300 hover:text-pink-400 transition-colors flex items-center">
+                    {footerData.contact.email}
+                    <FiExternalLink className="w-3 h-3 ml-1 opacity-60" />
+                  </a>
+                ) : (
+                  <span className="text-gray-300">{footerData?.contact?.email || siteData.contact?.email || fallbackData.contact.email}</span>
+                )}
               </div>
               <div className="flex items-center">
                 <FiMapPin className="w-4 h-4 text-pink-400 mr-3" />
-                <span className="text-gray-300">{siteData.contact?.address || fallbackData.contact.address}</span>
+                {footerData?.contact?.addressLink ? (
+                  <a href={footerData.contact.addressLink} className="text-gray-300 hover:text-pink-400 transition-colors flex items-center">
+                    {footerData.contact.address}
+                    <FiExternalLink className="w-3 h-3 ml-1 opacity-60" />
+                  </a>
+                ) : (
+                  <span className="text-gray-300">{footerData?.contact?.address || siteData.contact?.address || fallbackData.contact.address}</span>
+                )}
               </div>
             </div>
           </div>
 
           {/* Services */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 font-inter">Services</h4>
+            <h4 className="text-lg font-semibold mb-4 font-inter">{footerData?.columns?.services?.heading || 'Services'}</h4>
             <ul className="space-y-2">
-              {services.map((service, index) => (
+              {services.map((service: any, index: number) => (
                 <li key={index}>
-                  <a href="#services" className="text-gray-300 hover:text-pink-400 transition-colors">
-                    {service}
+                  <a href={service.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors">
+                    {service.label || service}
                   </a>
                 </li>
               ))}
@@ -113,12 +146,12 @@ export default function Footer() {
 
           {/* Locations */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 font-inter">Global Locations</h4>
+            <h4 className="text-lg font-semibold mb-4 font-inter">{footerData?.columns?.locations?.heading || 'Global Locations'}</h4>
             <ul className="space-y-2">
-              {locations.map((location, index) => (
+              {locations.map((location: any, index: number) => (
                 <li key={index}>
-                  <a href="#locations" className="text-gray-300 hover:text-pink-400 transition-colors">
-                    {location}
+                  <a href={location.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors">
+                    {location.label || location}
                   </a>
                 </li>
               ))}
@@ -127,12 +160,12 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 font-inter">Resources</h4>
+            <h4 className="text-lg font-semibold mb-4 font-inter">{footerData?.columns?.resources?.heading || 'Resources'}</h4>
             <ul className="space-y-2">
-              {resources.map((resource, index) => (
+              {resources.map((resource: any, index: number) => (
                 <li key={index}>
-                  <a href="#" className="text-gray-300 hover:text-pink-400 transition-colors">
-                    {resource}
+                  <a href={resource.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors">
+                    {resource.label || resource}
                   </a>
                 </li>
               ))}
@@ -140,58 +173,42 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Newsletter Signup */}
-        <div className="py-8 border-t border-gray-800">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <h4 className="text-xl font-semibold mb-2 font-inter">Stay Updated</h4>
-              <p className="text-gray-300">
-                Get the latest exhibition trends, industry insights, and project showcases delivered to your inbox.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
-              />
-              <button className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </div>
+        {/* Newsletter removed per requirements */}
 
         {/* Bottom Footer */}
         <div className="py-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
               <p className="text-gray-400 text-sm">
-                © 2024 {siteData.companyName || fallbackData.companyName}. All rights reserved.
+                {footerData?.bottom?.copyright || `© 2024 ${siteData.companyName || fallbackData.companyName}. All rights reserved.`}
               </p>
               <div className="flex space-x-6 text-sm">
-                <a href="/legal/privacy-policy" className="text-gray-400 hover:text-pink-400 transition-colors">
-                  Privacy Policy
-                </a>
-                <a href="/legal/terms-of-service" className="text-gray-400 hover:text-pink-400 transition-colors">
-                  Terms of Service
-                </a>
-                <a href="/legal/cookie-policy" className="text-gray-400 hover:text-pink-400 transition-colors">
-                  Cookie Policy
-                </a>
+                {(footerData?.bottom?.links || [
+                  { label: 'Privacy Policy', href: '/legal/privacy-policy' },
+                  { label: 'Terms of Service', href: '/legal/terms-of-service' },
+                  { label: 'Cookie Policy', href: '/legal/cookie-policy' },
+                ]).map((l: any, i: number) => (
+                  <a key={i} href={l.href} className="text-gray-400 hover:text-pink-400 transition-colors">
+                    {l.label}
+                  </a>
+                ))}
               </div>
             </div>
 
             {/* Social Links */}
             <div className="flex space-x-4 mt-4 md:mt-0">
-              {socialLinks.map((social, index) => (
+              {(footerData?.social || socialLinks).map((social: any, index: number) => (
                 <a
                   key={index}
                   href={social.href}
                   aria-label={social.label}
                   className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-pink-400 hover:bg-gray-700 transition-all duration-300"
                 >
-                  <social.icon className="w-4 h-4" />
+                  {social.icon === 'linkedin' ? <FiLinkedin className="w-4 h-4" />
+                   : social.icon === 'twitter' ? <FiTwitter className="w-4 h-4" />
+                   : social.icon === 'instagram' ? <FiInstagram className="w-4 h-4" />
+                   : social.icon === 'facebook' ? <FiFacebook className="w-4 h-4" />
+                   : <FiExternalLink className="w-4 h-4" />}
                 </a>
               ))}
             </div>

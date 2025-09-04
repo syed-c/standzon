@@ -232,6 +232,34 @@ export async function GET(request: Request) {
       }
     }
 
+    // If requesting per-country aggregation, compute after sourcing builders
+    if (action === "countries") {
+      // Ensure we have the latest buildersSource compiled
+      const countryStats: Record<string, { builderCount: number; ratingSum: number; ratingCount: number }> = {};
+
+      for (const builder of buildersSource) {
+        const countryName = builder?.headquarters?.country || "Unknown";
+        if (!countryStats[countryName]) {
+          countryStats[countryName] = { builderCount: 0, ratingSum: 0, ratingCount: 0 };
+        }
+        countryStats[countryName].builderCount += 1;
+
+        const rating = Number(builder?.rating || 0);
+        if (!Number.isNaN(rating) && rating > 0) {
+          countryStats[countryName].ratingSum += rating;
+          countryStats[countryName].ratingCount += 1;
+        }
+      }
+
+      const data = Object.entries(countryStats).map(([name, stats]) => ({
+        name,
+        builderCount: stats.builderCount,
+        averageRating: stats.ratingCount > 0 ? Number((stats.ratingSum / stats.ratingCount).toFixed(2)) : 0,
+      }));
+
+      return NextResponse.json({ success: true, data });
+    }
+
     // Apply filters
     let filteredBuilders = [...buildersSource];
 

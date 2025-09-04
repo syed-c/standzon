@@ -33,6 +33,7 @@ interface FormData {
   budget: string;
   message: string;
   hasDesign: boolean;
+  confirmDetails: boolean;
   uploadedFiles: File[];
 }
 
@@ -54,6 +55,8 @@ export function PublicQuoteRequest({
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [matchingBuildersCount, setMatchingBuildersCount] = useState<number | null>(null);
+  const [countryBuildersCount, setCountryBuildersCount] = useState<number | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [formData, setFormData] = useState<FormData>({
     companyName: '',
@@ -66,6 +69,7 @@ export function PublicQuoteRequest({
     budget: '',
     message: '',
     hasDesign: false,
+    confirmDetails: false,
     uploadedFiles: []
   });
   const { toast } = useToast();
@@ -100,6 +104,86 @@ export function PublicQuoteRequest({
   };
 
   const detectedCountryCode = getLocationCountryCode(location, countryCode);
+
+  // Country normalization helpers
+  const countryCodeToName: Record<string, string> = {
+    US: 'United States',
+    AE: 'United Arab Emirates',
+    GB: 'United Kingdom',
+    DE: 'Germany',
+    FR: 'France',
+    ES: 'Spain',
+    IT: 'Italy',
+    NL: 'Netherlands',
+    CH: 'Switzerland',
+    SG: 'Singapore',
+    CN: 'China',
+    TR: 'Turkey',
+    AU: 'Australia',
+    CA: 'Canada',
+    QA: 'Qatar',
+    SA: 'Saudi Arabia',
+    OM: 'Oman',
+    BH: 'Bahrain',
+    KW: 'Kuwait',
+    IN: 'India',
+  };
+
+  const normalize = (s: string) =>
+    s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  const countryAliases: Record<string, string[]> = {
+    'united-states': ['united-states', 'usa', 'us', 'united-states-of-america', 'u-s-a'],
+    'united-kingdom': ['united-kingdom', 'uk', 'u-k', 'great-britain', 'britain'],
+    'united-arab-emirates': ['united-arab-emirates', 'uae', 'u-a-e', 'dubai', 'abu-dhabi'],
+    'germany': ['germany', 'deutschland'],
+    'france': ['france'],
+    'spain': ['spain', 'españa', 'espana'],
+    'italy': ['italy', 'italia'],
+    'netherlands': ['netherlands', 'holland'],
+    'switzerland': ['switzerland', 'schweiz', 'suisse', 'svizzera'],
+    'qatar': ['qatar'],
+    'saudi-arabia': ['saudi-arabia', 'ksa', 'kingdom-of-saudi-arabia'],
+    'australia': ['australia'],
+    'canada': ['canada'],
+    'india': ['india', 'bharat'],
+  };
+
+  async function fetchCountryBuilderCount(preferredCountryName?: string): Promise<number | null> {
+    try {
+      // First try aggregated endpoint
+      const countriesRes = await fetch('/api/admin/builders?action=countries');
+      const countriesJson = await countriesRes.json();
+      const targetName = (preferredCountryName || countryCodeToName[detectedCountryCode] || location || '').toString().trim();
+      const wantedA = targetName.toLowerCase();
+      const wantedB = normalize(targetName);
+      const aliasList = countryAliases[wantedB] || [wantedB];
+      if (countriesRes.ok && Array.isArray(countriesJson?.data)) {
+        const found = countriesJson.data.find((c: any) => {
+          const n = typeof c?.name === 'string' ? c.name : '';
+          const nA = n.toLowerCase();
+          const nB = normalize(n);
+          return nA === wantedA || nB === wantedB || aliasList.includes(nB);
+        });
+        if (found && typeof found.builderCount === 'number') {
+          return found.builderCount;
+        }
+      }
+
+      // Fallback: fetch builders and count locally by country match
+      const buildersRes = await fetch('/api/admin/builders?limit=1000&prioritize_real=true');
+      const buildersJson = await buildersRes.json();
+      const builders = buildersJson?.data?.builders || buildersJson?.builders || [];
+      const count = builders.filter((b: any) => {
+        const n = (b?.headquarters?.country || '').toString();
+        const nb = normalize(n);
+        return nb === wantedB || aliasList.includes(nb);
+      }).length;
+      return Number.isFinite(count) ? count : null;
+    } catch {
+      return null;
+    }
+  }
   
   // Query exhibitions from database based on location
   const exhibitionsFromDB = useQuery(api.exhibitions.getExhibitionsByCountry, { 
@@ -107,13 +191,12 @@ export function PublicQuoteRequest({
   });
   
   // City-specific exhibitions if cityName is provided
-  const cityExhibitionsFromDB = useQuery(
-    cityName ? api.exhibitions.getExhibitionsByCity : "skip",
-    cityName ? { 
-      countryCode: detectedCountryCode,
-      cityName: cityName 
-    } : "skip"
-  );
+  const cityExhibitionsFromDB = cityName
+    ? useQuery(api.exhibitions.getExhibitionsByCity as any, {
+        countryCode: detectedCountryCode,
+        cityName: cityName,
+      })
+    : null;
   
   // Fallback exhibitions if database is empty or loading
   const fallbackExhibitions = [
@@ -136,7 +219,7 @@ export function PublicQuoteRequest({
     
     // Prioritize city-specific exhibitions
     if (cityExhibitionsFromDB && cityExhibitionsFromDB.length > 0) {
-      dbExhibitions = cityExhibitionsFromDB.map(ex => ex.name);
+      dbExhibitions = cityExhibitionsFromDB.map((ex: any) => ex.name);
       console.log(`🏙️ Found ${dbExhibitions.length} city-specific exhibitions for ${cityName}`);
     } else if (exhibitionsFromDB && exhibitionsFromDB.length > 0) {
       dbExhibitions = exhibitionsFromDB.map(ex => ex.name);
@@ -227,7 +310,10 @@ export function PublicQuoteRequest({
       case 3:
         return true; // Optional fields
       case 4:
-        return true; // File upload is optional
+        // Require user confirmation on final step; if they indicate they have a design,
+        // require at least one file uploaded
+        if (formData.hasDesign && uploadedFiles.length === 0) return false;
+        return !!formData.confirmDetails;
       default:
         return false;
     }
@@ -282,12 +368,22 @@ export function PublicQuoteRequest({
       }
 
       console.log('✅ Unified quote request submitted:', result);
+      // Capture number of matching builders from API
+      const matched = typeof result?.data?.matchingBuilders === 'number'
+        ? result.data.matchingBuilders
+        : (typeof result?.notificationsSent === 'number' ? result.notificationsSent : null);
+      setMatchingBuildersCount(matched);
+
+      // Also fetch country-level builder count to display full availability
+      let countryCount: number | null = null;
+      countryCount = await fetchCountryBuilderCount();
+      if (countryCount !== null) setCountryBuildersCount(countryCount);
       setIsSuccess(true);
 
       const locationText = cityName ? `${cityName}, ${location}` : location || 'your area';
       toast({
         title: "Quote Request Sent!",
-        description: `You can expect quotations from 3-5 verified builders matching your criteria. They will contact you within 24 hours with competitive quotes.`,
+        description: `You can expect quotations from ${countryCount ?? matched ?? 'multiple'} verified builders matching your criteria. They will contact you within 24 hours with competitive quotes.`,
         duration: 5000,
       });
 
@@ -318,6 +414,7 @@ export function PublicQuoteRequest({
       budget: '',
       message: '',
       hasDesign: false,
+      confirmDetails: false,
       uploadedFiles: []
     });
   };
@@ -356,7 +453,7 @@ export function PublicQuoteRequest({
             <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-gray-900 mb-2">Request Sent Successfully!</h3>
             <p className="text-gray-600 mb-6">
-              You can expect a quotation from 3 to 5 builders matching your requirements.
+              You can expect a quotation from {countryBuildersCount ?? matchingBuildersCount ?? 'multiple'} builders matching your requirements.
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <h4 className="font-semibold text-blue-900 mb-2">What happens next:</h4>
@@ -676,6 +773,20 @@ export function PublicQuoteRequest({
                     )}
                   </div>
                 )}
+
+                {/* Required confirmation before submission */}
+                <div className="flex items-start gap-2 bg-yellow-50 border border-yellow-200 rounded-md p-3">
+                  <input
+                    type="checkbox"
+                    id="confirmDetails"
+                    checked={formData.confirmDetails}
+                    onChange={(e) => handleInputChange('confirmDetails', e.target.checked)}
+                    className="mt-1 rounded"
+                  />
+                  <Label htmlFor="confirmDetails" className="text-sm text-yellow-900">
+                    I confirm the details provided are accurate and I’m ready to submit my quote request.
+                  </Label>
+                </div>
               </div>
             </div>
           )}
@@ -707,7 +818,7 @@ export function PublicQuoteRequest({
             ) : (
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isStepValid()}
                 className="flex-1 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700"
               >
                 {isSubmitting ? (

@@ -297,30 +297,17 @@ export default function AboutPageContent() {
                 </>
               )}
               <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <FiCheckCircle className="w-6 h-6 text-green-500" />
-                  <span className="text-gray-700">
-                    Thoroughly vetted contractor network
-                  </span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <FiCheckCircle className="w-6 h-6 text-green-500" />
-                  <span className="text-gray-700">
-                    Transparent pricing and proposals
-                  </span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <FiCheckCircle className="w-6 h-6 text-green-500" />
-                  <span className="text-gray-700">
-                    Ongoing project support and guidance
-                  </span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <FiCheckCircle className="w-6 h-6 text-green-500" />
-                  <span className="text-gray-700">
-                    Global coverage with local expertise
-                  </span>
-                </div>
+                {(((saved as any)?.sections?.mission?.points as string[]) || [
+                  'Thoroughly vetted contractor network',
+                  'Transparent pricing and proposals',
+                  'Ongoing project support and guidance',
+                  'Global coverage with local expertise',
+                ]).map((pt: string, i: number) => (
+                  <div key={i} className="flex items-center space-x-3">
+                    <FiCheckCircle className="w-6 h-6 text-green-500" />
+                    <span className="text-gray-700" dangerouslySetInnerHTML={{ __html: pt }} />
+                  </div>
+                ))}
               </div>
             </div>
             <div className="bg-gradient-to-br from-blue-primary to-blue-dark rounded-2xl p-12 text-white">

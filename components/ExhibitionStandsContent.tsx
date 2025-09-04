@@ -58,6 +58,7 @@ export default function ExhibitionStandsContent() {
       
       // Try to get real builder data from API
       let buildersByCountry: { [key: string]: number } = {};
+      let averageRatingByCountry: { [key: string]: number } = {};
       try {
         const response = await fetch('/api/admin/builders?action=countries');
         const result = await response.json();
@@ -65,11 +66,14 @@ export default function ExhibitionStandsContent() {
         if (result.success && result.data) {
           result.data.forEach((country: any) => {
             buildersByCountry[country.name] = country.builderCount || 0;
+            averageRatingByCountry[country.name] = typeof country.averageRating === 'number' ? country.averageRating : 0;
             // Handle country name variations
             if (country.name === 'UAE') {
               buildersByCountry['United Arab Emirates'] = country.builderCount || 0;
+              averageRatingByCountry['United Arab Emirates'] = typeof country.averageRating === 'number' ? country.averageRating : 0;
             } else if (country.name === 'United Arab Emirates') {
               buildersByCountry['UAE'] = country.builderCount || 0;
+              averageRatingByCountry['UAE'] = typeof country.averageRating === 'number' ? country.averageRating : 0;
             }
           });
         }
@@ -81,14 +85,14 @@ export default function ExhibitionStandsContent() {
       const processedCountries = allCountries.map(country => {
         const countryCities = allCities.filter(city => city.countrySlug === country.slug);
         const realBuilderCount = buildersByCountry[country.name] || 0;
+        const averageRating = averageRatingByCountry[country.name] || 0;
         
         return {
           name: country.name,
           code: country.code,
           continent: country.continent,
           builderCount: realBuilderCount,
-          averageRating: realBuilderCount > 0 ? 
-            Math.round((4.2 + Math.random() * 0.7) * 10) / 10 : 0,
+          averageRating,
           cities: countryCities.map(city => city.name),
           slug: country.slug,
           marketSize: country.marketSize,

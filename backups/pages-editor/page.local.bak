@@ -1,0 +1,296 @@
+"use client";
+
+import React, { useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+type PageItem = { title: string; path: string; type: "static" | "country" | "city" };
+
+export default function PagesEditor() {
+  // Pages list state
+  const [pages, setPages] = useState<PageItem[]>([]);
+  const [search, setSearch] = useState("");
+  const [loadingPages, setLoadingPages] = useState(false);
+
+  // Selected page editing state
+  const [selectedPath, setSelectedPath] = useState<string>("");
+  const [h1, setH1] = useState("");
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [seoKeywords, setSeoKeywords] = useState("");
+  const [contentHtml, setContentHtml] = useState("");
+  const [savingPage, setSavingPage] = useState(false);
+
+  // Footer editor state (migrated from previous page)
+  const [footer, setFooter] = useState<any>({
+    paragraph: "",
+    contact: { phone: "", phoneLink: "", email: "", emailLink: "", address: "", addressLink: "" },
+    columns: {
+      services: { heading: "Services", items: [] as Array<{ label: string; href: string }> },
+      locations: { heading: "Global Locations", items: [] as Array<{ label: string; href: string }> },
+      resources: { heading: "Resources", items: [] as Array<{ label: string; href: string }> },
+    },
+    bottom: {
+      copyright: "© 2024 StandsZone. All rights reserved.",
+      links: [
+        { label: "Privacy Policy", href: "/legal/privacy-policy" },
+        { label: "Terms of Service", href: "/legal/terms-of-service" },
+        { label: "Cookie Policy", href: "/legal/cookie-policy" },
+      ],
+    },
+    social: [
+      { label: "LinkedIn", href: "#", icon: "linkedin" },
+      { label: "Twitter", href: "#", icon: "twitter" },
+      { label: "Instagram", href: "#", icon: "instagram" },
+      { label: "Facebook", href: "#", icon: "facebook" },
+    ],
+  });
+  const [savingFooter, setSavingFooter] = useState(false);
+  const [showFooter, setShowFooter] = useState(true);
+
+  // Load pages list and footer data
+  useEffect(() => {
+    setLoadingPages(true);
+    Promise.all([
+      fetch("/api/admin/pages-editor?action=list").then((r) => r.json()).catch(() => ({ success: false })),
+      fetch("/api/admin/footer").then((r) => r.json()).catch(() => ({ success: false })),
+    ])
+      .then(([listRes, footerRes]) => {
+        if (listRes?.success && Array.isArray(listRes.data)) setPages(listRes.data);
+        if (footerRes?.data) setFooter(footerRes.data);
+      })
+      .finally(() => setLoadingPages(false));
+  }, []);
+
+  const filteredPages = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return pages;
+    return pages.filter((p) => p.title.toLowerCase().includes(q) || p.path.toLowerCase().includes(q));
+  }, [pages, search]);
+
+  // Section state mirrors backend structure for flexible saving
+  const [sections, setSections] = useState<any>({});
+
+  // Load selected page content
+  const loadPage = async (path: string) => {
+    setSelectedPath(path);
+    try {
+      const res = await fetch(`/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(path)}`);
+      const j = await res.json();
+      const content = j?.data || {};
+      setSeoTitle(content?.seo?.metaTitle || "");
+      setSeoDescription(content?.seo?.metaDescription || "");
+      const kw = Array.isArray(content?.seo?.keywords) ? content.seo.keywords.join(", ") : "";
+      setSeoKeywords(kw);
+      setH1(content?.hero?.title || "");
+      setContentHtml(content?.content?.introduction || content?.contentHtml || "");
+      setSections(content?.sections || {});
+    } catch {}
+  };
+
+  const savePage = async () => {
+    if (!selectedPath) return;
+    setSavingPage(true);
+    try {
+      const res = await fetch("/api/admin/pages-editor", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "update",
+          path: selectedPath,
+          h1,
+          seo: { title: seoTitle, description: seoDescription, keywords: seoKeywords.split(",").map((s)=>s.trim()).filter(Boolean) },
+          contentHtml,
+          sections: {
+            ...sections,
+            hero: {
+              ...(sections?.hero || {}),
+              title: h1,
+            },
+          },
+        }),
+      });
+      await res.json();
+    } finally {
+      setSavingPage(false);
+    }
+  };
+
+  // Footer helpers
+  const addFooterItem = (col: "services" | "locations" | "resources") => {
+    setFooter((prev: any) => ({
+      ...prev,
+      columns: { ...prev.columns, [col]: { ...prev.columns[col], items: [...prev.columns[col].items, { label: "New", href: "#" }] } },
+    }));
+  };
+  const removeFooterItem = (col: "services" | "locations" | "resources", idx: number) => {
+    setFooter((prev: any) => ({
+      ...prev,
+      columns: { ...prev.columns, [col]: { ...prev.columns[col], items: prev.columns[col].items.filter((_: any, i: number) => i !== idx) } },
+    }));
+  };
+  const saveFooter = async () => {
+    setSavingFooter(true);
+    try {
+      const res = await fetch("/api/admin/footer", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(footer) });
+      await res.json();
+    } finally {
+      setSavingFooter(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <div className="bg-white rounded-xl shadow p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold">Pages Editor</h1>
+            <Button variant="outline" onClick={() => setShowFooter((s) => !s)}>{showFooter ? "Hide" : "Show"} Footer Editor</Button>
+          </div>
+
+          <div className="grid md:grid-cols-12 gap-6">
+            <div className="md:col-span-5 space-y-3">
+              <h2 className="font-semibold">Pages</h2>
+              <Input placeholder="Search pages by title or path" value={search} onChange={(e) => setSearch(e.target.value)} />
+              <div className="border rounded-lg divide-y max-h-[600px] overflow-auto">
+                {loadingPages && <div className="p-3 text-sm text-gray-500">Loading pages...</div>}
+                {!loadingPages && filteredPages.map((p) => (
+                  <div key={p.path} className="flex items-center justify-between p-3">
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">{p.title}</div>
+                      <div className="text-xs text-gray-500 truncate">{p.path}</div>
+                    </div>
+                    <div className="flex gap-2">
+                      <a href={p.path} target="_blank" rel="noreferrer">
+                        <Button variant="outline">View</Button>
+                      </a>
+                      <Button onClick={() => loadPage(p.path)}>Edit</Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="md:col-span-7 space-y-3">
+              <h2 className="font-semibold">Editor</h2>
+              {!selectedPath && <div className="text-sm text-gray-500">Select a page to edit.</div>}
+              {selectedPath && (
+                <div className="space-y-3">
+                  <div className="text-xs text-gray-500">Editing: {selectedPath}</div>
+                  <Input placeholder="SEO Title" value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} />
+                  <Textarea rows={3} placeholder="SEO Description" value={seoDescription} onChange={(e) => setSeoDescription(e.target.value)} />
+                  <Input placeholder="H1" value={h1} onChange={(e) => setH1(e.target.value)} />
+                  <Textarea rows={8} placeholder="Main content (HTML or text)" value={contentHtml} onChange={(e) => setContentHtml(e.target.value)} />
+                  <div className="flex gap-2">
+                    <Button onClick={savePage} disabled={savingPage}>{savingPage ? "Saving..." : "Save Changes"}</Button>
+                    <a href={selectedPath} target="_blank" rel="noreferrer"><Button variant="outline">View</Button></a>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {showFooter && (
+          <div className="bg-white rounded-xl shadow p-6 space-y-6">
+            <h2 className="text-xl font-semibold">Footer</h2>
+            <section className="space-y-3">
+              <h3 className="font-medium">Intro Paragraph</h3>
+              <Textarea rows={3} value={footer.paragraph} onChange={(e) => setFooter({ ...footer, paragraph: e.target.value })} />
+            </section>
+            <section className="space-y-3">
+              <h3 className="font-medium">Contact</h3>
+              <div className="grid md:grid-cols-2 gap-3">
+                <Input placeholder="Phone" value={footer.contact.phone} onChange={(e) => setFooter({ ...footer, contact: { ...footer.contact, phone: e.target.value } })} />
+                <Input placeholder="Phone Link (tel:)" value={footer.contact.phoneLink} onChange={(e) => setFooter({ ...footer, contact: { ...footer.contact, phoneLink: e.target.value } })} />
+                <Input placeholder="Email" value={footer.contact.email} onChange={(e) => setFooter({ ...footer, contact: { ...footer.contact, email: e.target.value } })} />
+                <Input placeholder="Email Link (mailto:)" value={footer.contact.emailLink} onChange={(e) => setFooter({ ...footer, contact: { ...footer.contact, emailLink: e.target.value } })} />
+                <Input placeholder="Address" value={footer.contact.address} onChange={(e) => setFooter({ ...footer, contact: { ...footer.contact, address: e.target.value } })} />
+                <Input placeholder="Address Link (map)" value={footer.contact.addressLink} onChange={(e) => setFooter({ ...footer, contact: { ...footer.contact, addressLink: e.target.value } })} />
+              </div>
+            </section>
+
+            {(["services", "locations", "resources"] as const).map((col) => (
+              <section key={col} className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium capitalize">{col} Column</h3>
+                  <Button variant="outline" onClick={() => addFooterItem(col)}>Add Item</Button>
+                </div>
+                <Input placeholder="Heading" value={footer.columns[col].heading} onChange={(e) => setFooter({ ...footer, columns: { ...footer.columns, [col]: { ...footer.columns[col], heading: e.target.value } } })} />
+                <div className="space-y-2">
+                  {footer.columns[col].items.map((item: any, idx: number) => (
+                    <div key={idx} className="grid md:grid-cols-12 gap-2 items-center">
+                      <Input className="md:col-span-5" placeholder="Label" value={item.label} onChange={(e) => {
+                        const items = [...footer.columns[col].items];
+                        items[idx] = { ...items[idx], label: e.target.value };
+                        setFooter({ ...footer, columns: { ...footer.columns, [col]: { ...footer.columns[col], items } } });
+                      }} />
+                      <Input className="md:col-span-6" placeholder="Link" value={item.href} onChange={(e) => {
+                        const items = [...footer.columns[col].items];
+                        items[idx] = { ...items[idx], href: e.target.value };
+                        setFooter({ ...footer, columns: { ...footer.columns, [col]: { ...footer.columns[col], items } } });
+                      }} />
+                      <Button variant="ghost" onClick={() => removeFooterItem(col, idx)}>Remove</Button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+
+            <section className="space-y-3">
+              <h3 className="font-medium">Bottom Row</h3>
+              <Input placeholder="Copyright Text" value={footer.bottom.copyright} onChange={(e) => setFooter({ ...footer, bottom: { ...footer.bottom, copyright: e.target.value } })} />
+              <div className="space-y-2">
+                {footer.bottom.links.map((l: any, idx: number) => (
+                  <div key={idx} className="grid md:grid-cols-12 gap-2 items-center">
+                    <Input className="md:col-span-5" placeholder="Label" value={l.label} onChange={(e) => {
+                      const links = [...footer.bottom.links];
+                      links[idx] = { ...links[idx], label: e.target.value };
+                      setFooter({ ...footer, bottom: { ...footer.bottom, links } });
+                    }} />
+                    <Input className="md:col-span-6" placeholder="Href" value={l.href} onChange={(e) => {
+                      const links = [...footer.bottom.links];
+                      links[idx] = { ...links[idx], href: e.target.value };
+                      setFooter({ ...footer, bottom: { ...footer.bottom, links } });
+                    }} />
+                    <Button variant="ghost" onClick={() => setFooter({ ...footer, bottom: { ...footer.bottom, links: footer.bottom.links.filter((_: any, i: number) => i !== idx) } })}>Remove</Button>
+                  </div>
+                ))}
+                <Button variant="outline" onClick={() => setFooter({ ...footer, bottom: { ...footer.bottom, links: [...footer.bottom.links, { label: "New", href: "#" }] } })}>Add Bottom Link</Button>
+              </div>
+            </section>
+
+            <section className="space-y-3">
+              <h3 className="font-medium">Social Links</h3>
+              {footer.social.map((s: any, idx: number) => (
+                <div key={idx} className="grid md:grid-cols-12 gap-2 items-center">
+                  <Input className="md:col-span-4" placeholder="Label" value={s.label} onChange={(e) => {
+                    const social = [...footer.social];
+                    social[idx] = { ...social[idx], label: e.target.value };
+                    setFooter({ ...footer, social });
+                  }} />
+                  <Input className="md:col-span-6" placeholder="Href" value={s.href} onChange={(e) => {
+                    const social = [...footer.social];
+                    social[idx] = { ...social[idx], href: e.target.value };
+                    setFooter({ ...footer, social });
+                  }} />
+                  <Input className="md:col-span-2" placeholder="Icon (linkedin/twitter/instagram/facebook)" value={s.icon} onChange={(e) => {
+                    const social = [...footer.social];
+                    social[idx] = { ...social[idx], icon: e.target.value };
+                    setFooter({ ...footer, social });
+                  }} />
+                </div>
+              ))}
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setFooter({ ...footer, social: [...footer.social, { label: "New", href: "#", icon: "linkedin" }] })}>Add Social</Button>
+                <Button onClick={saveFooter} disabled={savingFooter}>{savingFooter ? "Saving..." : "Save Footer"}</Button>
+              </div>
+            </section>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

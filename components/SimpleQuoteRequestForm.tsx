@@ -46,6 +46,63 @@ export default function SimpleQuoteRequestForm({
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [matchingBuildersCount, setMatchingBuildersCount] = useState<number | null>(null);
+  const [countryBuildersCount, setCountryBuildersCount] = useState<number | null>(null);
+
+  const normalize = (s: string) =>
+    s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  const countryAliases: Record<string, string[]> = {
+    'united-states': ['united-states', 'usa', 'us', 'united-states-of-america', 'u-s-a'],
+    'united-kingdom': ['united-kingdom', 'uk', 'u-k', 'great-britain', 'britain'],
+    'united-arab-emirates': ['united-arab-emirates', 'uae', 'u-a-e', 'dubai', 'abu-dhabi'],
+    'germany': ['germany', 'deutschland'],
+    'france': ['france'],
+    'spain': ['spain', 'españa', 'espana'],
+    'italy': ['italy', 'italia'],
+    'netherlands': ['netherlands', 'holland'],
+    'switzerland': ['switzerland', 'schweiz', 'suisse', 'svizzera'],
+    'qatar': ['qatar'],
+    'saudi-arabia': ['saudi-arabia', 'ksa', 'kingdom-of-saudi-arabia'],
+    'australia': ['australia'],
+    'canada': ['canada'],
+    'india': ['india', 'bharat'],
+  };
+
+  async function fetchCountryBuilderCount(preferredCountryName?: string): Promise<number | null> {
+    try {
+      const countriesRes = await fetch('/api/admin/builders?action=countries');
+      const countriesJson = await countriesRes.json();
+      const targetName = (preferredCountryName || formData.country || '').toString().trim();
+      const wantedA = targetName.toLowerCase();
+      const wantedB = normalize(targetName);
+      const aliasList = countryAliases[wantedB] || [wantedB];
+      if (countriesRes.ok && Array.isArray(countriesJson?.data)) {
+        const found = countriesJson.data.find((c: any) => {
+          const n = typeof c?.name === 'string' ? c.name : '';
+          const nA = n.toLowerCase();
+          const nB = normalize(n);
+          return nA === wantedA || nB === wantedB || aliasList.includes(nB);
+        });
+        if (found && typeof found.builderCount === 'number') {
+          return found.builderCount;
+        }
+      }
+
+      // Fallback to counting from builders list
+      const buildersRes = await fetch('/api/admin/builders?limit=1000&prioritize_real=true');
+      const buildersJson = await buildersRes.json();
+      const builders = buildersJson?.data?.builders || buildersJson?.builders || [];
+      const count = builders.filter((b: any) => {
+        const n = (b?.headquarters?.country || '').toString();
+        const nb = normalize(n);
+        return nb === wantedB || aliasList.includes(nb);
+      }).length;
+      return Number.isFinite(count) ? count : null;
+    } catch {
+      return null;
+    }
+  }
 
   const countries = [
     'United States', 'United Kingdom', 'Germany', 'France', 'Italy', 'Spain', 
@@ -147,6 +204,13 @@ export default function SimpleQuoteRequestForm({
       const result = await response.json();
       
       if (result.success) {
+        const matched = typeof result?.data?.matchingBuilders === 'number'
+          ? result.data.matchingBuilders
+          : (typeof result?.notificationsSent === 'number' ? result.notificationsSent : null);
+        setMatchingBuildersCount(matched);
+        // Fetch total builders for selected country
+        let countryCount: number | null = await fetchCountryBuilderCount();
+        if (countryCount !== null) setCountryBuildersCount(countryCount);
         setIsSubmitted(true);
         toast.success('Quote request submitted successfully!');
         
@@ -178,7 +242,7 @@ export default function SimpleQuoteRequestForm({
                 Quote Request Submitted!
               </h3>
               <p className="text-gray-600 mb-4">
-                You can expect a quotation from 3 to 5 builders matching your requirements.
+                You can expect a quotation from {countryBuildersCount ?? matchingBuildersCount ?? 'multiple'} builders matching your requirements.
               </p>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-800">

@@ -49,10 +49,40 @@ export default function AdminPagesEditor() {
     hero: { heading: '', description: '' },
   });
   const [isSaving, setIsSaving] = useState(false);
+  // Footer editor state
+  const [footer, setFooter] = useState<any>({
+    paragraph: '',
+    contact: { phone: '', phoneLink: '', email: '', emailLink: '', address: '', addressLink: '' },
+    columns: {
+      services: { heading: 'Services', items: [] as Array<{ label: string; href: string }> },
+      locations: { heading: 'Global Locations', items: [] as Array<{ label: string; href: string }> },
+      resources: { heading: 'Resources', items: [] as Array<{ label: string; href: string }> },
+    },
+    bottom: {
+      copyright: '© 2024 StandsZone. All rights reserved.',
+      links: [
+        { label: 'Privacy Policy', href: '/legal/privacy-policy' },
+        { label: 'Terms of Service', href: '/legal/terms-of-service' },
+        { label: 'Cookie Policy', href: '/legal/cookie-policy' },
+      ],
+    },
+    social: [
+      { label: 'LinkedIn', href: '#', icon: 'linkedin' },
+      { label: 'Twitter', href: '#', icon: 'twitter' },
+      { label: 'Instagram', href: '#', icon: 'instagram' },
+      { label: 'Facebook', href: '#', icon: 'facebook' },
+    ],
+  });
+  const [footerSaving, setFooterSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     loadPages();
+    // Load footer data
+    fetch('/api/admin/footer')
+      .then(r=>r.json())
+      .then(j=>{ if(j?.data) setFooter(j.data); })
+      .catch(()=>{});
   }, []);
 
   const loadPages = async () => {
@@ -363,6 +393,23 @@ export default function AdminPagesEditor() {
                 customBoothCta: pc.sections.customBoothCta || prev.customBoothCta,
               };
               console.log("New sections state:", newSections);
+              return newSections;
+            });
+          } else if (path === '/about') {
+            // Load About-specific sections
+            console.log("Loading about sections:", pc.sections);
+            setSections((prev:any) => {
+              const newSections = {
+                ...prev,
+                hero: pc.sections.hero || prev.hero,
+                mission: pc.sections.mission || prev.mission,
+                vision: pc.sections.vision || prev.vision,
+                coreValues: pc.sections.coreValues || prev.coreValues,
+                howItWorks: pc.sections.howItWorks || prev.howItWorks,
+                team: pc.sections.team || prev.team,
+                cta: pc.sections.cta || prev.cta,
+              };
+              console.log("New /about sections state:", newSections);
               return newSections;
             });
           } else if (path === '/booth-rental') {
@@ -842,12 +889,12 @@ export default function AdminPagesEditor() {
                                   </div>
                                   <Label className="mt-2 block">Review Text</Label>
                                   <Textarea rows={3} value={r.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.reviews||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, reviews:arr }; })} />
-                                </div>
-                              ))}
+                          </div>
+                        ))}
                               <div className="flex gap-2">
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, reviews:[...(s.reviews||[]), { name:'', role:'', rating:5, text:'', image:'' }] }))}>Add Review</Button>
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, reviews:(s.reviews||[]).slice(0,-1) }))}>Remove Last</Button>
-                              </div>
+                      </div>
                             </div>
                           </div>
                         </AccordionContent>
@@ -874,6 +921,240 @@ export default function AdminPagesEditor() {
                             <div className="flex gap-2 mt-2">
                               <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, finalCta:{ ...(s.finalCta||{}), buttons:[...(s.finalCta?.buttons||[]), { text:'', href:'' }] } }))}>Add Button</Button>
                               <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, finalCta:{ ...(s.finalCta||{}), buttons:(s.finalCta?.buttons||[]).slice(0,-1) } }))}>Remove Last</Button>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                      {/* Footer editor shared across pages */}
+                      <AccordionItem value="footer">
+                        <AccordionTrigger>Footer</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-4 bg-white border rounded-md p-3">
+                            <div>
+                              <Label>Intro Paragraph</Label>
+                              <Textarea rows={3} value={footer.paragraph} onChange={(e)=>setFooter({ ...footer, paragraph:e.target.value })} />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div>
+                                <Label>Phone</Label>
+                                <Input value={footer.contact.phone} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer.contact, phone:e.target.value } })} />
+                              </div>
+                              <div>
+                                <Label>Phone Link (tel:)</Label>
+                                <Input value={footer.contact.phoneLink} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer.contact, phoneLink:e.target.value } })} />
+                              </div>
+                              <div>
+                                <Label>Email</Label>
+                                <Input value={footer.contact.email} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer.contact, email:e.target.value } })} />
+                              </div>
+                              <div>
+                                <Label>Email Link (mailto:)</Label>
+                                <Input value={footer.contact.emailLink} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer.contact, emailLink:e.target.value } })} />
+                              </div>
+                              <div>
+                                <Label>Address</Label>
+                                <Input value={footer.contact.address} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer.contact, address:e.target.value } })} />
+                              </div>
+                              <div>
+                                <Label>Address Link (map)</Label>
+                                <Input value={footer.contact.addressLink} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer.contact, addressLink:e.target.value } })} />
+                              </div>
+                            </div>
+
+                            {(['services','locations','resources'] as const).map((col)=> (
+                              <div key={col} className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <Label className="font-semibold capitalize">{col} Column</Label>
+                                  <Button type="button" variant="outline" onClick={()=> setFooter({ ...footer, columns:{ ...footer.columns, [col]:{ ...footer.columns[col], items:[...footer.columns[col].items, { label:'New', href:'#' }] } } })}>Add Item</Button>
+                                </div>
+                                <Input value={footer.columns[col].heading} onChange={(e)=> setFooter({ ...footer, columns:{ ...footer.columns, [col]:{ ...footer.columns[col], heading:e.target.value } } })} />
+          <div className="space-y-2">
+                                  {footer.columns[col].items.map((item:any, idx:number)=> (
+                                    <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                                      <Input className="md:col-span-5" placeholder="Label" value={item.label} onChange={(e)=>{ const arr=[...footer.columns[col].items]; arr[idx] = { ...arr[idx], label:e.target.value }; setFooter({ ...footer, columns:{ ...footer.columns, [col]:{ ...footer.columns[col], items:arr } } }); }} />
+                                      <Input className="md:col-span-6" placeholder="Href" value={item.href} onChange={(e)=>{ const arr=[...footer.columns[col].items]; arr[idx] = { ...arr[idx], href:e.target.value }; setFooter({ ...footer, columns:{ ...footer.columns, [col]:{ ...footer.columns[col], items:arr } } }); }} />
+                                      <Button type="button" variant="ghost" onClick={()=>{ const arr=[...footer.columns[col].items]; arr.splice(idx,1); setFooter({ ...footer, columns:{ ...footer.columns, [col]:{ ...footer.columns[col], items:arr } } }); }}>Remove</Button>
+                                </div>
+                              ))}
+                              </div>
+                              </div>
+                            ))}
+
+                            <div className="space-y-2">
+                              <Label>Copyright</Label>
+                              <Input value={footer.bottom.copyright} onChange={(e)=>setFooter({ ...footer, bottom:{ ...footer.bottom, copyright:e.target.value } })} />
+                              {footer.bottom.links.map((l:any, idx:number)=> (
+                                <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                                  <Input className="md:col-span-5" placeholder="Label" value={l.label} onChange={(e)=>{ const arr=[...footer.bottom.links]; arr[idx] = { ...arr[idx], label:e.target.value }; setFooter({ ...footer, bottom:{ ...footer.bottom, links:arr } }); }} />
+                                  <Input className="md:col-span-6" placeholder="Href" value={l.href} onChange={(e)=>{ const arr=[...footer.bottom.links]; arr[idx] = { ...arr[idx], href:e.target.value }; setFooter({ ...footer, bottom:{ ...footer.bottom, links:arr } }); }} />
+                                  <Button type="button" variant="ghost" onClick={()=>{ const arr=[...footer.bottom.links]; arr.splice(idx,1); setFooter({ ...footer, bottom:{ ...footer.bottom, links:arr } }); }}>Remove</Button>
+                                </div>
+                              ))}
+                              <Button type="button" variant="outline" onClick={()=> setFooter({ ...footer, bottom:{ ...footer.bottom, links:[...footer.bottom.links, { label:'New', href:'#' }] } })}>Add Bottom Link</Button>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label>Social Links</Label>
+                              {footer.social.map((s:any, idx:number)=> (
+                                <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                                  <Input className="md:col-span-4" placeholder="Label" value={s.label} onChange={(e)=>{ const arr=[...footer.social]; arr[idx] = { ...arr[idx], label:e.target.value }; setFooter({ ...footer, social:arr }); }} />
+                                  <Input className="md:col-span-6" placeholder="Href" value={s.href} onChange={(e)=>{ const arr=[...footer.social]; arr[idx] = { ...arr[idx], href:e.target.value }; setFooter({ ...footer, social:arr }); }} />
+                                  <Input className="md:col-span-2" placeholder="Icon" value={s.icon} onChange={(e)=>{ const arr=[...footer.social]; arr[idx] = { ...arr[idx], icon:e.target.value }; setFooter({ ...footer, social:arr }); }} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=> setFooter({ ...footer, social:[...footer.social, { label:'New', href:'#', icon:'linkedin' }] })}>Add Social</Button>
+                                <Button type="button" onClick={async ()=>{ setFooterSaving(true); try{ const res=await fetch('/api/admin/footer',{ method:'PUT', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(footer)}); await res.json(); } finally { setFooterSaving(false); } }}>{footerSaving ? 'Saving…' : 'Save Footer'}</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  ) : editingPath === '/about' ? (
+                    <Accordion type="multiple" className="bg-transparent">
+                      <AccordionItem value="hero">
+                        <AccordionTrigger>Hero</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Hero H1</Label>
+                            <Input value={sections.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Hero Description</Label>
+                            <Textarea rows={3} value={sections.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="mission">
+                        <AccordionTrigger>Mission</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Heading</Label>
+                            <Input value={sections.mission?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, mission:{ ...(s.mission||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Paragraph (HTML allowed)</Label>
+                            <Textarea rows={4} value={sections.mission?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, mission:{ ...(s.mission||{}), paragraph:e.target.value } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2">Bullet Points</h5>
+                              {(sections.mission?.points||[]).map((pt:string, idx:number)=> (
+                                <div key={idx} className="flex items-center gap-2 mb-2">
+                                  <Input value={pt} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.mission?.points||[])]; arr[idx]=e.target.value; return { ...s, mission:{ ...(s.mission||{}), points:arr } }; })} />
+                                  <Button type="button" variant="ghost" onClick={()=>setSections((s:any)=>{ const arr=[...(s.mission?.points||[])]; arr.splice(idx,1); return { ...s, mission:{ ...(s.mission||{}), points:arr } }; })}>Remove</Button>
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, mission:{ ...(s.mission||{}), points:[...(s.mission?.points||[]), ""] } }))}>Add Point</Button>
+                                {(sections.mission?.points||[]).length>0 && (
+                                  <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, mission:{ ...(s.mission||{}), points:(s.mission?.points||[]).slice(0,-1) } }))}>Remove Last</Button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="vision">
+                        <AccordionTrigger>Vision</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Heading</Label>
+                            <Input value={sections.vision?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, vision:{ ...(s.vision||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Paragraph (HTML allowed)</Label>
+                            <Textarea rows={4} value={sections.vision?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, vision:{ ...(s.vision||{}), paragraph:e.target.value } }))} />
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="coreValues">
+                        <AccordionTrigger>Core Values</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            {(sections.coreValues||[]).map((cv:any, idx:number)=> (
+                              <div key={idx} className="border rounded p-3">
+                                <Label>Heading</Label>
+                                <Input value={cv.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.coreValues||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, coreValues:arr }; })} />
+                                <Label className="mt-2 block">Paragraph (HTML allowed)</Label>
+                                <Textarea rows={3} value={cv.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.coreValues||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, coreValues:arr }; })} />
+                              </div>
+                            ))}
+                            <div className="flex gap-2">
+                              <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, coreValues:[...(s.coreValues||[]), { heading:'', paragraph:'' }] }))}>Add Value</Button>
+                              <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, coreValues:(s.coreValues||[]).slice(0,-1) }))}>Remove Last</Button>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="howItWorks">
+                        <AccordionTrigger>How It Works</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            {(sections.howItWorks||[]).map((step:any, idx:number)=> (
+                              <div key={idx} className="border rounded p-3">
+                                <Label>Step Title</Label>
+                                <Input value={step.title||step.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.howItWorks||[])]; arr[idx]={...arr[idx], title:e.target.value, heading:e.target.value}; return { ...s, howItWorks:arr }; })} />
+                                <Label className="mt-2 block">Paragraph (HTML allowed)</Label>
+                                <Textarea rows={3} value={step.paragraph||step.description||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.howItWorks||[])]; arr[idx]={...arr[idx], paragraph:e.target.value, description:e.target.value}; return { ...s, howItWorks:arr }; })} />
+                              </div>
+                            ))}
+                            <div className="flex gap-2">
+                              <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, howItWorks:[...(s.howItWorks||[]), { title:'', paragraph:'' }] }))}>Add Step</Button>
+                              <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, howItWorks:(s.howItWorks||[]).slice(0,-1) }))}>Remove Last</Button>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="team">
+                        <AccordionTrigger>Team</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            {(sections.team||[]).map((m:any, idx:number)=> (
+                              <div key={idx} className="border rounded p-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                  <div>
+                                    <Label>Name</Label>
+                                    <Input value={m.name||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.team||[])]; arr[idx]={...arr[idx], name:e.target.value}; return { ...s, team:arr }; })} />
+                                  </div>
+                                  <div>
+                                    <Label>Role</Label>
+                                    <Input value={m.role||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.team||[])]; arr[idx]={...arr[idx], role:e.target.value}; return { ...s, team:arr }; })} />
+                                  </div>
+                                </div>
+                                <Label className="mt-2 block">Bio (HTML allowed)</Label>
+                                <Textarea rows={3} value={m.bio||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.team||[])]; arr[idx]={...arr[idx], bio:e.target.value}; return { ...s, team:arr }; })} />
+                                <Label className="mt-2 block">Specialties (comma separated)</Label>
+                                <Input value={(m.specialties||[]).join(', ')} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.team||[])]; arr[idx]={...arr[idx], specialties:e.target.value.split(',').map((x:string)=>x.trim()).filter(Boolean)}; return { ...s, team:arr }; })} />
+                              </div>
+                            ))}
+                            <div className="flex gap-2">
+                              <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, team:[...(s.team||[]), { name:'', role:'', bio:'', specialties:[] }] }))}>Add Member</Button>
+                              <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, team:(s.team||[]).slice(0,-1) }))}>Remove Last</Button>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="cta">
+                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Heading</Label>
+                            <Input value={sections.cta?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, cta:{ ...(s.cta||{}), heading:e.target.value } }))} />
+                            <Label className="mt-2 block">Paragraph</Label>
+                            <Textarea rows={3} value={sections.cta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, cta:{ ...(s.cta||{}), paragraph:e.target.value } }))} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                              {(sections.cta?.buttons||[]).map((b:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3">
+                                  <Label>Text</Label>
+                                  <Input value={b.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.cta?.buttons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, cta:{ ...(s.cta||{}), buttons:arr } }; })} />
+                                  <Label className="mt-2 block">Link</Label>
+                                  <Input value={b.href||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.cta?.buttons||[])]; arr[idx]={...arr[idx], href:e.target.value}; return { ...s, cta:{ ...(s.cta||{}), buttons:arr } }; })} />
+                                </div>
+                              ))}
+                            </div>
+                            <div className="flex gap-2 mt-2">
+                              <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, cta:{ ...(s.cta||{}), buttons:[...(s.cta?.buttons||[]), { text:'', href:'' }] } }))}>Add Button</Button>
+                              <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, cta:{ ...(s.cta||{}), buttons:(s.cta?.buttons||[]).slice(0,-1) } }))}>Remove Last</Button>
                             </div>
                           </div>
                         </AccordionContent>
@@ -2044,7 +2325,7 @@ export default function AdminPagesEditor() {
                                   </div>
                                   <div className="mt-3">
                                     <Label>Features (one per line)</Label>
-                                    <Textarea rows={3} value={(card.features||[]).join('\n')} onChange={(e)=>{ const features=e.target.value.split('\n').filter(f=>f.trim()); const arr=[...(s.renderingConcept?.services?.serviceCards||[])]; arr[idx]={...arr[idx], features}; setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), serviceCards:arr } } })); }} />
+                                    <Textarea rows={3} value={(card.features||[]).join('\n')} onChange={(e)=> setSections((s:any)=>{ const features=e.target.value.split('\n').filter((f:string)=>f.trim()); const arr=[...(s.renderingConcept?.services?.serviceCards||[])]; arr[idx]={...arr[idx], features}; return { ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), serviceCards:arr } } }; })} />
                                   </div>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                                     <div>
@@ -2202,7 +2483,7 @@ export default function AdminPagesEditor() {
                                   </div>
                                   <div className="mt-3">
                                     <Label>Features (one per line)</Label>
-                                    <Textarea rows={3} value={(card.features||[]).join('\n')} onChange={(e)=>{ const features=e.target.value.split('\n').filter(f=>f.trim()); const arr=[...(s.installationDismantle?.services?.serviceCards||[])]; arr[idx]={...arr[idx], features}; setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), serviceCards:arr } } })); }} />
+                                    <Textarea rows={3} value={(card.features||[]).join('\n')} onChange={(e)=> setSections((s:any)=>{ const features=e.target.value.split('\n').filter((f:string)=>f.trim()); const arr=[...(s.installationDismantle?.services?.serviceCards||[])]; arr[idx]={...arr[idx], features}; return { ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), serviceCards:arr } } }; })} />
                                   </div>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                                     <div>
@@ -2360,7 +2641,7 @@ export default function AdminPagesEditor() {
                                   </div>
                                   <div className="mt-3">
                                     <Label>Features (one per line)</Label>
-                                    <Textarea rows={3} value={(card.features||[]).join('\n')} onChange={(e)=>{ const features=e.target.value.split('\n').filter(f=>f.trim()); const arr=[...(s.projectManagement?.services?.serviceCards||[])]; arr[idx]={...arr[idx], features}; setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), serviceCards:arr } } })); }} />
+                                    <Textarea rows={3} value={(card.features||[]).join('\n')} onChange={(e)=> setSections((s:any)=>{ const features=e.target.value.split('\n').filter((f:string)=>f.trim()); const arr=[...(s.projectManagement?.services?.serviceCards||[])]; arr[idx]={...arr[idx], features}; return { ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), serviceCards:arr } } }; })} />
                                   </div>
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                                     <div>

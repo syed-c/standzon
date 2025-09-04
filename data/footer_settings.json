@@ -1,0 +1,72 @@
+{
+  "_metadata": {
+    "timestamp": "2025-09-04T10:13:46.889Z",
+    "version": "1.0",
+    "checksum": "53b3c5ca"
+  },
+  "data": {
+    "paragraph": "rrrrrr",
+    "contact": {
+      "phone": "0123456789",
+      "phoneLink": "",
+      "email": "dfghj@er.com",
+      "emailLink": "",
+      "address": "dubai",
+      "addressLink": ""
+    },
+    "columns": {
+      "services": {
+        "heading": "Services",
+        "items": []
+      },
+      "locations": {
+        "heading": "Global Locations",
+        "items": []
+      },
+      "resources": {
+        "heading": "Resources",
+        "items": []
+      }
+    },
+    "bottom": {
+      "copyright": "© 2024 StandsZone. All rights reserved.",
+      "links": [
+        {
+          "label": "Privacy Policy",
+          "href": "/legal/privacy-policy"
+        },
+        {
+          "label": "Terms of Service",
+          "href": "/legal/terms-of-service"
+        },
+        {
+          "label": "Cookie Policy",
+          "href": "/legal/cookie-policy"
+        }
+      ]
+    },
+    "social": [
+      {
+        "label": "LinkedIn",
+        "href": "#",
+        "icon": "linkedin"
+      },
+      {
+        "label": "Twitter",
+        "href": "#",
+        "icon": "twitter"
+      },
+      {
+        "label": "Instagram",
+        "href": "#",
+        "icon": "instagram"
+      },
+      {
+        "label": "Facebook",
+        "href": "#",
+        "icon": "facebook"
+      }
+    ],
+    "updatedAt": "2025-09-04T10:13:46.888Z"
+  }
+}

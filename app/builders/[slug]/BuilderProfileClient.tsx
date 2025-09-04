@@ -340,24 +340,24 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
     <div className="min-h-screen bg-gray-50">
       <Navigation />
 
-      <Dialog open={showLeadModal} onOpenChange={setShowLeadModal}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Request Quote from {builder.companyName}</DialogTitle>
-            <DialogDescription>
-              Get a personalized quote for your exhibition stand requirements
-            </DialogDescription>
-          </DialogHeader>
-          <LeadInquiryForm
-            builderId={builder.id}
-            builderName={builder.companyName}
-            builderLocation={`${builder.headquarters.city}, ${builder.headquarters.country}`}
-            isModal={true}
-            onClose={() => setShowLeadModal(false)}
-            onSuccess={handleLeadSuccess}
-          />
-        </DialogContent>
-      </Dialog>
+                  <Dialog open={showLeadModal} onOpenChange={setShowLeadModal}>
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Request Quote from {builder.companyName}</DialogTitle>
+                        <DialogDescription>
+                          Get a personalized quote for your exhibition stand requirements
+                        </DialogDescription>
+                      </DialogHeader>
+                      <LeadInquiryForm
+                        builderId={builder.id}
+                        builderName={builder.companyName}
+                        builderLocation={`${builder.headquarters.city}, ${builder.headquarters.country}`}
+                        isModal={true}
+                        onClose={() => setShowLeadModal(false)}
+                        onSuccess={handleLeadSuccess}
+                      />
+                    </DialogContent>
+                  </Dialog>
 
       <BuilderProfileTemplate
         builder={builder}
