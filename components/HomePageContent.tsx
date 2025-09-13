@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, Suspense, lazy } from "react";
 import Navigation from "@/components/Navigation";
-import SlidingHeroSection from "@/components/SlidingHeroSection";
+import UltraFastHero from "@/components/UltraFastHero";
 import PublicQuoteRequest from "@/components/PublicQuoteRequest";
 
 // ✅ PERFORMANCE: Lazy load non-critical components
@@ -15,13 +15,23 @@ type SavedContent = any;
 
 export default function HomePageContent() {
   const [saved, setSaved] = useState<SavedContent | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // ✅ PERFORMANCE: Optimize data loading with caching
   const load = async () => {
     try {
-      const res = await fetch("/api/admin/pages-editor?action=get-content&path=%2F", { cache: "no-store" });
+      setIsLoading(true);
+      const res = await fetch("/api/admin/pages-editor?action=get-content&path=%2F", { 
+        cache: "force-cache",
+        next: { revalidate: 300 } // 5 minutes cache
+      });
       const data = await res.json();
       if (data?.success) setSaved(data.data || null);
-    } catch {}
+    } catch (error) {
+      console.warn('Failed to load CMS data:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -64,11 +74,12 @@ export default function HomePageContent() {
     <div className="page-container homepage-container">
       <Navigation />
 
-      <main className="main-content pt-16">
-        <SlidingHeroSection
-          headings={[heroHeading]}
+      <main className="main-content">
+        {/* ✅ PERFORMANCE: Ultra-fast hero section with minimal dependencies */}
+        <UltraFastHero
+          headings={[heroHeading || "Exhibition Stand Builders Worldwide"]}
           subtitle=""
-          description={heroDescription}
+          description={heroDescription || "Connect with verified exhibition stand builders in your target location. Get multiple competitive quotes without creating an account."}
           stats={[
             { value: "45+", label: "Cities Covered" },
             { value: "10+", label: "Countries Served" },
