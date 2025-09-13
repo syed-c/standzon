@@ -6,10 +6,19 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // ✅ PERFORMANCE: Enable image optimization
   images: { 
-    unoptimized: true 
+    unoptimized: false,
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 31536000, // 1 year
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   devIndicators: false,
+  // ✅ PERFORMANCE: Enable compression and optimization
+  compress: true,
+  poweredByHeader: false,
+  // ✅ PERFORMANCE: Optimize webpack configuration
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
       config.watchOptions = {
@@ -19,13 +28,98 @@ const nextConfig = {
       };
       config.cache = false;
     }
+    
+    // ✅ PERFORMANCE: Optimize bundle splitting
+    if (!isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          // Create separate chunks for heavy libraries
+          recharts: {
+            name: 'recharts',
+            test: /[\\/]node_modules[\\/](recharts)[\\/]/,
+            chunks: 'all',
+            priority: 20,
+          },
+          lucide: {
+            name: 'lucide',
+            test: /[\\/]node_modules[\\/](lucide-react)[\\/]/,
+            chunks: 'all',
+            priority: 20,
+          },
+          ui: {
+            name: 'ui',
+            test: /[\\/]components[\\/]ui[\\/]/,
+            chunks: 'all',
+            priority: 15,
+          },
+          admin: {
+            name: 'admin',
+            test: /[\\/]components[\\/].*[Aa]dmin.*[\\/]/,
+            chunks: 'all',
+            priority: 10,
+          },
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            priority: 5,
+          },
+        },
+      };
+    }
+    
     return config;
   },
   experimental: {
     turbo: {
-      // Use object instead of boolean for turbo config
       moduleIdStrategy: 'deterministic',
     },
+    // ✅ PERFORMANCE: Enable modern features
+    optimizeCss: true,
+    optimizePackageImports: ['lucide-react', 'recharts'],
+  },
+  // ✅ PERFORMANCE: Enable caching headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+        ],
+      },
+      {
+        source: '/api/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=300, s-maxage=300',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
   },
   allowedDevOrigins: [
     "*.macaly.dev",

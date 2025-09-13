@@ -2,6 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ✅ PERFORMANCE: Critical CSS for above-the-fold content */
+@layer base {
+  /* Optimize font loading */
+  html {
+    font-display: swap;
+  }
+  
+  /* Critical styles for hero section */
+  .hero-gradient {
+    background: linear-gradient(135deg, #1e293b 0%, #1e40af 50%, #1e293b 100%);
+  }
+  
+  /* Optimize animations */
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* Critical button styles */
+  .btn-primary {
+    @apply bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-white text-white hover:bg-white hover:text-gray-900 px-6 py-3 rounded-xl font-semibold transition-all duration-300 backdrop-blur-md;
+  }
+}
+
+/* ✅ PERFORMANCE: Optimize scroll behavior */
+@layer utilities {
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+  
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-smooth {
+      scroll-behavior: auto;
+    }
+    
+    .animate-pulse {
+      animation: none;
+    }
+  }
+}
+
 /* ✅ PERFORMANCE FIX: Removed Google Fonts external import to prevent blocking
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 */

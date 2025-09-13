@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense, lazy } from "react";
 import Navigation from "@/components/Navigation";
 import SlidingHeroSection from "@/components/SlidingHeroSection";
-import LocationsSection from "@/components/LocationsSection";
-import TestimonialsCarousel from "@/components/TestimonialsCarousel";
-import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/Footer";
 import PublicQuoteRequest from "@/components/PublicQuoteRequest";
+
+// ✅ PERFORMANCE: Lazy load non-critical components
+const LocationsSection = lazy(() => import("@/components/LocationsSection"));
+const TestimonialsCarousel = lazy(() => import("@/components/TestimonialsCarousel"));
+const ContactSection = lazy(() => import("@/components/ContactSection"));
+const Footer = lazy(() => import("@/components/Footer"));
 
 type SavedContent = any;
 
@@ -105,11 +107,14 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        <LocationsSection
-          globalPresence={saved?.sections?.globalPresence}
-          moreCountries={saved?.sections?.moreCountries}
-          expandingMarkets={saved?.sections?.expandingMarkets}
-        />
+        {/* ✅ PERFORMANCE: Lazy load LocationsSection */}
+        <Suspense fallback={<div className="py-16 bg-gray-50 animate-pulse"><div className="container mx-auto px-4"><div className="h-64 bg-gray-200 rounded-lg"></div></div></div>}>
+          <LocationsSection
+            globalPresence={saved?.sections?.globalPresence}
+            moreCountries={saved?.sections?.moreCountries}
+            expandingMarkets={saved?.sections?.expandingMarkets}
+          />
+        </Suspense>
 
         {/* Ready to Get Started (CTA mid) */}
         <section className="py-12 md:py-16 bg-gradient-to-br from-blue-50 to-purple-50">
@@ -174,14 +179,22 @@ export default function HomePageContent() {
                   ))}
                 </div>
               ) : (
-                <TestimonialsCarousel />
+                <Suspense fallback={<div className="h-64 bg-gray-200 rounded-lg animate-pulse"></div>}>
+                  <TestimonialsCarousel />
+                </Suspense>
               )}
             </div>
           </section>
         ) : (
-          <TestimonialsCarousel />
+          <Suspense fallback={<div className="h-64 bg-gray-200 rounded-lg animate-pulse"></div>}>
+            <TestimonialsCarousel />
+          </Suspense>
         )}
-        <ContactSection />
+        
+        {/* ✅ PERFORMANCE: Lazy load ContactSection */}
+        <Suspense fallback={<div className="py-16 bg-gray-50 animate-pulse"><div className="container mx-auto px-4"><div className="h-64 bg-gray-200 rounded-lg"></div></div></div>}>
+          <ContactSection />
+        </Suspense>
 
         {/* Final CTA */}
         <section className="py-12 md:py-16 bg-blue-primary text-white">
@@ -202,7 +215,11 @@ export default function HomePageContent() {
           </div>
         </section>
       </main>
-      <Footer />
+      
+      {/* ✅ PERFORMANCE: Lazy load Footer */}
+      <Suspense fallback={<div className="h-32 bg-gray-900 animate-pulse"></div>}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }
