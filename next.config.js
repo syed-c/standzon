@@ -18,6 +18,8 @@ const nextConfig = {
   // ✅ PERFORMANCE: Enable compression and optimization
   compress: true,
   poweredByHeader: false,
+  // ✅ PERFORMANCE: Enable CSS optimization without experimental features
+  swcMinify: true,
   // ✅ PERFORMANCE: Optimize webpack configuration
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
@@ -77,8 +79,8 @@ const nextConfig = {
     turbo: {
       moduleIdStrategy: 'deterministic',
     },
-    // ✅ PERFORMANCE: Enable modern features
-    optimizeCss: true,
+    // ✅ PERFORMANCE: Enable modern features (disabled for now due to deployment issues)
+    // optimizeCss: true,
     optimizePackageImports: ['lucide-react', 'recharts'],
   },
   // ✅ PERFORMANCE: Enable caching headers
