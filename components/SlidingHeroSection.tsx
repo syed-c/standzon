@@ -121,7 +121,7 @@ export function SlidingHeroSection({
                 <Button 
                   variant={button.variant || "outline"}
                   size="lg"
-                  className={button.className || "border-2 border-white text-white bg-white/20 hover:bg-white hover:text-gray-900 backdrop-blur-md px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg w-full sm:w-auto min-w-[160px] min-h-[56px] flex items-center justify-center opacity-100 visible"}
+                  className={button.className || "border-2 border-white text-white bg-black/30 hover:bg-white hover:text-gray-900 backdrop-blur-md px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg w-full sm:w-auto min-w-[160px] min-h-[56px] flex items-center justify-center opacity-100 visible hover:border-gray-300"}
                 >
                   <span className="text-current opacity-100 visible">{button.text}</span>
                 </Button>
@@ -131,7 +131,7 @@ export function SlidingHeroSection({
                 key={index}
                 variant={button.variant || "outline"}
                 size="lg"
-                className={button.className || "border-2 border-white text-white bg-white/20 hover:bg-white hover:text-gray-900 backdrop-blur-md px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg w-full sm:w-auto min-w-[160px] min-h-[56px] flex items-center justify-center opacity-100 visible"}
+                className={button.className || "border-2 border-white text-white bg-black/30 hover:bg-white hover:text-gray-900 backdrop-blur-md px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg w-full sm:w-auto min-w-[160px] min-h-[56px] flex items-center justify-center opacity-100 visible hover:border-gray-300"}
               >
                 <span className="text-current opacity-100 visible">{button.text}</span>
               </Button>

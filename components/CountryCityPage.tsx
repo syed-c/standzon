@@ -246,7 +246,7 @@ export function CountryCityPage({
                 placeholder="Enter your email" 
                 className="bg-white/10 border-white/20 text-white placeholder:text-white/70"
               />
-              <Button className="bg-transparent text-purple-600 hover:bg-gray-100 font-semibold">
+              <Button className="bg-white text-purple-600 hover:bg-gray-100 font-semibold shadow-lg">
                 Notify Me
               </Button>
             </div>
@@ -853,7 +853,7 @@ export function CountryCityPage({
               <Button 
                 variant="outline" 
                 size="lg"
-                className="border-white/20 text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-4"
+                className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg"
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               >
                 Back to Top

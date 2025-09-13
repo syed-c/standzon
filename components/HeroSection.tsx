@@ -68,7 +68,7 @@ export function HeroSection() {
             <Button 
               variant="outline" 
               size="lg"
-              className="border-2 border-white text-white bg-white/10 hover:bg-white/20 px-8 py-4 text-lg font-semibold rounded-xl backdrop-blur-md transition-all duration-300 transform hover:scale-105 shadow-lg"
+              className="border-2 border-white text-white bg-black/30 hover:bg-white/20 px-8 py-4 text-lg font-semibold rounded-xl backdrop-blur-md transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
               Global Venues
             </Button>
@@ -77,7 +77,7 @@ export function HeroSection() {
             <Button 
               variant="outline" 
               size="lg"
-              className="border-2 border-white text-white bg-white/10 hover:bg-white/20 px-8 py-4 text-lg font-semibold rounded-xl backdrop-blur-md transition-all duration-300 transform hover:scale-105 shadow-lg"
+              className="border-2 border-white text-white bg-black/30 hover:bg-white/20 px-8 py-4 text-lg font-semibold rounded-xl backdrop-blur-md transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
               Find Builders
             </Button>

@@ -865,7 +865,7 @@ export default function BuildersDirectoryContent() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-navy-900 px-8 py-3"
+                className="border-white text-white hover:bg-white hover:text-navy-900 px-8 py-3 shadow-lg"
               >
                 <FiGlobe className="w-4 h-4 mr-2" />
                 Find Your Trade Show

@@ -63,10 +63,10 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       <div className="w-full">
         {!disableRichTools && (
           <div className="mb-1 flex items-center gap-2">
-            <button type="button" onClick={onBold} className="px-2 py-1 text-xs rounded-button border border-border-color hover:bg-white/10">Bold</button>
-            <button type="button" onClick={onLink} className="px-2 py-1 text-xs rounded-button border border-border-color hover:bg-white/10">Link</button>
+            <button type="button" onClick={onBold} className="px-2 py-1 text-xs rounded-button border-2 border-gray-300 hover:bg-gray-100 bg-white text-gray-700 hover:border-gray-400">Bold</button>
+            <button type="button" onClick={onLink} className="px-2 py-1 text-xs rounded-button border-2 border-gray-300 hover:bg-gray-100 bg-white text-gray-700 hover:border-gray-400">Link</button>
             <div className="ml-auto flex items-center gap-2 text-xs">
-              <button type="button" onClick={() => setShowPreview((v)=>!v)} className="px-2 py-1 rounded-button border border-border-color hover:bg-white/10">{showPreview ? 'Edit' : 'Preview'}</button>
+              <button type="button" onClick={() => setShowPreview((v)=>!v)} className="px-2 py-1 rounded-button border-2 border-gray-300 hover:bg-gray-100 bg-white text-gray-700 hover:border-gray-400">{showPreview ? 'Edit' : 'Preview'}</button>
               <span className="hidden sm:inline">Ctrl+B • Ctrl+K</span>
             </div>
           </div>

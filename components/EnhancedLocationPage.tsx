@@ -266,7 +266,7 @@ export function EnhancedLocationPage({
               <Button 
                 variant="outline" 
                 size="lg"
-                className="border-white/20 text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-4"
+                className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg"
                 onClick={() => document.getElementById('builders-grid')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Browse Local Builders
@@ -541,7 +541,7 @@ export function EnhancedLocationPage({
                   <Button 
                     variant="outline" 
                     size="lg"
-                    className="border-white/20 text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-4"
+                    className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg"
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     {cmsData?.sections?.countryPages?.[countrySlug]?.backToTopButtonText || "Back to Top"}

@@ -202,7 +202,7 @@ export default function AboutPageContent() {
       text: "Get Started Today",
       href: "/contact",
       className:
-        "bg-transparent text-blue-primary hover:bg-gray-100 px-8 py-4 text-lg",
+        "bg-white text-blue-primary hover:bg-gray-100 px-8 py-4 text-lg shadow-lg",
     },
     {
       text: "Browse Contractors",
@@ -449,7 +449,7 @@ export default function AboutPageContent() {
             ]).map((b: any, i: number) => (
               <Link key={i} href={b.href || "#"}>
                 <Button
-                  className={i === 0 ? "bg-transparent text-blue-primary hover:bg-gray-100 px-8 py-4 text-lg" : "border-white text-white hover:bg-white hover:text-blue-primary px-8 py-4 text-lg"}
+                  className={i === 0 ? "bg-white text-blue-primary hover:bg-gray-100 px-8 py-4 text-lg shadow-lg" : "border-white text-white hover:bg-white hover:text-blue-primary px-8 py-4 text-lg shadow-lg"}
                   variant={i === 0 ? undefined : "outline"}
                 >
                   {b.text || (i === 0 ? "Get Started Today" : "Browse Contractors")}

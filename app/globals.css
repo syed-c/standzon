@@ -171,18 +171,35 @@ button[class*="bg-primary"] {
   color: white !important;
 }
 
-/* ✅ Global rule: remove white backgrounds from ALL buttons */
-button[class*="bg-white"] {
+/* ✅ FIXED: Ensure buttons with blue text on white backgrounds are visible */
+button[class*="bg-white"][class*="text-blue"] {
+  background-color: white !important;
+  color: #1D4ED8 !important; /* Darker blue for better contrast */
+}
+button[class*="bg-white"][class*="text-blue-primary"] {
+  background-color: white !important;
+  color: #1D4ED8 !important; /* Darker blue for better contrast */
+}
+
+/* ✅ FIXED: Ensure buttons with white text on blue backgrounds have proper contrast */
+button[class*="bg-blue"][class*="text-white"],
+button[class*="bg-blue-primary"][class*="text-white"] {
+  background-color: #1D4ED8 !important; /* Darker blue for better contrast */
+  color: white !important;
+}
+
+/* ✅ FIXED: Only remove white backgrounds from buttons that don't have explicit text colors AND are not outline buttons */
+button[class*="bg-white"]:not([class*="text-"]):not([class*="text-blue"]):not([class*="text-gray"]):not([class*="text-black"]):not([class*="outline"]) {
   background-color: transparent !important;
 }
-button[class*="hover:bg-white"]:hover {
+button[class*="hover:bg-white"]:hover:not([class*="text-"]):not([class*="text-blue"]):not([class*="text-gray"]):not([class*="text-black"]):not([class*="outline"]) {
   background-color: transparent !important;
 }
 /* Also cover semi-transparent white backgrounds on buttons */
-button[class*="bg-white/"] {
+button[class*="bg-white/"]:not([class*="text-"]):not([class*="text-blue"]):not([class*="text-gray"]):not([class*="text-black"]):not([class*="outline"]) {
   background-color: transparent !important;
 }
-button[class*="hover:bg-white/"]:hover {
+button[class*="hover:bg-white/"]:hover:not([class*="text-"]):not([class*="text-blue"]):not([class*="text-gray"]):not([class*="text-black"]):not([class*="outline"]) {
   background-color: transparent !important;
 }
 
@@ -194,6 +211,167 @@ button[class*="bg-pink"]:hover,
 button[class*="bg-rose"]:hover,
 button[class*="bg-primary"]:hover {
   color: white !important;
+}
+
+/* ✅ FIXED: Ensure outline buttons maintain visibility on hover */
+button[class*="outline"]:hover {
+  border-color: currentColor !important;
+  color: inherit !important;
+}
+button[class*="outline"]:hover span {
+  color: inherit !important;
+}
+
+/* ✅ FIXED: Ensure white buttons with borders stay visible on hover */
+button[class*="bg-white"]:hover {
+  background-color: white !important;
+  border-color: #d1d5db !important; /* gray-300 for subtle border */
+}
+button[class*="bg-white"][class*="text-"]:hover {
+  color: inherit !important;
+}
+
+/* ✅ FIXED: Ensure all buttons maintain text visibility on hover */
+button:hover {
+  color: inherit !important;
+}
+button:hover span {
+  color: inherit !important;
+}
+
+/* ✅ FIXED: Specific rule for outline buttons to maintain borders */
+button[class*="outline"] {
+  border-width: 2px !important;
+}
+button[class*="outline"]:hover {
+  border-width: 2px !important;
+  border-style: solid !important;
+}
+
+/* ✅ FIXED: Ensure buttons with hover:bg-white maintain text visibility */
+button[class*="hover:bg-white"]:hover {
+  background-color: white !important;
+  color: #374151 !important; /* gray-700 for good contrast */
+}
+button[class*="hover:bg-white"]:hover span {
+  color: #374151 !important;
+}
+
+/* ✅ FIXED: Specific rules for buttons with text color changes on hover */
+button[class*="hover:text-"]:hover {
+  color: inherit !important;
+}
+button[class*="hover:text-"]:hover span {
+  color: inherit !important;
+}
+
+/* ✅ FIXED: Ensure buttons with white/20 backgrounds maintain visibility */
+button[class*="bg-white/20"]:hover {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ✅ FIXED: Ensure buttons with hover:bg-white/20 maintain text visibility */
+button[class*="hover:bg-white/20"]:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #374151 !important; /* gray-700 for visibility */
+}
+button[class*="hover:bg-white/20"]:hover span {
+  color: #374151 !important;
+}
+
+/* ✅ CRITICAL FIX: Override any conflicting rules for location page buttons */
+button[class*="hover:bg-white/20"][class*="text-white"]:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #374151 !important;
+}
+button[class*="hover:bg-white/20"][class*="text-white"]:hover span {
+  color: #374151 !important;
+}
+
+/* ✅ CRITICAL FIX: Specific rule for outline buttons with white text on hover */
+button[class*="outline"][class*="text-white"]:hover {
+  color: #374151 !important;
+}
+button[class*="outline"][class*="text-white"]:hover span {
+  color: #374151 !important;
+}
+
+/* ✅ CRITICAL FIX: Override all conflicting rules for location page buttons */
+button[class*="hover:text-gray-900"]:hover {
+  color: #374151 !important;
+}
+button[class*="hover:text-gray-900"]:hover span {
+  color: #374151 !important;
+}
+
+/* ✅ FIXED: Emergency fallback - ensure all buttons have visible text */
+button:not([class*="text-transparent"]):not([class*="text-white"]) {
+  color: #374151 !important; /* gray-700 as fallback */
+}
+button[class*="text-white"] {
+  color: white !important;
+}
+button[class*="text-white"]:hover {
+  color: white !important;
+}
+
+/* ✅ CRITICAL FIX: Ensure white buttons with text are always visible */
+button[class*="bg-white"] {
+  background-color: white !important;
+  color: #374151 !important; /* gray-700 for visibility */
+}
+button[class*="bg-white"]:hover {
+  background-color: white !important;
+  color: #374151 !important;
+}
+button[class*="bg-white"] span {
+  color: #374151 !important;
+}
+button[class*="bg-white"]:hover span {
+  color: #374151 !important;
+}
+
+/* ✅ CRITICAL FIX: Override any conflicting rules for white buttons */
+button[class*="bg-white"][class*="text-"] {
+  background-color: white !important;
+}
+button[class*="bg-white"][class*="text-"]:hover {
+  background-color: white !important;
+}
+
+/* ✅ CRITICAL FIX: Specific rules for white buttons with blue text */
+button[class*="bg-white"][class*="text-blue-primary"] {
+  background-color: white !important;
+  color: #1D4ED8 !important; /* Darker blue for better contrast */
+}
+button[class*="bg-white"][class*="text-blue-primary"]:hover {
+  background-color: white !important;
+  color: #1D4ED8 !important;
+}
+button[class*="bg-white"][class*="text-blue-primary"] span {
+  color: #1D4ED8 !important;
+}
+button[class*="bg-white"][class*="text-blue-primary"]:hover span {
+  color: #1D4ED8 !important;
+}
+
+/* ✅ FIXED: Ensure small form buttons have better visibility */
+button[class*="text-xs"] {
+  border-width: 2px !important;
+  border-color: #d1d5db !important; /* gray-300 */
+}
+button[class*="text-xs"]:hover {
+  border-color: #9ca3af !important; /* gray-400 */
+  background-color: #f9fafb !important; /* gray-50 */
+}
+
+/* ✅ FIXED: Ensure green buttons maintain visibility */
+button[class*="text-green"] {
+  color: #059669 !important; /* green-600 for better contrast */
+}
+button[class*="text-green"]:hover {
+  color: #047857 !important; /* green-700 for better contrast */
 }
 
 /* ✅ CRITICAL FIX: Ensure all navigation text is visible */

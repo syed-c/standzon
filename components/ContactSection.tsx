@@ -137,7 +137,7 @@ export default function ContactSection() {
                 <p className="mb-4 opacity-90">
                   Get instant responses to your queries
                 </p>
-                <Button className="bg-white text-green-600 hover:bg-gray-100">
+                <Button className="bg-white text-green-600 hover:bg-gray-100 hover:text-green-700 border-2 border-green-200 hover:border-green-300">
                   Chat Now
                 </Button>
               </CardContent>

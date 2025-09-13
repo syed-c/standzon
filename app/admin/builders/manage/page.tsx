@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,16 +8,17 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { 
   Building2, ArrowLeft, Edit, Trash2, CheckCircle, XCircle, 
   Star, Mail, Phone, Globe, MapPin, Users, Calendar,
-  Plus, Save, X, Eye, ExternalLink, Award
+  Plus, Save, X, Eye, ExternalLink, Award, Loader2
 } from 'lucide-react';
 import Link from 'next/link';
-import { exhibitionBuilders, ExhibitionBuilder } from '@/lib/data/exhibitionBuilders';
+import { ExhibitionBuilder } from '@/lib/data/exhibitionBuilders';
 import { tier1Countries } from '@/lib/data/countries';
 
 export default function ManageBuildersPage() {
@@ -27,16 +28,51 @@ export default function ManageBuildersPage() {
   const [selectedBuilder, setSelectedBuilder] = useState<ExhibitionBuilder | null>(null);
   const [editingBuilder, setEditingBuilder] = useState<ExhibitionBuilder | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [builders, setBuilders] = useState<ExhibitionBuilder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
-  console.log('Manage Builders page loaded');
+  // Load builders from API
+  useEffect(() => {
+    loadBuilders();
+  }, []);
+
+  const loadBuilders = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/builders?prioritize_real=true');
+      const data = await response.json();
+      
+      if (data.success && data.data?.builders) {
+        // Filter to show only Supabase-added providers (real data)
+        const realBuilders = data.data.builders.filter((builder: any) => 
+          builder.source === 'google_places_api' || 
+          builder.gmbImported || 
+          builder.importedFromGMB ||
+          (builder.id && builder.id.startsWith('gmb_'))
+        );
+        setBuilders(realBuilders);
+        console.log('Loaded real builders:', realBuilders.length);
+      } else {
+        setBuilders([]);
+        console.log('No real builders found');
+      }
+    } catch (error) {
+      console.error('Error loading builders:', error);
+      setBuilders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter builders
-  const filteredBuilders = exhibitionBuilders.filter(builder => {
-    const matchesSearch = builder.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         builder.contactInfo.contactPerson.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredBuilders = builders.filter(builder => {
+    const matchesSearch = builder.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         builder.contactInfo?.contactPerson?.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesCountry = filterCountry === 'all' || 
-                          builder.serviceLocations.some(loc => loc.country === filterCountry);
+                          builder.serviceLocations?.some(loc => loc.country === filterCountry);
     
     const matchesStatus = filterStatus === 'all' ||
                          (filterStatus === 'verified' && builder.verified) ||
@@ -52,36 +88,102 @@ export default function ManageBuildersPage() {
     console.log('Editing builder:', builder.companyName);
   };
 
-  const handleSaveBuilder = () => {
+  const handleSaveBuilder = async () => {
     if (!editingBuilder) return;
     
-    console.log('Saving builder changes:', editingBuilder.companyName);
-    // In a real app, this would make an API call to save changes
-    
-    // Update the builder in the local array (for demo purposes)
-    const index = exhibitionBuilders.findIndex(b => b.id === editingBuilder.id);
-    if (index !== -1) {
-      Object.assign(exhibitionBuilders[index], editingBuilder);
+    try {
+      setSaving(true);
+      console.log('Saving builder changes:', editingBuilder.companyName);
+      
+      const response = await fetch('/api/admin/builders', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          builderId: editingBuilder.id,
+          updates: editingBuilder
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Update local state
+        setBuilders(prev => prev.map(b => b.id === editingBuilder.id ? editingBuilder : b));
+        setIsEditing(false);
+        setEditingBuilder(null);
+        alert('Builder updated successfully!');
+      } else {
+        alert('Failed to update builder: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error saving builder:', error);
+      alert('Failed to update builder. Please try again.');
+    } finally {
+      setSaving(false);
     }
-    
-    setIsEditing(false);
-    setEditingBuilder(null);
-    alert('Builder updated successfully!');
   };
 
-  const handleDeleteBuilder = (builderId: string) => {
-    if (confirm('Are you sure you want to delete this builder?')) {
+  const handleDeleteBuilder = async (builderId: string) => {
+    try {
+      setDeleting(builderId);
       console.log('Deleting builder:', builderId);
-      // In a real app, this would make an API call to delete
-      alert('Builder deleted successfully!');
+      
+      const response = await fetch('/api/admin/builders', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ builderId })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Remove from local state
+        setBuilders(prev => prev.filter(b => b.id !== builderId));
+        alert('Builder deleted successfully!');
+      } else {
+        alert('Failed to delete builder: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error deleting builder:', error);
+      alert('Failed to delete builder. Please try again.');
+    } finally {
+      setDeleting(null);
     }
   };
 
-  const toggleBuilderStatus = (builder: ExhibitionBuilder, field: 'verified' | 'premiumMember') => {
-    console.log(`Toggling ${field} for builder:`, builder.companyName);
-    // In a real app, this would make an API call
-    builder[field] = !builder[field];
-    alert(`Builder ${field} status updated!`);
+  const toggleBuilderStatus = async (builder: ExhibitionBuilder, field: 'verified' | 'premiumMember') => {
+    try {
+      setSaving(true);
+      console.log(`Toggling ${field} for builder:`, builder.companyName);
+      
+      const updates = { [field]: !builder[field] };
+      
+      const response = await fetch('/api/admin/builders', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          builderId: builder.id,
+          updates
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Update local state
+        setBuilders(prev => prev.map(b => 
+          b.id === builder.id ? { ...b, [field]: !b[field] } : b
+        ));
+        alert(`Builder ${field} status updated!`);
+      } else {
+        alert('Failed to update builder status: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error updating builder status:', error);
+      alert('Failed to update builder status. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -164,9 +266,20 @@ export default function ManageBuildersPage() {
           </CardContent>
         </Card>
 
+        {/* Loading State */}
+        {loading && (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+              <p className="text-gray-600">Loading providers from Supabase...</p>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Builders List */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {filteredBuilders.map((builder) => (
+        {!loading && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {filteredBuilders.map((builder) => (
             <Card key={builder.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
@@ -260,7 +373,18 @@ export default function ManageBuildersPage() {
                   </Button>
                   <Button
                     size="sm"
+                    variant="outline"
+                    asChild
+                  >
+                    <Link href={`/builders/${builder.slug}`} target="_blank">
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      Profile
+                    </Link>
+                  </Button>
+                  <Button
+                    size="sm"
                     onClick={() => handleEditBuilder(builder)}
+                    disabled={saving}
                   >
                     <Edit className="w-3 h-3 mr-1" />
                     Edit
@@ -270,38 +394,69 @@ export default function ManageBuildersPage() {
                     variant="outline"
                     onClick={() => toggleBuilderStatus(builder, 'verified')}
                     className={builder.verified ? 'text-red-600' : 'text-green-600'}
+                    disabled={saving}
                   >
-                    {builder.verified ? <XCircle className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />}
+                    {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : (builder.verified ? <XCircle className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />)}
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleDeleteBuilder(builder.id)}
-                    className="text-red-600 hover:bg-red-50"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-red-600 hover:bg-red-50"
+                        disabled={deleting === builder.id}
+                      >
+                        {deleting === builder.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Provider</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete <strong>{builder.companyName}</strong>? 
+                          This action cannot be undone and will permanently remove the provider from the database.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDeleteBuilder(builder.id)}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
+                          Delete Provider
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </CardContent>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
 
-        {filteredBuilders.length === 0 && (
+        {!loading && filteredBuilders.length === 0 && (
           <Card>
             <CardContent className="p-8 text-center">
               <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No builders found</h3>
+              <h3 className="text-lg font-medium mb-2">
+                {builders.length === 0 ? 'No Supabase providers found' : 'No providers match your filters'}
+              </h3>
               <p className="text-gray-600 mb-4">
-                No builders match your current filters. Try adjusting your search criteria.
+                {builders.length === 0 
+                  ? 'No providers have been added from Supabase yet. Add providers through the GMB integration or bulk import.'
+                  : 'No providers match your current filters. Try adjusting your search criteria.'
+                }
               </p>
-              <Button onClick={() => {
-                setSearchQuery('');
-                setFilterCountry('all');
-                setFilterStatus('all');
-              }}>
-                Clear Filters
-              </Button>
+              {builders.length > 0 && (
+                <Button onClick={() => {
+                  setSearchQuery('');
+                  setFilterCountry('all');
+                  setFilterStatus('all');
+                }}>
+                  Clear Filters
+                </Button>
+              )}
             </CardContent>
           </Card>
         )}
@@ -601,13 +756,22 @@ export default function ManageBuildersPage() {
               </div>
 
               <div className="flex justify-end space-x-2 pt-4 border-t">
-                <Button variant="outline" onClick={() => setIsEditing(false)}>
+                <Button variant="outline" onClick={() => setIsEditing(false)} disabled={saving}>
                   <X className="w-4 h-4 mr-2" />
                   Cancel
                 </Button>
-                <Button onClick={handleSaveBuilder}>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Changes
+                <Button onClick={handleSaveBuilder} disabled={saving}>
+                  {saving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Changes
+                    </>
+                  )}
                 </Button>
               </div>
             </div>

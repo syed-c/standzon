@@ -106,7 +106,7 @@ export function EnhancedCityPage({
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white/20 text-white hover:bg-white/10 backdrop-blur-sm text-lg px-8 py-4"
+                className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4"
                 onClick={() => document.getElementById('builders-grid')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Browse Local Builders
