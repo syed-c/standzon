@@ -7,11 +7,22 @@ const config: Config = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  safelist: [
+    'font-helvetica',
+    'font-inter',
+    'font-poppins',
+    'font-roboto',
+    'font-montserrat',
+  ],
   theme: {
     extend: {
       fontFamily: {
-        'inter': ['Inter', 'sans-serif'],
+        'inter': ['var(--font-inter)', 'Inter', 'sans-serif'],
         'geist': ['Geist Sans', 'sans-serif'],
+        'poppins': ['var(--font-poppins)', 'Poppins', 'Inter', 'system-ui', 'sans-serif'],
+        'helvetica': ['Helvetica', 'Arial', 'Trebuchet MS', 'sans-serif'],
+        'roboto': ['var(--font-roboto)', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        'montserrat': ['var(--font-montserrat)', 'Montserrat', 'Helvetica', 'Arial', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

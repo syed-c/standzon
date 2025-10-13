@@ -4,6 +4,7 @@ import React, { useEffect, useState, Suspense, lazy } from "react";
 import { sanitizeHtml } from "@/lib/utils/html";
 import Navigation from "@/components/Navigation";
 import UltraFastHero from "@/components/UltraFastHero";
+import { getFontClass } from "@/lib/utils/fonts";
 import PublicQuoteRequest from "@/components/PublicQuoteRequest";
 
 // ✅ PERFORMANCE: Lazy load non-critical components
@@ -48,8 +49,17 @@ export default function HomePageContent() {
   }, []);
 
   const heroHeading = saved?.sections?.hero?.heading || "";
+  const heroHeadingFont = saved?.sections?.hero?.headingFont || "";
   const heroDescriptionRaw = saved?.sections?.hero?.description || "";
   const heroDescription = sanitizeHtml(heroDescriptionRaw);
+  const heroBgImage = saved?.sections?.hero?.bgImage || '';
+  const heroBgOpacity = typeof saved?.sections?.hero?.bgOpacity === 'number' ? saved.sections.hero.bgOpacity : 0.25;
+
+  // Section heading font choices
+  const leadsIntroFont = saved?.sections?.leadsIntro?.headingFont || '';
+  const readyLeadsFont = saved?.sections?.readyLeads?.headingFont || '';
+  const globalPresenceFont = saved?.sections?.globalPresence?.headingFont || '';
+  const finalCtaFont = saved?.sections?.finalCta?.headingFont || '';
 
   const heroButton = (saved?.sections?.heroButton as { text?: string; href?: string }) || null;
 
@@ -80,6 +90,9 @@ export default function HomePageContent() {
           headings={[heroHeading]}
           subtitle=""
           description={heroDescription}
+          headingFont={heroHeadingFont}
+          bgImage={heroBgImage}
+          bgOpacity={heroBgOpacity}
           stats={[
             { value: "45+", label: "Cities Covered" },
             { value: "10+", label: "Countries Served" },
@@ -98,7 +111,7 @@ export default function HomePageContent() {
             {(leadsHeading || leadsParagraph) && (
               <div className="text-center mb-8">
                 {leadsHeading && (
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{leadsHeading}</h2>
+                  <h2 className={["text-2xl md:text-3xl font-bold text-gray-900 mb-3", getFontClass(leadsIntroFont as any)].join(' ')}>{leadsHeading}</h2>
                 )}
                 {leadsParagraph && (
                   <p className="text-lg text-gray-700 max-w-3xl mx-auto" dangerouslySetInnerHTML={{ __html: leadsParagraph }} />
@@ -131,7 +144,7 @@ export default function HomePageContent() {
         <section className="py-12 md:py-16 bg-gradient-to-br from-blue-50 to-purple-50">
           <div className="container mx-auto px-4 sm:px-6 text-center">
             <div className="max-w-3xl mx-auto">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 md:mb-6">
+              <h2 className={["text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 md:mb-6", getFontClass(readyLeadsFont as any)].join(' ')}>
                 {readyStart.heading || "Ready to Get Started?"}
               </h2>
               <p className="text-lg md:text-xl text-gray-600 mb-6 md:mb-8 px-4" dangerouslySetInnerHTML={{ __html: readyStart.paragraph || "" }} />
@@ -167,7 +180,7 @@ export default function HomePageContent() {
           <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
             <div className="max-w-6xl mx-auto px-4">
               {saved?.sections?.clientSay?.heading && (
-                <h2 className="text-3xl font-bold text-gray-900 mb-3">{saved.sections.clientSay.heading}</h2>
+                <h2 className={["text-3xl font-bold text-gray-900 mb-3", getFontClass(leadsIntroFont as any)].join(' ')}>{saved.sections.clientSay.heading}</h2>
               )}
               {saved?.sections?.clientSay?.paragraph && (
                 <p className="text-lg text-gray-600 mb-8" dangerouslySetInnerHTML={{ __html: saved.sections.clientSay.paragraph }} />
@@ -209,8 +222,8 @@ export default function HomePageContent() {
 
         {/* Final CTA */}
         <section className="py-12 md:py-16 bg-blue-primary text-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className={["text-3xl md:text-4xl font-bold mb-6", finalCtaFont ? `font-${finalCtaFont}` : ''].join(' ')}>
               {finalCta.heading}
             </h2>
             <p className="text-xl mb-8 text-blue-100" dangerouslySetInnerHTML={{ __html: finalCta.paragraph }} />

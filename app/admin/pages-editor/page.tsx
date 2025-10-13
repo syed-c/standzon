@@ -74,6 +74,8 @@ export default function AdminPagesEditor() {
     ],
   });
   const [footerSaving, setFooterSaving] = useState(false);
+  // Global typography default for headings
+  const [typography, setTypography] = useState<any>({ headingFont: '' });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -83,6 +85,13 @@ export default function AdminPagesEditor() {
       .then(r=>r.json())
       .then(j=>{ if(j?.data) setFooter(j.data); })
       .catch(()=>{});
+    // Load any saved typography (kept inside sections.typography)
+    fetch('/api/admin/pages-editor?action=get-content&path=%2F')
+      .then(r=>r.json())
+      .then(j=>{
+        const t = j?.data?.sections?.typography;
+        if (t) setTypography(t);
+      }).catch(()=>{});
   }, []);
 
   const loadPages = async () => {
@@ -601,7 +610,7 @@ export default function AdminPagesEditor() {
           contentHtml,
           // new: send structured sections so changes are scoped
           // keep sending sections for non-about pages; for /about, contentHtml drives visible text
-          sections,
+          sections: { ...sections, ...(editingPath === '/' ? { typography } : {}) },
         })
       });
       const data = await res.json();
@@ -716,6 +725,25 @@ export default function AdminPagesEditor() {
                 <div className="space-y-6">
                   {editingPath === '/' ? (
                     <Accordion type="multiple" className="bg-transparent">
+                      <AccordionItem value="typography">
+                        <AccordionTrigger>Typography (Global)</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Default Heading Font (H1–H6)</Label>
+                            <select
+                              className="w-full border rounded-md px-3 py-2"
+                              value={typography.headingFont||''}
+                              onChange={(e)=>setTypography((t:any)=>({ ...(t||{}), headingFont:e.target.value }))}
+                            >
+                              <option value="">Current Theme Default</option>
+                              <option value="arial">Arial</option>
+                              <option value="helvetica">Helvetica</option>
+                              <option value="trebuchet">Trebuchet MS</option>
+                              <option value="poppins">Poppins</option>
+                            </select>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
                       <AccordionItem value="hero">
                         <AccordionTrigger>Hero</AccordionTrigger>
                         <AccordionContent>
@@ -724,6 +752,32 @@ export default function AdminPagesEditor() {
                             <Input value={sections.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Hero Description</Label>
                             <Textarea rows={3} value={sections.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                              <div>
+                                <Label>Hero Background Image URL (optional)</Label>
+                                <Input value={sections.hero?.bgImage||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), bgImage:e.target.value } }))} placeholder="https://.../image.jpg" />
+                              </div>
+                              <div>
+                                <Label>Hero BG Opacity (0.0 - 1.0)</Label>
+                                <Input type="number" step="0.05" min="0" max="1" value={sections.hero?.bgOpacity??0.25} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), bgOpacity:Number(e.target.value) } }))} />
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                              <div>
+                                <Label>Heading Font</Label>
+                                <select
+                                  className="w-full border rounded-md px-3 py-2"
+                                  value={sections.hero?.headingFont||''}
+                                  onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), headingFont:e.target.value } }))}
+                                >
+                                  <option value="">Default</option>
+                                  <option value="arial">Arial</option>
+                                  <option value="helvetica">Helvetica</option>
+                                  <option value="trebuchet">Trebuchet MS</option>
+                                  <option value="poppins">Poppins</option>
+                                </select>
+                              </div>
+                            </div>
                             <div className="mt-2">
                               <h5 className="font-semibold mb-2">Hero Buttons</h5>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -739,6 +793,48 @@ export default function AdminPagesEditor() {
                               <div className="flex gap-2 mt-2">
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, heroButtons:[...(s.heroButtons||[]), { text:'', href:'' }] }))}>Add Button</Button>
                                 <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, heroButtons:(s.heroButtons||[]).slice(0,-1) }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                              <div>
+                                <Label>Leads Intro Heading Font</Label>
+                                <select className="w-full border rounded-md px-3 py-2" value={sections.leadsIntro?.headingFont||''} onChange={(e)=>setSections((s:any)=>({ ...s, leadsIntro:{ ...(s.leadsIntro||{}), headingFont:e.target.value } }))}>
+                                  <option value="">Default</option>
+                                  <option value="arial">Arial</option>
+                                  <option value="helvetica">Helvetica</option>
+                                  <option value="trebuchet">Trebuchet MS</option>
+                                  <option value="poppins">Poppins</option>
+                                </select>
+                              </div>
+                              <div>
+                                <Label>Ready Leads Heading Font</Label>
+                                <select className="w-full border rounded-md px-3 py-2" value={sections.readyLeads?.headingFont||''} onChange={(e)=>setSections((s:any)=>({ ...s, readyLeads:{ ...(s.readyLeads||{}), headingFont:e.target.value } }))}>
+                                  <option value="">Default</option>
+                                  <option value="arial">Arial</option>
+                                  <option value="helvetica">Helvetica</option>
+                                  <option value="trebuchet">Trebuchet MS</option>
+                                  <option value="poppins">Poppins</option>
+                                </select>
+                              </div>
+                              <div>
+                                <Label>Global Presence Heading Font</Label>
+                                <select className="w-full border rounded-md px-3 py-2" value={sections.globalPresence?.headingFont||''} onChange={(e)=>setSections((s:any)=>({ ...s, globalPresence:{ ...(s.globalPresence||{}), headingFont:e.target.value } }))}>
+                                  <option value="">Default</option>
+                                  <option value="arial">Arial</option>
+                                  <option value="helvetica">Helvetica</option>
+                                  <option value="trebuchet">Trebuchet MS</option>
+                                  <option value="poppins">Poppins</option>
+                                </select>
+                              </div>
+                              <div>
+                                <Label>Final CTA Heading Font</Label>
+                                <select className="w-full border rounded-md px-3 py-2" value={sections.finalCta?.headingFont||''} onChange={(e)=>setSections((s:any)=>({ ...s, finalCta:{ ...(s.finalCta||{}), headingFont:e.target.value } }))}>
+                                  <option value="">Default</option>
+                                  <option value="arial">Arial</option>
+                                  <option value="helvetica">Helvetica</option>
+                                  <option value="trebuchet">Trebuchet MS</option>
+                                  <option value="poppins">Poppins</option>
+                                </select>
                               </div>
                             </div>
                           </div>

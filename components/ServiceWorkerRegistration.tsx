@@ -4,8 +4,13 @@ import { useEffect } from 'react';
 
 export default function ServiceWorkerRegistration() {
   useEffect(() => {
-    // ✅ PERFORMANCE: Register service worker for aggressive caching
+    // Only register SW in production; in dev/unset, unregister to avoid stale chunks
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      const isProd = process.env.NODE_ENV === 'production';
+      if (!isProd) {
+        navigator.serviceWorker.getRegistrations?.().then(regs => regs.forEach(r => r.unregister().catch(()=>{})));
+        return;
+      }
       const registerSW = async () => {
         try {
           const registration = await navigator.serviceWorker.register('/sw.js', {
