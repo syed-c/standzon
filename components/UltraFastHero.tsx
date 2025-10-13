@@ -1,6 +1,7 @@
 'use client';
 
 import React, { memo } from 'react';
+import { sanitizeHtml } from '@/lib/utils/html';
 import { Button } from '@/components/ui/button';
 import PublicQuoteRequest from '@/components/PublicQuoteRequest';
 
@@ -54,11 +55,12 @@ const UltraFastHero = memo(function UltraFastHero({
             </h2>
           )}
 
-          {/* Description */}
+          {/* Description - allow basic HTML from CMS */}
           {description && (
-            <p className="text-lg md:text-xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
-              {description}
-            </p>
+            <div
+              className="text-lg md:text-xl text-gray-200 max-w-4xl mx-auto leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
+            />
           )}
 
           {/* Stats */}

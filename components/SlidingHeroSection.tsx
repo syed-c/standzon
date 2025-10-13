@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { sanitizeHtml } from '@/lib/utils/html';
 import { Button } from '@/components/ui/button';
 import PublicQuoteRequest from '@/components/PublicQuoteRequest';
 import Link from 'next/link';
@@ -86,7 +87,7 @@ export function SlidingHeroSection({
         <p
           className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-100 mb-6 md:mb-10 max-w-4xl mx-auto leading-relaxed px-4"
           data-macaly="hero-description"
-          dangerouslySetInnerHTML={{ __html: description }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
         />
 
         {/* Stats Section */}

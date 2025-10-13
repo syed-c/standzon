@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { sanitizeHtml } from '@/lib/utils/html';
 import { FiCalendar, FiMapPin, FiUsers, FiTrendingUp, FiSearch } from 'react-icons/fi';
 import { Input } from '@/components/ui/input';
 
@@ -41,9 +42,10 @@ export default function TradeStyleBanner({
 						{mainHeading}
 						<span className="block" style={{ color: '#2ec4b6' }}>{highlightHeading}</span>
 					</h1>
-					<p className="text-xl md:text-2xl text-[#cfd8e3] mb-8 max-w-3xl mx-auto">
-						{description}
-					</p>
+                    <p
+                        className="text-xl md:text-2xl text-[#cfd8e3] mb-8 max-w-3xl mx-auto"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
+                    />
 
 					{stats && stats.length > 0 && (
 						<div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-lg mb-8">

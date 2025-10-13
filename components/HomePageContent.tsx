@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, Suspense, lazy } from "react";
+import { sanitizeHtml } from "@/lib/utils/html";
 import Navigation from "@/components/Navigation";
 import UltraFastHero from "@/components/UltraFastHero";
 import PublicQuoteRequest from "@/components/PublicQuoteRequest";
@@ -22,8 +23,7 @@ export default function HomePageContent() {
     try {
       setIsLoading(true);
       const res = await fetch("/api/admin/pages-editor?action=get-content&path=%2F", { 
-        cache: "force-cache",
-        next: { revalidate: 300 } // 5 minutes cache
+        cache: "no-store",
       });
       const data = await res.json();
       if (data?.success) setSaved(data.data || null);
@@ -48,8 +48,8 @@ export default function HomePageContent() {
   }, []);
 
   const heroHeading = saved?.sections?.hero?.heading || "";
-  const heroDescription = saved?.sections?.hero?.description ||
-    "";
+  const heroDescriptionRaw = saved?.sections?.hero?.description || "";
+  const heroDescription = sanitizeHtml(heroDescriptionRaw);
 
   const heroButton = (saved?.sections?.heroButton as { text?: string; href?: string }) || null;
 
@@ -77,9 +77,9 @@ export default function HomePageContent() {
       <main className="main-content">
         {/* ✅ PERFORMANCE: Ultra-fast hero section with minimal dependencies */}
         <UltraFastHero
-          headings={[heroHeading || "Exhibition Stand Builders Worldwide"]}
+          headings={[heroHeading]}
           subtitle=""
-          description={heroDescription || "Connect with verified exhibition stand builders in your target location. Get multiple competitive quotes without creating an account."}
+          description={heroDescription}
           stats={[
             { value: "45+", label: "Cities Covered" },
             { value: "10+", label: "Countries Served" },
