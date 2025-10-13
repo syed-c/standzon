@@ -13,6 +13,7 @@ const config: Config = {
     'font-poppins',
     'font-roboto',
     'font-montserrat',
+    'font-trebuchet',
   ],
   theme: {
     extend: {
@@ -23,6 +24,7 @@ const config: Config = {
         'helvetica': ['Helvetica', 'Arial', 'Trebuchet MS', 'sans-serif'],
         'roboto': ['var(--font-roboto)', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
         'montserrat': ['var(--font-montserrat)', 'Montserrat', 'Helvetica', 'Arial', 'sans-serif'],
+        'trebuchet': ['Trebuchet MS', 'Arial', 'Helvetica', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

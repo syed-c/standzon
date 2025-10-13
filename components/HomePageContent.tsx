@@ -49,7 +49,7 @@ export default function HomePageContent() {
   }, []);
 
   const heroHeading = saved?.sections?.hero?.heading || "";
-  const heroHeadingFont = saved?.sections?.hero?.headingFont || "";
+  const heroHeadingFont = saved?.sections?.hero?.headingFont || saved?.sections?.typography?.headingFont || "";
   const heroDescriptionRaw = saved?.sections?.hero?.description || "";
   const heroDescription = sanitizeHtml(heroDescriptionRaw);
   const heroBgImage = saved?.sections?.hero?.bgImage || '';

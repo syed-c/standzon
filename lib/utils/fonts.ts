@@ -19,6 +19,8 @@ export function getFontClass(font?: HeadingFont): string {
       return 'font-roboto';
     case 'montserrat':
       return 'font-montserrat';
+    case 'trebuchet':
+      return 'font-trebuchet';
     case 'helvetica':
     case 'arial':
     case 'trebuchet':
