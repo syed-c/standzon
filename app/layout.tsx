@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter, Poppins, Roboto, Montserrat } from "next/font/google";
+import { Inter, Poppins, Roboto, Montserrat, Red_Hat_Display } from "next/font/google";
 import { Toaster } from '@/components/ui/toaster';
 import siteMetadata from '@/app/metadata.json';
 import { ConvexClientProvider } from '@/components/convex-client-provider';
@@ -44,6 +44,14 @@ const montserrat = Montserrat({
   variable: '--font-montserrat'
 });
 
+const redHatDisplay = Red_Hat_Display({
+  subsets: ['latin'],
+  weight: ['400','500','600','700','900'],
+  display: 'swap',
+  preload: true,
+  variable: '--font-red-hat-display'
+});
+
 // Use centralized metadata for the root layout
 export const metadata: Metadata = {
   ...siteMetadata['/'],
@@ -75,7 +83,7 @@ export default function RootLayout({
           
           {/* Note: Removed inline critical CSS and invalid preloads to avoid hydration mismatches and 404s. */}
         </head>
-        <body className={`${inter.className} ${poppins.className} ${roboto.variable} ${montserrat.variable} h-full m-0 p-0`} suppressHydrationWarning>
+        <body className={`${inter.className} ${poppins.className} ${roboto.variable} ${montserrat.variable} ${redHatDisplay.variable} h-full m-0 p-0`} suppressHydrationWarning>
           <ConvexClientProvider>
             <CriticalResourcePreloader />
             {/* <GlobalTypography /> */}

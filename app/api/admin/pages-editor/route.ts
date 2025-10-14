@@ -400,9 +400,21 @@ export async function PUT(request: NextRequest) {
           },
         };
       } else if (isLocation) {
+        // Handle country pages with countryPages structure
+        const countrySlug = parts[1];
+        const prevCountryPages = currentSections.countryPages || {};
+        const incomingCountrySections = (sections as any).countryPages && (sections as any).countryPages[countrySlug]
+          ? (sections as any).countryPages[countrySlug]
+          : sections;
         (updated as any).sections = {
           ...currentSections,
-          ...sections,
+          countryPages: {
+            ...prevCountryPages,
+            [countrySlug]: {
+              ...(prevCountryPages[countrySlug] || {}),
+              ...incomingCountrySections,
+            },
+          },
         };
       } else {
         (updated as any).sections = { ...currentSections, ...sections };

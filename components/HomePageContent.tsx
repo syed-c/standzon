@@ -202,10 +202,10 @@ export default function HomePageContent() {
           <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
             <div className="max-w-6xl mx-auto px-4">
               {saved?.sections?.clientSay?.heading && (
-                <h2 className={["text-3xl font-bold text-gray-900 mb-3", getFontClass(leadsIntroFont as any)].join(' ')}>{saved.sections.clientSay.heading}</h2>
+                <h2 className={["text-3xl font-bold text-gray-900 mb-3 text-center", getFontClass(leadsIntroFont as any)].join(' ')}>{saved.sections.clientSay.heading}</h2>
               )}
               {saved?.sections?.clientSay?.paragraph && (
-                <p className="text-lg text-gray-600 mb-8" dangerouslySetInnerHTML={{ __html: saved.sections.clientSay.paragraph }} />
+                <p className="text-lg text-gray-600 mb-8 text-center" dangerouslySetInnerHTML={{ __html: saved.sections.clientSay.paragraph }} />
               )}
               {/* If custom reviews provided, render them; else fallback to existing carousel */}
               {(Array.isArray(saved?.sections?.reviews) && saved!.sections!.reviews!.length > 0) || reviewsFromTop.length>0 ? (

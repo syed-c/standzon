@@ -533,6 +533,10 @@ export default function AdminPagesEditor() {
               clientSay: pc.sections.clientSay || prev.clientSay,
               reviews: pc.sections.reviews || prev.reviews,
               finalCta: pc.sections.finalCta || prev.finalCta,
+              countryPages: {
+                ...(prev.countryPages || {}),
+                homeInfoCards: pc.sections.countryPages?.homeInfoCards || prev.countryPages?.homeInfoCards || []
+              }
             }));
           } else if (path.startsWith('/exhibition-stands/')) {
             // Handle city vs country paths
@@ -648,16 +652,22 @@ export default function AdminPagesEditor() {
         console.log('🚀 CTA data:', sections.customBoothCta);
       }
 
-      // Normalize sections for city pages so they save under sections.cityPages[country-city]
+      // Normalize sections for country and city pages
       let sectionsToSend: any = { ...sections };
       if (editingPath.startsWith('/exhibition-stands/')) {
         const parts = editingPath.split('/').filter(Boolean);
         if (parts.length >= 3) {
+          // City page: sections.cityPages[country-city]
           const countrySlug = parts[1];
           const citySlug = parts[2];
           const key = `${countrySlug}-${citySlug}`;
           sectionsToSend = { cityPages: { [key]: { ...sections } } };
           console.log('🏙️ Normalized city sections for save:', sectionsToSend);
+        } else if (parts.length >= 2) {
+          // Country page: sections.countryPages[country]
+          const countrySlug = parts[1];
+          sectionsToSend = { countryPages: { [countrySlug]: { ...sections } } };
+          console.log('🌍 Normalized country sections for save:', sectionsToSend);
         }
       }
 
@@ -840,6 +850,7 @@ export default function AdminPagesEditor() {
                               <option value="helvetica">Helvetica</option>
                               <option value="trebuchet">Trebuchet MS</option>
                               <option value="poppins">Poppins</option>
+                              <option value="redhat">Red Hat Display</option>
                             </select>
                           </div>
                         </AccordionContent>
@@ -875,6 +886,7 @@ export default function AdminPagesEditor() {
                                   <option value="helvetica">Helvetica</option>
                                   <option value="trebuchet">Trebuchet MS</option>
                                   <option value="poppins">Poppins</option>
+                                  <option value="redhat">Red Hat Display</option>
                                 </select>
                               </div>
                             </div>
