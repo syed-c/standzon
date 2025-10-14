@@ -46,12 +46,18 @@ export default function Footer() {
     // Refresh when the tab gains focus (helps after saving in CMS)
     const onFocus = () => fetchFooter();
     const onVisible = () => { if (document.visibilityState === 'visible') fetchFooter(); };
+    const onFooterUpdated = () => fetchFooter();
+    const onGlobalPagesUpdated = () => fetchFooter();
     window.addEventListener('focus', onFocus);
     document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('footer:updated', onFooterUpdated as EventListener);
+    window.addEventListener('global-pages:updated', onGlobalPagesUpdated as EventListener);
     return () => {
       mounted = false;
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('footer:updated', onFooterUpdated as EventListener);
+      window.removeEventListener('global-pages:updated', onGlobalPagesUpdated as EventListener);
     };
   }, []);
 

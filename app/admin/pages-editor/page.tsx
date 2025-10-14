@@ -1098,10 +1098,10 @@ export default function AdminPagesEditor() {
                                   <Input className="md:col-span-2" placeholder="Icon" value={s.icon} onChange={(e)=>{ const arr=[...footer.social]; arr[idx] = { ...arr[idx], icon:e.target.value }; setFooter({ ...footer, social:arr }); }} />
                                 </div>
                               ))}
-                              <div className="flex gap-2">
-                                <Button type="button" variant="outline" onClick={()=> setFooter({ ...footer, social:[...footer.social, { label:'New', href:'#', icon:'linkedin' }] })}>Add Social</Button>
-                                <Button type="button" onClick={async ()=>{ setFooterSaving(true); try{ const res=await fetch('/api/admin/footer',{ method:'PUT', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(footer)}); await res.json(); } finally { setFooterSaving(false); } }}>{footerSaving ? 'Saving…' : 'Save Footer'}</Button>
-                              </div>
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={()=> setFooter({ ...footer, social:[...footer.social, { label:'New', href:'#', icon:'linkedin' }] })}>Add Social</Button>
+              <Button type="button" onClick={async ()=>{ setFooterSaving(true); try{ const res=await fetch('/api/admin/footer',{ method:'PUT', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(footer)}); const json=await res.json(); try{ window.dispatchEvent(new CustomEvent('footer:updated')); }catch{} } finally { setFooterSaving(false); } }}>{footerSaving ? 'Saving…' : 'Save Footer'}</Button>
+            </div>
                             </div>
                           </div>
                         </AccordionContent>

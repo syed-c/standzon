@@ -1,20 +1,47 @@
 import { Metadata } from 'next';
+import { preloadQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
-import EnhancedCityPageClient from '@/components/EnhancedCityPageClient';
+import { CountryCityPage } from '@/components/CountryCityPage';
 import { getCityBySlug } from '@/lib/data/globalExhibitionDatabase';
+import { getServerSupabase } from "@/lib/supabase";
+import SimpleQuoteRequestForm from '@/components/SimpleQuoteRequestForm';
 
 interface CityPageProps {
-  params: {
+  params: Promise<{
     country: string;
     city: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params }: { params: { country: string; city: string } }): Promise<Metadata> {
+// Default fallback content for each city
+const getDefaultCityContent = (cityName: string, countryName: string) => ({
+  whyChooseHeading: `Why Choose Local Builders in ${cityName}, ${countryName}?`,
+  whyChooseParagraph: `Local builders in ${cityName} offer unique advantages including market knowledge, logistical expertise, and established vendor relationships.`,
+  infoCards: [
+    {
+      title: "Local Market Knowledge",
+      text: `Understand local regulations, venue requirements, and cultural preferences specific to ${cityName}.`
+    },
+    {
+      title: "Faster Project Delivery",
+      text: "Reduced logistics time, easier coordination, and faster response times for urgent modifications or support."
+    },
+    {
+      title: "Cost-Effective Solutions",
+      text: "Lower transportation costs, established supplier networks, and competitive local pricing structures."
+    }
+  ],
+  quotesParagraph: `Connect with 3-5 verified local builders in ${cityName} who understand your market. No registration required, quotes within 24 hours.`,
+  servicesHeading: `Exhibition Stand Builders in ${cityName}: Services, Costs, and Tips`,
+  servicesParagraph: `Finding the right exhibition stand partner in ${cityName} can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.`
+});
+
+export async function generateMetadata({ params }: { params: Promise<{ country: string; city: string }> }): Promise<Metadata> {
   try {
-    const { country, city } = params;
+    const { country, city } = await params;
     const normalize = (s: string) => s.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     const toTitle = (s: string) => s.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     const countrySlug = normalize(country);
@@ -47,17 +74,82 @@ export async function generateMetadata({ params }: { params: { country: string; 
   }
 }
 
+// Fetch CMS content for the city page
+async function getCityPageContent(countrySlug: string, citySlug: string) {
+  try {
+    const sb = getServerSupabase();
+    if (sb) {
+      console.log('🔍 Server-side: Fetching CMS data for city:', citySlug, 'in country:', countrySlug);
+      
+      const { data, error } = await sb
+        .from('page_contents')
+        .select('content')
+        .eq('id', `${countrySlug}-${citySlug}`)
+        .single();
+      
+      if (error) {
+        console.log('❌ Server-side: Supabase error:', error);
+        return null;
+      }
+      
+      if (data?.content) {
+        console.log('✅ Server-side: Found CMS data for city page');
+        return data.content;
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('❌ Error fetching city page content:', error);
+    return null;
+  }
+}
+
 export default async function CityPage({ params }: CityPageProps) {
-  const { country, city } = params;
+  const { country, city } = await params;
   const normalize = (s: string) => s.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const toTitle = (s: string) => s.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   const countrySlug = normalize(country);
   const citySlug = normalize(city);
+  
   console.log('🏙️ Loading city page:', { country: countrySlug, city: citySlug });
+  
+  // Get city data from global database
+  const cityData = getCityBySlug(countrySlug, citySlug);
+  const cityName = cityData ? cityData.name : toTitle(citySlug);
+  const countryName = toTitle(countrySlug);
+  
+  // Try to get CMS content
+  const cmsContent = await getCityPageContent(countrySlug, citySlug);
+  
+  // Use default content if no CMS content is available
+  const defaultContent = getDefaultCityContent(cityName, countryName);
+  const pageContent = cmsContent || defaultContent;
   
   return (
     <div className="font-inter">
       <Navigation />
-      <EnhancedCityPageClient countrySlug={countrySlug} citySlug={citySlug} />
+      <CountryCityPage 
+        country={countryName}
+        city={cityName}
+        initialBuilders={[]}
+        cityData={cityData}
+        cmsContent={pageContent}
+        showQuoteForm={true}
+      />
+      <div className="bg-blue-600 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+            <div className="p-6 sm:p-10">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Get Free Quotes from {cityName} Builders</h2>
+              <p className="text-lg text-gray-600 mb-8">
+                Submit your requirements and receive competitive quotes from verified local builders
+              </p>
+              <SimpleQuoteRequestForm location={`${cityName}, ${countryName}`} />
+            </div>
+          </div>
+        </div>
+      </div>
       <Footer />
       <WhatsAppFloat />
     </div>

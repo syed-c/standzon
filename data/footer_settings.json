@@ -1,11 +1,11 @@
 {
   "_metadata": {
-    "timestamp": "2025-10-14T10:35:49.474Z",
+    "timestamp": "2025-10-14T11:26:50.838Z",
     "version": "1.0",
-    "checksum": "8085bad"
+    "checksum": "4e8fe22f"
   },
   "data": {
-    "paragraph": "asdfgh",
+    "paragraph": "Connect with trusted exhibition stand builders worldwide and make your next trade show booth truly unforgettable.",
     "contact": {
       "phone": "0123456789",
       "phoneLink": "",
@@ -67,6 +67,6 @@
         "icon": "facebook"
       }
     ],
-    "updatedAt": "2025-10-14T10:35:49.473Z"
+    "updatedAt": "2025-10-14T11:26:50.838Z"
   }
 }

@@ -75,6 +75,8 @@ interface CountryCityPageProps {
   showComingSoon?: boolean;
   // Add CMS content prop for server-side rendered content
   cmsContent?: any;
+  // Flag to indicate if the quote form should be shown separately
+  showQuoteForm?: boolean;
 }
 
 const BUILDERS_PER_PAGE = 6;
@@ -87,7 +89,8 @@ export function CountryCityPage({
   isEditable = false,
   cityData,
   showComingSoon = false,
-  cmsContent
+  cmsContent,
+  showQuoteForm = false
 }: CountryCityPageProps) {
   const [builders, setBuilders] = useState<Builder[]>(initialBuilders);
   const [filteredBuilders, setFilteredBuilders] = useState<Builder[]>(initialBuilders);

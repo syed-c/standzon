@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Building2, Star, Phone, Globe, Mail, ArrowRight, Users, Calendar, Award, DollarSign } from "lucide-react";
+import PublicQuoteRequest from '@/components/PublicQuoteRequest';
 import Link from "next/link";
 import SimpleQuoteRequestForm from '@/components/SimpleQuoteRequestForm';
 
@@ -70,14 +71,10 @@ export function EnhancedCityPage({
   const totalProjects = builderCount * 12; // Estimate
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-20">
-        <div className="absolute inset-0 opacity-20">
-          <div className="w-full h-full bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-pink-500/10"></div>
-        </div>
-        
-        <div className="relative container mx-auto px-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Hero Section - use same structure/colors the server rendered */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex justify-center mb-6">
               <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-lg px-4 py-2">
@@ -88,9 +85,7 @@ export function EnhancedCityPage({
             
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               <span className="block">Exhibition Stand Builders</span>
-              <span className="block bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-                in {cityName}, {countryName}
-              </span>
+              <span className="block text-blue-200">in {cityName}, {countryName}</span>
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
@@ -100,9 +95,11 @@ export function EnhancedCityPage({
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-4">
-                Get Quotes from {cityName} Builders
-              </Button>
+              <PublicQuoteRequest 
+                location={`${cityName}, ${countryName}`}
+                buttonText={`Get Quotes from ${cityName} Builders`}
+                className="text-lg px-8 py-4"
+              />
               <Button 
                 size="lg" 
                 variant="outline" 
@@ -114,43 +111,33 @@ export function EnhancedCityPage({
               </Button>
             </div>
 
-            {/* Location Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
+            {/* Location Stats - match country style */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+              <div className="text-center bg-white/15 backdrop-blur-sm rounded-xl p-4">
                 <div className="flex items-center justify-center mb-3">
-                  <Building2 className="w-8 h-8 text-blue-400" />
                 </div>
-                <div className="text-2xl font-bold">{builderCount}+</div>
-                <div className="text-slate-300 text-sm">Verified Builders</div>
+                <div className="text-2xl lg:text-4xl font-bold text-white">{builderCount}+</div>
+                <div className="text-blue-200 text-sm lg:text-base">Verified Builders</div>
               </div>
               
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
-                <div className="flex items-center justify-center mb-3">
-                  <Star className="w-8 h-8 text-yellow-400" />
-                </div>
-                <div className="text-2xl font-bold">{averageRating}</div>
-                <div className="text-slate-300 text-sm">Average Rating</div>
+              <div className="text-center bg-white/15 backdrop-blur-sm rounded-xl p-4">
+                <div className="text-2xl lg:text-4xl font-bold text-white">{averageRating}</div>
+                <div className="text-blue-200 text-sm lg.text-base">Average Rating</div>
               </div>
               
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
-                <div className="flex items-center justify-center mb-3">
-                  <Award className="w-8 h-8 text-green-400" />
-                </div>
-                <div className="text-2xl font-bold">{totalProjects.toLocaleString()}</div>
-                <div className="text-slate-300 text-sm">Projects Completed</div>
+              <div className="text-center bg-white/15 backdrop-blur-sm rounded-xl p-4">
+                <div className="text-2xl lg:text-4xl font-bold text-white">{totalProjects}</div>
+                <div className="text-blue-200 text-sm lg:text-base">Projects Completed</div>
               </div>
               
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
-                <div className="flex items-center justify-center mb-3">
-                  <DollarSign className="w-8 h-8 text-purple-400" />
-                </div>
-                <div className="text-2xl font-bold">$450</div>
-                <div className="text-slate-300 text-sm">Avg. Price/sqm</div>
+              <div className="text-center bg-white/15 backdrop-blur-sm rounded-xl p-4">
+                <div className="text-2xl lg:text-4xl font-bold text-white">$450</div>
+                <div className="text-blue-200 text-sm lg:text-base">Avg. Price/sqm</div>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Why Choose Local Builders Section */}
@@ -351,23 +338,6 @@ export function EnhancedCityPage({
           )}
         </section>
 
-        {/* Quote Request Form */}
-        <section className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Get Free Quotes from {cityName} Builders
-            </h2>
-            <p className="text-lg text-gray-600">
-              Submit your requirements and receive competitive quotes from verified local builders
-            </p>
-          </div>
-          <SimpleQuoteRequestForm 
-            defaultCountry={countryName}
-            defaultCity={cityName}
-            className="max-w-4xl mx-auto"
-          />
-        </section>
-
         {/* CTA Section */}
         <section className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">
@@ -381,6 +351,23 @@ export function EnhancedCityPage({
               Get Free Quotes
             </Button>
           </Link>
+        </section>
+
+        {/* Quote Request Form - keep this as the last section */}
+        <section className="mb-16 mt-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Get Free Quotes from {cityName} Builders
+            </h2>
+            <p className="text-lg text-gray-600">
+              Submit your requirements and receive competitive quotes from verified local builders
+            </p>
+          </div>
+          <SimpleQuoteRequestForm 
+            defaultCountry={countryName}
+            defaultCity={cityName}
+            className="max-w-4xl mx-auto"
+          />
         </section>
       </div>
     </div>
