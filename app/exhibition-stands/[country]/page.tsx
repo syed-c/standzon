@@ -230,4 +230,4 @@ export async function generateStaticParams() {
 }
 
 // Enable ISR with revalidation for dynamic content updates
-export const revalidate = 60; // Revalidate every 60 seconds
+export const revalidate = 0; // Disable ISR for now to ensure real-time updates

@@ -249,6 +249,10 @@ export async function GET(request: NextRequest) {
             const countryData = data?.content?.sections?.countryPages?.[countrySlug];
             console.log('🌍 Country data for', countrySlug, ':', countryData);
             if (countryData) {
+              // If countryData has nested countryPages, extract the inner data
+              const actualCountryData = (countryData as any)?.countryPages?.[countrySlug] || countryData;
+              console.log('🌍 Actual country data for API:', actualCountryData);
+              
               return NextResponse.json(
                 { 
                   success: true, 
@@ -257,7 +261,7 @@ export async function GET(request: NextRequest) {
                     sections: {
                       ...data.content.sections,
                       countryPages: {
-                        [countrySlug]: countryData
+                        [countrySlug]: actualCountryData
                       }
                     }
                   }, 
@@ -406,13 +410,17 @@ export async function PUT(request: NextRequest) {
         const incomingCountrySections = (sections as any).countryPages && (sections as any).countryPages[countrySlug]
           ? (sections as any).countryPages[countrySlug]
           : sections;
+        
+        // Prevent double-nesting by extracting inner countryPages if it exists
+        const actualIncomingSections = (incomingCountrySections as any)?.countryPages?.[countrySlug] || incomingCountrySections;
+        
         (updated as any).sections = {
           ...currentSections,
           countryPages: {
             ...prevCountryPages,
             [countrySlug]: {
               ...(prevCountryPages[countrySlug] || {}),
-              ...incomingCountrySections,
+              ...actualIncomingSections,
             },
           },
         };

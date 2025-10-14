@@ -304,20 +304,21 @@ export function CountryCityPage({
     const loadSavedContent = async () => {
       setIsLoadingContent(true);
       try {
-        const pageId = city ? 
-          `${country.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, '')}-${city.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, '')}` :
-          `${country.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`;
+        const countrySlug = country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        const path = city ? 
+          `/exhibition-stands/${countrySlug}/${city.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}` :
+          `/exhibition-stands/${countrySlug}`;
         
-        console.log('🔍 Loading saved content for page:', pageId);
+        console.log('🔍 Loading saved content for path:', path);
         
-        const response = await fetch(`/api/admin/global-pages?action=get-content&pageId=${pageId}`);
+        const response = await fetch(`/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(path)}`, { cache: 'no-store' });
         const data = await response.json();
         
         if (data.success && data.data) {
-          console.log('✅ Found saved content for page:', pageId);
+          console.log('✅ Found saved content for path:', path);
           setSavedPageContent(data.data);
         } else {
-          console.log('ℹ️ No saved content found for page:', pageId);
+          console.log('ℹ️ No saved content found for path:', path);
         }
       } catch (error) {
         console.error('❌ Error loading saved content:', error);
@@ -333,15 +334,16 @@ export function CountryCityPage({
   useEffect(() => {
     const handler = (e: Event) => {
       try {
-        const detail = (e as CustomEvent)?.detail as { pageId?: string } | undefined;
-        const currentPageId = city ? 
-          `${country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}-${city.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}` :
-          `${country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`;
-        if (!detail?.pageId || detail.pageId === currentPageId) {
+        const detail = (e as CustomEvent)?.detail as { path?: string } | undefined;
+        const countrySlug = country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        const currentPath = city ? 
+          `/exhibition-stands/${countrySlug}/${city.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}` :
+          `/exhibition-stands/${countrySlug}`;
+        if (!detail?.path || detail.path === currentPath) {
           // Re-run saved content fetch
           (async () => {
             try {
-              const resp = await fetch(`/api/admin/global-pages?action=get-content&pageId=${currentPageId}`);
+              const resp = await fetch(`/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(currentPath)}`, { cache: 'no-store' });
               const data = await resp.json();
               if (data.success && data.data) {
                 setSavedPageContent(data.data);

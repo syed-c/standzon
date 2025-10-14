@@ -556,10 +556,31 @@ export default function AdminPagesEditor() {
                 countryPages: { [citySlug]: nested },
               }));
             } else {
+              // For country pages, extract the specific country's data
+              const countrySlug = parts[1];
+              const countryData = pc.sections?.countryPages?.[countrySlug] || {};
+              console.log('🌍 Loading country data for:', countrySlug, countryData);
+              
+              // If countryData has nested countryPages, extract the inner data
+              const actualCountryData = (countryData as any)?.countryPages?.[countrySlug] || countryData;
+              console.log('🌍 Actual country data:', actualCountryData);
+              
               setSections((prev:any) => ({
                 ...prev,
-                hero: pc.sections.hero || prev.hero,
-                countryPages: pc.sections.countryPages || prev.countryPages,
+                hero: actualCountryData.hero || prev.hero,
+                countryPages: {
+                  ...(prev.countryPages || {}),
+                  [countrySlug]: {
+                    whyChooseHeading: actualCountryData.whyChooseHeading || prev.whyChooseHeading,
+                    whyChooseParagraph: actualCountryData.whyChooseParagraph || prev.whyChooseParagraph,
+                    infoCards: actualCountryData.infoCards || prev.infoCards,
+                    quotesParagraph: actualCountryData.quotesParagraph || prev.quotesParagraph,
+                    servicesHeading: actualCountryData.servicesHeading || prev.servicesHeading,
+                    servicesParagraph: actualCountryData.servicesParagraph || prev.servicesParagraph,
+                    finalCtaHeading: actualCountryData.finalCtaHeading || prev.finalCtaHeading,
+                    finalCtaParagraph: actualCountryData.finalCtaParagraph || prev.finalCtaParagraph,
+                  }
+                }
               }));
             }
           } else {
@@ -664,9 +685,10 @@ export default function AdminPagesEditor() {
           sectionsToSend = { cityPages: { [key]: { ...sections } } };
           console.log('🏙️ Normalized city sections for save:', sectionsToSend);
         } else if (parts.length >= 2) {
-          // Country page: sections.countryPages[country]
+          // Country page: extract the country data from sections.countryPages[countrySlug]
           const countrySlug = parts[1];
-          sectionsToSend = { countryPages: { [countrySlug]: { ...sections } } };
+          const countryData = sections.countryPages?.[countrySlug] || sections;
+          sectionsToSend = { countryPages: { [countrySlug]: countryData } };
           console.log('🌍 Normalized country sections for save:', sectionsToSend);
         }
       }
@@ -694,6 +716,13 @@ export default function AdminPagesEditor() {
 
       // Debug: Log the response
       console.log('✅ Save response:', data);
+
+      // Dispatch event to notify components of the update
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('global-pages:updated', { 
+          detail: { path: editingPath } 
+        }));
+      }
 
       toast({ title: 'Updated', description: 'Page updated successfully and revalidated.' });
       setEditingPath(null);

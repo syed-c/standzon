@@ -189,10 +189,13 @@ export function EnhancedLocationPage({
           }
         });
       } else {
+        // For country pages, serverCmsContent should already be structured correctly
+        // or we need to extract the country-specific data
+        const countryData = (serverCmsContent as any)?.sections?.countryPages?.[countrySlug] || serverCmsContent;
         setCmsData({
           sections: {
             countryPages: {
-              [countrySlug]: serverCmsContent
+              [countrySlug]: countryData
             }
           }
         });
