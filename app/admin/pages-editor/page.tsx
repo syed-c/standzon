@@ -36,6 +36,7 @@ export default function AdminPagesEditor() {
   const [pages, setPages] = useState<PageItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<'all' | 'general' | 'country' | 'city'>('all');
   const [editingPath, setEditingPath] = useState<string | null>(null);
   const [cmsSource, setCmsSource] = useState<'supabase' | 'file' | null>(null);
   const [seoTitle, setSeoTitle] = useState('');
@@ -97,9 +98,33 @@ export default function AdminPagesEditor() {
   const loadPages = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/pages-editor?action=list');
+      const res = await fetch('/api/admin/pages-editor?action=list', { cache: 'no-store' });
       const data = await res.json();
-      if (data.success) setPages(data.data || []);
+      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+        setPages(data.data || []);
+      } else {
+        // Client fallback: generate pages list from global dataset so Cities tab is not empty
+        try {
+          const mod = await import('@/lib/data/globalCities');
+          const countries = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).map((c: any) => ({
+            title: `${c.name} Exhibition Stands`,
+            path: `/exhibition-stands/${c.slug}`,
+            type: 'country'
+          }));
+          const cities = (mod.GLOBAL_EXHIBITION_DATA?.cities || []).map((city: any) => {
+            const country = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).find((c: any) => c.name === city.country);
+            return country ? {
+              title: `Exhibition Stands in ${city.name}, ${country.name}`,
+              path: `/exhibition-stands/${country.slug}/${city.slug}`,
+              type: 'city'
+            } : null;
+          }).filter(Boolean) as any[];
+          setPages([...(countries as any[]), ...cities]);
+        } catch (err) {
+          console.warn('Fallback generation failed:', err);
+          setPages([]);
+        }
+      }
     } catch (e) {
       console.error('Failed to load pages', e);
     } finally {
@@ -109,8 +134,20 @@ export default function AdminPagesEditor() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return pages.filter(p => p.title.toLowerCase().includes(q) || p.path.toLowerCase().includes(q));
-  }, [pages, search]);
+    return pages.filter(p => {
+      // Apply search filter
+      const matchesSearch = p.title.toLowerCase().includes(q) || p.path.toLowerCase().includes(q);
+      
+      // Apply type filter
+      const matchesType = 
+        filter === 'all' || 
+        (filter === 'general' && p.type === 'static') ||
+        (filter === 'country' && p.type === 'country') ||
+        (filter === 'city' && p.type === 'city');
+      
+      return matchesSearch && matchesType;
+    });
+  }, [pages, search, filter]);
 
   const openEditor = async (path: string) => {
     setEditingPath(path);
@@ -498,13 +535,29 @@ export default function AdminPagesEditor() {
               finalCta: pc.sections.finalCta || prev.finalCta,
             }));
           } else if (path.startsWith('/exhibition-stands/')) {
-            // For country pages, load country-specific sections
-            const countrySlug = path.split('/').pop() || '';
-            setSections((prev:any) => ({
-              ...prev,
-              hero: pc.sections.hero || prev.hero,
-              countryPages: pc.sections.countryPages || prev.countryPages,
-            }));
+            // Handle city vs country paths
+            const parts = path.split('/').filter(Boolean);
+            if (parts.length >= 3) {
+              const countrySlug = parts[1];
+              const citySlug = parts[2];
+              const key = `${countrySlug}-${citySlug}`;
+              const rawCity = pc.sections?.cityPages?.[key] || {};
+              const nested = (rawCity as any).countryPages?.[citySlug]
+                || Object.values((rawCity as any).countryPages || {})[0]
+                || rawCity;
+              setSections((prev:any) => ({
+                ...prev,
+                hero: nested.hero || prev.hero,
+                // Feed the editor with an object keyed by the city slug so the UI map renders correctly
+                countryPages: { [citySlug]: nested },
+              }));
+            } else {
+              setSections((prev:any) => ({
+                ...prev,
+                hero: pc.sections.hero || prev.hero,
+                countryPages: pc.sections.countryPages || prev.countryPages,
+              }));
+            }
           } else {
             // For other pages, load common sections only
             setSections((prev:any) => ({
@@ -595,6 +648,19 @@ export default function AdminPagesEditor() {
         console.log('🚀 CTA data:', sections.customBoothCta);
       }
 
+      // Normalize sections for city pages so they save under sections.cityPages[country-city]
+      let sectionsToSend: any = { ...sections };
+      if (editingPath.startsWith('/exhibition-stands/')) {
+        const parts = editingPath.split('/').filter(Boolean);
+        if (parts.length >= 3) {
+          const countrySlug = parts[1];
+          const citySlug = parts[2];
+          const key = `${countrySlug}-${citySlug}`;
+          sectionsToSend = { cityPages: { [key]: { ...sections } } };
+          console.log('🏙️ Normalized city sections for save:', sectionsToSend);
+        }
+      }
+
       const res = await fetch('/api/admin/pages-editor', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -610,7 +676,7 @@ export default function AdminPagesEditor() {
           contentHtml,
           // new: send structured sections so changes are scoped
           // keep sending sections for non-about pages; for /about, contentHtml drives visible text
-          sections: { ...sections, ...(editingPath === '/' ? { typography } : {}) },
+          sections: { ...sectionsToSend, ...(editingPath === '/' ? { typography } : {}) },
         })
       });
       const data = await res.json();
@@ -655,8 +721,42 @@ export default function AdminPagesEditor() {
               <CardDescription>Search and manage all available pages</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-3 mb-4">
-                <Input placeholder="Search pages by title or path" value={search} onChange={(e) => setSearch(e.target.value)} />
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+                <Input placeholder="Search pages by title or path" value={search} onChange={(e) => setSearch(e.target.value)} className="w-full sm:w-auto" />
+                <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                  <Button 
+                    variant={filter === 'all' ? 'default' : 'outline'} 
+                    size="sm" 
+                    onClick={() => setFilter('all')}
+                    className="px-3 py-1 h-9"
+                  >
+                    All
+                  </Button>
+                  <Button 
+                    variant={filter === 'general' ? 'default' : 'outline'} 
+                    size="sm" 
+                    onClick={() => setFilter('general')}
+                    className="px-3 py-1 h-9"
+                  >
+                    General
+                  </Button>
+                  <Button 
+                    variant={filter === 'country' ? 'default' : 'outline'} 
+                    size="sm" 
+                    onClick={() => setFilter('country')}
+                    className="px-3 py-1 h-9"
+                  >
+                    Countries
+                  </Button>
+                  <Button 
+                    variant={filter === 'city' ? 'default' : 'outline'} 
+                    size="sm" 
+                    onClick={() => setFilter('city')}
+                    className="px-3 py-1 h-9"
+                  >
+                    Cities
+                  </Button>
+                </div>
               </div>
               {loading ? (
                 <div className="text-gray-500">Loading pages…</div>

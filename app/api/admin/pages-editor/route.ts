@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { storageAPI, PageContent } from '@/lib/data/storage';
+import { GLOBAL_EXHIBITION_DATA } from '@/lib/data/globalCities';
 import fs from 'fs';
 import path from 'path';
 import { getServerSupabase } from '@/lib/supabase';
@@ -135,6 +136,23 @@ export async function GET(request: NextRequest) {
   if (action === 'list') {
     // Combine static pages with known country pages from storage (if any)
     const pages: PageItem[] = [...STATIC_PAGES];
+    // Include all country pages from global dataset
+    try {
+      GLOBAL_EXHIBITION_DATA.countries.forEach((c) => {
+        pages.push({ title: `${c.name} Exhibition Stands`, path: `/exhibition-stands/${c.slug}`, type: 'country' });
+      });
+      // Include all city pages from global dataset
+      GLOBAL_EXHIBITION_DATA.cities.forEach((city) => {
+        const country = GLOBAL_EXHIBITION_DATA.countries.find((c) => c.name === city.country);
+        if (country) {
+          pages.push({
+            title: `Exhibition Stands in ${city.name}, ${country.name}`,
+            path: `/exhibition-stands/${country.slug}/${city.slug}`,
+            type: 'city'
+          });
+        }
+      });
+    } catch {}
     try {
       const all = storageAPI.getAllPageContents();
       all.forEach((pc) => {
@@ -163,10 +181,14 @@ export async function GET(request: NextRequest) {
     let pageId = '';
     const parts = path.split('/').filter(Boolean);
     
-    // Handle dynamic country pages
+    // Handle dynamic country/city pages
     if (parts[0] === 'exhibition-stands') {
-      if (parts.length >= 2) {
-        // For country pages: /exhibition-stands/china -> pageId = china
+      if (parts.length >= 3) {
+        // City page: /exhibition-stands/{country}/{city} -> pageId = country-city
+        pageId = `${parts[1]}-${parts[2]}`;
+        console.log('🏙️ API Debug - City page detected:', { path, pageId, parts });
+      } else if (parts.length >= 2) {
+        // Country page: /exhibition-stands/{country} -> pageId = country
         pageId = parts[1];
         console.log('🌍 API Debug - Country page detected:', { path, pageId, parts });
       } else {
@@ -213,30 +235,36 @@ export async function GET(request: NextRequest) {
           console.log('🎨 Custom-booth GET debug - customDesignServices:', data?.content?.sections?.customDesignServices);
         }
         
-        // For country pages, ensure we return the correct structure
-        if (parts[0] === 'exhibition-stands' && parts.length >= 2) {
-          const countrySlug = parts[1];
-          const countryData = data?.content?.sections?.countryPages?.[countrySlug];
-          console.log('🌍 Country data for', countrySlug, ':', countryData);
-          
-          if (countryData) {
-            // Return the specific country data
+        // For country or city pages, ensure we return the correct structure
+        if (parts[0] === 'exhibition-stands') {
+          if (parts.length >= 3) {
+            // For city pages, return the FULL document so CMS has SEO/content and the editor can pick cityPages[key]
             return NextResponse.json(
-              { 
-                success: true, 
-                data: { 
-                  ...data.content,
-                  sections: {
-                    ...data.content.sections,
-                    countryPages: {
-                      [countrySlug]: countryData
-                    }
-                  }
-                }, 
-                error: null 
-              },
+              { success: true, data: data?.content || null, error: null },
               { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'supabase', 'x-sb-present': 'true' } }
             );
+          } else if (parts.length >= 2) {
+            const countrySlug = parts[1];
+            const countryData = data?.content?.sections?.countryPages?.[countrySlug];
+            console.log('🌍 Country data for', countrySlug, ':', countryData);
+            if (countryData) {
+              return NextResponse.json(
+                { 
+                  success: true, 
+                  data: { 
+                    ...data.content,
+                    sections: {
+                      ...data.content.sections,
+                      countryPages: {
+                        [countrySlug]: countryData
+                      }
+                    }
+                  }, 
+                  error: null 
+                },
+                { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'supabase', 'x-sb-present': 'true' } }
+              );
+            }
           }
         }
         
@@ -287,10 +315,16 @@ export async function PUT(request: NextRequest) {
     // /exhibition-stands/{country}[/{city}] or static
     let pageId = '';
     const parts = path.split('/').filter(Boolean);
+    const isLocation = parts[0] === 'exhibition-stands';
+    const isCityPage = isLocation && parts.length >= 3;
     
-    if (parts[0] === 'exhibition-stands') {
-      if (parts.length >= 2) {
-        // For country pages: /exhibition-stands/china -> pageId = china
+    if (isLocation) {
+      if (isCityPage) {
+        // City page id: country-city
+        pageId = `${parts[1]}-${parts[2]}`;
+        console.log('🏙️ PUT Debug - City page detected:', { path, pageId, parts });
+      } else if (parts.length >= 2) {
+        // Country page id: country
         pageId = parts[1];
         console.log('🌍 PUT Debug - Country page detected:', { path, pageId, parts });
       } else {
@@ -316,8 +350,8 @@ export async function PUT(request: NextRequest) {
     const existing = storageAPI.getPageContent(pageId);
     const updated: PageContent = existing ? { ...existing } : {
       id: pageId,
-      type: 'country',
-      location: { name: pageId, slug: pageId },
+      type: isCityPage ? 'city' : 'country',
+      location: isCityPage ? { name: parts[2], country: parts[1], slug: pageId } : { name: parts[1] || pageId, slug: pageId },
       seo: { metaTitle: '', metaDescription: '', keywords: [], canonicalUrl: path },
       hero: { title: '', subtitle: '', description: '', ctaText: 'Get Free Quote' },
       content: { introduction: '', whyChooseSection: '', industryOverview: '', venueInformation: '', builderAdvantages: '', conclusion: '' },
@@ -346,10 +380,32 @@ export async function PUT(request: NextRequest) {
     // Merge section-aware updates (do not overwrite unrelated fields)
     if (sections && typeof sections === 'object') {
       console.log('🔍 API Debug - Sections received:', JSON.stringify(sections, null, 2));
-      (updated as any).sections = {
-        ...(updated as any).sections,
-        ...sections,
-      };
+      const currentSections = (updated as any).sections || {};
+      if (isCityPage) {
+        // Accept either flat sections or sections.cityPages[pageId]
+        const cityKey = pageId; // country-city
+        const prevCityPages = currentSections.cityPages || {};
+        const incomingCitySections = (sections as any).cityPages && (sections as any).cityPages[cityKey]
+          ? (sections as any).cityPages[cityKey]
+          : sections;
+        (updated as any).sections = {
+          ...currentSections,
+          cityPages: {
+            ...prevCityPages,
+            [cityKey]: {
+              ...(prevCityPages[cityKey] || {}),
+              ...incomingCitySections,
+            },
+          },
+        };
+      } else if (isLocation) {
+        (updated as any).sections = {
+          ...currentSections,
+          ...sections,
+        };
+      } else {
+        (updated as any).sections = { ...currentSections, ...sections };
+      }
       console.log('🔍 API Debug - Updated sections:', JSON.stringify((updated as any).sections, null, 2));
     }
 

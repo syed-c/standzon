@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import SimpleQuoteRequestForm from '@/components/SimpleQuoteRequestForm';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -77,6 +78,8 @@ interface CountryCityPageProps {
   cmsContent?: any;
   // Flag to indicate if the quote form should be shown separately
   showQuoteForm?: boolean;
+  // Flag to hide the cities section on city pages
+  hideCitiesSection?: boolean;
 }
 
 const BUILDERS_PER_PAGE = 6;
@@ -90,7 +93,8 @@ export function CountryCityPage({
   cityData,
   showComingSoon = false,
   cmsContent,
-  showQuoteForm = false
+  showQuoteForm = false,
+  hideCitiesSection = false
 }: CountryCityPageProps) {
   const [builders, setBuilders] = useState<Builder[]>(initialBuilders);
   const [filteredBuilders, setFilteredBuilders] = useState<Builder[]>(initialBuilders);
@@ -797,8 +801,8 @@ export function CountryCityPage({
         </section>
       )}
 
-      {/* Cities Section placed after builders + pagination */}
-      {cities && cities.length > 0 && (
+      {/* Cities Section placed after builders + pagination - hidden on city pages */}
+      {cities && cities.length > 0 && !hideCitiesSection && (
         <section className="py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-8 text-center">
@@ -841,7 +845,43 @@ export function CountryCityPage({
         </div>
       </section>
 
-      {/* Bottom CTA after SEO section */}
+      {/* Quote Request Form placed just above the final CTA (only for city pages) */}
+      {Boolean(city) && (
+        <section className="py-12 bg-gray-50">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900">
+                {`Get Free Quotes from ${city} Builders`}
+              </h2>
+              <p className="text-lg text-gray-600 mt-2">
+                Submit your requirements and receive competitive quotes from verified local builders
+              </p>
+            </div>
+            <div className="max-w-4xl mx-auto">
+              <SimpleQuoteRequestForm defaultCountry={country} defaultCity={city} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Personalized/Raw Content Section (renders saved HTML) */}
+      {(savedPageContent?.content?.extra?.personalizedHtml || savedPageContent?.content?.extra?.rawHtml || savedPageContent?.content?.introduction) && (
+        <section className="py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {savedPageContent?.content?.extra?.sectionHeading && (
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                {savedPageContent.content.extra.sectionHeading}
+              </h2>
+            )}
+            <div
+              className="prose max-w-none"
+              dangerouslySetInnerHTML={{ __html: savedPageContent.content.extra?.personalizedHtml || savedPageContent.content.extra?.rawHtml || savedPageContent.content.introduction }}
+            />
+          </div>
+        </section>
+      )}
+      
+      {/* Bottom CTA moved to the very bottom */}
       <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
         <div className="container mx-auto px-6 text-center">
           <div className="max-w-3xl mx-auto">
@@ -865,23 +905,6 @@ export function CountryCityPage({
           </div>
         </div>
       </section>
-
-      {/* Personalized/Raw Content Section (renders saved HTML) */}
-      {(savedPageContent?.content?.extra?.personalizedHtml || savedPageContent?.content?.extra?.rawHtml || savedPageContent?.content?.introduction) && (
-        <section className="py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {savedPageContent?.content?.extra?.sectionHeading && (
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                {savedPageContent.content.extra.sectionHeading}
-              </h2>
-            )}
-            <div
-              className="prose max-w-none"
-              dangerouslySetInnerHTML={{ __html: savedPageContent.content.extra?.personalizedHtml || savedPageContent.content.extra?.rawHtml || savedPageContent.content.introduction }}
-            />
-          </div>
-        </section>
-      )}
 
       {/* Cities section was moved to top */}
     </>

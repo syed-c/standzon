@@ -338,23 +338,8 @@ export function EnhancedCityPage({
           )}
         </section>
 
-        {/* CTA Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            Need a Custom Exhibition Stand in {cityName}?
-          </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Get quotes from multiple verified builders and compare prices instantly
-          </p>
-          <Link href="/quote">
-            <Button size="lg" variant="secondary">
-              Get Free Quotes
-            </Button>
-          </Link>
-        </section>
-
-        {/* Quote Request Form - keep this as the last section */}
-        <section className="mb-16 mt-16">
+        {/* Quote Request Form - placed above final CTA */}
+        <section className="mt-16 mb-16">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
               Get Free Quotes from {cityName} Builders
@@ -368,6 +353,21 @@ export function EnhancedCityPage({
             defaultCity={cityName}
             className="max-w-4xl mx-auto"
           />
+        </section>
+
+        {/* CTA Section */}
+        <section className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white text-center">
+          <h2 className="text-3xl font-bold mb-4">
+            Need a Custom Exhibition Stand in {cityName}?
+          </h2>
+          <p className="text-xl mb-8 opacity-90">
+            Get quotes from multiple verified builders and compare prices instantly
+          </p>
+          <Link href="/quote">
+            <Button size="lg" variant="secondary">
+              Get Free Quotes
+            </Button>
+          </Link>
         </section>
       </div>
     </div>

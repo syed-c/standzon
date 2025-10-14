@@ -93,8 +93,10 @@ async function getCityPageContent(countrySlug: string, citySlug: string) {
       }
       
       if (data?.content) {
-        console.log('✅ Server-side: Found CMS data for city page');
-        return data.content;
+        const key = `${countrySlug}-${citySlug}`;
+        const fromCityPages = (data.content as any)?.sections?.cityPages?.[key];
+        console.log('✅ Server-side: Found CMS data for city page, cityPages hit:', Boolean(fromCityPages));
+        return fromCityPages || data.content;
       }
     }
     
@@ -136,20 +138,8 @@ export default async function CityPage({ params }: CityPageProps) {
         cityData={cityData}
         cmsContent={pageContent}
         showQuoteForm={true}
+        hideCitiesSection={true}
       />
-      <div className="bg-blue-600 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-xl overflow-hidden">
-            <div className="p-6 sm:p-10">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Get Free Quotes from {cityName} Builders</h2>
-              <p className="text-lg text-gray-600 mb-8">
-                Submit your requirements and receive competitive quotes from verified local builders
-              </p>
-              <SimpleQuoteRequestForm location={`${cityName}, ${countryName}`} />
-            </div>
-          </div>
-        </div>
-      </div>
       <Footer />
       <WhatsAppFloat />
     </div>

@@ -175,13 +175,28 @@ export function EnhancedLocationPage({
   useEffect(() => {
     if (serverCmsContent) {
       console.log("✅ Using server-side CMS content:", serverCmsContent);
-      setCmsData({
-        sections: {
-          countryPages: {
-            [countrySlug]: serverCmsContent
+      // When on a city page, prefer cityPages[country-city] if provided, else treat the payload as the city block
+      if (isCity) {
+        const slugify = (s: string) => s?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || '';
+        const citySlug = slugify(finalLocationName);
+        const cityKey = `${countrySlug}-${citySlug}`;
+        const cityBlock = (serverCmsContent as any)?.sections?.cityPages?.[cityKey] || serverCmsContent;
+        setCmsData({
+          sections: {
+            cityPages: {
+              [cityKey]: cityBlock
+            }
           }
-        }
-      });
+        });
+      } else {
+        setCmsData({
+          sections: {
+            countryPages: {
+              [countrySlug]: serverCmsContent
+            }
+          }
+        });
+      }
       setIsLoadingCms(false);
       return;
     }
@@ -228,6 +243,18 @@ export function EnhancedLocationPage({
 
     fetchCmsData();
   }, [finalCountryName, finalLocationName, isCity, serverCmsContent, countrySlug]);
+
+  // Resolve CMS block depending on page type (safe for SSR)
+  const slugify = (s: string) => (s || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const derivedCitySlug = slugify(finalLocationName);
+  const derivedCityKey = `${countrySlug}-${derivedCitySlug}`;
+  const rawCityBlock = cmsData?.sections?.cityPages?.[derivedCityKey] || null;
+  const nestedCityBlock = rawCityBlock && (rawCityBlock as any).countryPages
+    ? (rawCityBlock as any).countryPages[derivedCitySlug] || Object.values((rawCityBlock as any).countryPages || {})[0]
+    : null;
+  const cmsBlock = isCity
+    ? (nestedCityBlock || rawCityBlock || null)
+    : (cmsData?.sections?.countryPages?.[countrySlug] || null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
@@ -320,18 +347,18 @@ export function EnhancedLocationPage({
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {cmsData?.sections?.countryPages?.[countrySlug]?.whyChooseHeading || 
+                {(cmsBlock?.whyChooseHeading) || 
                  `Why Choose Local Builders in ${displayLocation}?`}
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {cmsData?.sections?.countryPages?.[countrySlug]?.whyChooseParagraph || 
+                {(cmsBlock?.whyChooseParagraph) || 
                  `Local builders offer unique advantages including market knowledge, 
                  logistical expertise, and established vendor relationships.`}
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 mb-12">
-              {(cmsData?.sections?.countryPages?.[countrySlug]?.infoCards || [
+              {((cmsBlock?.infoCards) || [
                 {
                   title: "Local Market Knowledge",
                   text: `Understand local regulations, venue requirements, and cultural preferences specific to ${displayLocation}.`
@@ -365,8 +392,8 @@ export function EnhancedLocationPage({
               <h3 className="text-2xl font-bold mb-4">
                 Get Quotes from {displayLocation} Experts
               </h3>
-              <p className="text-lg mb-6 opacity-90">
-                {cmsData?.sections?.countryPages?.[countrySlug]?.quotesParagraph || 
+               <p className="text-lg mb-6 opacity-90">
+                {(cmsBlock?.quotesParagraph) || 
                  `Connect with 3-5 verified local builders who understand your market. 
                  No registration required, quotes within 24 hours.`}
               </p>
@@ -379,7 +406,7 @@ export function EnhancedLocationPage({
             {/* Country gallery placed below the CTA and above builders */}
             <div className="mt-10">
               {(() => {
-                const cmsImages = (cmsData?.sections?.countryPages?.[countrySlug]?.galleryImages as string[] | undefined) || [];
+                const cmsImages = ((cmsBlock?.galleryImages) as string[] | undefined) || [];
                 const fallback = [
                   'https://images.unsplash.com/photo-1515165562835-c3b8c93deaab?q=80&w=1600&auto=format&fit=crop',
                   'https://images.unsplash.com/photo-1487017159836-4e23ece2e4cf?q=80&w=1600&auto=format&fit=crop',
@@ -525,11 +552,11 @@ export function EnhancedLocationPage({
             <div className="container mx-auto px-6">
               <div className="max-w-4xl mx-auto prose prose-slate">
                 <h2 className="text-2xl md:text-3xl font-bold !mb-4">
-                  {cmsData?.sections?.countryPages?.[countrySlug]?.servicesHeading || 
+                  {(cmsBlock?.servicesHeading) || 
                    `Exhibition Stand Builders in ${displayLocation}: Services, Costs, and Tips`}
                 </h2>
                 <p>
-                  {cmsData?.sections?.countryPages?.[countrySlug]?.servicesParagraph || 
+                  {(cmsBlock?.servicesParagraph) || 
                    `Finding the right exhibition stand partner in ${displayLocation} can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.`}
                 </p>
               </div>
@@ -541,17 +568,17 @@ export function EnhancedLocationPage({
             <div className="container mx-auto px-6 text-center">
               <div className="max-w-3xl mx-auto">
                 <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                  {cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaHeading || 
+                  {(cmsBlock?.finalCtaHeading) || 
                    `Ready to Find Your Perfect Builder in ${displayLocation}?`}
                 </h2>
                 <p className="text-xl text-slate-300 mb-8">
-                  {cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaParagraph || 
+                  {(cmsBlock?.finalCtaParagraph) || 
                    `Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.`}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <PublicQuoteRequest 
                     location={displayLocation}
-                    buttonText={cmsData?.sections?.countryPages?.[countrySlug]?.finalCtaButtonText || "Start Getting Quotes"}
+                    buttonText={(cmsBlock?.finalCtaButtonText) || "Start Getting Quotes"}
                     className="text-lg px-8 py-4"
                   />
                   <Button 
