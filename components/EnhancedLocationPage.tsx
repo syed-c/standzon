@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import CountryGallery from '@/components/CountryGallery';
+import dynamic from 'next/dynamic';
+const CountryGallery = dynamic(() => import('@/components/CountryGallery'), { ssr: false });
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BuilderCard } from '@/components/BuilderCard';
@@ -377,13 +378,17 @@ export function EnhancedLocationPage({
             </div>
             {/* Country gallery placed below the CTA and above builders */}
             <div className="mt-10">
-              <CountryGallery images={[
-                'https://images.unsplash.com/photo-1515165562835-c3b8c93deaab?q=80&w=1600&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1487017159836-4e23ece2e4cf?q=80&w=1600&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1600&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1600&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1536895058696-a69b1ccb5540?q=80&w=1600&auto=format&fit=crop'
-              ]} />
+              {(() => {
+                const cmsImages = (cmsData?.sections?.countryPages?.[countrySlug]?.galleryImages as string[] | undefined) || [];
+                const fallback = [
+                  'https://images.unsplash.com/photo-1515165562835-c3b8c93deaab?q=80&w=1600&auto=format&fit=crop',
+                  'https://images.unsplash.com/photo-1487017159836-4e23ece2e4cf?q=80&w=1600&auto=format&fit=crop',
+                  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1600&auto=format&fit=crop',
+                  'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1600&auto=format&fit=crop',
+                  'https://images.unsplash.com/photo-1536895058696-a69b1ccb5540?q=80&w=1600&auto=format&fit=crop'
+                ];
+                return <CountryGallery images={cmsImages.length > 0 ? cmsImages : fallback} />;
+              })()}
             </div>
           </div>
         </div>

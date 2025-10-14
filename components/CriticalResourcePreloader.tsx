@@ -21,34 +21,7 @@ export default function CriticalResourcePreloader() {
         document.head.appendChild(link);
       });
 
-      // Preload critical CSS chunks
-      const criticalCSS = [
-        '/_next/static/css/',
-        '/_next/static/chunks/'
-      ];
-
-      criticalCSS.forEach(css => {
-        const link = document.createElement('link');
-        link.rel = 'preload';
-        link.href = css;
-        link.as = 'style';
-        document.head.appendChild(link);
-      });
-
-      // Preload critical JavaScript chunks
-      const criticalJS = [
-        '/_next/static/chunks/webpack.js',
-        '/_next/static/chunks/main.js',
-        '/_next/static/chunks/pages/_app.js'
-      ];
-
-      criticalJS.forEach(js => {
-        const link = document.createElement('link');
-        link.rel = 'preload';
-        link.href = js;
-        link.as = 'script';
-        document.head.appendChild(link);
-      });
+      // Avoid preloading non-existent chunk paths which caused 404s during dev
     };
 
     // Run immediately

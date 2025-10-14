@@ -49,7 +49,7 @@ const UltraFastHero = memo(function UltraFastHero({
       
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8">
         {/* Content container with white border and dark translucent background */}
-        <div className="mx-auto max-w-6xl shadow-{#0b1a3a}/50 rounded-2xl bg-[#0b1a3a]/50 backdrop-blur-sm shadow-lg">
+        <div className="mx-auto max-w-6xl rounded-2xl backdrop-blur-sm shadow-lg">
           <div className="text-center px-4 sm:px-8 md:px-12 py-8 md:py-12 space-y-8">
           {/* Headings */}
           <div className="space-y-4">

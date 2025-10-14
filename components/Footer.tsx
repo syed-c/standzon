@@ -35,11 +35,24 @@ export default function Footer() {
   const [footerData, setFooterData] = React.useState<any | null>(null);
   React.useEffect(() => {
     let mounted = true;
-    fetch('/api/admin/footer')
-      .then(r => r.json())
-      .then(json => { if (mounted) setFooterData(json?.data || null); })
-      .catch(() => {});
-    return () => { mounted = false; };
+    const fetchFooter = () => {
+      const url = `/api/admin/footer?ts=${Date.now()}`; // cache-bust SW/CDN
+      fetch(url, { cache: 'no-store' })
+        .then(r => r.json())
+        .then(json => { if (mounted) setFooterData(json?.data || null); })
+        .catch(() => {});
+    };
+    fetchFooter();
+    // Refresh when the tab gains focus (helps after saving in CMS)
+    const onFocus = () => fetchFooter();
+    const onVisible = () => { if (document.visibilityState === 'visible') fetchFooter(); };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      mounted = false;
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, []);
 
   // Use settings data or fallback

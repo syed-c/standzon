@@ -94,9 +94,9 @@ export default function HomePageContent() {
           bgImage={heroBgImage}
           bgOpacity={heroBgOpacity}
           stats={[
-            { value: "45+", label: "Cities Covered" },
-            { value: "10+", label: "Countries Served" },
-            { value: "500+", label: "Expert Builders" },
+            { value: "120+", label: "Cities Covered" },
+            { value: "55+", label: "Countries Served" },
+            { value: "1500+", label: "Expert Builders" },
           ]}
           buttons={[
             { text: "Get Free Quote →", isQuoteButton: true },
