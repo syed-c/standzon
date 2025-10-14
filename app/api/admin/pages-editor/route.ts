@@ -181,7 +181,7 @@ export async function GET(request: NextRequest) {
     let pageId = '';
     const parts = path.split('/').filter(Boolean);
     
-    // Handle dynamic country/city pages
+    // Handle dynamic country/city pages and home info cards
     if (parts[0] === 'exhibition-stands') {
       if (parts.length >= 3) {
         // City page: /exhibition-stands/{country}/{city} -> pageId = country-city
@@ -236,7 +236,8 @@ export async function GET(request: NextRequest) {
         }
         
         // For country or city pages, ensure we return the correct structure
-        if (parts[0] === 'exhibition-stands') {
+        if (parts[0] === 'exhibition-stands' || path === '/') {
+          // For the homepage, just return full content so editors can read sections.countryPages.homeInfoCards
           if (parts.length >= 3) {
             // For city pages, return the FULL document so CMS has SEO/content and the editor can pick cityPages[key]
             return NextResponse.json(

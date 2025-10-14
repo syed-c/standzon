@@ -118,6 +118,28 @@ export default function HomePageContent() {
                 )}
               </div>
             )}
+            {/* CMS-driven Info Cards section (4 cards) */}
+            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-20">
+              {(() => {
+                const cards = (saved?.sections?.countryPages?.homeInfoCards as Array<any> | undefined) || [];
+                const fallback = [
+                  { title: 'Global Network', text: 'Access verified builders across major markets worldwide.' },
+                  { title: 'Local Expertise', text: 'Work with local teams who understand venue rules and culture.' },
+                  { title: 'Faster Delivery', text: 'Shorter lead times and rapid onsite support when needed.' },
+                  { title: 'Cost-Effective', text: 'Save logistics with nearby fabrication and supplier networks.' },
+                ];
+                return (cards.length > 0 ? cards.slice(0,4) : fallback).map((c, i) => (
+                  <div key={i} className="bg-white rounded-2xl shadow p-6 border">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center mb-4 text-white"
+                         style={{ background: i===0 ? '#3b82f6' : i===1 ? '#10b981' : i===2 ? '#8b5cf6' : '#f59e0b' }}>
+                      <span className="font-semibold">{i+1}</span>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{c.title || ''}</h3>
+                    <p className="text-gray-600 text-sm">{c.text || ''}</p>
+                  </div>
+                ));
+              })()}
+            </div>
             {/* Existing recent leads component with CMS CTA */}
             <div>
               {React.createElement(require("@/components/RecentLeadsSection").default, {

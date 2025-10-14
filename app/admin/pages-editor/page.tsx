@@ -1006,6 +1006,31 @@ export default function AdminPagesEditor() {
                         </AccordionContent>
                       </AccordionItem>
 
+                      <AccordionItem value="homeInfoCards">
+                        <AccordionTrigger>Home Info Cards</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-4 bg-white border rounded-md p-3">
+                            <p className="text-sm text-gray-600">Up to 4 cards are shown on the home page between the Leads section and Live Lead Activity.</p>
+                            {(sections.countryPages?.homeInfoCards || []).map((card: any, idx: number) => (
+                              <div key={idx} className="border rounded p-3">
+                                <div className="flex items-center justify-between mb-2">
+                                  <h5 className="font-semibold">Card {idx+1}</h5>
+                                  <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>{ const arr=[...(s.countryPages?.homeInfoCards||[])]; arr.splice(idx,1); return { ...s, countryPages:{ ...(s.countryPages||{}), homeInfoCards:arr } }; })}>Remove</Button>
+                                </div>
+                                <Label>Title</Label>
+                                <Input value={card.title||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.countryPages?.homeInfoCards||[])]; arr[idx]={...arr[idx], title:e.target.value}; return { ...s, countryPages:{ ...(s.countryPages||{}), homeInfoCards:arr } }; })} />
+                                <Label className="mt-2 block">Text</Label>
+                                <Textarea rows={3} value={card.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.countryPages?.homeInfoCards||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, countryPages:{ ...(s.countryPages||{}), homeInfoCards:arr } }; })} />
+                              </div>
+                            ))}
+                            <div className="flex gap-2">
+                              <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, countryPages:{ ...(s.countryPages||{}), homeInfoCards:[...(s.countryPages?.homeInfoCards||[]), { title:'', text:'' }].slice(0,4) } }))}>Add Card</Button>
+                              <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, countryPages:{ ...(s.countryPages||{}), homeInfoCards:(s.countryPages?.homeInfoCards||[]).slice(0,-1) } }))}>Remove Last</Button>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
                       <AccordionItem value="expandingMarkets">
                         <AccordionTrigger>Expanding Markets</AccordionTrigger>
                         <AccordionContent>
