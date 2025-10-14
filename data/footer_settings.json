@@ -1,31 +1,106 @@
 {
   "_metadata": {
-    "timestamp": "2025-10-14T11:26:50.838Z",
+    "timestamp": "2025-10-14T11:36:09.806Z",
     "version": "1.0",
-    "checksum": "4e8fe22f"
+    "checksum": "418310c1"
   },
   "data": {
     "paragraph": "Connect with trusted exhibition stand builders worldwide and make your next trade show booth truly unforgettable.",
     "contact": {
-      "phone": "0123456789",
-      "phoneLink": "",
-      "email": "dfghj@er.com",
-      "emailLink": "",
-      "address": "dubai",
+      "phone": "+1 909-600-0210",
+      "phoneLink": "tel:19096000210",
+      "email": "enquiry@standszone.com",
+      "emailLink": "mailto:enquiry@standszone.com",
+      "address": "72-32 Broadway, Flushing, NY 11372, USA",
       "addressLink": ""
     },
     "columns": {
       "services": {
         "heading": "Services",
-        "items": []
+        "items": [
+          {
+            "label": "Custom Stand Design",
+            "href": "#"
+          },
+          {
+            "label": "Stand Construction",
+            "href": "#"
+          },
+          {
+            "label": "3D Visualization",
+            "href": "#"
+          },
+          {
+            "label": "Installation Services",
+            "href": "#"
+          },
+          {
+            "label": "Project Management",
+            "href": "#"
+          },
+          {
+            "label": "Graphics & Branding",
+            "href": "#"
+          }
+        ]
       },
       "locations": {
         "heading": "Global Locations",
-        "items": []
+        "items": [
+          {
+            "label": "United Arab Emirates",
+            "href": "#"
+          },
+          {
+            "label": "United States",
+            "href": "#"
+          },
+          {
+            "label": "Germany",
+            "href": "#"
+          },
+          {
+            "label": "Italy",
+            "href": "#"
+          },
+          {
+            "label": "France",
+            "href": "#"
+          },
+          {
+            "label": "Russia",
+            "href": "#"
+          },
+          {
+            "label": "India",
+            "href": "#"
+          }
+        ]
       },
       "resources": {
         "heading": "Resources",
-        "items": []
+        "items": [
+          {
+            "label": "About",
+            "href": "#"
+          },
+          {
+            "label": "Find Builders",
+            "href": "#"
+          },
+          {
+            "label": "Trade Shows",
+            "href": "#"
+          },
+          {
+            "label": "Blog",
+            "href": "#"
+          },
+          {
+            "label": "Quote",
+            "href": "#"
+          }
+        ]
       }
     },
     "bottom": {
@@ -67,6 +142,6 @@
         "icon": "facebook"
       }
     ],
-    "updatedAt": "2025-10-14T11:26:50.838Z"
+    "updatedAt": "2025-10-14T11:36:09.805Z"
   }
 }
