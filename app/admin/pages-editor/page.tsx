@@ -554,6 +554,8 @@ export default function AdminPagesEditor() {
                 hero: nested.hero || prev.hero,
                 // Feed the editor with an object keyed by the city slug so the UI map renders correctly
                 countryPages: { [citySlug]: nested },
+                // Also store under cityPages with composite key for city-specific panels
+                cityPages: { ...(prev.cityPages || {}), [key]: nested },
               }));
             } else {
               // For country pages, extract the specific country's data
@@ -571,6 +573,9 @@ export default function AdminPagesEditor() {
                 countryPages: {
                   ...(prev.countryPages || {}),
                   [countrySlug]: {
+                    heroDescription: actualCountryData.heroDescription || prev.heroDescription,
+                    buildersHeading: actualCountryData.buildersHeading || prev.buildersHeading,
+                    buildersIntro: actualCountryData.buildersIntro || prev.buildersIntro,
                     whyChooseHeading: actualCountryData.whyChooseHeading || prev.whyChooseHeading,
                     whyChooseParagraph: actualCountryData.whyChooseParagraph || prev.whyChooseParagraph,
                     infoCards: actualCountryData.infoCards || prev.infoCards,
@@ -2122,6 +2127,28 @@ export default function AdminPagesEditor() {
                                       Why Choose Local Builders
                                     </h5>
                                     <div className="space-y-4">
+                                      {/* Hero Description (country) */}
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Hero Description</Label>
+                                        <Textarea
+                                          className="mt-1"
+                                          rows={3}
+                                          value={countryData?.heroDescription || ''}
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                heroDescription: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                        {(countryData?.heroDescription) && (
+                                          <div className="prose mt-2 text-sm text-gray-600" dangerouslySetInnerHTML={{ __html: (countryData.heroDescription || '').replace(/\r?\n/g, '<br/>') }} />
+                                        )}
+                                      </div>
                                       <div>
                                         <Label className="text-sm font-medium text-gray-600">Section Heading</Label>
                                         <Input 
@@ -2723,6 +2750,29 @@ export default function AdminPagesEditor() {
                                         }
                                       }))}
                                     />
+                                  </div>
+                                  {/* Hero Description (city) */}
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Hero Description</Label>
+                                    <Textarea
+                                      className="mt-1"
+                                      rows={3}
+                                      value={cityData?.heroDescription || ''}
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        cityPages: {
+                                          ...(s.cityPages || {}),
+                                          [key]: {
+                                            ...(s.cityPages?.[key] || {}),
+                                            heroDescription: e.target.value
+                                          }
+                                        }
+                                      }))}
+                                    />
+                                    {/* Preview (sanitized) */}
+                                    {(cityData?.heroDescription) && (
+                                      <div className="prose mt-2 text-sm text-gray-600" dangerouslySetInnerHTML={{ __html: (cityData.heroDescription || '').replace(/\r?\n/g, '<br/>') }} />
+                                    )}
                                   </div>
                                   {/* Final CTA for city */}
                                   <div className="mt-6 p-4 rounded-md border border-gray-100 bg-gray-50">

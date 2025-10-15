@@ -259,26 +259,72 @@ export function EnhancedLocationPage({
     ? (nestedCityBlock || rawCityBlock || null)
     : (cmsData?.sections?.countryPages?.[countrySlug] || null);
 
-  // Minimal sanitizer to allow safe basic formatting
+  // Enhanced sanitizer to allow safe basic formatting and properly render HTML
   const sanitizeHtml = (html: string | undefined): string => {
     if (!html) return '';
     // Normalize line breaks to <br/>
     const withBreaks = html.replace(/\r?\n/g, '<br/>');
     // Allow only a whitelist of tags; strip others
-    const allowedTags = /<(\/?)(h2|h3|h4|p|strong|em|ul|ol|li|br|a)(\s+[^>]*)?>/gi;
-    // Escape everything
-    let escaped = withBreaks
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-    // Unescape allowed tags
-    escaped = escaped.replace(/&lt;(\/?)(h2|h3|h4|p|strong|em|ul|ol|li|br|a)(\s+[^&>]*)?&gt;/gi, '<$1$2$3>');
-    // Remove inline event handlers and scripts/styles
-    escaped = escaped.replace(/on[a-z]+="[^"]*"/gi, '')
-                     .replace(/javascript:/gi, '')
-                     .replace(/<\/(script|style)>/gi, '')
-                     .replace(/<(script|style)[^>]*>[\s\S]*?<\/(script|style)>/gi, '');
-    return escaped;
+    const allowedTags = ['h2', 'h3', 'h4', 'p', 'strong', 'em', 'ul', 'ol', 'li', 'br', 'a'];
+    
+    // Create a temporary div to parse HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = withBreaks;
+    
+    // Recursively sanitize nodes
+    const sanitizeNode = (node: Node): Node => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return node;
+      }
+      
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node as Element;
+        const tagName = element.tagName.toLowerCase();
+        
+        if (allowedTags.includes(tagName)) {
+          // Create a new element with the same tag
+          const newElement = document.createElement(tagName);
+          
+          // Copy allowed attributes (only href for links)
+          if (tagName === 'a' && element.hasAttribute('href')) {
+            const href = element.getAttribute('href');
+            if (href && !href.toLowerCase().startsWith('javascript:')) {
+              newElement.setAttribute('href', href);
+            }
+          }
+          
+          // Recursively sanitize child nodes
+          Array.from(element.childNodes).forEach(child => {
+            const sanitizedChild = sanitizeNode(child);
+            if (sanitizedChild) {
+              newElement.appendChild(sanitizedChild);
+            }
+          });
+          
+          return newElement;
+        } else {
+          // Replace disallowed tags with their text content
+          return document.createTextNode(element.textContent || '');
+        }
+      }
+      
+      return document.createTextNode('');
+    };
+    
+    // Sanitize all child nodes
+    const sanitizedNodes: Node[] = [];
+    Array.from(tempDiv.childNodes).forEach(node => {
+      const sanitized = sanitizeNode(node);
+      if (sanitized) {
+        sanitizedNodes.push(sanitized);
+      }
+    });
+    
+    // Create new div with sanitized content
+    const resultDiv = document.createElement('div');
+    sanitizedNodes.forEach(node => resultDiv.appendChild(node.cloneNode(true)));
+    
+    return resultDiv.innerHTML;
   };
 
   return (
@@ -306,8 +352,7 @@ export function EnhancedLocationPage({
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
-              Connect with {stats.totalBuilders}+ verified exhibition stand builders in {displayLocation}. 
-              Get competitive quotes from local experts who understand your market.
+              {(cmsBlock?.heroDescription)}
             </p>
 
             {/* CTA Buttons */}
