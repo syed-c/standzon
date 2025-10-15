@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, Edit, RefreshCw, FileText } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type PageItem = {
   title: string;
@@ -79,6 +80,20 @@ export default function AdminPagesEditor() {
   const [typography, setTypography] = useState<any>({ headingFont: '' });
   const { toast } = useToast();
 
+  // Quick Gallery Editors state
+  const [countryOptions, setCountryOptions] = useState<Array<{ slug: string; name: string }>>([]);
+  const [cityOptionsByCountry, setCityOptionsByCountry] = useState<Record<string, Array<{ slug: string; name: string }>>>({});
+  const [selectedCountryForGallery, setSelectedCountryForGallery] = useState<string>('');
+  const [countryGalleryText, setCountryGalleryText] = useState<string>('');
+  const [loadingCountryGallery, setLoadingCountryGallery] = useState<boolean>(false);
+  const [savingCountryGallery, setSavingCountryGallery] = useState<boolean>(false);
+
+  const [selectedCountryForCityGallery, setSelectedCountryForCityGallery] = useState<string>('');
+  const [selectedCityForGallery, setSelectedCityForGallery] = useState<string>('');
+  const [cityGalleryText, setCityGalleryText] = useState<string>('');
+  const [loadingCityGallery, setLoadingCityGallery] = useState<boolean>(false);
+  const [savingCityGallery, setSavingCityGallery] = useState<boolean>(false);
+
   useEffect(() => {
     loadPages();
     // Load footer data
@@ -94,6 +109,110 @@ export default function AdminPagesEditor() {
         if (t) setTypography(t);
       }).catch(()=>{});
   }, []);
+
+  // Load country/city options once for gallery managers
+  useEffect(() => {
+    (async () => {
+      try {
+        const mod = await import('@/lib/data/globalCities');
+        const countries = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).map((c: any) => ({ slug: c.slug, name: c.name }));
+        const cities = (mod.GLOBAL_EXHIBITION_DATA?.cities || []).reduce((acc: Record<string, Array<{ slug: string; name: string }>>, city: any) => {
+          const country = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).find((c: any) => c.name === city.country);
+          if (!country) return acc;
+          const arr = acc[country.slug] || [];
+          arr.push({ slug: city.slug, name: city.name });
+          acc[country.slug] = arr;
+          return acc;
+        }, {} as Record<string, Array<{ slug: string; name: string }>>);
+        setCountryOptions(countries);
+        setCityOptionsByCountry(cities);
+      } catch {}
+    })();
+  }, []);
+
+  const loadCountryGallery = async () => {
+    if (!selectedCountryForGallery) return;
+    setLoadingCountryGallery(true);
+    try {
+      const path = `/exhibition-stands/${selectedCountryForGallery}`;
+      const res = await fetch(`/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(path)}`, { cache: 'no-store' });
+      const j = await res.json();
+      const images = (j?.data?.sections?.countryPages?.[selectedCountryForGallery]?.galleryImages || j?.data?.countryPages?.[selectedCountryForGallery]?.galleryImages || []) as string[];
+      setCountryGalleryText(Array.isArray(images) ? images.join('\n') : '');
+    } catch {
+      setCountryGalleryText('');
+    } finally {
+      setLoadingCountryGallery(false);
+    }
+  };
+
+  const saveCountryGallery = async () => {
+    if (!selectedCountryForGallery) return;
+    setSavingCountryGallery(true);
+    try {
+      const path = `/exhibition-stands/${selectedCountryForGallery}`;
+      const urls = countryGalleryText.split('\n').map(u => u.trim()).filter(Boolean);
+      const res = await fetch('/api/admin/pages-editor', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update', path, sections: { countryPages: { [selectedCountryForGallery]: { galleryImages: urls } } } })
+      });
+      const j = await res.json();
+      if (j?.success) {
+        toast({ title: 'Saved', description: 'Country gallery updated.' });
+        window.dispatchEvent(new CustomEvent('global-pages:updated', { detail: { path } }) as any);
+      } else {
+        toast({ title: 'Save failed', description: 'Could not save gallery.', variant: 'destructive' as any });
+      }
+    } catch {
+      toast({ title: 'Save failed', description: 'Network or server error.', variant: 'destructive' as any });
+    } finally {
+      setSavingCountryGallery(false);
+    }
+  };
+
+  const loadCityGallery = async () => {
+    if (!selectedCountryForCityGallery || !selectedCityForGallery) return;
+    setLoadingCityGallery(true);
+    try {
+      const path = `/exhibition-stands/${selectedCountryForCityGallery}/${selectedCityForGallery}`;
+      const res = await fetch(`/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(path)}`, { cache: 'no-store' });
+      const j = await res.json();
+      const key = `${selectedCountryForCityGallery}-${selectedCityForGallery}`;
+      const images = (j?.data?.sections?.cityPages?.[key]?.galleryImages || []) as string[];
+      setCityGalleryText(Array.isArray(images) ? images.join('\n') : '');
+    } catch {
+      setCityGalleryText('');
+    } finally {
+      setLoadingCityGallery(false);
+    }
+  };
+
+  const saveCityGallery = async () => {
+    if (!selectedCountryForCityGallery || !selectedCityForGallery) return;
+    setSavingCityGallery(true);
+    try {
+      const path = `/exhibition-stands/${selectedCountryForCityGallery}/${selectedCityForGallery}`;
+      const key = `${selectedCountryForCityGallery}-${selectedCityForGallery}`;
+      const urls = cityGalleryText.split('\n').map(u => u.trim()).filter(Boolean);
+      const res = await fetch('/api/admin/pages-editor', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update', path, sections: { cityPages: { [key]: { galleryImages: urls } } } })
+      });
+      const j = await res.json();
+      if (j?.success) {
+        toast({ title: 'Saved', description: 'City gallery updated.' });
+        window.dispatchEvent(new CustomEvent('global-pages:updated', { detail: { path } }) as any);
+      } else {
+        toast({ title: 'Save failed', description: 'Could not save gallery.', variant: 'destructive' as any });
+      }
+    } catch {
+      toast({ title: 'Save failed', description: 'Network or server error.', variant: 'destructive' as any });
+    } finally {
+      setSavingCityGallery(false);
+    }
+  };
 
   const loadPages = async () => {
     setLoading(true);
@@ -584,6 +703,7 @@ export default function AdminPagesEditor() {
                     servicesParagraph: actualCountryData.servicesParagraph || prev.servicesParagraph,
                     finalCtaHeading: actualCountryData.finalCtaHeading || prev.finalCtaHeading,
                     finalCtaParagraph: actualCountryData.finalCtaParagraph || prev.finalCtaParagraph,
+                    galleryImages: actualCountryData.galleryImages || prev.galleryImages || [],
                   }
                 }
               }));
@@ -826,6 +946,120 @@ export default function AdminPagesEditor() {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* Quick Gallery Managers */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* Country Gallery Editor */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Country Gallery Manager</CardTitle>
+            <CardDescription>Add or update gallery images for a specific country page.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <Label>Select Country</Label>
+              <Select value={selectedCountryForGallery} onValueChange={(v)=>setSelectedCountryForGallery(v)}>
+                <SelectTrigger className="w-full"><SelectValue placeholder="Choose a country" /></SelectTrigger>
+                <SelectContent className="max-h-80">
+                  {countryOptions.map(c => (
+                    <SelectItem key={c.slug} value={c.slug}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={loadCountryGallery} disabled={!selectedCountryForGallery || loadingCountryGallery}>
+                  {loadingCountryGallery ? 'Loading…' : 'Load Images'}
+                </Button>
+              </div>
+              <Label className="mt-2">Image URLs (one per line)</Label>
+              <Textarea rows={8} value={countryGalleryText} onChange={(e)=>setCountryGalleryText(e.target.value)} placeholder="https://example.com/1.jpg\nhttps://example.com/2.jpg" />
+              <div className="flex items-center gap-3">
+                <input type="file" accept="image/*" onChange={async (e)=>{
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  const fd = new FormData();
+                  fd.append('file', f);
+                  fd.append('scope', `countries/${selectedCountryForGallery||'general'}`);
+                  const res = await fetch('/api/admin/gallery-upload', { method: 'POST', body: fd });
+                  const j = await res.json();
+                  if (j?.success && j.url) {
+                    setCountryGalleryText((prev)=> (prev? prev+"\n":"") + j.url);
+                    toast({ title: 'Uploaded', description: 'Image added to country gallery.' });
+                  } else {
+                    toast({ title: 'Upload failed', description: j?.error||'Could not upload', variant: 'destructive' as any });
+                  }
+                }} />
+                <span className="text-xs text-gray-500">Upload to Supabase Storage</span>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={saveCountryGallery} disabled={!selectedCountryForGallery || savingCountryGallery}>{savingCountryGallery ? 'Saving…' : 'Save Country Gallery'}</Button>
+                <Button variant="outline" onClick={()=>setCountryGalleryText('')}>Clear</Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* City Gallery Editor */}
+        <Card>
+          <CardHeader>
+            <CardTitle>City Gallery Manager</CardTitle>
+            <CardDescription>Add or update gallery images for a specific city page.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <Label>Select Country</Label>
+              <Select value={selectedCountryForCityGallery} onValueChange={(v)=>{ setSelectedCountryForCityGallery(v); setSelectedCityForGallery(''); }}>
+                <SelectTrigger className="w-full"><SelectValue placeholder="Choose a country" /></SelectTrigger>
+                <SelectContent className="max-h-80">
+                  {countryOptions.map(c => (
+                    <SelectItem key={c.slug} value={c.slug}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Label>Select City</Label>
+              <Select value={selectedCityForGallery} onValueChange={(v)=>setSelectedCityForGallery(v)} disabled={!selectedCountryForCityGallery}>
+                <SelectTrigger className="w-full"><SelectValue placeholder="Choose a city" /></SelectTrigger>
+                <SelectContent className="max-h-80">
+                  {(cityOptionsByCountry[selectedCountryForCityGallery]||[]).map(city => (
+                    <SelectItem key={city.slug} value={city.slug}>{city.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={loadCityGallery} disabled={!selectedCountryForCityGallery || !selectedCityForGallery || loadingCityGallery}>
+                  {loadingCityGallery ? 'Loading…' : 'Load Images'}
+                </Button>
+              </div>
+              <Label className="mt-2">Image URLs (one per line)</Label>
+              <Textarea rows={8} value={cityGalleryText} onChange={(e)=>setCityGalleryText(e.target.value)} placeholder="https://example.com/1.jpg\nhttps://example.com/2.jpg" />
+              <div className="flex items-center gap-3">
+                <input type="file" accept="image/*" onChange={async (e)=>{
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  const fd = new FormData();
+                  fd.append('file', f);
+                  fd.append('scope', `cities/${selectedCountryForCityGallery||'country'}/${selectedCityForGallery||'city'}`);
+                  const res = await fetch('/api/admin/gallery-upload', { method: 'POST', body: fd });
+                  const j = await res.json();
+                  if (j?.success && j.url) {
+                    setCityGalleryText((prev)=> (prev? prev+"\n":"") + j.url);
+                    toast({ title: 'Uploaded', description: 'Image added to city gallery.' });
+                  } else {
+                    toast({ title: 'Upload failed', description: j?.error||'Could not upload', variant: 'destructive' as any });
+                  }
+                }} />
+                <span className="text-xs text-gray-500">Upload to Supabase Storage</span>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={saveCityGallery} disabled={!selectedCountryForCityGallery || !selectedCityForGallery || savingCityGallery}>{savingCityGallery ? 'Saving…' : 'Save City Gallery'}</Button>
+                <Button variant="outline" onClick={()=>setCityGalleryText('')}>Clear</Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Edit Modal */}
@@ -2829,6 +3063,70 @@ export default function AdminPagesEditor() {
                                             }
                                           }))}
                                         />
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Gallery Images Management (country) */}
+                                  <div className="mt-6 p-4 rounded-md border border-gray-100 bg-gray-50">
+                                    <h6 className="font-semibold mb-3 text-gray-800">Gallery Images</h6>
+                                    <div className="space-y-3">
+                                      <div className="text-sm text-gray-600 mb-2">
+                                        Add image URLs for the gallery (one per line):
+                                      </div>
+                                      <Textarea
+                                        className="mt-1"
+                                        rows={4}
+                                        placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
+                                        value={((sections.countryPages?.[countrySlug]?.galleryImages || []) as string[]).join('\n')}
+                                        onChange={(e) => {
+                                          const urls = e.target.value.split('\n').map(url => url.trim()).filter(Boolean);
+                                          setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                galleryImages: urls
+                                              }
+                                            }
+                                          }));
+                                        }}
+                                      />
+                                      <div className="text-xs text-gray-500">
+                                        Current: {((sections.countryPages?.[countrySlug]?.galleryImages || []) as string[]).length} images
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Gallery Images Management (city) */}
+                                  <div className="mt-6 p-4 rounded-md border border-gray-100 bg-gray-50">
+                                    <h6 className="font-semibold mb-3 text-gray-800">Gallery Images</h6>
+                                    <div className="space-y-3">
+                                      <div className="text-sm text-gray-600 mb-2">
+                                        Add image URLs for the gallery (one per line):
+                                      </div>
+                                      <Textarea
+                                        className="mt-1"
+                                        rows={4}
+                                        placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
+                                        value={((sections.cityPages?.[key]?.galleryImages || []) as string[]).join('\n')}
+                                        onChange={(e) => {
+                                          const urls = e.target.value.split('\n').map(url => url.trim()).filter(Boolean);
+                                          setSections((s: any) => ({
+                                            ...s,
+                                            cityPages: {
+                                              ...(s.cityPages || {}),
+                                              [key]: {
+                                                ...(s.cityPages?.[key] || {}),
+                                                galleryImages: urls
+                                              }
+                                            }
+                                          }));
+                                        }}
+                                      />
+                                      <div className="text-xs text-gray-500">
+                                        Current: {((sections.cityPages?.[key]?.galleryImages || []) as string[]).length} images
                                       </div>
                                     </div>
                                   </div>

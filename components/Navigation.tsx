@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { FiMenu, FiX, FiChevronDown, FiUser, FiZap } from 'react-icons/fi';
 import Link from 'next/link';
+import Image from 'next/image';
+import logoImg from '@/components/zonelogo1.png';
 import LogoutButton from '@/components/LogoutButton';
 
 export default function Navigation() {
@@ -191,13 +193,15 @@ export default function Navigation() {
         : 'bg-slate-900/90 backdrop-blur-md shadow-md border-b border-slate-800/30'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 lg:h-18">
-          {/* Logo - Updated with pink Zone text for better visibility */}
+        <div className="flex justify-between items-center h-20 lg:h-22">
+          {/* Logo - uses image from /public/logo.png if available */}
           <div className="flex-shrink-0">
             <Link href="/" className="group">
-              <h1 className="text-xl lg:text-2xl font-bold font-inter transition-all duration-300 group-hover:scale-105">
-                <span className="bg-gradient-to-r from-gray-200 via-white to-gray-300 bg-clip-text text-transparent">Stands</span><span className="bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 bg-clip-text text-transparent">Zone</span>
-              </h1>
+              <div className="flex items-center">
+                <Image src={logoImg} alt="StandsZone" width={500} height={500} priority className="w-44 md:w-48 lg:w-52 h-auto transition-transform duration-300 group-hover:scale-105" />
+                {/* Fallback text if image missing */}
+                <span className="sr-only">StandsZone</span>
+              </div>
             </Link>
           </div>
 

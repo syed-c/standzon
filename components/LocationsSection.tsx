@@ -384,9 +384,9 @@ export default function LocationsSection({
         {/* New Interlinking Countries Section */}
         <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 mb-16">
           <div className="text-center mb-8">
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
               {(moreCountries?.heading ? (moreCountries.heading as string) : 'More Countries in {country}').replace(/\{country\}/ig, activeTab)}
-            </h3>
+            </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
               {moreCountries?.paragraph || 'Discover exhibition stand builders across all major markets in this region. Click on any country to explore local professionals and get instant quotes.'}
             </p>
@@ -429,9 +429,9 @@ export default function LocationsSection({
                 <FiGlobe className="w-8 h-8 text-white" />
               </div>
             </div>
-            <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               {expandingMarkets?.heading || 'Expanding to New Markets?'}
-            </h3>
+            </h2>
             <p className="text-lg text-gray-300 mb-8">
               {expandingMarkets?.paragraph || "We're continuously growing our global network. If you don't see your location listed, contact us to discuss how we can support your exhibition needs."}
             </p>
