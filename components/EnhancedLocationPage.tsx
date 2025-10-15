@@ -259,6 +259,28 @@ export function EnhancedLocationPage({
     ? (nestedCityBlock || rawCityBlock || null)
     : (cmsData?.sections?.countryPages?.[countrySlug] || null);
 
+  // Minimal sanitizer to allow safe basic formatting
+  const sanitizeHtml = (html: string | undefined): string => {
+    if (!html) return '';
+    // Normalize line breaks to <br/>
+    const withBreaks = html.replace(/\r?\n/g, '<br/>');
+    // Allow only a whitelist of tags; strip others
+    const allowedTags = /<(\/?)(h2|h3|h4|p|strong|em|ul|ol|li|br|a)(\s+[^>]*)?>/gi;
+    // Escape everything
+    let escaped = withBreaks
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    // Unescape allowed tags
+    escaped = escaped.replace(/&lt;(\/?)(h2|h3|h4|p|strong|em|ul|ol|li|br|a)(\s+[^&>]*)?&gt;/gi, '<$1$2$3>');
+    // Remove inline event handlers and scripts/styles
+    escaped = escaped.replace(/on[a-z]+="[^"]*"/gi, '')
+                     .replace(/javascript:/gi, '')
+                     .replace(/<\/(script|style)>/gi, '')
+                     .replace(/<(script|style)[^>]*>[\s\S]*?<\/(script|style)>/gi, '');
+    return escaped;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Hero Section */}
@@ -468,16 +490,23 @@ export function EnhancedLocationPage({
       <section id="builders-grid" className="py-16 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-4">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                  Verified Builders in {displayLocation}
-                </h2>
-                <p className="text-gray-600">
-                  {filteredBuilders.length} professional exhibition stand builders available
-                </p>
+            {/* Heading + intro full width */}
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                {(cmsBlock?.buildersHeading) || `Verified Builders in ${displayLocation}`}
+              </h2>
+              <div className="text-gray-600">
+                {cmsBlock?.buildersIntro
+                  ? (
+                    <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(cmsBlock.buildersIntro) }} />
+                  ) : (
+                    <p>{filteredBuilders.length} professional exhibition stand builders available</p>
+                  )}
               </div>
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+            </div>
+
+            {/* Filters row below, aligned left */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto mb-8">
                 {/* Search box placed before filters */}
                 <div className="w-full sm:w-64">
                   <Input
@@ -512,7 +541,6 @@ export function EnhancedLocationPage({
                   Price
                 </Button>
               </div>
-            </div>
 
             {filteredBuilders.length > 0 ? (
               <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
@@ -553,15 +581,20 @@ export function EnhancedLocationPage({
           {/* SEO Content Section (between builders grid and bottom CTA) */}
           <section className="py-16 bg-white">
             <div className="container mx-auto px-6">
-              <div className="max-w-4xl mx-auto prose prose-slate">
+              <div className="max-w-4xl mx-auto prose prose-slate leading-relaxed space-y-4">
                 <h2 className="text-2xl md:text-3xl font-bold !mb-4">
                   {(cmsBlock?.servicesHeading) || 
                    `Exhibition Stand Builders in ${displayLocation}: Services, Costs, and Tips`}
                 </h2>
-                <p>
-                  {(cmsBlock?.servicesParagraph) || 
-                   `Finding the right exhibition stand partner in ${displayLocation} can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.`}
-                </p>
+                <div
+                  className="prose max-w-none"
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHtml(
+                      (cmsBlock?.servicesParagraph) ||
+                      `Finding the right exhibition stand partner in ${displayLocation} can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.`
+                    )
+                  }}
+                />
               </div>
             </div>
           </section>

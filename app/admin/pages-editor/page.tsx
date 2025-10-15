@@ -2356,6 +2356,88 @@ export default function AdminPagesEditor() {
                                       <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
                                       Services Overview
                                     </h5>
+                                    {/* New Builders Intro (Heading + content) displayed above builders grid */}
+                                    <div className="mb-8 p-4 rounded-md border border-gray-100 bg-gray-50">
+                                      <h6 className="font-semibold mb-3 text-gray-800">Builders Intro (heading + rich content)</h6>
+                                      <div className="grid md:grid-cols-2 gap-4">
+                                        <div>
+                                          <Label className="text-sm font-medium text-gray-600">Builders Heading</Label>
+                                          <Input 
+                                            className="mt-1"
+                                            value={countryData?.buildersHeading || ''}
+                                            onChange={(e) => setSections((s: any) => ({
+                                              ...s,
+                                              countryPages: {
+                                                ...(s.countryPages || {}),
+                                                [countrySlug]: {
+                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                                  buildersHeading: e.target.value
+                                                }
+                                              }
+                                            }))}
+                                          />
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm font-medium text-gray-600">Builders Intro (accepts basic HTML)</Label>
+                                          <Textarea 
+                                            className="mt-1"
+                                            rows={4}
+                                            value={countryData?.buildersIntro || ''}
+                                            onChange={(e) => setSections((s: any) => ({
+                                              ...s,
+                                              countryPages: {
+                                                ...(s.countryPages || {}),
+                                                [countrySlug]: {
+                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                                  buildersIntro: e.target.value
+                                                }
+                                              }
+                                            }))}
+                                          />
+                                          <div className="flex gap-2 mt-2">
+                                            <Button type="button" variant="outline" size="sm" onClick={() => {
+                                              const current = countryData?.buildersIntro || '';
+                                              setSections((s: any) => ({
+                                                ...s,
+                                                countryPages: {
+                                                  ...(s.countryPages || {}),
+                                                  [countrySlug]: {
+                                                    ...(s.countryPages?.[countrySlug] || {}),
+                                                    buildersIntro: current + (current ? "\n" : '') + '<p>Intro paragraph...</p>'
+                                                  }
+                                                }
+                                              }));
+                                            }}>P</Button>
+                                            <Button type="button" variant="outline" size="sm" onClick={() => {
+                                              const current = countryData?.buildersIntro || '';
+                                              setSections((s: any) => ({
+                                                ...s,
+                                                countryPages: {
+                                                  ...(s.countryPages || {}),
+                                                  [countrySlug]: {
+                                                    ...(s.countryPages?.[countrySlug] || {}),
+                                                    buildersIntro: current + (current ? "\n" : '') + '<ul>\n  <li>Point</li>\n</ul>'
+                                                  }
+                                                }
+                                              }));
+                                            }}>UL</Button>
+                                            <Button type="button" variant="outline" size="sm" onClick={() => {
+                                              const current = countryData?.buildersIntro || '';
+                                              setSections((s: any) => ({
+                                                ...s,
+                                                countryPages: {
+                                                  ...(s.countryPages || {}),
+                                                  [countrySlug]: {
+                                                    ...(s.countryPages?.[countrySlug] || {}),
+                                                    buildersIntro: current + (current ? "\n" : '') + '<ol>\n  <li>Step</li>\n</ol>'
+                                                  }
+                                                }
+                                              }));
+                                            }}>OL</Button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
                                     <div className="space-y-4">
                                       <div>
                                         <Label className="text-sm font-medium text-gray-600">Section Heading</Label>
@@ -2376,9 +2458,77 @@ export default function AdminPagesEditor() {
                                       </div>
                                       <div>
                                         <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
+                                        {/* Simple rich controls */}
+                                        <div className="flex gap-2 mb-2">
+                                          <Button type="button" variant="outline" size="sm" onClick={() => {
+                                            const current = countryData?.servicesParagraph || '';
+                                            setSections((s: any) => ({
+                                              ...s,
+                                              countryPages: {
+                                                ...(s.countryPages || {}),
+                                                [countrySlug]: {
+                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                                  servicesParagraph: current + (current ? "\n" : '') + '<h2>Heading</h2>'
+                                                }
+                                              }
+                                            }));
+                                          }}>H2</Button>
+                                          <Button type="button" variant="outline" size="sm" onClick={() => {
+                                            const current = countryData?.servicesParagraph || '';
+                                            setSections((s: any) => ({
+                                              ...s,
+                                              countryPages: {
+                                                ...(s.countryPages || {}),
+                                                [countrySlug]: {
+                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                                  servicesParagraph: current + (current ? "\n" : '') + '<h3>Subheading</h3>'
+                                                }
+                                              }
+                                            }));
+                                          }}>H3</Button>
+                                          <Button type="button" variant="outline" size="sm" onClick={() => {
+                                            const current = countryData?.servicesParagraph || '';
+                                            setSections((s: any) => ({
+                                              ...s,
+                                              countryPages: {
+                                                ...(s.countryPages || {}),
+                                                [countrySlug]: {
+                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                                  servicesParagraph: current + (current ? "\n" : '') + '<ul>\n  <li>List item</li>\n</ul>'
+                                                }
+                                              }
+                                            }));
+                                          }}>UL</Button>
+                                          <Button type="button" variant="outline" size="sm" onClick={() => {
+                                            const current = countryData?.servicesParagraph || '';
+                                            setSections((s: any) => ({
+                                              ...s,
+                                              countryPages: {
+                                                ...(s.countryPages || {}),
+                                                [countrySlug]: {
+                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                                  servicesParagraph: current + (current ? "\n" : '') + '<ol>\n  <li>Numbered</li>\n</ol>'
+                                                }
+                                              }
+                                            }));
+                                          }}>OL</Button>
+                                          <Button type="button" variant="outline" size="sm" onClick={() => {
+                                            const current = countryData?.servicesParagraph || '';
+                                            setSections((s: any) => ({
+                                              ...s,
+                                              countryPages: {
+                                                ...(s.countryPages || {}),
+                                                [countrySlug]: {
+                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                                  servicesParagraph: current + (current ? "\n" : '') + '<p><strong>Bold</strong> and <em>italic</em> text</p>'
+                                                }
+                                              }
+                                            }));
+                                          }}>Format</Button>
+                                        </div>
                                         <Textarea 
                                           className="mt-1"
-                                          rows={4} 
+                                          rows={6} 
                                           value={countryData?.servicesParagraph || ''} 
                                           onChange={(e) => setSections((s: any) => ({
                                             ...s,
@@ -2478,6 +2628,166 @@ export default function AdminPagesEditor() {
                             </div>
                           </AccordionContent>
                                               </AccordionItem>
+                    </Accordion>
+                  </div>
+                ) : editingPath.startsWith('/exhibition-stands/') && editingPath.split('/').filter(Boolean).length === 3 ? (
+                  // City page editor panel
+                  <div className="space-y-6">
+                    <Accordion type="single" collapsible className="w-full">
+                      <AccordionItem value="cityServices">
+                        <AccordionTrigger>City Content</AccordionTrigger>
+                        <AccordionContent>
+                          {(() => {
+                            const parts = editingPath.split('/').filter(Boolean);
+                            const countrySlug = parts[1];
+                            const citySlug = parts[2];
+                            const key = `${countrySlug}-${citySlug}`;
+                            const cityData = (sections.cityPages?.[key] as any) || {};
+                            return (
+                              <div className="space-y-6 bg-white border rounded-md p-4">
+                                {/* Builders Intro for city */}
+                                <div className="mb-4 p-4 rounded-md border border-gray-100 bg-gray-50">
+                                  <h6 className="font-semibold mb-3 text-gray-800">Builders Intro (heading + rich content)</h6>
+                                  <div className="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                      <Label className="text-sm font-medium text-gray-600">Builders Heading</Label>
+                                      <Input
+                                        className="mt-1"
+                                        value={cityData?.buildersHeading || ''}
+                                        onChange={(e) => setSections((s: any) => ({
+                                          ...s,
+                                          cityPages: {
+                                            ...(s.cityPages || {}),
+                                            [key]: {
+                                              ...(s.cityPages?.[key] || {}),
+                                              buildersHeading: e.target.value
+                                            }
+                                          }
+                                        }))}
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label className="text-sm font-medium text-gray-600">Builders Intro (accepts basic HTML)</Label>
+                                      <Textarea
+                                        className="mt-1"
+                                        rows={4}
+                                        value={cityData?.buildersIntro || ''}
+                                        onChange={(e) => setSections((s: any) => ({
+                                          ...s,
+                                          cityPages: {
+                                            ...(s.cityPages || {}),
+                                            [key]: {
+                                              ...(s.cityPages?.[key] || {}),
+                                              buildersIntro: e.target.value
+                                            }
+                                          }
+                                        }))}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Services editor for city */}
+                                <div className="space-y-4">
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Services Heading</Label>
+                                    <Input
+                                      className="mt-1"
+                                      value={cityData?.servicesHeading || ''}
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        cityPages: {
+                                          ...(s.cityPages || {}),
+                                          [key]: {
+                                            ...(s.cityPages?.[key] || {}),
+                                            servicesHeading: e.target.value
+                                          }
+                                        }
+                                      }))}
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Services Paragraph</Label>
+                                    <Textarea
+                                      className="mt-1"
+                                      rows={6}
+                                      value={cityData?.servicesParagraph || ''}
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        cityPages: {
+                                          ...(s.cityPages || {}),
+                                          [key]: {
+                                            ...(s.cityPages?.[key] || {}),
+                                            servicesParagraph: e.target.value
+                                          }
+                                        }
+                                      }))}
+                                    />
+                                  </div>
+                                  {/* Final CTA for city */}
+                                  <div className="mt-6 p-4 rounded-md border border-gray-100 bg-gray-50">
+                                    <h6 className="font-semibold mb-3 text-gray-800">Final CTA</h6>
+                                    <div className="space-y-3">
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Final CTA Heading</Label>
+                                        <Input
+                                          className="mt-1"
+                                          value={cityData?.finalCtaHeading || ''}
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            cityPages: {
+                                              ...(s.cityPages || {}),
+                                              [key]: {
+                                                ...(s.cityPages?.[key] || {}),
+                                                finalCtaHeading: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Final CTA Paragraph</Label>
+                                        <Textarea
+                                          className="mt-1"
+                                          rows={4}
+                                          value={cityData?.finalCtaParagraph || ''}
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            cityPages: {
+                                              ...(s.cityPages || {}),
+                                              [key]: {
+                                                ...(s.cityPages?.[key] || {}),
+                                                finalCtaParagraph: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Final CTA Button Text</Label>
+                                        <Input
+                                          className="mt-1"
+                                          value={cityData?.finalCtaButtonText || ''}
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            cityPages: {
+                                              ...(s.cityPages || {}),
+                                              [key]: {
+                                                ...(s.cityPages?.[key] || {}),
+                                                finalCtaButtonText: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </AccordionContent>
+                      </AccordionItem>
                     </Accordion>
                   </div>
                 ) : editingPath === '/3d-rendering-and-concept-development' ? (

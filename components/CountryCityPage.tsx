@@ -844,7 +844,10 @@ export function CountryCityPage({
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{heading}</h2>
               )}
               {paragraph && (
-                <p className="text-gray-700 leading-relaxed">{paragraph}</p>
+                <div
+                  className="prose max-w-none leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: paragraph.replace(/\r?\n/g, '<br/>') }}
+                />
               )}
             </div>
           </section>
@@ -870,7 +873,10 @@ export function CountryCityPage({
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{heading}</h2>
               )}
               {paragraph && (
-                <p className="text-gray-700 leading-relaxed">{paragraph}</p>
+                <div
+                  className="prose max-w-none leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: paragraph.replace(/\r?\n/g, '<br/>') }}
+                />
               )}
             </div>
           </section>
@@ -896,30 +902,41 @@ export function CountryCityPage({
         </section>
       )}
       
-      {/* Bottom CTA moved to the very bottom */}
-      <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
-        <div className="container mx-auto px-6 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {`Ready to Find Your Perfect Builder in ${city || country}?`}
-            </h2>
-            <p className="text-xl text-slate-300 mb-8">
-              {'Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.'}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="text-lg px-8 py-4">Start Getting Quotes</Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg"
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              >
-                Back to Top
-              </Button>
+      {/* Bottom CTA moved to the very bottom - now sourced from CMS/Supabase */}
+      {(() => {
+        const countrySlug = country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        const citySlug = city ? city.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') : '';
+        const key = city ? `${countrySlug}-${citySlug}` : '';
+        const countryBlock = (savedPageContent as any)?.sections?.countryPages?.[countrySlug] || (cmsContent as any)?.sections?.countryPages?.[countrySlug] || (cmsContent as any) || {};
+        const rawCity = city ? (savedPageContent as any)?.sections?.cityPages?.[key] : null;
+        const nestedCity = city ? ((rawCity as any)?.countryPages?.[citySlug] || rawCity) : null;
+        const cityBlock = city ? (nestedCity || (cmsContent as any)?.sections?.cityPages?.[key] || (cmsContent as any) || {}) : null;
+        const block = city ? (cityBlock || {}) : (countryBlock || {});
+        const heading = (block as any)?.finalCtaHeading || `Ready to Find Your Perfect Builder in ${city || country}?`;
+        const paragraph = (block as any)?.finalCtaParagraph || 'Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.';
+        const buttonText = (block as any)?.finalCtaButtonText || 'Start Getting Quotes';
+        return (
+          <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
+            <div className="container mx-auto px-6 text-center">
+              <div className="max-w-3xl mx-auto">
+                <h2 className="text-3xl md:text-4xl font-bold mb-6">{heading}</h2>
+                <p className="text-xl text-slate-300 mb-8">{paragraph}</p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button className="text-lg px-8 py-4">{buttonText}</Button>
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg"
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  >
+                    Back to Top
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
+        );
+      })()}
 
       {/* Cities section was moved to top */}
     </>
