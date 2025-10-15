@@ -2,6 +2,8 @@
 "use client";
 
 import React from 'react';
+import Image from 'next/image';
+import logoImg from '@/components/zonelogo1.png';
 import { FiPhone, FiMail, FiMapPin, FiLinkedin, FiTwitter, FiInstagram, FiFacebook, FiExternalLink } from 'react-icons/fi';
 // import { useQuery } from 'convex/react';
 // import { api } from '@/convex/_generated/api';
@@ -105,9 +107,9 @@ export default function Footer() {
         <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-1">
-            <h3 className="text-2xl font-bold font-inter mb-4">
-              {siteData.companyName}<span className="text-pink-500">Zone</span>
-            </h3>
+            <div className="mb-4">
+              <Image src={logoImg} alt="StandsZone" width={200} height={60} className="w-40 md:w-48 h-auto" priority />
+            </div>
             <p className="text-gray-300 mb-6 leading-relaxed">
               {footerData?.paragraph || siteData.pages?.footerText || fallbackData.pages.footerText}
             </p>
