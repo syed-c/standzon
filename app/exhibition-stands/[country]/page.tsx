@@ -122,9 +122,15 @@ export default async function CountryPage({ params }: PageProps) {
   const defaultContent = getDefaultCountryContent(countryName, sanitized);
   
   // Merge CMS content with defaults (CMS content takes precedence)
+  // Be flexible with incoming shapes to avoid falling back to hardcoded defaults
+  const countryBlock =
+    (cmsContent as any)?.sections?.countryPages?.[sanitized] ||
+    (cmsContent as any)?.countryPages?.[sanitized] ||
+    cmsContent ||
+    null;
   const mergedContent = {
     ...defaultContent,
-    ...(cmsContent?.sections?.countryPages?.[sanitized] || {})
+    ...(countryBlock || {})
   };
 
   try {

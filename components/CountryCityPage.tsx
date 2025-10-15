@@ -830,22 +830,52 @@ export function CountryCityPage({
         </section>
       )}
 
-      {/* SEO Content Section after Cities */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto prose prose-slate">
-            <h2 className="text-2xl md:text-3xl font-bold !mb-4">
-              {savedPageContent?.content?.extra?.sectionHeading || `Exhibition Stand Builders in ${city || country}: Services, Costs, and Tips`}
-            </h2>
-            <p>
-              {savedPageContent?.content?.extra?.rawHtml ? '' : `Finding the right exhibition stand partner in ${city || country} can dramatically improve your event ROI. Local builders offer end‑to‑end services including custom design, fabrication, graphics, logistics, and on‑site installation.`}
-            </p>
-            {savedPageContent?.content?.extra?.rawHtml && (
-              <div dangerouslySetInnerHTML={{ __html: savedPageContent.content.extra.rawHtml }} />
-            )}
-          </div>
-        </div>
-      </section>
+      {/* Country Services Section (H2 + paragraph) sourced from CMS */}
+      {!city && (() => {
+        const slug = country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        const servicesFromSaved = (savedPageContent as any)?.sections?.countryPages?.[slug];
+        const heading = servicesFromSaved?.servicesHeading || (cmsContent as any)?.servicesHeading;
+        const paragraph = servicesFromSaved?.servicesParagraph || (cmsContent as any)?.servicesParagraph;
+        if (!heading && !paragraph) return null;
+        return (
+          <section className="py-12 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              {heading && (
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{heading}</h2>
+              )}
+              {paragraph && (
+                <p className="text-gray-700 leading-relaxed">{paragraph}</p>
+              )}
+            </div>
+          </section>
+        );
+      })()}
+
+      {/* Removed extra SEO content block after cities; services are rendered inside EnhancedLocationPage */}
+
+      {/* City Services Section (H2 + paragraph) sourced from CMS */}
+      {city && (() => {
+        const countrySlug = country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        const citySlug = city.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        const key = `${countrySlug}-${citySlug}`;
+        const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
+        const nested = (raw as any)?.countryPages?.[citySlug] || raw;
+        const heading = nested?.servicesHeading || (cmsContent as any)?.sections?.cityPages?.[key]?.servicesHeading || (cmsContent as any)?.servicesHeading;
+        const paragraph = nested?.servicesParagraph || (cmsContent as any)?.sections?.cityPages?.[key]?.servicesParagraph || (cmsContent as any)?.servicesParagraph;
+        if (!heading && !paragraph) return null;
+        return (
+          <section className="py-12 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              {heading && (
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{heading}</h2>
+              )}
+              {paragraph && (
+                <p className="text-gray-700 leading-relaxed">{paragraph}</p>
+              )}
+            </div>
+          </section>
+        );
+      })()}
 
       {/* Quote Request Form placed just above the final CTA (only for city pages) */}
       {Boolean(city) && (
@@ -862,23 +892,6 @@ export function CountryCityPage({
             <div className="max-w-4xl mx-auto">
               <SimpleQuoteRequestForm defaultCountry={country} defaultCity={city} />
             </div>
-          </div>
-        </section>
-      )}
-
-      {/* Personalized/Raw Content Section (renders saved HTML) */}
-      {(savedPageContent?.content?.extra?.personalizedHtml || savedPageContent?.content?.extra?.rawHtml || savedPageContent?.content?.introduction) && (
-        <section className="py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {savedPageContent?.content?.extra?.sectionHeading && (
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                {savedPageContent.content.extra.sectionHeading}
-              </h2>
-            )}
-            <div
-              className="prose max-w-none"
-              dangerouslySetInnerHTML={{ __html: savedPageContent.content.extra?.personalizedHtml || savedPageContent.content.extra?.rawHtml || savedPageContent.content.introduction }}
-            />
           </div>
         </section>
       )}
