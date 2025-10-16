@@ -481,18 +481,45 @@ export function CountryCityPage({
               return servesCity || headquartersMatch;
             }).length
           }));
-          // Fallback: If no cities derived from builders, pull from global database
-          if (cityList.length === 0) {
-            try {
-              const { getCitiesByCountry } = require('@/lib/data/globalExhibitionDatabase');
-              const countrySlug = country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-              const allCountryCities = getCitiesByCountry(countrySlug) || [];
-              cityList = allCountryCities.map((c: any) => ({
-                name: c.name,
-                slug: c.slug,
-                builderCount: 0
-              }));
-            } catch {}
+          // Always pull cities from global database to ensure all cities are displayed
+          try {
+            const { getCitiesByCountry } = require('@/lib/data/globalExhibitionDatabase');
+            const { locationData } = require('@/lib/data/locationData');
+            
+            const countrySlug = country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            const allCountryCities = getCitiesByCountry(countrySlug) || [];
+            
+            // Also get cities from locationData for more comprehensive coverage
+            const locationCountry = locationData.find(c => c.countrySlug === countrySlug);
+            const locationCities = locationCountry?.cities || [];
+            
+            // Merge cities from all sources: builders, global database, and location data
+            const allCityNames = new Set([
+              ...cityList.map(c => c.name), 
+              ...allCountryCities.map(c => c.name),
+              ...locationCities.map(c => c.cityName)
+            ]);
+            
+            // Create maps for quick lookup
+            const existingCitiesMap = new Map(cityList.map(c => [c.name, c]));
+            const locationCitiesMap = new Map(locationCities.map(c => [c.cityName, c]));
+            
+            // Create the final city list with merged data from all sources
+            cityList = Array.from(allCityNames).map(cityName => {
+              const existingCity = existingCitiesMap.get(cityName);
+              const databaseCity = allCountryCities.find(c => c.name === cityName);
+              const locationCity = locationCitiesMap.get(cityName);
+              
+              return {
+                name: cityName,
+                slug: (existingCity?.slug || databaseCity?.slug || locationCity?.citySlug || cityName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')),
+                builderCount: existingCity?.builderCount || databaseCity?.builderCount || 0
+              };
+            }).sort((a, b) => a.name.localeCompare(b.name));
+            
+            console.log(`Found ${cityList.length} cities for ${country}`);
+          } catch (error) {
+            console.error('Error merging cities:', error);
           }
           
           setCities(cityList);
@@ -817,7 +844,7 @@ export function CountryCityPage({
                 // Import and use the utility function for consistent slug generation
                 const cityUrl = `/exhibition-stands/${normalizeCountrySlug(country)}/${normalizeCitySlug(c.name)}`;
                 return (
-                  <a key={c.slug} href={cityUrl} className="group">
+                  <a key={c.slug || c.name} href={cityUrl} className="group">
                     <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-all">
                       <div className="flex items-center justify-between">
                         <div className="font-semibold text-gray-900 group-hover:text-blue-700">{c.name}</div>
