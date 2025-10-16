@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { FiMenu, FiX, FiChevronDown, FiUser, FiZap } from 'react-icons/fi';
 import Link from 'next/link';
 import Image from 'next/image';
-import logoImg from '@/components/zonelogo1.png';
+import logoImg from '@/components/zonelogo2.png';
 import LogoutButton from '@/components/LogoutButton';
 
 export default function Navigation() {

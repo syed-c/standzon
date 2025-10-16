@@ -151,12 +151,42 @@ export default function AdminPagesEditor() {
     setSavingCountryGallery(true);
     try {
       const path = `/exhibition-stands/${selectedCountryForGallery}`;
+      
+      // First, fetch the current page content to preserve it
+      const getRes = await fetch(`/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(path)}`, { cache: 'no-store' });
+      const currentContent = await getRes.json();
+      
+      if (!currentContent?.success) {
+        toast({ title: 'Save failed', description: 'Could not retrieve current page content.', variant: 'destructive' as any });
+        return;
+      }
+      
+      // Extract the URLs from the text area
       const urls = countryGalleryText.split('\n').map(u => u.trim()).filter(Boolean);
+      
+      // Update only the gallery images while preserving the rest of the content
       const res = await fetch('/api/admin/pages-editor', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'update', path, sections: { countryPages: { [selectedCountryForGallery]: { galleryImages: urls } } } })
+        body: JSON.stringify({ 
+          action: 'update', 
+          path,
+          // Preserve existing content by sending it back with the update
+          ...currentContent.data,
+          // Only update the gallery images section
+          sections: { 
+            ...currentContent.data.sections,
+            countryPages: { 
+              ...currentContent.data.sections?.countryPages,
+              [selectedCountryForGallery]: { 
+                ...currentContent.data.sections?.countryPages?.[selectedCountryForGallery],
+                galleryImages: urls 
+              } 
+            } 
+          }
+        })
       });
+      
       const j = await res.json();
       if (j?.success) {
         toast({ title: 'Saved', description: 'Country gallery updated.' });
@@ -164,7 +194,8 @@ export default function AdminPagesEditor() {
       } else {
         toast({ title: 'Save failed', description: 'Could not save gallery.', variant: 'destructive' as any });
       }
-    } catch {
+    } catch (error) {
+      console.error('Gallery save error:', error);
       toast({ title: 'Save failed', description: 'Network or server error.', variant: 'destructive' as any });
     } finally {
       setSavingCountryGallery(false);
@@ -193,13 +224,41 @@ export default function AdminPagesEditor() {
     setSavingCityGallery(true);
     try {
       const path = `/exhibition-stands/${selectedCountryForCityGallery}/${selectedCityForGallery}`;
+      
+      // First, fetch the current page content to preserve it
+      const getRes = await fetch(`/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(path)}`, { cache: 'no-store' });
+      const currentContent = await getRes.json();
+      
+      if (!currentContent?.success) {
+        toast({ title: 'Save failed', description: 'Could not retrieve current page content.', variant: 'destructive' as any });
+        return;
+      }
+      
       const key = `${selectedCountryForCityGallery}-${selectedCityForGallery}`;
       const urls = cityGalleryText.split('\n').map(u => u.trim()).filter(Boolean);
+      
       const res = await fetch('/api/admin/pages-editor', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'update', path, sections: { cityPages: { [key]: { galleryImages: urls } } } })
+        body: JSON.stringify({ 
+          action: 'update', 
+          path,
+          // Preserve existing content by sending it back with the update
+          ...currentContent.data,
+          // Only update the gallery images section
+          sections: { 
+            ...currentContent.data.sections,
+            cityPages: { 
+              ...currentContent.data.sections?.cityPages,
+              [key]: { 
+                ...currentContent.data.sections?.cityPages?.[key],
+                galleryImages: urls 
+              } 
+            } 
+          }
+        })
       });
+      
       const j = await res.json();
       if (j?.success) {
         toast({ title: 'Saved', description: 'City gallery updated.' });
@@ -207,7 +266,8 @@ export default function AdminPagesEditor() {
       } else {
         toast({ title: 'Save failed', description: 'Could not save gallery.', variant: 'destructive' as any });
       }
-    } catch {
+    } catch (error) {
+      console.error('City gallery save error:', error);
       toast({ title: 'Save failed', description: 'Network or server error.', variant: 'destructive' as any });
     } finally {
       setSavingCityGallery(false);

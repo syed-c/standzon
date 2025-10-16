@@ -3,7 +3,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import logoImg from '@/components/zonelogo1.png';
+import logoImg from '@/components/zonelogo2.png';
 import { FiPhone, FiMail, FiMapPin, FiLinkedin, FiTwitter, FiInstagram, FiFacebook, FiExternalLink } from 'react-icons/fi';
 // import { useQuery } from 'convex/react';
 // import { api } from '@/convex/_generated/api';
