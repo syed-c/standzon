@@ -26,6 +26,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/united-arab-emirates', request.url))
   }
 
+  // Fix city slug inconsistencies
+  if (pathname.includes('/abudhabi')) {
+    const newPathname = pathname.replace('/abudhabi', '/abu-dhabi')
+    return NextResponse.redirect(new URL(newPathname, request.url))
+  }
+
   return NextResponse.next()
 }
 
@@ -33,6 +39,8 @@ export const config = {
   matcher: [
     '/admin/:path*',
     '/exhibition-stands/uae/:path*',
-    '/uae/:path*'
+    '/uae/:path*',
+    '/exhibition-stands/:country/abudhabi',
+    '/exhibition-stands/:country/abudhabi/:path*'
   ]
 }

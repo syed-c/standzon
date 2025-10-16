@@ -1,11 +1,12 @@
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import { CountryCityPage } from '@/components/CountryCityPage';
-import { getCityBySlug } from '@/lib/data/globalExhibitionDatabase';
+import { getCityBySlug, getCountryBySlug } from '@/lib/data/globalExhibitionDatabase';
 import { getServerSupabase } from "@/lib/supabase";
 import SimpleQuoteRequestForm from '@/components/SimpleQuoteRequestForm';
 
@@ -47,9 +48,21 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
     const countrySlug = normalize(country);
     const citySlug = normalize(city);
     
+    // Validate country exists
+    const countryData = getCountryBySlug(countrySlug);
+    if (!countryData) {
+      console.log('❌ Country not found in metadata:', countrySlug);
+      notFound();
+    }
+    
     // Try to get city data from global database for better metadata
     const cityData = getCityBySlug(countrySlug, citySlug);
-    const cityName = cityData ? cityData.name : toTitle(citySlug);
+    if (!cityData) {
+      console.log('❌ City not found in metadata:', citySlug, 'in country:', countrySlug);
+      notFound();
+    }
+    
+    const cityName = cityData.name;
     const countryName = toTitle(countrySlug);
     
     return {
@@ -116,9 +129,23 @@ export default async function CityPage({ params }: CityPageProps) {
   
   console.log('🏙️ Loading city page:', { country: countrySlug, city: citySlug });
   
+  // Validate country exists
+  const countryData = getCountryBySlug(countrySlug);
+  if (!countryData) {
+    console.log('❌ Country not found:', countrySlug);
+    notFound();
+  }
+  
   // Get city data from global database
   const cityData = getCityBySlug(countrySlug, citySlug);
-  const cityName = cityData ? cityData.name : toTitle(citySlug);
+  
+  // Return 404 if city doesn't exist
+  if (!cityData) {
+    console.log('❌ City not found:', citySlug, 'in country:', countrySlug);
+    notFound();
+  }
+  
+  const cityName = cityData.name;
   const countryName = toTitle(countrySlug);
   
   // Try to get CMS content

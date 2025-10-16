@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { BuilderCard } from './BuilderCard';
 import { EnhancedLocationPage } from './EnhancedLocationPage';
 import LocationPageEditor from './LocationPageEditor';
+import { normalizeCountrySlug, normalizeCitySlug } from '@/lib/utils/slugUtils';
 import { 
   MapPin, Users, Building2, TrendingUp, Search, Filter,
   Grid, List, ChevronLeft, ChevronRight, Edit3, Save,
@@ -813,9 +814,10 @@ export function CountryCityPage({
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {cities.map((c) => {
-                const countrySlug = country.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                // Import and use the utility function for consistent slug generation
+                const cityUrl = `/exhibition-stands/${normalizeCountrySlug(country)}/${normalizeCitySlug(c.name)}`;
                 return (
-                  <a key={c.slug} href={`/exhibition-stands/${countrySlug}/${c.slug}`} className="group">
+                  <a key={c.slug} href={cityUrl} className="group">
                     <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-all">
                       <div className="flex items-center justify-between">
                         <div className="font-semibold text-gray-900 group-hover:text-blue-700">{c.name}</div>

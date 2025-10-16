@@ -12,6 +12,7 @@ import {
   sanitizeCountrySlug,
 } from "@/lib/locations/countries";
 import { getServerSupabase } from "@/lib/supabase";
+import { notFound } from "next/navigation";
 
 interface PageProps {
   params: Promise<{
@@ -50,9 +51,14 @@ export async function generateMetadata({
   const { country } = await params;
   const sanitized = sanitizeCountrySlug(country);
   const isValid = isValidCountrySlug(sanitized);
-  const countryName = isValid
-    ? getDisplayNameFromSlug(sanitized)
-    : getDisplayNameFromSlug(sanitized || "country");
+  
+  // Return 404 if country doesn't exist
+  if (!isValid) {
+    console.log('❌ Country not found in metadata:', sanitized);
+    notFound();
+  }
+  
+  const countryName = getDisplayNameFromSlug(sanitized);
 
   return {
     title: `Exhibition Stand Builders in ${countryName} | Professional Trade Show Displays`,
@@ -112,7 +118,12 @@ async function getCountryPageContent(countrySlug: string) {
 export default async function CountryPage({ params }: PageProps) {
   const { country } = await params;
   const sanitized = sanitizeCountrySlug(country);
-  const isValid = isValidCountrySlug(sanitized);
+  
+  // Validate country slug immediately to prevent template flash
+  if (!isValidCountrySlug(sanitized)) {
+    return notFound();
+  }
+  
   const countryName = getDisplayNameFromSlug(sanitized);
 
   // Fetch CMS content server-side for better SEO and performance
@@ -134,34 +145,6 @@ export default async function CountryPage({ params }: PageProps) {
   };
 
   try {
-    if (!isValid) {
-      return (
-        <div className="font-inter">
-          <Navigation />
-          <CountryCityPage
-            country={countryName}
-            initialBuilders={[]}
-            initialContent={{
-              id: `${sanitized || "country"}-main`,
-              title: `Exhibition Stand Builders in ${countryName}`,
-              metaTitle: `${countryName} Exhibition Stand Builders | Trade Show Booth Design`,
-              metaDescription: `Leading exhibition stand builders across ${countryName}. Custom trade show displays, booth design, and professional exhibition services in major cities.`,
-              description: `Find the best exhibition stand builders across ${countryName}. Connect with experienced professionals who create stunning custom displays for trade shows and exhibitions across all major cities.`,
-              heroContent: `Discover ${countryName}'s premier exhibition stand builders and booth designers.`,
-              seoKeywords: [
-                `${countryName} exhibition stands`,
-                `${countryName} trade show builders`,
-                `${countryName} booth design`,
-              ],
-            }}
-            // Pass CMS content for dynamic rendering
-            cmsContent={mergedContent}
-          />
-          <Footer />
-          <WhatsAppFloat />
-        </div>
-      );
-    }
 
     // Attempt to read from backend if available, but do not fail the page if it errors
     let preloadedCountryData: any = null;
