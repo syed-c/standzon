@@ -43,6 +43,9 @@ export const ALL_COUNTRY_SLUGS: string[] = [
   "kuwait",
   "oman",
   "bahrain",
+  "spain",
+  "italy",
+  "india",
 ];
 
 export function isValidCountrySlug(
