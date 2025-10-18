@@ -131,7 +131,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'italy',
     capital: 'Rome',
     currency: 'EUR',
-    majorCities: ['Milan', 'Venice', 'Naples', 'Bologna', 'Rome', 'Verona'],
+    majorCities: ['Milan', 'Bologna', 'Florence', 'Rimini', 'Rome', 'Verona', 'Genoa'],
     totalVenues: 42,
     annualEvents: 750,
     keyIndustries: ['Fashion', 'Design', 'Food & Beverage', 'Automotive', 'Machinery'],
