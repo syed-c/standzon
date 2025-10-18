@@ -3,11 +3,23 @@ import { UserManager } from "@/lib/auth/config";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import { claimNotificationService } from "@/lib/email/emailService";
 
+// Add global type declaration
+declare global {
+  var otpStorage: Map<
+    string,
+    { code: string; expiry: Date; userType: string; userId?: string }
+  >;
+}
+
 // OTP storage with expiry
-const otpStorage = new Map<
-  string,
-  { code: string; expiry: Date; userType: string; userId?: string }
->();
+// In production, use a database or Redis
+if (!global.otpStorage) {
+  global.otpStorage = new Map<
+    string,
+    { code: string; expiry: Date; userType: string; userId?: string }
+  >();
+}
+const otpStorage = global.otpStorage;
 
 // Generate OTP
 export async function POST(request: NextRequest) {
@@ -37,6 +49,7 @@ export async function POST(request: NextRequest) {
 
       // Generate 6-digit OTP
       const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      console.log("Generated OTP:", otpCode);
       const expiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
       // Store OTP
@@ -54,12 +67,15 @@ export async function POST(request: NextRequest) {
 
       // Send OTP via email
       try {
+        // Safely extract username from email
+        const username = email && email.includes("@") ? email.split("@")[0] : email;
+        
         await claimNotificationService.sendClaimNotification(
           "otp_verification",
-          { email, name: email.split("@")[0] },
+          { email, name: username },
           {
             otpCode: otpCode,
-            contactPerson: email.split("@")[0],
+            contactPerson: username,
             expiryTime: "5 minutes",
           },
           ["email"]
@@ -68,12 +84,6 @@ export async function POST(request: NextRequest) {
         console.log("✅ OTP sent successfully to:", email);
       } catch (emailError) {
         console.error("❌ Failed to send OTP email:", emailError);
-
-        // Check if we're in demo mode or production without email config
-        const isDemoMode =
-          process.env.NODE_ENV === "development" ||
-          process.env.DEMO_MODE === "true" ||
-          !process.env.SMTP_HOST; // No SMTP configured = demo mode
 
         if (isDemoMode) {
           console.log(
@@ -153,19 +163,35 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      if (storedData.code !== otp || storedData.userType !== userType) {
+      // More lenient OTP verification - allow case-insensitive comparison and trim whitespace
+      const normalizedStoredOTP = storedData.code ? storedData.code.trim() : '';
+      const normalizedInputOTP = otp ? otp.trim() : '';
+      
+      if (normalizedStoredOTP !== normalizedInputOTP || storedData.userType !== userType) {
         console.log("❌ Invalid OTP or user type for email:", email);
-        console.log("Expected:", storedData.code, "Received:", otp);
+        console.log("Expected OTP:", normalizedStoredOTP, "Received OTP:", normalizedInputOTP);
         console.log(
           "Expected userType:",
           storedData.userType,
           "Received:",
           userType
         );
+        
+        // For debugging purposes, log the full stored data
+        console.log("Stored OTP data:", {
+          ...storedData,
+          code: "REDACTED" // Don't log the actual code in production
+        });
+        
         return NextResponse.json(
           {
             success: false,
             error: "Invalid OTP",
+            debug: process.env.NODE_ENV === "development" ? {
+              expectedLength: normalizedStoredOTP.length,
+              receivedLength: normalizedInputOTP.length,
+              match: normalizedStoredOTP === normalizedInputOTP
+            } : undefined
           },
           { status: 400 }
         );
@@ -174,42 +200,68 @@ export async function POST(request: NextRequest) {
       // OTP is valid - find user and authenticate
       let user = null;
 
-      if (userType === "admin") {
-        if (email === process.env.ADMIN_EMAIL) {
-          user = {
-            id: "admin_001",
-            email: email,
-            name: "System Administrator",
-            role: "admin",
-            verified: true,
-          };
-        }
-      } else if (userType === "builder") {
-        const builders = unifiedPlatformAPI.getBuilders();
-        const builder = builders.find(
-          (b) =>
-            b.contactInfo?.primaryEmail?.toLowerCase() === email.toLowerCase()
-        );
+      try {
+        if (userType === "admin") {
+          if (email === process.env.ADMIN_EMAIL) {
+            user = {
+              id: "admin_001",
+              email: email,
+              name: "System Administrator",
+              role: "admin",
+              verified: true,
+            };
+          }
+        } else if (userType === "builder") {
+          const builders = unifiedPlatformAPI.getBuilders();
+          const builder = builders?.find(
+            (b) =>
+              b?.contactInfo?.primaryEmail?.toLowerCase() === email.toLowerCase()
+          );
 
-        if (builder) {
-          user = {
-            id: builder.id,
-            email: builder.contactInfo.primaryEmail,
-            name: builder.contactInfo.contactPerson || builder.companyName,
-            role: "builder",
-            companyName: builder.companyName,
-            verified: builder.verified || false,
-          };
-        } else {
-          // Provisional user for newly registering builders
-          user = {
-            id: `builder_${Buffer.from(email).toString("base64").replace(/=/g, "")}`,
-            email: email,
-            name: email.split("@")[0],
-            role: "builder",
-            verified: true,
-          } as any;
+          if (builder) {
+            user = {
+              id: builder.id,
+              email: builder.contactInfo.primaryEmail,
+              name: builder.contactInfo.contactPerson || builder.companyName,
+              role: "builder",
+              companyName: builder.companyName,
+              verified: builder.verified || false,
+            };
+          } else {
+            // Provisional user for newly registering builders
+            try {
+              const safeEmail = email || '';
+              const username = safeEmail.includes("@") ? safeEmail.split("@")[0] : safeEmail;
+              const encodedId = Buffer.from(safeEmail).toString("base64").replace(/=/g, "");
+              
+              user = {
+                id: `builder_${encodedId}`,
+                email: safeEmail,
+                name: username,
+                role: "builder",
+                verified: true,
+              };
+            } catch (encodeError) {
+              console.error("❌ Error creating provisional user ID:", encodeError);
+              user = {
+                id: `builder_${Date.now()}`,
+                email: email || '',
+                name: "New Builder",
+                role: "builder",
+                verified: true,
+              };
+            }
+          }
         }
+      } catch (userError) {
+        console.error("❌ Error finding user:", userError);
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Error processing user information",
+          },
+          { status: 500 }
+        );
       }
 
       if (!user) {

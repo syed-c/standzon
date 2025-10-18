@@ -1057,11 +1057,11 @@ export default function BuilderSignupForm() {
             </Button>
             
             {currentStep < 5 ? (
-              <Button onClick={nextStep} disabled={isSubmitting}>
-                Next
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            ) : (
+                <Button onClick={() => nextStep()} disabled={isSubmitting}>
+                  Next
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              ) : (
               <Button 
                 onClick={handleSubmit} 
                 disabled={isSubmitting || !formData.agreeToTerms}

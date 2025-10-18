@@ -648,7 +648,7 @@ export function EnhancedBuilderRegistration() {
               </Button>
               
               {currentStep < 4 ? (
-                <Button type="button" onClick={nextStep}>
+                <Button type="button" onClick={() => nextStep()} className="bg-primary hover:bg-primary/90">
                   Next Step
                 </Button>
               ) : (

@@ -237,7 +237,29 @@ export const locationData: CountryData[] = [
     timezone: "Asia/Tehran",
     language: "Persian",
     cities: [
-      { cityName: "Tehran", citySlug: "tehran" }
+      { cityName: "Tehran", citySlug: "tehran" },
+      { cityName: "Isfahan", citySlug: "isfahan" },
+      { cityName: "Shiraz", citySlug: "shiraz" },
+      { cityName: "Mashhad", citySlug: "mashhad" },
+      { cityName: "Tabriz", citySlug: "tabriz" },
+      { cityName: "Qom", citySlug: "qom" }
+    ]
+  },
+  {
+    countryName: "Iraq",
+    countryCode: "IQ",
+    countrySlug: "iraq",
+    continent: "Asia",
+    currency: "IQD",
+    timezone: "Asia/Baghdad",
+    language: "Arabic",
+    cities: [
+      { cityName: "Baghdad", citySlug: "baghdad" },
+      { cityName: "Basra", citySlug: "basra" },
+      { cityName: "Mosul", citySlug: "mosul" },
+      { cityName: "Erbil", citySlug: "erbil" },
+      { cityName: "Najaf", citySlug: "najaf" },
+      { cityName: "Karbala", citySlug: "karbala" }
     ]
   },
   {

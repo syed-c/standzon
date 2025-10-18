@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as ResendOTP from "../ResendOTP.js";
+import type * as addRayyanExibit from "../addRayyanExibit.js";
 import type * as admin from "../admin.js";
 import type * as auth from "../auth.js";
 import type * as builders from "../builders.js";
@@ -25,6 +26,7 @@ import type * as http from "../http.js";
 import type * as leads from "../leads.js";
 import type * as locations from "../locations.js";
 import type * as quotes from "../quotes.js";
+import type * as rayyanExibit from "../rayyanExibit.js";
 import type * as siteSettings from "../siteSettings.js";
 
 /**
@@ -37,6 +39,7 @@ import type * as siteSettings from "../siteSettings.js";
  */
 declare const fullApi: ApiFromModules<{
   ResendOTP: typeof ResendOTP;
+  addRayyanExibit: typeof addRayyanExibit;
   admin: typeof admin;
   auth: typeof auth;
   builders: typeof builders;
@@ -48,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   leads: typeof leads;
   locations: typeof locations;
   quotes: typeof quotes;
+  rayyanExibit: typeof rayyanExibit;
   siteSettings: typeof siteSettings;
 }>;
 export declare const api: FilterApi<

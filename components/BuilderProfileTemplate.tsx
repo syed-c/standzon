@@ -198,7 +198,7 @@ export default function BuilderProfileTemplate({ builder, isGmbImported, display
                       <div>
                         <h4 className="font-medium text-gray-900 mb-2">{c.strengthsTitle}</h4>
                         <ul className="space-y-1">
-                          {builder.keyStrengths.map((s: string, i: number) => (
+                          {builder.keyStrengths?.map((s: string, i: number) => (
                             <li key={i} className="flex items-center gap-2 text-gray-700">
                               <Shield className="w-4 h-4 text-green-500" />
                               {s}

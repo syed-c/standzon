@@ -310,21 +310,36 @@ export default function EnhancedBuilderSignup() {
 
   const verifyOTP = async () => {
     console.log("🔐 Verifying OTP for enhanced signup:", formData.otpCode);
+    console.log("Email being used:", formData.primaryEmail);
     setIsSubmitting(true);
 
+    // Validate OTP format before sending to server
+    if (!formData.otpCode || formData.otpCode.length !== 6) {
+      setErrors({ otpCode: "OTP must be 6 digits" });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
+      // Log the exact payload being sent
+      const payload = {
+        action: "verify",
+        email: formData.primaryEmail,
+        otp: formData.otpCode,
+        userType: "builder",
+      };
+      console.log("Sending OTP verification payload:", payload);
+
       const response = await fetch("/api/auth/otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "verify",
-          email: formData.primaryEmail,
-          otp: formData.otpCode,
-          userType: "builder",
-        }),
+        body: JSON.stringify(payload),
       });
 
+      // Log the raw response for debugging
+      console.log("OTP verification response status:", response.status);
       const result = await response.json();
+      console.log("OTP verification response:", result);
 
       if (result.success) {
         updateFormData("emailVerified", true);
@@ -332,11 +347,23 @@ export default function EnhancedBuilderSignup() {
         console.log("✅ OTP verified successfully");
         setErrors((prev) => ({ ...prev, otpCode: "" }));
       } else {
+        // More detailed error handling
         console.error("❌ OTP verification failed:", result.error);
+        
+        // Show a more user-friendly error message
+        if (result.error === "Invalid or expired OTP") {
+          toast.error("The verification code is invalid or has expired. Please request a new code.");
+        } else if (result.error === "OTP has expired") {
+          toast.error("The verification code has expired. Please request a new code.");
+        } else if (result.error === "Invalid OTP") {
+          toast.error("Incorrect verification code. Please check and try again.");
+        }
+        
         setErrors({ otpCode: result.error || "Invalid OTP code" });
       }
     } catch (error) {
       console.error("❌ Network error verifying OTP:", error);
+      toast.error("Network error. Please check your connection and try again.");
       setErrors({ otpCode: "Network error. Please try again." });
     } finally {
       setIsSubmitting(false);
@@ -1325,11 +1352,11 @@ export default function EnhancedBuilderSignup() {
             </Button>
 
             {currentStep < 5 ? (
-              <Button onClick={nextStep} disabled={isSubmitting}>
-                Next
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            ) : (
+                <Button onClick={() => nextStep()} disabled={isSubmitting}>
+                  Next
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              ) : (
               <Button
                 onClick={handleSubmit}
                 disabled={

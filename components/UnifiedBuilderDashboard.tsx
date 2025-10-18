@@ -385,7 +385,9 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
         // Trigger public profile refresh
         await refreshPublicListing();
       } else {
-        throw new Error(result.error);
+        console.error('❌ Error updating profile:', result.error);
+        setSyncStatus('error');
+        toast.error(`Failed to update profile: ${result.error || 'Unknown error'}`);
       }
       
     } catch (error) {
@@ -938,7 +940,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             </CardHeader>
             <CardContent className="space-y-4">
               {profile.services.map((service, index) => (
-                <div key={service.id} className="border rounded-lg p-4">
+                <div key={`service-${index}`} className="border rounded-lg p-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                     <Input
                       placeholder="Service name (e.g., Custom Stand Design)"

@@ -8,37 +8,79 @@
   html {
     font-display: swap;
   }
-  
+
   /* Critical styles for hero section */
   .hero-gradient {
     background: linear-gradient(135deg, #1e293b 0%, #1e40af 50%, #1e293b 100%);
   }
-  
+
   /* Optimize animations */
   .animate-pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-  
+
   /* Critical button styles */
   .btn-primary {
     @apply bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105;
   }
-  
+
   .btn-outline {
     @apply border-2 border-white text-white hover:bg-white hover:text-gray-900 px-6 py-3 rounded-xl font-semibold transition-all duration-300 backdrop-blur-md;
   }
 
   /* Global heading sizes for desktop/tablet (keep mobile as-is via media query below) */
-  h1 { font-size: 60px !important; line-height: 1.1 !important; font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif !important; }
-  h2 { font-size: 36px !important; line-height: 1.2 !important; font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif !important; }
-  h3 { font-size: 22px !important; line-height: 1.3 !important; font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif !important; }
+  h1 {
+    font-size: 60px !important;
+    line-height: 1.1 !important;
+    font-family:
+      "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif !important;
+  }
+  h2 {
+    font-size: 36px !important;
+    line-height: 1.2 !important;
+    font-family:
+      "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif !important;
+  }
+  h3 {
+    font-size: 22px !important;
+    line-height: 1.3 !important;
+    font-family:
+      "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif !important;
+  }
   /* Make headings bold by default */
-  h1, h2, h3, h4 { font-weight: 800 !important; }
-  
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 800 !important;
+  }
+
   /* Override Tailwind text size classes for headings */
-  h1.text-4xl, h1.text-5xl, h1.text-6xl, h1.text-7xl, h1.text-8xl, h1.text-9xl { font-size: 60px !important; font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif !important; }
-  h2.text-2xl, h2.text-3xl, h2.text-4xl, h2.text-5xl { font-size: 36px !important; font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif !important; }
-  h3.text-xl, h3.text-2xl, h3.text-3xl { font-size: 22px !important; font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif !important; }
+  h1.text-4xl,
+  h1.text-5xl,
+  h1.text-6xl,
+  h1.text-7xl,
+  h1.text-8xl,
+  h1.text-9xl {
+    font-size: 60px !important;
+    font-family:
+      "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif !important;
+  }
+  h2.text-2xl,
+  h2.text-3xl,
+  h2.text-4xl,
+  h2.text-5xl {
+    font-size: 36px !important;
+    font-family:
+      "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif !important;
+  }
+  h3.text-xl,
+  h3.text-2xl,
+  h3.text-3xl {
+    font-size: 22px !important;
+    font-family:
+      "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif !important;
+  }
 }
 
 /* ✅ PERFORMANCE: Optimize scroll behavior */
@@ -46,13 +88,13 @@
   .scroll-smooth {
     scroll-behavior: smooth;
   }
-  
+
   /* Reduce motion for users who prefer it */
   @media (prefers-reduced-motion: reduce) {
     .scroll-smooth {
       scroll-behavior: auto;
     }
-    
+
     .animate-pulse {
       animation: none;
     }
@@ -130,13 +172,25 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
 body {
-  font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family:
+    "Poppins",
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
+    "Oxygen",
+    "Ubuntu",
+    "Cantarell",
+    "Fira Sans",
+    "Droid Sans",
+    "Helvetica Neue",
     sans-serif;
   color: hsl(var(--foreground));
   background: hsl(var(--background));
@@ -153,16 +207,56 @@ body {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* Global heading font toggles applied on body */
-.heading-font-arial h1, .heading-font-arial h2, .heading-font-arial h3, .heading-font-arial h4, .heading-font-arial h5, .heading-font-arial h6 { font-family: Arial, Helvetica, 'Trebuchet MS', sans-serif; }
-.heading-font-helvetica h1, .heading-font-helvetica h2, .heading-font-helvetica h3, .heading-font-helvetica h4, .heading-font-helvetica h5, .heading-font-helvetica h6 { font-family: Helvetica, Arial, 'Trebuchet MS', sans-serif; }
-.heading-font-trebuchet h1, .heading-font-trebuchet h2, .heading-font-trebuchet h3, .heading-font-trebuchet h4, .heading-font-trebuchet h5, .heading-font-trebuchet h6 { font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif; }
-.heading-font-poppins h1, .heading-font-poppins h2, .heading-font-poppins h3, .heading-font-poppins h4, .heading-font-poppins h5, .heading-font-poppins h6 { font-family: 'Poppins', 'Inter', system-ui, sans-serif; }
-.heading-font-redhat h1, .heading-font-redhat h2, .heading-font-redhat h3, .heading-font-redhat h4, .heading-font-redhat h5, .heading-font-redhat h6 { font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif; }
+.heading-font-arial h1,
+.heading-font-arial h2,
+.heading-font-arial h3,
+.heading-font-arial h4,
+.heading-font-arial h5,
+.heading-font-arial h6 {
+  font-family: Arial, Helvetica, "Trebuchet MS", sans-serif;
+}
+.heading-font-helvetica h1,
+.heading-font-helvetica h2,
+.heading-font-helvetica h3,
+.heading-font-helvetica h4,
+.heading-font-helvetica h5,
+.heading-font-helvetica h6 {
+  font-family: Helvetica, Arial, "Trebuchet MS", sans-serif;
+}
+.heading-font-trebuchet h1,
+.heading-font-trebuchet h2,
+.heading-font-trebuchet h3,
+.heading-font-trebuchet h4,
+.heading-font-trebuchet h5,
+.heading-font-trebuchet h6 {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+.heading-font-poppins h1,
+.heading-font-poppins h2,
+.heading-font-poppins h3,
+.heading-font-poppins h4,
+.heading-font-poppins h5,
+.heading-font-poppins h6 {
+  font-family: "Poppins", "Inter", system-ui, sans-serif;
+}
+.heading-font-redhat h1,
+.heading-font-redhat h2,
+.heading-font-redhat h3,
+.heading-font-redhat h4,
+.heading-font-redhat h5,
+.heading-font-redhat h6 {
+  font-family: "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif;
+}
 
 @keyframes slideInFromTop {
   from {
@@ -176,8 +270,14 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-in {
@@ -221,6 +321,17 @@ button[class*="outline"]:not([class*="text-white"]) {
   color: white !important;
 }
 
+/* Hero description styles for country and city pages */
+[data-macaly="hero-description"],
+.exhibition-stands-page p.text-lg,
+.exhibition-stands-page p.text-xl,
+section p.text-white\/80,
+section p.text-slate-300 {
+  font-size: 18px !important;
+  max-width: 100% !important;
+  line-height: 1.75rem;
+}
+
 /* ✅ FIXED: Ensure buttons with explicit white text stay white */
 button[class*="text-white"],
 button[class*="text-white"] span,
@@ -239,32 +350,44 @@ button[class*="bg-primary"] {
 /* ✅ FIXED: Ensure buttons with blue text on white backgrounds are visible */
 button[class*="bg-white"][class*="text-blue"] {
   background-color: white !important;
-  color: #1D4ED8 !important; /* Darker blue for better contrast */
+  color: #1d4ed8 !important; /* Darker blue for better contrast */
 }
 button[class*="bg-white"][class*="text-blue-primary"] {
   background-color: white !important;
-  color: #1D4ED8 !important; /* Darker blue for better contrast */
+  color: #1d4ed8 !important; /* Darker blue for better contrast */
 }
 
 /* ✅ FIXED: Ensure buttons with white text on blue backgrounds have proper contrast */
 button[class*="bg-blue"][class*="text-white"],
 button[class*="bg-blue-primary"][class*="text-white"] {
-  background-color: #1D4ED8 !important; /* Darker blue for better contrast */
+  background-color: #1d4ed8 !important; /* Darker blue for better contrast */
   color: white !important;
 }
 
 /* ✅ FIXED: Only remove white backgrounds from buttons that don't have explicit text colors AND are not outline buttons */
-button[class*="bg-white"]:not([class*="text-"]):not([class*="text-blue"]):not([class*="text-gray"]):not([class*="text-black"]):not([class*="outline"]) {
+button[class*="bg-white"]:not([class*="text-"]):not([class*="text-blue"]):not(
+    [class*="text-gray"]
+  ):not([class*="text-black"]):not([class*="outline"]) {
   background-color: transparent !important;
 }
-button[class*="hover:bg-white"]:hover:not([class*="text-"]):not([class*="text-blue"]):not([class*="text-gray"]):not([class*="text-black"]):not([class*="outline"]) {
+button[class*="hover:bg-white"]:hover:not([class*="text-"]):not(
+    [class*="text-blue"]
+  ):not([class*="text-gray"]):not([class*="text-black"]):not(
+    [class*="outline"]
+  ) {
   background-color: transparent !important;
 }
 /* Also cover semi-transparent white backgrounds on buttons */
-button[class*="bg-white/"]:not([class*="text-"]):not([class*="text-blue"]):not([class*="text-gray"]):not([class*="text-black"]):not([class*="outline"]) {
+button[class*="bg-white/"]:not([class*="text-"]):not([class*="text-blue"]):not(
+    [class*="text-gray"]
+  ):not([class*="text-black"]):not([class*="outline"]) {
   background-color: transparent !important;
 }
-button[class*="hover:bg-white/"]:hover:not([class*="text-"]):not([class*="text-blue"]):not([class*="text-gray"]):not([class*="text-black"]):not([class*="outline"]) {
+button[class*="hover:bg-white/"]:hover:not([class*="text-"]):not(
+    [class*="text-blue"]
+  ):not([class*="text-gray"]):not([class*="text-black"]):not(
+    [class*="outline"]
+  ) {
   background-color: transparent !important;
 }
 
@@ -408,17 +531,17 @@ button[class*="bg-white"][class*="text-"]:hover {
 /* ✅ CRITICAL FIX: Specific rules for white buttons with blue text */
 button[class*="bg-white"][class*="text-blue-primary"] {
   background-color: white !important;
-  color: #1D4ED8 !important; /* Darker blue for better contrast */
+  color: #1d4ed8 !important; /* Darker blue for better contrast */
 }
 button[class*="bg-white"][class*="text-blue-primary"]:hover {
   background-color: white !important;
-  color: #1D4ED8 !important;
+  color: #1d4ed8 !important;
 }
 button[class*="bg-white"][class*="text-blue-primary"] span {
-  color: #1D4ED8 !important;
+  color: #1d4ed8 !important;
 }
 button[class*="bg-white"][class*="text-blue-primary"]:hover span {
-  color: #1D4ED8 !important;
+  color: #1d4ed8 !important;
 }
 
 /* ✅ FIXED: Ensure small form buttons have better visibility */
@@ -459,16 +582,25 @@ nav a,
 }
 
 /* ✅ CRITICAL FIX: Ensure all text elements have proper contrast */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: inherit;
 }
 
-p, span, div {
+p,
+span,
+div {
   color: inherit;
 }
 
 /* ✅ CRITICAL FIX: Ensure form elements are visible */
-input, textarea, select {
+input,
+textarea,
+select {
   color: #374151 !important;
   background-color: white !important;
 }
@@ -479,7 +611,8 @@ textarea::placeholder {
 }
 
 /* ✅ CRITICAL FIX: Ensure card content is visible */
-.card, .card-content {
+.card,
+.card-content {
   color: #374151;
 }
 
@@ -555,8 +688,14 @@ a:focus {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-in {
@@ -577,7 +716,8 @@ a:focus {
   pointer-events: auto;
 }
 
-.dropdown-menu a, .dropdown-menu button {
+.dropdown-menu a,
+.dropdown-menu button {
   pointer-events: auto;
   cursor: pointer;
 }
@@ -614,19 +754,57 @@ a:focus {
 /* ✅ MOBILE OPTIMIZATION: Better touch targets */
 @media (max-width: 768px) {
   /* Override default heading sizes for mobile only */
-  h1 { font-size: 32px !important; line-height: 1.2 !important; font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif !important; }
-  h2 { font-size: 24px !important; line-height: 1.3 !important; font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif !important; }
-  h3 { font-size: 18px !important; line-height: 1.4 !important; font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif !important; }
-  
+  h1 {
+    font-size: 32px !important;
+    line-height: 1.2 !important;
+    font-family:
+      "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif !important;
+  }
+  h2 {
+    font-size: 24px !important;
+    line-height: 1.3 !important;
+    font-family:
+      "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif !important;
+  }
+  h3 {
+    font-size: 18px !important;
+    line-height: 1.4 !important;
+    font-family:
+      "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif !important;
+  }
+
   /* Override Tailwind text size classes for headings on mobile */
-  h1.text-4xl, h1.text-5xl, h1.text-6xl, h1.text-7xl, h1.text-8xl, h1.text-9xl { font-size: 32px !important; font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif !important; }
-  h2.text-2xl, h2.text-3xl, h2.text-4xl, h2.text-5xl { font-size: 24px !important; font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif !important; }
-  h3.text-xl, h3.text-2xl, h3.text-3xl { font-size: 18px !important; font-family: 'Red Hat Display', 'Poppins', 'Inter', system-ui, sans-serif !important; }
-  button, a {
+  h1.text-4xl,
+  h1.text-5xl,
+  h1.text-6xl,
+  h1.text-7xl,
+  h1.text-8xl,
+  h1.text-9xl {
+    font-size: 32px !important;
+    font-family:
+      "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif !important;
+  }
+  h2.text-2xl,
+  h2.text-3xl,
+  h2.text-4xl,
+  h2.text-5xl {
+    font-size: 24px !important;
+    font-family:
+      "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif !important;
+  }
+  h3.text-xl,
+  h3.text-2xl,
+  h3.text-3xl {
+    font-size: 18px !important;
+    font-family:
+      "Red Hat Display", "Poppins", "Inter", system-ui, sans-serif !important;
+  }
+  button,
+  a {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   .touch-target {
     min-height: 44px;
     min-width: 44px;
@@ -642,7 +820,7 @@ a:focus {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   .section-padding {
     padding-top: 2rem;
     padding-bottom: 2rem;
@@ -655,7 +833,7 @@ a:focus {
     width: 100% !important;
     margin-bottom: 1rem;
   }
-  
+
   .mobile-stack > *:last-child {
     margin-bottom: 0;
   }
