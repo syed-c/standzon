@@ -66,6 +66,14 @@ export function EnhancedLocationPage({
   const finalCountryName = countryName || (city ? country : undefined);
   const isCity = locationType === 'city' || !!city;
   
+  // Debug logging
+  console.log('🔍 EnhancedLocationPage received builders:', finalBuilders.length);
+  console.log('🔍 EnhancedLocationPage builders details:', finalBuilders.map(b => ({
+    companyName: b.companyName,
+    headquarters: b.headquarters,
+    verified: b.verified
+  })));
+  
   const [filteredBuilders, setFilteredBuilders] = useState(finalBuilders);
   const [sortBy, setSortBy] = useState<'rating' | 'projects' | 'price'>('rating');
   const [cmsData, setCmsData] = useState<any>(null);

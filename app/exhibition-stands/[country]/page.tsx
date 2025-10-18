@@ -1,6 +1,4 @@
 import { Metadata } from "next";
-import { preloadQuery } from "convex/nextjs";
-import { api } from "@/convex/_generated/api";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
@@ -144,25 +142,108 @@ export default async function CountryPage({ params }: PageProps) {
     ...(countryBlock || {})
   };
 
+  // Fetch builders from Supabase
+  let builders: any[] = [];
   try {
+    const sb = getServerSupabase();
+    if (sb) {
+      console.log('🔍 Server-side: Fetching builders for country:', countryName);
+      
+      const { data, error } = await sb
+        .from('builder_profiles')
+        .select('*')
+        .eq('headquarters_country', countryName)
+        .eq('verified', true)
+        .order('rating', { ascending: false });
+      
+      if (error) {
+        console.log('❌ Server-side: Supabase error fetching builders:', error);
+      } else if (data) {
+        // Transform Supabase data to match expected structure
+        builders = data.map((builder: any) => ({
+          id: builder.id,
+          companyName: builder.company_name,
+          slug: builder.slug,
+          logo: builder.logo || "/images/builders/default-logo.png",
+          establishedYear: builder.established_year || 2020,
+          headquarters: {
+            city: builder.headquarters_city || "Unknown",
+            country: builder.headquarters_country || "Unknown",
+            countryCode: builder.headquarters_country_code || "XX",
+            address: builder.headquarters_address || "",
+            latitude: builder.headquarters_latitude || 0,
+            longitude: builder.headquarters_longitude || 0,
+            isHeadquarters: true,
+          },
+          serviceLocations: [
+            {
+              city: builder.headquarters_city || "Unknown",
+              country: builder.headquarters_country || "Unknown",
+              countryCode: builder.headquarters_country_code || "XX",
+              address: builder.headquarters_address || "",
+              latitude: builder.headquarters_latitude || 0,
+              longitude: builder.headquarters_longitude || 0,
+              isHeadquarters: false,
+            },
+          ],
+          contactInfo: {
+            primaryEmail: builder.primary_email || "",
+            phone: builder.phone || "",
+            website: builder.website || "",
+            contactPerson: builder.contact_person || "Contact Person",
+            position: builder.position || "Manager",
+          },
+          services: [],
+          specializations: [
+            { id: 'general', name: 'Exhibition Builder', icon: '🏗️', color: '#3B82F6' }
+          ],
+          companyDescription: builder.company_description || 'Professional exhibition services provider',
+          keyStrengths: ["Professional Service", "Quality Work", "Local Expertise"],
+          projectsCompleted: builder.projects_completed || 25,
+          rating: builder.rating || 4.0,
+          reviewCount: builder.review_count || 0,
+          responseTime: builder.response_time || 'Within 24 hours',
+          languages: builder.languages || ['English'],
+          verified: builder.verified || false,
+          premiumMember: builder.premium_member || false,
+          claimed: builder.claimed || false,
+          claimStatus: builder.claim_status || 'unclaimed',
+          teamSize: builder.team_size || 10,
+          averageProjectValue: builder.average_project || 15000,
+          currency: builder.currency || 'USD',
+          basicStandMin: builder.basic_stand_min || 5000,
+          basicStandMax: builder.basic_stand_max || 15000,
+          customStandMin: builder.custom_stand_min || 15000,
+          customStandMax: builder.custom_stand_max || 50000,
+          premiumStandMin: builder.premium_stand_min || 50000,
+          premiumStandMax: builder.premium_stand_max || 100000,
+          gmbImported: builder.gmb_imported || false,
+          importedFromGmb: builder.imported_from_gmb || false,
+          source: builder.source || 'manual',
+          createdAt: builder.created_at,
+          updatedAt: builder.updated_at,
+        }));
+        console.log(`✅ Server-side: Found ${builders.length} builders for ${countryName}`);
+        console.log('🔍 Server-side: Builder details:', builders.map(b => ({
+          companyName: b.companyName,
+          headquarters: b.headquarters,
+          verified: b.verified
+        })));
+      }
+    }
+  } catch (error) {
+    console.error('❌ Server-side: Error fetching builders:', error);
+  }
 
-    // Attempt to read from backend if available, but do not fail the page if it errors
-    let preloadedCountryData: any = null;
-    try {
-      preloadedCountryData = await preloadQuery(
-        api.locations.getCountryBySlug,
-        { slug: sanitized }
-      );
-    } catch {}
-
-    const displayName = preloadedCountryData?.countryName || countryName;
+  try {
+    const displayName = countryName;
 
     return (
       <div className="font-inter">
         <Navigation />
         <CountryCityPage
           country={displayName}
-          initialBuilders={[]}
+          initialBuilders={builders}
           initialContent={{
             id: `${sanitized}-main`,
             title: `Exhibition Stand Builders in ${displayName}`,
@@ -189,7 +270,7 @@ export default async function CountryPage({ params }: PageProps) {
         <Navigation />
         <CountryCityPage
           country={countryName}
-          initialBuilders={[]}
+          initialBuilders={builders}
           initialContent={{
             id: `${sanitized}-main`,
             title: `Exhibition Stand Builders in ${countryName}`,

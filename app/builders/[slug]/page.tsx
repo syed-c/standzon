@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import BuilderProfileClient from "./BuilderProfileClient";
-import { ConvexHttpClient } from "convex/browser";
-import { api } from "@/convex/_generated/api";
+import { getServerSupabase } from "@/lib/supabase";
 
 // Server component wrapper that handles params
 export default async function BuilderProfilePage({
@@ -18,52 +17,68 @@ export default async function BuilderProfilePage({
   const unifiedBuilders = unifiedPlatformAPI.getBuilders();
   let builder = unifiedBuilders.find((b) => b.slug === slug);
 
-  // Fallback: query Convex by slug
+  // Fallback: query Supabase by slug
   if (!builder) {
     try {
-      const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
-      if (convexUrl) {
-        const convex = new ConvexHttpClient(convexUrl);
-        const convexBuilder = await convex.query(api.builders.getBuilderBySlug, { slug });
-        if (convexBuilder) {
+      const sb = getServerSupabase();
+      if (sb) {
+        console.log("🔍 Server: Querying Supabase for builder with slug:", slug);
+        
+        const { data: supabaseBuilder, error } = await sb
+          .from('builder_profiles')
+          .select('*')
+          .eq('slug', slug)
+          .single();
+        
+        if (error) {
+          console.log("❌ Server: Supabase error:", error);
+        } else if (supabaseBuilder) {
           builder = {
-            id: convexBuilder._id,
-            companyName: convexBuilder.companyName,
-            slug: convexBuilder.slug || slug,
-            logo: convexBuilder.logo || "/images/builders/default-logo.png",
-            establishedYear: convexBuilder.establishedYear || 2020,
+            id: supabaseBuilder.id,
+            companyName: supabaseBuilder.company_name,
+            slug: supabaseBuilder.slug || slug,
+            logo: supabaseBuilder.logo || "/images/builders/default-logo.png",
+            establishedYear: supabaseBuilder.established_year || 2020,
             headquarters: {
-              city: convexBuilder.headquartersCity || "Unknown",
-              country: convexBuilder.headquartersCountry || "Unknown",
+              city: supabaseBuilder.headquarters_city || "Unknown",
+              country: supabaseBuilder.headquarters_country || "Unknown",
             },
-            serviceLocations: (convexBuilder.serviceLocations || []).map((l: any) => ({ city: l.city, country: l.country })),
+            serviceLocations: [
+              {
+                city: supabaseBuilder.headquarters_city || "Unknown",
+                country: supabaseBuilder.headquarters_country || "Unknown",
+              }
+            ],
             contactInfo: {
-              primaryEmail: convexBuilder.primaryEmail || "",
-              phone: convexBuilder.phone || "",
-              website: convexBuilder.website || "",
-              contactPerson: convexBuilder.contactPerson || "Contact Person",
-              position: convexBuilder.position || "Manager",
+              primaryEmail: supabaseBuilder.primary_email || "",
+              phone: supabaseBuilder.phone || "",
+              website: supabaseBuilder.website || "",
+              contactPerson: supabaseBuilder.contact_person || "Contact Person",
+              position: supabaseBuilder.position || "Manager",
             },
-            services: convexBuilder.services || [],
-            specializations: convexBuilder.specializations || [
+            services: [],
+            specializations: [
               { id: 'general', name: 'Exhibition Builder', icon: '🏗️', color: '#3B82F6' }
             ],
-            companyDescription: convexBuilder.companyDescription || 'Professional exhibition services provider',
+            companyDescription: supabaseBuilder.company_description || 'Professional exhibition services provider',
             keyStrengths: ["Professional Service", "Quality Work", "Local Expertise"],
-            projectsCompleted: convexBuilder.projectsCompleted || 25,
-            rating: convexBuilder.rating || 4.0,
-            reviewCount: convexBuilder.reviewCount || 0,
-            responseTime: convexBuilder.responseTime || 'Within 24 hours',
-            languages: convexBuilder.languages || ['English'],
-            verified: convexBuilder.verified || false,
-            premiumMember: convexBuilder.premiumMember || false,
-            claimed: convexBuilder.claimed || false,
-            claimStatus: convexBuilder.claimStatus || 'unclaimed',
+            projectsCompleted: supabaseBuilder.projects_completed || 25,
+            rating: supabaseBuilder.rating || 4.0,
+            reviewCount: supabaseBuilder.review_count || 0,
+            responseTime: supabaseBuilder.response_time || 'Within 24 hours',
+            languages: supabaseBuilder.languages || ['English'],
+            verified: supabaseBuilder.verified || false,
+            premiumMember: supabaseBuilder.premium_member || false,
+            claimed: supabaseBuilder.claimed || false,
+            claimStatus: supabaseBuilder.claim_status || 'unclaimed',
             planType: 'free',
           } as any;
+          console.log("✅ Server: Found builder in Supabase:", builder?.companyName);
         }
       }
-    } catch {}
+    } catch (error) {
+      console.error("❌ Server: Error querying Supabase:", error);
+    }
   }
 
   if (!builder) {
@@ -74,3 +89,4 @@ export default async function BuilderProfilePage({
   console.log("✅ Server: Found builder:", builder.companyName);
   return <BuilderProfileClient slug={slug} initialBuilder={builder} />;
 }
+

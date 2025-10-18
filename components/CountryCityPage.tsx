@@ -133,6 +133,14 @@ export function CountryCityPage({
   const [builders, setBuilders] = useState<Builder[]>(initialBuilders);
   const [filteredBuilders, setFilteredBuilders] =
     useState<Builder[]>(initialBuilders);
+  
+  // Debug logging
+  console.log('🔍 CountryCityPage received initialBuilders:', initialBuilders.length);
+  console.log('🔍 CountryCityPage initialBuilders details:', initialBuilders.map(b => ({
+    companyName: b.companyName,
+    headquarters: b.headquarters,
+    verified: b.verified
+  })));
   const [cities, setCities] = useState<any[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>(city || "");
   const [currentPage, setCurrentPage] = useState(1);
@@ -489,6 +497,14 @@ export function CountryCityPage({
           console.log(
             `📊 Total builders in persistent storage: ${allBuilders.length}`
           );
+          
+          // If we have initialBuilders from server-side, prioritize them
+          if (initialBuilders.length > 0) {
+            console.log(`✅ Using ${initialBuilders.length} server-side builders instead of persistent storage`);
+            setBuilders(initialBuilders);
+            setFilteredBuilders(initialBuilders);
+            return;
+          }
 
           // Handle country name variations (UAE vs United Arab Emirates)
           const countryVariations = [country];
@@ -732,6 +748,10 @@ export function CountryCityPage({
           console.log(
             "ℹ️ No builders found in persistent storage, using initial data"
           );
+          // Always use initialBuilders if available, even if persistent storage is empty
+          if (initialBuilders.length > 0) {
+            console.log(`✅ Using ${initialBuilders.length} server-side builders (persistent storage empty)`);
+          }
           setBuilders(initialBuilders);
           setFilteredBuilders(initialBuilders);
         }
