@@ -571,10 +571,15 @@ export interface Database {
 
 // Create Supabase clients
 export function createSupabaseClient() {
-  const url = process.env.SUPABASE_URL;
-  const anonKey = process.env.SUPABASE_ANON_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
   
   if (!url || !anonKey) {
+    console.error('Missing Supabase environment variables:');
+    console.error('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    console.error('SUPABASE_URL:', process.env.SUPABASE_URL);
+    console.error('SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY);
     throw new Error('Missing Supabase environment variables');
   }
   
@@ -586,19 +591,42 @@ export function createSupabaseServiceClient() {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   
   if (!url || !serviceKey) {
+    console.error('Missing Supabase service role environment variables:');
+    console.error('SUPABASE_URL:', process.env.SUPABASE_URL);
+    console.error('SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY);
     throw new Error('Missing Supabase service role environment variables');
   }
   
   return createClient<Database>(url, serviceKey);
 }
 
-// Export default client
-export const supabase = createSupabaseClient();
-export const supabaseAdmin = createSupabaseServiceClient();
+// Export default client (only create if environment variables are available)
+let supabase: ReturnType<typeof createClient<Database>> | null = null;
+let supabaseAdmin: ReturnType<typeof createClient<Database>> | null = null;
+
+try {
+  supabase = createSupabaseClient();
+} catch (error) {
+  console.warn('Supabase client not initialized:', error);
+}
+
+try {
+  supabaseAdmin = createSupabaseServiceClient();
+} catch (error) {
+  console.warn('Supabase admin client not initialized:', error);
+}
+
+export { supabase, supabaseAdmin };
 
 // Database service class
 export class DatabaseService {
   private client = supabaseAdmin;
+
+  constructor() {
+    if (!this.client) {
+      throw new Error('Supabase client not initialized. Please check your environment variables.');
+    }
+  }
 
   // Users
   async getUsers() {

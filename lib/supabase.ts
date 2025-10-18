@@ -17,7 +17,10 @@ export function getBrowserSupabase() {
   return createClient<Database>(url, anonKey);
 }
 
-// Export the new database service
+// Export the new database service (server-side only)
 export { db, DatabaseService } from './supabase/database';
+
+// Export simple client-side functions
+export * from './supabase/client';
 
 

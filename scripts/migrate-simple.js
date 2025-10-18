@@ -88,7 +88,7 @@ class SimpleMigration {
       try {
         const { data, error } = await supabase
           .from('countries')
-          .upsert({
+          .insert({
             country_name: country.countryName,
             country_code: country.countryCode,
             country_slug: country.countrySlug,
@@ -99,7 +99,7 @@ class SimpleMigration {
             active: country.active,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
-          }, { onConflict: 'country_code' });
+          });
 
         if (error) {
           console.error(`Error upserting country ${country.countryName}:`, error);
@@ -144,7 +144,7 @@ class SimpleMigration {
         if (country) {
           const { data, error } = await supabase
             .from('cities')
-            .upsert({
+            .insert({
               city_name: city.cityName,
               city_slug: city.citySlug,
               country_id: country.id,
@@ -158,7 +158,7 @@ class SimpleMigration {
               active: true,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
-            }, { onConflict: 'city_slug' });
+            });
 
           if (error) {
             console.error(`Error upserting city ${city.cityName}:`, error);
