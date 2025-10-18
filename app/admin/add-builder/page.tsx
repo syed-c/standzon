@@ -1,8 +1,15 @@
+"use client";
+
 import { Suspense } from 'react';
 import AddBuilderForm from '@/components/AddBuilderForm';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function AddBuilderPage() {
+  const handleSuccess = () => {
+    // Redirect to builders list or show success message
+    window.location.href = '/admin/builders';
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
@@ -24,12 +31,7 @@ export default function AddBuilderPage() {
             </CardContent>
           </Card>
         }>
-          <AddBuilderForm 
-            onSuccess={() => {
-              // Redirect to builders list or show success message
-              window.location.href = '/admin/builders';
-            }}
-          />
+          <AddBuilderForm onSuccess={handleSuccess} />
         </Suspense>
       </div>
     </div>

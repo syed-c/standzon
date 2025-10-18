@@ -1,7 +1,6 @@
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/client';
 
 export async function getAllExhibitions() {
-  const supabase = createClient();
   const { data, error } = await supabase
     .from('exhibitions')
     .select('*');
@@ -11,7 +10,6 @@ export async function getAllExhibitions() {
 }
 
 export async function getExhibitionBySlug(slug: string) {
-  const supabase = createClient();
   const { data, error } = await supabase
     .from('exhibitions')
     .select('*')
@@ -23,7 +21,6 @@ export async function getExhibitionBySlug(slug: string) {
 }
 
 export async function getExhibitionById(id: string) {
-  const supabase = createClient();
   const { data, error } = await supabase
     .from('exhibitions')
     .select('*')
@@ -35,7 +32,6 @@ export async function getExhibitionById(id: string) {
 }
 
 export async function getExhibitionsByCountry(country: string) {
-  const supabase = createClient();
   const { data, error } = await supabase
     .from('exhibitions')
     .select('*')
@@ -46,7 +42,6 @@ export async function getExhibitionsByCountry(country: string) {
 }
 
 export async function getUpcomingExhibitions(limit: number = 10) {
-  const supabase = createClient();
   const today = new Date().toISOString();
   
   const { data, error } = await supabase
@@ -61,8 +56,6 @@ export async function getUpcomingExhibitions(limit: number = 10) {
 }
 
 export async function getFeaturedExhibitions(limit: number = 6) {
-  const supabase = createClient();
-  
   const { data, error } = await supabase
     .from('exhibitions')
     .select('*')
@@ -74,7 +67,6 @@ export async function getFeaturedExhibitions(limit: number = 6) {
 }
 
 export async function createExhibition(exhibitionData: any) {
-  const supabase = createClient();
   const { data, error } = await supabase
     .from('exhibitions')
     .insert([exhibitionData])
@@ -85,7 +77,6 @@ export async function createExhibition(exhibitionData: any) {
 }
 
 export async function updateExhibition(id: string, updates: any) {
-  const supabase = createClient();
   const { data, error } = await supabase
     .from('exhibitions')
     .update(updates)
@@ -97,7 +88,6 @@ export async function updateExhibition(id: string, updates: any) {
 }
 
 export async function deleteExhibition(id: string) {
-  const supabase = createClient();
   const { error } = await supabase
     .from('exhibitions')
     .delete()

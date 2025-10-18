@@ -1,7 +1,6 @@
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/client';
 
 export async function getAllBuilders() {
-  const supabase = createClient();
   const { data, error } = await supabase
     .from('builders')
     .select('*');
@@ -11,7 +10,6 @@ export async function getAllBuilders() {
 }
 
 export async function getBuilderBySlug(slug: string) {
-  const supabase = createClient();
   const { data, error } = await supabase
     .from('builders')
     .select('*')
@@ -23,7 +21,6 @@ export async function getBuilderBySlug(slug: string) {
 }
 
 export async function getBuilderById(id: string) {
-  const supabase = createClient();
   const { data, error } = await supabase
     .from('builders')
     .select('*')
@@ -35,7 +32,6 @@ export async function getBuilderById(id: string) {
 }
 
 export async function createBuilder(builderData: any) {
-  const supabase = createClient();
   const { data, error } = await supabase
     .from('builders')
     .insert([builderData])
@@ -46,7 +42,6 @@ export async function createBuilder(builderData: any) {
 }
 
 export async function updateBuilder(id: string, updates: any) {
-  const supabase = createClient();
   const { data, error } = await supabase
     .from('builders')
     .update(updates)
@@ -58,7 +53,6 @@ export async function updateBuilder(id: string, updates: any) {
 }
 
 export async function deleteBuilder(id: string) {
-  const supabase = createClient();
   const { error } = await supabase
     .from('builders')
     .delete()

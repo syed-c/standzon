@@ -66,14 +66,6 @@ export function EnhancedLocationPage({
   const finalCountryName = countryName || (city ? country : undefined);
   const isCity = locationType === 'city' || !!city;
   
-  // Debug logging
-  console.log('🔍 EnhancedLocationPage received builders:', finalBuilders.length);
-  console.log('🔍 EnhancedLocationPage builders details:', finalBuilders.map(b => ({
-    companyName: b.companyName,
-    headquarters: b.headquarters,
-    verified: b.verified
-  })));
-  
   const [filteredBuilders, setFilteredBuilders] = useState(finalBuilders);
   const [sortBy, setSortBy] = useState<'rating' | 'projects' | 'price'>('rating');
   const [cmsData, setCmsData] = useState<any>(null);
@@ -338,7 +330,7 @@ export function EnhancedLocationPage({
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-20 pt-32">
+      <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-20">
         <div className="absolute inset-0 opacity-20">
           <div className="w-full h-full bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-pink-500/10"></div>
         </div>
