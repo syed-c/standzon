@@ -67,7 +67,7 @@ export default function LocationsSection({
         {
           name: 'Germany',
           flag: '🇩🇪',
-          cities: ['Berlin', 'Frankfurt', 'Munich', 'Hamburg', 'Cologne', 'Stuttgart', 'Düsseldorf'],
+          cities: ['Berlin', 'Frankfurt', 'Munich', 'Hamburg', 'Cologne', 'Stuttgart', 'Dusseldorf'],
           builders: 180,
           rating: 4.9,
           projects: 750,

@@ -42,9 +42,9 @@ interface LeadFormProps {
 }
 
 const EXHIBITION_OPTIONS = [
-  'CES 2025', 'Hannover Messe', 'SIAL Paris', 'Bauma Munich', 'Drupa Düsseldorf',
-  'K Fair Düsseldorf', 'ISH Frankfurt', 'Automechanika Frankfurt', 'ITB Berlin',
-  'MEDICA Düsseldorf', 'Euroshop Düsseldorf', 'Art Basel', 'FIBO Cologne',
+  'CES 2025', 'Hannover Messe', 'SIAL Paris', 'Bauma Munich', 'Drupa Dusseldorf',
+  'K Fair Dusseldorf', 'ISH Frankfurt', 'Automechanika Frankfurt', 'ITB Berlin',
+  'MEDICA Dusseldorf', 'Euroshop Dusseldorf', 'Art Basel', 'FIBO Cologne',
   'IFA Berlin', 'Mobile World Congress', 'NAB Show Las Vegas', 'Other - not listed'
 ];
 

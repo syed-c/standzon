@@ -1,15 +1,24 @@
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { FiMapPin, FiUsers, FiCalendar, FiTrendingUp, FiStar, FiArrowRight } from 'react-icons/fi';
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  FiMapPin,
+  FiUsers,
+  FiCalendar,
+  FiTrendingUp,
+  FiStar,
+  FiArrowRight,
+} from "react-icons/fi";
 
 export const metadata = {
   title: "Top Exhibitions in Germany 2025 | Major Trade Shows - ExhibitBay",
-  description: "Discover major exhibitions and trade shows in Germany 2025. From Hannover Messe to IFA Berlin, find the best German trade shows for your business. Get exhibition stand quotes.",
-  keywords: "Germany exhibitions 2025, German trade shows, Hannover Messe, IFA Berlin, K Fair, Medica, German exhibitions",
+  description:
+    "Discover major exhibitions and trade shows in Germany 2025. From Hannover Messe to IFA Berlin, find the best German trade shows for your business. Get exhibition stand quotes.",
+  keywords:
+    "Germany exhibitions 2025, German trade shows, Hannover Messe, IFA Berlin, K Fair, Medica, German exhibitions",
 };
 
 const upcomingShows = [
@@ -23,7 +32,7 @@ const upcomingShows = [
     attendees: "200,000+",
     exhibitors: "5,000+",
     description: "World's leading trade fair for industrial technology",
-    featured: true
+    featured: true,
   },
   {
     name: "IFA Berlin",
@@ -34,29 +43,30 @@ const upcomingShows = [
     industry: "Consumer Electronics",
     attendees: "245,000+",
     exhibitors: "1,800+",
-    description: "Global trade show for consumer electronics and home appliances"
+    description:
+      "Global trade show for consumer electronics and home appliances",
   },
   {
     name: "Medica",
     slug: "medica-dusseldorf",
     dates: "Nov 17-20, 2025",
-    location: "Düsseldorf",
-    venue: "Messe Düsseldorf",
+    location: "Dusseldorf",
+    venue: "Messe Dusseldorf",
     industry: "Medical Technology",
     attendees: "120,000+",
     exhibitors: "5,500+",
-    description: "World's largest medical trade fair"
+    description: "World's largest medical trade fair",
   },
   {
     name: "K Fair",
     slug: "k-plastics-rubber",
     dates: "Oct 8-15, 2025",
-    location: "Düsseldorf",
-    venue: "Messe Düsseldorf",
+    location: "Dusseldorf",
+    venue: "Messe Dusseldorf",
     industry: "Plastics & Rubber",
     attendees: "230,000+",
     exhibitors: "3,300+",
-    description: "World's No.1 trade fair for plastics and rubber"
+    description: "World's No.1 trade fair for plastics and rubber",
   },
   {
     name: "Anuga",
@@ -67,7 +77,7 @@ const upcomingShows = [
     industry: "Food & Beverage",
     attendees: "170,000+",
     exhibitors: "7,800+",
-    description: "World's leading food and beverage trade fair"
+    description: "World's leading food and beverage trade fair",
   },
   {
     name: "EMO",
@@ -78,18 +88,18 @@ const upcomingShows = [
     industry: "Metalworking",
     attendees: "130,000+",
     exhibitors: "2,200+",
-    description: "World trade fair for metalworking"
+    description: "World trade fair for metalworking",
   },
   {
     name: "Interpack",
     slug: "interpack",
     dates: "May 8-14, 2025",
-    location: "Düsseldorf",
-    venue: "Messe Düsseldorf",
+    location: "Dusseldorf",
+    venue: "Messe Dusseldorf",
     industry: "Packaging",
     attendees: "175,000+",
     exhibitors: "2,800+",
-    description: "Leading trade fair for packaging and related processes"
+    description: "Leading trade fair for packaging and related processes",
   },
   {
     name: "Automechanika",
@@ -100,30 +110,52 @@ const upcomingShows = [
     industry: "Automotive",
     attendees: "136,000+",
     exhibitors: "4,600+",
-    description: "Leading international trade fair for automotive service industry"
+    description:
+      "Leading international trade fair for automotive service industry",
   },
   {
     name: "IMTS (European Edition)",
     slug: "emo-hannover",
     dates: "Sep 16-21, 2025",
-    location: "Hannover", 
+    location: "Hannover",
     venue: "Hannover Exhibition Centre",
     industry: "Manufacturing Technology",
     attendees: "130,000+",
     exhibitors: "2,200+",
-    description: "European edition of the world's largest manufacturing technology show"
-  }
+    description:
+      "European edition of the world's largest manufacturing technology show",
+  },
 ];
 
 const cities = [
   { name: "Berlin", shows: 15, venues: ["Messe Berlin", "CityCube Berlin"] },
-  { name: "Düsseldorf", shows: 25, venues: ["Messe Düsseldorf", "CCD Congress Centre"] },
-  { name: "Cologne", shows: 18, venues: ["Koelnmesse", "Congress-Centrum Nord"] },
-  { name: "Munich", shows: 20, venues: ["Messe München", "MOC Veranstaltungscenter"] },
-  { name: "Hannover", shows: 12, venues: ["Hannover Exhibition Centre", "Congress Centrum"] },
+  {
+    name: "Dusseldorf",
+    shows: 25,
+    venues: ["Messe Dusseldorf", "CCD Congress Centre"],
+  },
+  {
+    name: "Cologne",
+    shows: 18,
+    venues: ["Koelnmesse", "Congress-Centrum Nord"],
+  },
+  {
+    name: "Munich",
+    shows: 20,
+    venues: ["Messe München", "MOC Veranstaltungscenter"],
+  },
+  {
+    name: "Hannover",
+    shows: 12,
+    venues: ["Hannover Exhibition Centre", "Congress Centrum"],
+  },
   { name: "Frankfurt", shows: 22, venues: ["Frankfurt Fair", "Kap Europa"] },
-  { name: "Hamburg", shows: 8, venues: ["Hamburg Messe", "CCH Congress Center"] },
-  { name: "Stuttgart", shows: 14, venues: ["Messe Stuttgart", "SI-Centrum"] }
+  {
+    name: "Hamburg",
+    shows: 8,
+    venues: ["Hamburg Messe", "CCH Congress Center"],
+  },
+  { name: "Stuttgart", shows: 14, venues: ["Messe Stuttgart", "SI-Centrum"] },
 ];
 
 export default function GermanyTradeShows() {
@@ -132,7 +164,7 @@ export default function GermanyTradeShows() {
   return (
     <div className="font-inter min-h-screen">
       <Navigation />
-      
+
       {/* Hero Section */}
       <section className="pt-20 pb-16 bg-gradient-to-br from-navy-900 via-navy-800 to-blue-dark text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -148,8 +180,9 @@ export default function GermanyTradeShows() {
                 <span className="block text-blue-primary">Germany 2025</span>
               </h1>
               <p className="text-xl text-gray-300 mb-8">
-                Discover Germany's leading trade shows and exhibitions. From industrial technology in Hannover 
-                to consumer electronics in Berlin, find the perfect events for your business growth.
+                Discover Germany's leading trade shows and exhibitions. From
+                industrial technology in Hannover to consumer electronics in
+                Berlin, find the perfect events for your business growth.
               </p>
               <div className="flex flex-wrap gap-6 mb-8">
                 <div className="flex items-center space-x-2">
@@ -172,7 +205,9 @@ export default function GermanyTradeShows() {
             <div className="hidden lg:block">
               <Card className="bg-white/10 backdrop-blur-sm border-white/20">
                 <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold mb-6 text-white">Germany Exhibition Market</h3>
+                  <h3 className="text-2xl font-bold mb-6 text-white">
+                    Germany Exhibition Market
+                  </h3>
                   <div className="space-y-4 text-white">
                     <div className="flex justify-between">
                       <span>Annual Trade Shows:</span>
@@ -211,7 +246,9 @@ export default function GermanyTradeShows() {
                 href={`/trade-shows/germany/${show.slug}`}
                 className="group"
               >
-                <Card className={`h-full hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1 ${show.featured ? 'ring-2 ring-blue-primary' : ''}`}>
+                <Card
+                  className={`h-full hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1 ${show.featured ? "ring-2 ring-blue-primary" : ""}`}
+                >
                   <CardContent className="p-6">
                     {show.featured && (
                       <div className="inline-block bg-blue-primary text-white text-xs px-2 py-1 rounded-full mb-3">
@@ -220,23 +257,35 @@ export default function GermanyTradeShows() {
                     )}
                     <div className="flex items-center space-x-2 mb-3">
                       <FiCalendar className="text-blue-primary" />
-                      <span className="text-sm text-gray-500">{show.dates}</span>
+                      <span className="text-sm text-gray-500">
+                        {show.dates}
+                      </span>
                     </div>
-                    <h3 className="text-xl font-bold text-navy-900 mb-2">{show.name}</h3>
-                    <p className="text-gray-600 mb-4 text-sm">{show.description}</p>
-                    
+                    <h3 className="text-xl font-bold text-navy-900 mb-2">
+                      {show.name}
+                    </h3>
+                    <p className="text-gray-600 mb-4 text-sm">
+                      {show.description}
+                    </p>
+
                     <div className="space-y-2 mb-6">
                       <div className="flex items-center space-x-2">
                         <FiMapPin className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-600 text-sm">{show.location}, Germany</span>
+                        <span className="text-gray-600 text-sm">
+                          {show.location}, Germany
+                        </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <FiTrendingUp className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-600 text-sm">{show.industry}</span>
+                        <span className="text-gray-600 text-sm">
+                          {show.industry}
+                        </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <FiUsers className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-600 text-sm">{show.attendees} visitors</span>
+                        <span className="text-gray-600 text-sm">
+                          {show.attendees} visitors
+                        </span>
                       </div>
                     </div>
 
@@ -244,7 +293,11 @@ export default function GermanyTradeShows() {
                       <div className="text-blue-primary group-hover:text-blue-dark font-medium flex items-center">
                         View Details <FiArrowRight className="ml-1 w-4 h-4" />
                       </div>
-                      <Button variant="outline" size="sm" className="group-hover:bg-blue-primary group-hover:text-white">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="group-hover:bg-blue-primary group-hover:text-white"
+                      >
                         Get Quote
                       </Button>
                     </div>
@@ -271,12 +324,20 @@ export default function GermanyTradeShows() {
               >
                 <Card className="h-full hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1">
                   <CardContent className="p-6 text-center">
-                    <h3 className="text-xl font-bold text-navy-900 mb-3">{city.name}</h3>
-                    <div className="text-3xl font-bold text-blue-primary mb-2">{city.shows}</div>
-                    <div className="text-sm text-gray-500 mb-4">Annual Shows</div>
+                    <h3 className="text-xl font-bold text-navy-900 mb-3">
+                      {city.name}
+                    </h3>
+                    <div className="text-3xl font-bold text-blue-primary mb-2">
+                      {city.shows}
+                    </div>
+                    <div className="text-sm text-gray-500 mb-4">
+                      Annual Shows
+                    </div>
                     <div className="space-y-1 mb-4">
                       {city.venues.map((venue) => (
-                        <div key={venue} className="text-xs text-gray-600">• {venue}</div>
+                        <div key={venue} className="text-xs text-gray-600">
+                          • {venue}
+                        </div>
                       ))}
                     </div>
                     <div className="text-blue-primary group-hover:text-blue-dark font-medium text-sm">
@@ -297,8 +358,9 @@ export default function GermanyTradeShows() {
             Ready to Exhibit at German Trade Shows?
           </h2>
           <p className="text-xl mb-8 text-blue-100">
-            Connect with Germany's top exhibition stand builders. Get free quotes from certified contractors 
-            who understand the German market and deliver exceptional results across all major venues.
+            Connect with Germany's top exhibition stand builders. Get free
+            quotes from certified contractors who understand the German market
+            and deliver exceptional results across all major venues.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/contact">
@@ -307,7 +369,10 @@ export default function GermanyTradeShows() {
               </Button>
             </Link>
             <Link href="/exhibition-stands/germany">
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-primary px-8 py-4 text-lg">
+              <Button
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-blue-primary px-8 py-4 text-lg"
+              >
                 View German Contractors
               </Button>
             </Link>

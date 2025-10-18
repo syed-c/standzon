@@ -112,7 +112,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'germany',
     capital: 'Berlin',
     currency: 'EUR',
-    majorCities: ['Berlin', 'Frankfurt', 'Munich', 'Hamburg', 'Düsseldorf', 'Stuttgart', 'Cologne', 'Hannover', 'Dortmund', 'Essen', 'Nuremberg', 'Leipzig'],
+    majorCities: ['Berlin', 'Frankfurt', 'Munich', 'Hamburg', 'Dusseldorf', 'Stuttgart', 'Cologne', 'Hannover', 'Dortmund', 'Essen', 'Nuremberg', 'Leipzig'],
     totalVenues: 95,
     annualEvents: 2100,
     keyIndustries: ['Automotive', 'Industrial Technology', 'Healthcare', 'Energy', 'Engineering'],

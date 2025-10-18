@@ -17,7 +17,8 @@ const sampleBuilders = [
     website: "https://vegasexhibitionmasters.com",
     contactPerson: "Michael Rodriguez",
     position: "CEO",
-    companyDescription: "Premier exhibition stand builders specializing in trade shows at Las Vegas Convention Center. We create stunning, interactive displays that capture attention and drive results.",
+    companyDescription:
+      "Premier exhibition stand builders specializing in trade shows at Las Vegas Convention Center. We create stunning, interactive displays that capture attention and drive results.",
     teamSize: 45,
     projectsCompleted: 280,
     rating: 4.8,
@@ -35,7 +36,7 @@ const sampleBuilders = [
     premiumStandMin: 50000,
     premiumStandMax: 200000,
     averageProject: 35000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   {
     companyName: "Sin City Displays",
@@ -50,7 +51,8 @@ const sampleBuilders = [
     website: "https://sincitydisplays.com",
     contactPerson: "Sarah Chen",
     position: "Creative Director",
-    companyDescription: "Innovative exhibition stand design and construction company serving major trade shows in Las Vegas. Known for cutting-edge technology integration and sustainable materials.",
+    companyDescription:
+      "Innovative exhibition stand design and construction company serving major trade shows in Las Vegas. Known for cutting-edge technology integration and sustainable materials.",
     teamSize: 32,
     projectsCompleted: 195,
     rating: 4.7,
@@ -68,7 +70,7 @@ const sampleBuilders = [
     premiumStandMin: 40000,
     premiumStandMax: 150000,
     averageProject: 28000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   // Germany - Berlin
   {
@@ -84,7 +86,8 @@ const sampleBuilders = [
     website: "https://berlinexposolutions.de",
     contactPerson: "Klaus Mueller",
     position: "Managing Director",
-    companyDescription: "Leading exhibition stand builder in Berlin with expertise in Messe Berlin events. Specializing in modular systems and sustainable exhibition solutions.",
+    companyDescription:
+      "Leading exhibition stand builder in Berlin with expertise in Messe Berlin events. Specializing in modular systems and sustainable exhibition solutions.",
     teamSize: 38,
     projectsCompleted: 320,
     rating: 4.9,
@@ -102,7 +105,7 @@ const sampleBuilders = [
     premiumStandMin: 45000,
     premiumStandMax: 180000,
     averageProject: 32000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   {
     companyName: "Deutsche Messebau GmbH",
@@ -117,7 +120,8 @@ const sampleBuilders = [
     website: "https://deutschemessebau.de",
     contactPerson: "Anna Schneider",
     position: "Project Manager",
-    companyDescription: "Traditional German craftsmanship meets modern exhibition design. Serving major trade fairs across Germany with focus on automotive and technology sectors.",
+    companyDescription:
+      "Traditional German craftsmanship meets modern exhibition design. Serving major trade fairs across Germany with focus on automotive and technology sectors.",
     teamSize: 52,
     projectsCompleted: 450,
     rating: 4.6,
@@ -135,7 +139,7 @@ const sampleBuilders = [
     premiumStandMin: 40000,
     premiumStandMax: 160000,
     averageProject: 29000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   // UAE - Dubai
   {
@@ -151,7 +155,8 @@ const sampleBuilders = [
     website: "https://dubaiexhibitionexperts.ae",
     contactPerson: "Ahmed Al-Rashid",
     position: "CEO",
-    companyDescription: "Premier exhibition stand builders in Dubai serving DWTC and other major venues. Specializing in luxury displays and Middle Eastern market expertise.",
+    companyDescription:
+      "Premier exhibition stand builders in Dubai serving DWTC and other major venues. Specializing in luxury displays and Middle Eastern market expertise.",
     teamSize: 42,
     projectsCompleted: 235,
     rating: 4.8,
@@ -169,7 +174,7 @@ const sampleBuilders = [
     premiumStandMin: 180000,
     premiumStandMax: 750000,
     averageProject: 125000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   {
     companyName: "Emirates Stand Builders",
@@ -184,7 +189,8 @@ const sampleBuilders = [
     website: "https://emiratesstandbuilders.com",
     contactPerson: "Priya Sharma",
     position: "Operations Director",
-    companyDescription: "International exhibition stand builders with strong presence in Dubai. Known for innovative designs and seamless project execution across the Middle East.",
+    companyDescription:
+      "International exhibition stand builders with strong presence in Dubai. Known for innovative designs and seamless project execution across the Middle East.",
     teamSize: 35,
     projectsCompleted: 189,
     rating: 4.7,
@@ -202,7 +208,7 @@ const sampleBuilders = [
     premiumStandMin: 150000,
     premiumStandMax: 600000,
     averageProject: 95000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   // Australia - Sydney
   {
@@ -218,7 +224,8 @@ const sampleBuilders = [
     website: "https://sydneyexhibition.com.au",
     contactPerson: "James Wilson",
     position: "Founder & CEO",
-    companyDescription: "Australia's leading exhibition stand builders serving Sydney Olympic Park and major venues across NSW. Specializing in eco-friendly and modular exhibition solutions.",
+    companyDescription:
+      "Australia's leading exhibition stand builders serving Sydney Olympic Park and major venues across NSW. Specializing in eco-friendly and modular exhibition solutions.",
     teamSize: 28,
     projectsCompleted: 167,
     rating: 4.6,
@@ -236,7 +243,7 @@ const sampleBuilders = [
     premiumStandMin: 75000,
     premiumStandMax: 300000,
     averageProject: 45000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   {
     companyName: "Harbour City Displays",
@@ -251,7 +258,8 @@ const sampleBuilders = [
     website: "https://harbourcitydisplays.com.au",
     contactPerson: "Emma Thompson",
     position: "Creative Director",
-    companyDescription: "Boutique exhibition stand design studio in Sydney focusing on creative, award-winning displays. Known for innovative use of Australian materials and themes.",
+    companyDescription:
+      "Boutique exhibition stand design studio in Sydney focusing on creative, award-winning displays. Known for innovative use of Australian materials and themes.",
     teamSize: 18,
     projectsCompleted: 89,
     rating: 4.9,
@@ -269,7 +277,7 @@ const sampleBuilders = [
     premiumStandMin: 85000,
     premiumStandMax: 350000,
     averageProject: 52000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   // Australia - Melbourne
   {
@@ -285,7 +293,8 @@ const sampleBuilders = [
     website: "https://melbourneconventionbuilders.com.au",
     contactPerson: "David Chen",
     position: "Managing Director",
-    companyDescription: "Melbourne's premier exhibition stand builders serving MCEC and major Victorian venues. Expertise in large-scale installations and complex technical requirements.",
+    companyDescription:
+      "Melbourne's premier exhibition stand builders serving MCEC and major Victorian venues. Expertise in large-scale installations and complex technical requirements.",
     teamSize: 41,
     projectsCompleted: 298,
     rating: 4.7,
@@ -303,7 +312,7 @@ const sampleBuilders = [
     premiumStandMin: 70000,
     premiumStandMax: 280000,
     averageProject: 42000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   // France - Paris
   {
@@ -319,7 +328,8 @@ const sampleBuilders = [
     website: "https://parisexpocreateurs.fr",
     contactPerson: "Marie Dubois",
     position: "Directrice Générale",
-    companyDescription: "Créateurs d'espaces d'exposition exceptionnels à Paris. Spécialisés dans les salons de luxe et les événements corporatifs au Parc des Expositions de Paris.",
+    companyDescription:
+      "Créateurs d'espaces d'exposition exceptionnels à Paris. Spécialisés dans les salons de luxe et les événements corporatifs au Parc des Expositions de Paris.",
     teamSize: 36,
     projectsCompleted: 267,
     rating: 4.8,
@@ -337,7 +347,7 @@ const sampleBuilders = [
     premiumStandMin: 50000,
     premiumStandMax: 200000,
     averageProject: 38000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   // United Kingdom - London
   {
@@ -353,7 +363,8 @@ const sampleBuilders = [
     website: "https://londonexhibitionspecialists.co.uk",
     contactPerson: "Oliver Smith",
     position: "Director",
-    companyDescription: "Leading exhibition stand contractors in London serving ExCeL and major UK venues. Renowned for British craftsmanship and attention to detail.",
+    companyDescription:
+      "Leading exhibition stand contractors in London serving ExCeL and major UK venues. Renowned for British craftsmanship and attention to detail.",
     teamSize: 44,
     projectsCompleted: 356,
     rating: 4.6,
@@ -371,7 +382,7 @@ const sampleBuilders = [
     premiumStandMin: 40000,
     premiumStandMax: 160000,
     averageProject: 32000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   // Italy - Milan
   {
@@ -387,7 +398,8 @@ const sampleBuilders = [
     website: "https://milanofieracostruzioni.it",
     contactPerson: "Giuseppe Rossi",
     position: "Amministratore Delegato",
-    companyDescription: "Costruttori di stand fieristici di alta qualità a Milano. Specializzati in design italiano e soluzioni innovative per Fiera Milano e eventi di lusso.",
+    companyDescription:
+      "Costruttori di stand fieristici di alta qualità a Milano. Specializzati in design italiano e soluzioni innovative per Fiera Milano e eventi di lusso.",
     teamSize: 33,
     projectsCompleted: 201,
     rating: 4.7,
@@ -405,7 +417,7 @@ const sampleBuilders = [
     premiumStandMin: 45000,
     premiumStandMax: 180000,
     averageProject: 34000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   // Spain - Barcelona
   {
@@ -416,12 +428,14 @@ const sampleBuilders = [
     headquartersCity: "Barcelona",
     headquartersCountry: "Spain",
     headquartersCountryCode: "ES",
-    headquartersAddress: "Av. Joan Carles I, 64, 08908 L'Hospitalet de Llobregat, Barcelona",
+    headquartersAddress:
+      "Av. Joan Carles I, 64, 08908 L'Hospitalet de Llobregat, Barcelona",
     phone: "+34-93-555-0901",
     website: "https://barcelonaexhibitionmasters.es",
     contactPerson: "Carlos Martinez",
     position: "Director General",
-    companyDescription: "Maestros en construcción de stands en Barcelona. Especializados en Fira de Barcelona y eventos internacionales con diseño mediterráneo contemporáneo.",
+    companyDescription:
+      "Maestros en construcción de stands en Barcelona. Especializados en Fira de Barcelona y eventos internacionales con diseño mediterráneo contemporáneo.",
     teamSize: 29,
     projectsCompleted: 178,
     rating: 4.5,
@@ -439,7 +453,7 @@ const sampleBuilders = [
     premiumStandMin: 42000,
     premiumStandMax: 170000,
     averageProject: 31000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   // Netherlands - Amsterdam
   {
@@ -455,7 +469,8 @@ const sampleBuilders = [
     website: "https://amsterdamexpobuilders.nl",
     contactPerson: "Pieter van der Berg",
     position: "Managing Director",
-    companyDescription: "Leading exhibition stand builders in Amsterdam serving RAI Amsterdam and major Dutch venues. Known for sustainable practices and innovative Dutch design.",
+    companyDescription:
+      "Leading exhibition stand builders in Amsterdam serving RAI Amsterdam and major Dutch venues. Known for sustainable practices and innovative Dutch design.",
     teamSize: 31,
     projectsCompleted: 189,
     rating: 4.8,
@@ -473,7 +488,7 @@ const sampleBuilders = [
     premiumStandMin: 47000,
     premiumStandMax: 190000,
     averageProject: 35500,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   // Singapore
   {
@@ -489,7 +504,8 @@ const sampleBuilders = [
     website: "https://singaporeexhibitionsolutions.sg",
     contactPerson: "Li Wei",
     position: "CEO",
-    companyDescription: "Premier exhibition stand builders in Singapore serving Singapore Expo and Marina Bay venues. Specializing in high-tech displays and Asian market expertise.",
+    companyDescription:
+      "Premier exhibition stand builders in Singapore serving Singapore Expo and Marina Bay venues. Specializing in high-tech displays and Asian market expertise.",
     teamSize: 26,
     projectsCompleted: 134,
     rating: 4.9,
@@ -507,7 +523,7 @@ const sampleBuilders = [
     premiumStandMin: 65000,
     premiumStandMax: 260000,
     averageProject: 48000,
-    source: "bulk_import"
+    source: "bulk_import",
   },
   // Japan - Tokyo
   {
@@ -523,7 +539,8 @@ const sampleBuilders = [
     website: "https://tokyoexhibitioncraft.jp",
     contactPerson: "Hiroshi Tanaka",
     position: "President",
-    companyDescription: "Japanese precision meets modern exhibition design. Serving Tokyo Big Sight and major venues across Japan with meticulous attention to detail and innovative technology.",
+    companyDescription:
+      "Japanese precision meets modern exhibition design. Serving Tokyo Big Sight and major venues across Japan with meticulous attention to detail and innovative technology.",
     teamSize: 39,
     projectsCompleted: 245,
     rating: 4.8,
@@ -541,112 +558,404 @@ const sampleBuilders = [
     premiumStandMin: 5500000,
     premiumStandMax: 22000000,
     averageProject: 4200000,
-    source: "bulk_import"
-  }
+    source: "bulk_import",
+  },
 ];
 
 // Service locations for builders (cities they serve)
 const serviceLocations = [
   // Vegas Exhibition Masters serves multiple US cities
-  { builderSlug: "vegas-exhibition-masters", city: "Las Vegas", country: "United States", countryCode: "US" },
-  { builderSlug: "vegas-exhibition-masters", city: "Los Angeles", country: "United States", countryCode: "US" },
-  { builderSlug: "vegas-exhibition-masters", city: "Phoenix", country: "United States", countryCode: "US" },
-  
+  {
+    builderSlug: "vegas-exhibition-masters",
+    city: "Las Vegas",
+    country: "United States",
+    countryCode: "US",
+  },
+  {
+    builderSlug: "vegas-exhibition-masters",
+    city: "Los Angeles",
+    country: "United States",
+    countryCode: "US",
+  },
+  {
+    builderSlug: "vegas-exhibition-masters",
+    city: "Phoenix",
+    country: "United States",
+    countryCode: "US",
+  },
+
   // Sin City Displays
-  { builderSlug: "sin-city-displays", city: "Las Vegas", country: "United States", countryCode: "US" },
-  { builderSlug: "sin-city-displays", city: "Reno", country: "United States", countryCode: "US" },
-  
+  {
+    builderSlug: "sin-city-displays",
+    city: "Las Vegas",
+    country: "United States",
+    countryCode: "US",
+  },
+  {
+    builderSlug: "sin-city-displays",
+    city: "Reno",
+    country: "United States",
+    countryCode: "US",
+  },
+
   // Berlin Expo Solutions serves German cities
-  { builderSlug: "berlin-expo-solutions", city: "Berlin", country: "Germany", countryCode: "DE" },
-  { builderSlug: "berlin-expo-solutions", city: "Hamburg", country: "Germany", countryCode: "DE" },
-  { builderSlug: "berlin-expo-solutions", city: "Munich", country: "Germany", countryCode: "DE" },
-  
+  {
+    builderSlug: "berlin-expo-solutions",
+    city: "Berlin",
+    country: "Germany",
+    countryCode: "DE",
+  },
+  {
+    builderSlug: "berlin-expo-solutions",
+    city: "Hamburg",
+    country: "Germany",
+    countryCode: "DE",
+  },
+  {
+    builderSlug: "berlin-expo-solutions",
+    city: "Munich",
+    country: "Germany",
+    countryCode: "DE",
+  },
+
   // Deutsche Messebau GmbH
-  { builderSlug: "deutsche-messebau-gmbh", city: "Berlin", country: "Germany", countryCode: "DE" },
-  { builderSlug: "deutsche-messebau-gmbh", city: "Frankfurt", country: "Germany", countryCode: "DE" },
-  { builderSlug: "deutsche-messebau-gmbh", city: "Cologne", country: "Germany", countryCode: "DE" },
-  { builderSlug: "deutsche-messebau-gmbh", city: "Düsseldorf", country: "Germany", countryCode: "DE" },
-  
+  {
+    builderSlug: "deutsche-messebau-gmbh",
+    city: "Berlin",
+    country: "Germany",
+    countryCode: "DE",
+  },
+  {
+    builderSlug: "deutsche-messebau-gmbh",
+    city: "Frankfurt",
+    country: "Germany",
+    countryCode: "DE",
+  },
+  {
+    builderSlug: "deutsche-messebau-gmbh",
+    city: "Cologne",
+    country: "Germany",
+    countryCode: "DE",
+  },
+  {
+    builderSlug: "deutsche-messebau-gmbh",
+    city: "Dusseldorf",
+    country: "Germany",
+    countryCode: "DE",
+  },
+
   // Dubai Exhibition Experts serves UAE cities
-  { builderSlug: "dubai-exhibition-experts", city: "Dubai", country: "United Arab Emirates", countryCode: "AE" },
-  { builderSlug: "dubai-exhibition-experts", city: "Abu Dhabi", country: "United Arab Emirates", countryCode: "AE" },
-  { builderSlug: "dubai-exhibition-experts", city: "Sharjah", country: "United Arab Emirates", countryCode: "AE" },
-  
+  {
+    builderSlug: "dubai-exhibition-experts",
+    city: "Dubai",
+    country: "United Arab Emirates",
+    countryCode: "AE",
+  },
+  {
+    builderSlug: "dubai-exhibition-experts",
+    city: "Abu Dhabi",
+    country: "United Arab Emirates",
+    countryCode: "AE",
+  },
+  {
+    builderSlug: "dubai-exhibition-experts",
+    city: "Sharjah",
+    country: "United Arab Emirates",
+    countryCode: "AE",
+  },
+
   // Emirates Stand Builders
-  { builderSlug: "emirates-stand-builders", city: "Dubai", country: "United Arab Emirates", countryCode: "AE" },
-  { builderSlug: "emirates-stand-builders", city: "Abu Dhabi", country: "United Arab Emirates", countryCode: "AE" },
-  
+  {
+    builderSlug: "emirates-stand-builders",
+    city: "Dubai",
+    country: "United Arab Emirates",
+    countryCode: "AE",
+  },
+  {
+    builderSlug: "emirates-stand-builders",
+    city: "Abu Dhabi",
+    country: "United Arab Emirates",
+    countryCode: "AE",
+  },
+
   // Sydney Exhibition Co serves Australian cities
-  { builderSlug: "sydney-exhibition-co", city: "Sydney", country: "Australia", countryCode: "AU" },
-  { builderSlug: "sydney-exhibition-co", city: "Brisbane", country: "Australia", countryCode: "AU" },
-  { builderSlug: "sydney-exhibition-co", city: "Gold Coast", country: "Australia", countryCode: "AU" },
-  
+  {
+    builderSlug: "sydney-exhibition-co",
+    city: "Sydney",
+    country: "Australia",
+    countryCode: "AU",
+  },
+  {
+    builderSlug: "sydney-exhibition-co",
+    city: "Brisbane",
+    country: "Australia",
+    countryCode: "AU",
+  },
+  {
+    builderSlug: "sydney-exhibition-co",
+    city: "Gold Coast",
+    country: "Australia",
+    countryCode: "AU",
+  },
+
   // Harbour City Displays
-  { builderSlug: "harbour-city-displays", city: "Sydney", country: "Australia", countryCode: "AU" },
-  { builderSlug: "harbour-city-displays", city: "Newcastle", country: "Australia", countryCode: "AU" },
-  
+  {
+    builderSlug: "harbour-city-displays",
+    city: "Sydney",
+    country: "Australia",
+    countryCode: "AU",
+  },
+  {
+    builderSlug: "harbour-city-displays",
+    city: "Newcastle",
+    country: "Australia",
+    countryCode: "AU",
+  },
+
   // Melbourne Convention Builders
-  { builderSlug: "melbourne-convention-builders", city: "Melbourne", country: "Australia", countryCode: "AU" },
-  { builderSlug: "melbourne-convention-builders", city: "Adelaide", country: "Australia", countryCode: "AU" },
-  { builderSlug: "melbourne-convention-builders", city: "Perth", country: "Australia", countryCode: "AU" },
-  
+  {
+    builderSlug: "melbourne-convention-builders",
+    city: "Melbourne",
+    country: "Australia",
+    countryCode: "AU",
+  },
+  {
+    builderSlug: "melbourne-convention-builders",
+    city: "Adelaide",
+    country: "Australia",
+    countryCode: "AU",
+  },
+  {
+    builderSlug: "melbourne-convention-builders",
+    city: "Perth",
+    country: "Australia",
+    countryCode: "AU",
+  },
+
   // Paris Expo Créateurs serves French cities
-  { builderSlug: "paris-expo-createurs", city: "Paris", country: "France", countryCode: "FR" },
-  { builderSlug: "paris-expo-createurs", city: "Lyon", country: "France", countryCode: "FR" },
-  { builderSlug: "paris-expo-createurs", city: "Marseille", country: "France", countryCode: "FR" },
-  
+  {
+    builderSlug: "paris-expo-createurs",
+    city: "Paris",
+    country: "France",
+    countryCode: "FR",
+  },
+  {
+    builderSlug: "paris-expo-createurs",
+    city: "Lyon",
+    country: "France",
+    countryCode: "FR",
+  },
+  {
+    builderSlug: "paris-expo-createurs",
+    city: "Marseille",
+    country: "France",
+    countryCode: "FR",
+  },
+
   // London Exhibition Specialists serves UK cities
-  { builderSlug: "london-exhibition-specialists", city: "London", country: "United Kingdom", countryCode: "GB" },
-  { builderSlug: "london-exhibition-specialists", city: "Birmingham", country: "United Kingdom", countryCode: "GB" },
-  { builderSlug: "london-exhibition-specialists", city: "Manchester", country: "United Kingdom", countryCode: "GB" },
-  
+  {
+    builderSlug: "london-exhibition-specialists",
+    city: "London",
+    country: "United Kingdom",
+    countryCode: "GB",
+  },
+  {
+    builderSlug: "london-exhibition-specialists",
+    city: "Birmingham",
+    country: "United Kingdom",
+    countryCode: "GB",
+  },
+  {
+    builderSlug: "london-exhibition-specialists",
+    city: "Manchester",
+    country: "United Kingdom",
+    countryCode: "GB",
+  },
+
   // Milano Fiera Costruzioni serves Italian cities
-  { builderSlug: "milano-fiera-costruzioni", city: "Milan", country: "Italy", countryCode: "IT" },
-  { builderSlug: "milano-fiera-costruzioni", city: "Rome", country: "Italy", countryCode: "IT" },
-  { builderSlug: "milano-fiera-costruzioni", city: "Bologna", country: "Italy", countryCode: "IT" },
-  
+  {
+    builderSlug: "milano-fiera-costruzioni",
+    city: "Milan",
+    country: "Italy",
+    countryCode: "IT",
+  },
+  {
+    builderSlug: "milano-fiera-costruzioni",
+    city: "Rome",
+    country: "Italy",
+    countryCode: "IT",
+  },
+  {
+    builderSlug: "milano-fiera-costruzioni",
+    city: "Bologna",
+    country: "Italy",
+    countryCode: "IT",
+  },
+
   // Barcelona Exhibition Masters serves Spanish cities
-  { builderSlug: "barcelona-exhibition-masters", city: "Barcelona", country: "Spain", countryCode: "ES" },
-  { builderSlug: "barcelona-exhibition-masters", city: "Madrid", country: "Spain", countryCode: "ES" },
-  { builderSlug: "barcelona-exhibition-masters", city: "Valencia", country: "Spain", countryCode: "ES" },
-  
+  {
+    builderSlug: "barcelona-exhibition-masters",
+    city: "Barcelona",
+    country: "Spain",
+    countryCode: "ES",
+  },
+  {
+    builderSlug: "barcelona-exhibition-masters",
+    city: "Madrid",
+    country: "Spain",
+    countryCode: "ES",
+  },
+  {
+    builderSlug: "barcelona-exhibition-masters",
+    city: "Valencia",
+    country: "Spain",
+    countryCode: "ES",
+  },
+
   // Amsterdam Expo Builders serves Dutch cities
-  { builderSlug: "amsterdam-expo-builders", city: "Amsterdam", country: "Netherlands", countryCode: "NL" },
-  { builderSlug: "amsterdam-expo-builders", city: "Rotterdam", country: "Netherlands", countryCode: "NL" },
-  { builderSlug: "amsterdam-expo-builders", city: "Utrecht", country: "Netherlands", countryCode: "NL" },
-  
+  {
+    builderSlug: "amsterdam-expo-builders",
+    city: "Amsterdam",
+    country: "Netherlands",
+    countryCode: "NL",
+  },
+  {
+    builderSlug: "amsterdam-expo-builders",
+    city: "Rotterdam",
+    country: "Netherlands",
+    countryCode: "NL",
+  },
+  {
+    builderSlug: "amsterdam-expo-builders",
+    city: "Utrecht",
+    country: "Netherlands",
+    countryCode: "NL",
+  },
+
   // Singapore Exhibition Solutions
-  { builderSlug: "singapore-exhibition-solutions", city: "Singapore", country: "Singapore", countryCode: "SG" },
-  
+  {
+    builderSlug: "singapore-exhibition-solutions",
+    city: "Singapore",
+    country: "Singapore",
+    countryCode: "SG",
+  },
+
   // Tokyo Exhibition Craft serves Japanese cities
-  { builderSlug: "tokyo-exhibition-craft", city: "Tokyo", country: "Japan", countryCode: "JP" },
-  { builderSlug: "tokyo-exhibition-craft", city: "Osaka", country: "Japan", countryCode: "JP" },
-  { builderSlug: "tokyo-exhibition-craft", city: "Nagoya", country: "Japan", countryCode: "JP" },
+  {
+    builderSlug: "tokyo-exhibition-craft",
+    city: "Tokyo",
+    country: "Japan",
+    countryCode: "JP",
+  },
+  {
+    builderSlug: "tokyo-exhibition-craft",
+    city: "Osaka",
+    country: "Japan",
+    countryCode: "JP",
+  },
+  {
+    builderSlug: "tokyo-exhibition-craft",
+    city: "Nagoya",
+    country: "Japan",
+    countryCode: "JP",
+  },
 ];
 
 // Services offered by builders
 const builderServices = [
   // Common services across all builders
-  { category: "Design", name: "Custom Stand Design", description: "Bespoke exhibition stand design tailored to your brand" },
-  { category: "Construction", name: "Stand Construction", description: "Professional construction and installation services" },
-  { category: "Graphics", name: "Graphics & Signage", description: "High-quality graphics and branded signage solutions" },
-  { category: "Technology", name: "AV Integration", description: "Audio-visual equipment and technology integration" },
-  { category: "Logistics", name: "Project Management", description: "End-to-end project management and coordination" },
-  { category: "Storage", name: "Storage Solutions", description: "Secure storage for reusable exhibition components" },
-  { category: "Maintenance", name: "On-site Support", description: "Technical support during exhibition events" },
-  { category: "Rental", name: "Modular Systems", description: "Flexible modular exhibition system rentals" },
+  {
+    category: "Design",
+    name: "Custom Stand Design",
+    description: "Bespoke exhibition stand design tailored to your brand",
+  },
+  {
+    category: "Construction",
+    name: "Stand Construction",
+    description: "Professional construction and installation services",
+  },
+  {
+    category: "Graphics",
+    name: "Graphics & Signage",
+    description: "High-quality graphics and branded signage solutions",
+  },
+  {
+    category: "Technology",
+    name: "AV Integration",
+    description: "Audio-visual equipment and technology integration",
+  },
+  {
+    category: "Logistics",
+    name: "Project Management",
+    description: "End-to-end project management and coordination",
+  },
+  {
+    category: "Storage",
+    name: "Storage Solutions",
+    description: "Secure storage for reusable exhibition components",
+  },
+  {
+    category: "Maintenance",
+    name: "On-site Support",
+    description: "Technical support during exhibition events",
+  },
+  {
+    category: "Rental",
+    name: "Modular Systems",
+    description: "Flexible modular exhibition system rentals",
+  },
 ];
 
 // Specializations by industry
 const builderSpecializations = [
-  { industryName: "Technology", industrySlug: "technology", color: "#3B82F6", icon: "💻" },
-  { industryName: "Healthcare", industrySlug: "healthcare", color: "#10B981", icon: "🏥" },
-  { industryName: "Automotive", industrySlug: "automotive", color: "#EF4444", icon: "🚗" },
-  { industryName: "Manufacturing", industrySlug: "manufacturing", color: "#F59E0B", icon: "🏭" },
-  { industryName: "Fashion", industrySlug: "fashion", color: "#EC4899", icon: "👗" },
-  { industryName: "Food & Beverage", industrySlug: "food-beverage", color: "#84CC16", icon: "🍽️" },
-  { industryName: "Finance", industrySlug: "finance", color: "#6366F1", icon: "💰" },
-  { industryName: "Education", industrySlug: "education", color: "#8B5CF6", icon: "🎓" },
+  {
+    industryName: "Technology",
+    industrySlug: "technology",
+    color: "#3B82F6",
+    icon: "💻",
+  },
+  {
+    industryName: "Healthcare",
+    industrySlug: "healthcare",
+    color: "#10B981",
+    icon: "🏥",
+  },
+  {
+    industryName: "Automotive",
+    industrySlug: "automotive",
+    color: "#EF4444",
+    icon: "🚗",
+  },
+  {
+    industryName: "Manufacturing",
+    industrySlug: "manufacturing",
+    color: "#F59E0B",
+    icon: "🏭",
+  },
+  {
+    industryName: "Fashion",
+    industrySlug: "fashion",
+    color: "#EC4899",
+    icon: "👗",
+  },
+  {
+    industryName: "Food & Beverage",
+    industrySlug: "food-beverage",
+    color: "#84CC16",
+    icon: "🍽️",
+  },
+  {
+    industryName: "Finance",
+    industrySlug: "finance",
+    color: "#6366F1",
+    icon: "💰",
+  },
+  {
+    industryName: "Education",
+    industrySlug: "education",
+    color: "#8B5CF6",
+    icon: "🎓",
+  },
 ];
 
 export const bulkImportBuilders = mutation({
@@ -655,39 +964,45 @@ export const bulkImportBuilders = mutation({
   },
   handler: async (ctx, args) => {
     console.log("🚀 Starting bulk builder import...");
-    
+
     try {
       // Clear existing data if requested
       if (args.clearExisting) {
         console.log("🗑️ Clearing existing builder data...");
-        
+
         // Delete all related data first
-        const existingServiceLocations = await ctx.db.query("builderServiceLocations").collect();
+        const existingServiceLocations = await ctx.db
+          .query("builderServiceLocations")
+          .collect();
         for (const location of existingServiceLocations) {
           await ctx.db.delete(location._id);
         }
-        
-        const existingServices = await ctx.db.query("builderServices").collect();
+
+        const existingServices = await ctx.db
+          .query("builderServices")
+          .collect();
         for (const service of existingServices) {
           await ctx.db.delete(service._id);
         }
-        
-        const existingSpecializations = await ctx.db.query("builderSpecializations").collect();
+
+        const existingSpecializations = await ctx.db
+          .query("builderSpecializations")
+          .collect();
         for (const spec of existingSpecializations) {
           await ctx.db.delete(spec._id);
         }
-        
+
         const existingBuilders = await ctx.db.query("builders").collect();
         for (const builder of existingBuilders) {
           await ctx.db.delete(builder._id);
         }
-        
+
         console.log("✅ Existing data cleared");
       }
-      
+
       const now = Date.now();
       const builderIdMap = new Map<string, string>();
-      
+
       // Import builders
       console.log("📦 Importing builders...");
       for (const builderData of sampleBuilders) {
@@ -699,7 +1014,7 @@ export const bulkImportBuilders = mutation({
         builderIdMap.set(builderData.slug, builderId);
         console.log(`✅ Created builder: ${builderData.companyName}`);
       }
-      
+
       // Import service locations
       console.log("🌍 Importing service locations...");
       for (const location of serviceLocations) {
@@ -714,14 +1029,19 @@ export const bulkImportBuilders = mutation({
           });
         }
       }
-      
+
       // Import services for each builder
       console.log("🔧 Importing builder services...");
       for (const [builderSlug, builderId] of builderIdMap.entries()) {
         // Add 4-6 random services per builder
-        const shuffledServices = [...builderServices].sort(() => 0.5 - Math.random());
-        const selectedServices = shuffledServices.slice(0, Math.floor(Math.random() * 3) + 4);
-        
+        const shuffledServices = [...builderServices].sort(
+          () => 0.5 - Math.random()
+        );
+        const selectedServices = shuffledServices.slice(
+          0,
+          Math.floor(Math.random() * 3) + 4
+        );
+
         for (const service of selectedServices) {
           await ctx.db.insert("builderServices", {
             builderId: builderId as any,
@@ -729,7 +1049,9 @@ export const bulkImportBuilders = mutation({
             description: service.description,
             category: service.category,
             priceFrom: Math.floor(Math.random() * 5000) + 1000,
-            currency: sampleBuilders.find(b => b.slug === builderSlug)?.currency || "USD",
+            currency:
+              sampleBuilders.find((b) => b.slug === builderSlug)?.currency ||
+              "USD",
             unit: "per sqm",
             popular: Math.random() > 0.7,
             turnoverTime: `${Math.floor(Math.random() * 14) + 7} days`,
@@ -737,14 +1059,19 @@ export const bulkImportBuilders = mutation({
           });
         }
       }
-      
+
       // Import specializations for each builder
       console.log("🎯 Importing builder specializations...");
       for (const [builderSlug, builderId] of builderIdMap.entries()) {
         // Add 2-4 random specializations per builder
-        const shuffledSpecs = [...builderSpecializations].sort(() => 0.5 - Math.random());
-        const selectedSpecs = shuffledSpecs.slice(0, Math.floor(Math.random() * 3) + 2);
-        
+        const shuffledSpecs = [...builderSpecializations].sort(
+          () => 0.5 - Math.random()
+        );
+        const selectedSpecs = shuffledSpecs.slice(
+          0,
+          Math.floor(Math.random() * 3) + 2
+        );
+
         for (const spec of selectedSpecs) {
           await ctx.db.insert("builderSpecializations", {
             builderId: builderId as any,
@@ -757,9 +1084,9 @@ export const bulkImportBuilders = mutation({
           });
         }
       }
-      
+
       console.log("🎉 Bulk import completed successfully!");
-      
+
       return {
         success: true,
         imported: {
@@ -768,15 +1095,15 @@ export const bulkImportBuilders = mutation({
           services: sampleBuilders.length * 5, // Average services per builder
           specializations: sampleBuilders.length * 3, // Average specializations per builder
         },
-        message: `Successfully imported ${sampleBuilders.length} builders with complete data across major cities worldwide.`
+        message: `Successfully imported ${sampleBuilders.length} builders with complete data across major cities worldwide.`,
       };
-      
     } catch (error) {
       console.error("❌ Bulk import failed:", error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error occurred",
-        message: "Bulk import failed. Please check the logs for details."
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+        message: "Bulk import failed. Please check the logs for details.",
       };
     }
   },

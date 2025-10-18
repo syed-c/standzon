@@ -41,7 +41,11 @@ export const locationData: CountryData[] = [
       { cityName: "Chicago", citySlug: "chicago", state: "Illinois" },
       { cityName: "Houston", citySlug: "houston", state: "Texas" },
       { cityName: "Washington", citySlug: "washington", state: "Washington" },
-      { cityName: "San Francisco", citySlug: "san-francisco", state: "California" },
+      {
+        cityName: "San Francisco",
+        citySlug: "san-francisco",
+        state: "California",
+      },
       { cityName: "Miami", citySlug: "miami", state: "Florida" },
       { cityName: "Las Vegas", citySlug: "las-vegas", state: "Nevada" },
       { cityName: "Austin", citySlug: "austin", state: "Texas" },
@@ -59,13 +63,17 @@ export const locationData: CountryData[] = [
       { cityName: "San Diego", citySlug: "san-diego", state: "California" },
       { cityName: "San Jose", citySlug: "san-jose", state: "California" },
       { cityName: "Texas", citySlug: "texas", state: "Texas" },
-      { cityName: "Washington DC", citySlug: "washington-dc", state: "District of Columbia" },
+      {
+        cityName: "Washington DC",
+        citySlug: "washington-dc",
+        state: "District of Columbia",
+      },
       { cityName: "New Orleans", citySlug: "new-orleans", state: "Louisiana" },
       { cityName: "Utah", citySlug: "utah", state: "Utah" },
       { cityName: "Michigan", citySlug: "michigan", state: "Michigan" },
       { cityName: "Alaska", citySlug: "alaska", state: "Alaska" },
-      { cityName: "Georgia", citySlug: "georgia", state: "Georgia" }
-    ]
+      { cityName: "Georgia", citySlug: "georgia", state: "Georgia" },
+    ],
   },
   {
     countryName: "India",
@@ -78,8 +86,8 @@ export const locationData: CountryData[] = [
     cities: [
       { cityName: "Bangalore", citySlug: "bangalore", state: "Karnataka" },
       { cityName: "Mumbai", citySlug: "mumbai", state: "Maharashtra" },
-      { cityName: "New Delhi", citySlug: "new-delhi", state: "Delhi" }
-    ]
+      { cityName: "New Delhi", citySlug: "new-delhi", state: "Delhi" },
+    ],
   },
   {
     countryName: "United Kingdom",
@@ -92,8 +100,8 @@ export const locationData: CountryData[] = [
     cities: [
       { cityName: "London", citySlug: "london" },
       { cityName: "Birmingham", citySlug: "birmingham" },
-      { cityName: "Manchester", citySlug: "manchester" }
-    ]
+      { cityName: "Manchester", citySlug: "manchester" },
+    ],
   },
   {
     countryName: "Australia",
@@ -106,8 +114,8 @@ export const locationData: CountryData[] = [
     cities: [
       { cityName: "Brisbane", citySlug: "brisbane", state: "Queensland" },
       { cityName: "Melbourne", citySlug: "melbourne", state: "Victoria" },
-      { cityName: "Sydney", citySlug: "sydney", state: "New South Wales" }
-    ]
+      { cityName: "Sydney", citySlug: "sydney", state: "New South Wales" },
+    ],
   },
   {
     countryName: "France",
@@ -121,8 +129,8 @@ export const locationData: CountryData[] = [
       { cityName: "Cannes", citySlug: "cannes" },
       { cityName: "Lyon", citySlug: "lyon" },
       { cityName: "Paris", citySlug: "paris" },
-      { cityName: "Strasbourg", citySlug: "strasbourg" }
-    ]
+      { cityName: "Strasbourg", citySlug: "strasbourg" },
+    ],
   },
   {
     countryName: "Saudi Arabia",
@@ -134,8 +142,8 @@ export const locationData: CountryData[] = [
     language: "Arabic",
     cities: [
       { cityName: "Riyadh", citySlug: "riyadh" },
-      { cityName: "Jeddah", citySlug: "jeddah" }
-    ]
+      { cityName: "Jeddah", citySlug: "jeddah" },
+    ],
   },
   {
     countryName: "Germany",
@@ -157,8 +165,8 @@ export const locationData: CountryData[] = [
       { cityName: "Essen", citySlug: "essen" },
       { cityName: "Dusseldorf", citySlug: "dusseldorf" },
       { cityName: "Munich", citySlug: "munich" },
-      { cityName: "Leipzig", citySlug: "leipzig" }
-    ]
+      { cityName: "Leipzig", citySlug: "leipzig" },
+    ],
   },
   {
     countryName: "Italy",
@@ -175,8 +183,8 @@ export const locationData: CountryData[] = [
       { cityName: "Rimini", citySlug: "rimini" },
       { cityName: "Rome", citySlug: "rome" },
       { cityName: "Verona", citySlug: "verona" },
-      { cityName: "Genoa", citySlug: "genoa" }
-    ]
+      { cityName: "Genoa", citySlug: "genoa" },
+    ],
   },
   {
     countryName: "Egypt",
@@ -186,9 +194,7 @@ export const locationData: CountryData[] = [
     currency: "EGP",
     timezone: "Africa/Cairo",
     language: "Arabic",
-    cities: [
-      { cityName: "Cairo", citySlug: "cairo" }
-    ]
+    cities: [{ cityName: "Cairo", citySlug: "cairo" }],
   },
   {
     countryName: "Spain",
@@ -211,8 +217,8 @@ export const locationData: CountryData[] = [
       { cityName: "Valladolid", citySlug: "valladolid" },
       { cityName: "Valencia", citySlug: "valencia" },
       { cityName: "Seville", citySlug: "seville" },
-      { cityName: "Palma de Mallorca", citySlug: "palma-de-mallorca" }
-    ]
+      { cityName: "Palma de Mallorca", citySlug: "palma-de-mallorca" },
+    ],
   },
   {
     countryName: "United Arab Emirates",
@@ -225,8 +231,8 @@ export const locationData: CountryData[] = [
     cities: [
       { cityName: "Dubai", citySlug: "dubai" },
       { cityName: "Abu Dhabi", citySlug: "abu-dhabi" },
-      { cityName: "Sharjah", citySlug: "sharjah" }
-    ]
+      { cityName: "Sharjah", citySlug: "sharjah" },
+    ],
   },
   {
     countryName: "Iran",
@@ -242,8 +248,8 @@ export const locationData: CountryData[] = [
       { cityName: "Shiraz", citySlug: "shiraz" },
       { cityName: "Mashhad", citySlug: "mashhad" },
       { cityName: "Tabriz", citySlug: "tabriz" },
-      { cityName: "Qom", citySlug: "qom" }
-    ]
+      { cityName: "Qom", citySlug: "qom" },
+    ],
   },
   {
     countryName: "Iraq",
@@ -259,8 +265,8 @@ export const locationData: CountryData[] = [
       { cityName: "Mosul", citySlug: "mosul" },
       { cityName: "Erbil", citySlug: "erbil" },
       { cityName: "Najaf", citySlug: "najaf" },
-      { cityName: "Karbala", citySlug: "karbala" }
-    ]
+      { cityName: "Karbala", citySlug: "karbala" },
+    ],
   },
   {
     countryName: "Indonesia",
@@ -272,8 +278,8 @@ export const locationData: CountryData[] = [
     language: "Indonesian",
     cities: [
       { cityName: "Bali", citySlug: "bali" },
-      { cityName: "Jakarta", citySlug: "jakarta" }
-    ]
+      { cityName: "Jakarta", citySlug: "jakarta" },
+    ],
   },
   {
     countryName: "Malaysia",
@@ -283,9 +289,7 @@ export const locationData: CountryData[] = [
     currency: "MYR",
     timezone: "Asia/Kuala_Lumpur",
     language: "Malay",
-    cities: [
-      { cityName: "Kuala Lumpur", citySlug: "kuala-lumpur" }
-    ]
+    cities: [{ cityName: "Kuala Lumpur", citySlug: "kuala-lumpur" }],
   },
   {
     countryName: "Turkey",
@@ -295,9 +299,7 @@ export const locationData: CountryData[] = [
     currency: "TRY",
     timezone: "Europe/Istanbul",
     language: "Turkish",
-    cities: [
-      { cityName: "Istanbul", citySlug: "istanbul" }
-    ]
+    cities: [{ cityName: "Istanbul", citySlug: "istanbul" }],
   },
   {
     countryName: "Russia",
@@ -309,8 +311,8 @@ export const locationData: CountryData[] = [
     language: "Russian",
     cities: [
       { cityName: "Moscow", citySlug: "moscow" },
-      { cityName: "St. Petersburg", citySlug: "st-petersburg" }
-    ]
+      { cityName: "St. Petersburg", citySlug: "st-petersburg" },
+    ],
   },
   {
     countryName: "Singapore",
@@ -320,9 +322,7 @@ export const locationData: CountryData[] = [
     currency: "SGD",
     timezone: "Asia/Singapore",
     language: "English",
-    cities: [
-      { cityName: "Singapore", citySlug: "singapore" }
-    ]
+    cities: [{ cityName: "Singapore", citySlug: "singapore" }],
   },
   {
     countryName: "China",
@@ -334,8 +334,8 @@ export const locationData: CountryData[] = [
     language: "Chinese",
     cities: [
       { cityName: "Beijing", citySlug: "beijing" },
-      { cityName: "Guangzhou", citySlug: "guangzhou" }
-    ]
+      { cityName: "Guangzhou", citySlug: "guangzhou" },
+    ],
   },
   {
     countryName: "Canada",
@@ -348,8 +348,8 @@ export const locationData: CountryData[] = [
     cities: [
       { cityName: "Montreal", citySlug: "montreal" },
       { cityName: "Toronto", citySlug: "toronto" },
-      { cityName: "Vancouver", citySlug: "vancouver" }
-    ]
+      { cityName: "Vancouver", citySlug: "vancouver" },
+    ],
   },
   {
     countryName: "Switzerland",
@@ -365,8 +365,8 @@ export const locationData: CountryData[] = [
       { cityName: "Basel", citySlug: "basel" },
       { cityName: "Sirnach", citySlug: "sirnach" },
       { cityName: "Bern", citySlug: "bern" },
-      { cityName: "Lugano", citySlug: "lugano" }
-    ]
+      { cityName: "Lugano", citySlug: "lugano" },
+    ],
   },
   {
     countryName: "Belgium",
@@ -378,19 +378,22 @@ export const locationData: CountryData[] = [
     language: "Dutch",
     cities: [
       { cityName: "Brussels", citySlug: "brussels" },
-      { cityName: "Kortrijk", citySlug: "kortrijk" }
-    ]
-  }
+      { cityName: "Kortrijk", citySlug: "kortrijk" },
+    ],
+  },
 ];
 
 // Helper functions for location data
 export const getCountryBySlug = (slug: string): CountryData | undefined => {
-  return locationData.find(country => country.countrySlug === slug);
+  return locationData.find((country) => country.countrySlug === slug);
 };
 
-export const getCityBySlug = (countrySlug: string, citySlug: string): CityData | undefined => {
+export const getCityBySlug = (
+  countrySlug: string,
+  citySlug: string
+): CityData | undefined => {
   const country = getCountryBySlug(countrySlug);
-  return country?.cities.find(city => city.citySlug === citySlug);
+  return country?.cities.find((city) => city.citySlug === citySlug);
 };
 
 export const getAllCountries = (): CountryData[] => {
@@ -405,14 +408,33 @@ export const getAllCitiesForCountry = (countrySlug: string): CityData[] => {
 // Statistics for the platform
 export const globalExhibitionStats = {
   totalCountries: locationData.length,
-  totalCities: locationData.reduce((sum, country) => sum + country.cities.length, 0),
+  totalCities: locationData.reduce(
+    (sum, country) => sum + country.cities.length,
+    0
+  ),
   totalBuilders: 0, // Will be updated from database
   totalExhibitions: 0, // Will be updated from database
-  tier1Countries: ['United States', 'Germany', 'United Kingdom', 'France', 'Italy', 'Spain'],
+  tier1Countries: [
+    "United States",
+    "Germany",
+    "United Kingdom",
+    "France",
+    "Italy",
+    "Spain",
+  ],
   tier1Stats: {
     countries: 6,
     cities: locationData
-      .filter(country => ['United States', 'Germany', 'United Kingdom', 'France', 'Italy', 'Spain'].includes(country.countryName))
-      .reduce((sum, country) => sum + country.cities.length, 0)
-  }
+      .filter((country) =>
+        [
+          "United States",
+          "Germany",
+          "United Kingdom",
+          "France",
+          "Italy",
+          "Spain",
+        ].includes(country.countryName)
+      )
+      .reduce((sum, country) => sum + country.cities.length, 0),
+  },
 };

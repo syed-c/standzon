@@ -119,7 +119,16 @@ export default function EnhancedCountryPageClient({
               Click on any city to view local builders and get competitive quotes.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-              {countryData.cities.map((city: any) => (
+              {/* Filter out duplicate cities by citySlug and normalize city names */}
+              {countryData.cities
+                .filter((city: any, index: number, self: any[]) => 
+                  index === self.findIndex((c: any) => 
+                    c.citySlug === city.citySlug || 
+                    c.cityName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === 
+                    city.cityName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                  )
+                )
+                .map((city: any) => (
                 <Link
                   key={city._id}
                   href={`/exhibition-stands/${countrySlug}/${city.citySlug}`}
@@ -151,7 +160,15 @@ export default function EnhancedCountryPageClient({
                 Popular Cities for Exhibition Stands in {countryData.countryName}
               </h3>
               <div className="flex flex-wrap gap-2">
-                {countryData.cities.map((city: any, index: number) => (
+                {countryData.cities
+                  .filter((city: any, index: number, self: any[]) => 
+                    index === self.findIndex((c: any) => 
+                      c.citySlug === city.citySlug || 
+                      c.cityName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === 
+                      city.cityName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    )
+                  )
+                  .map((city: any, index: number, filteredCities: any[]) => (
                   <span key={city._id}>
                     <Link
                       href={`/exhibition-stands/${countrySlug}/${city.citySlug}`}
@@ -159,7 +176,7 @@ export default function EnhancedCountryPageClient({
                     >
                       Exhibition Stands in {city.cityName}
                     </Link>
-                    {index < countryData.cities.length - 1 && (
+                    {index < filteredCities.length - 1 && (
                       <span className="text-gray-400 ml-2">•</span>
                     )}
                   </span>

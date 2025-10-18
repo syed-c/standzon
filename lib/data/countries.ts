@@ -420,7 +420,7 @@ export const tier1Countries: Country[] = [
         }
       },
       {
-        name: 'Düsseldorf',
+        name: 'Dusseldorf',
         slug: 'dusseldorf',
         population: 1200000,
         isCapital: false,
@@ -429,7 +429,7 @@ export const tier1Countries: Country[] = [
         averageStandCost: 460,
         majorVenues: [
           {
-            name: 'Messe Düsseldorf',
+            name: 'Messe Dusseldorf',
             totalSpace: 262000,
             hallCount: 19,
             facilities: ['Medical Excellence', 'Japanese Quarter', 'Rhine Access'],
@@ -437,7 +437,7 @@ export const tier1Countries: Country[] = [
           }
         ],
         transportation: {
-          airports: ['Düsseldorf Airport'],
+          airports: ['Dusseldorf Airport'],
           publicTransport: ['S-Bahn', 'U-Bahn', 'Buses'],
           accessibility: 'Airport and city center connections available'
         }

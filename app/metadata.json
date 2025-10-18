@@ -702,7 +702,7 @@
     "ogImage": "/og-image-madrid.png"
   },
   "/exhibition-stands/spain/barcelona": {
-    "title": "Barcelona Exhibition Stand Builders | Trade Show Contractors", 
+    "title": "Barcelona Exhibition Stand Builders | Trade Show Contractors",
     "description": "Expert exhibition stand builders in Barcelona, Spain. Professional contractors for all major Barcelona trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
     "keywords": "Barcelona exhibition stands, Barcelona trade show builders, Barcelona contractors, Barcelona exhibition services, Spain trade shows",
     "ogImage": "/og-image-barcelona.png"
@@ -1038,9 +1038,9 @@
     "ogImage": "/og-image-delhi.png"
   },
   "/exhibition-stands/germany/dusseldorf": {
-    "title": "Düsseldorf Exhibition Stand Builders | Trade Show Contractors",
-    "description": "Expert exhibition stand builders in Düsseldorf, Germany. Professional contractors for all major Düsseldorf trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
-    "keywords": "Düsseldorf exhibition stands, Düsseldorf trade show builders, Düsseldorf contractors, Düsseldorf exhibition services, Germany trade shows",
+    "title": "Dusseldorf Exhibition Stand Builders | Trade Show Contractors",
+    "description": "Expert exhibition stand builders in Dusseldorf, Germany. Professional contractors for all major Dusseldorf trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
+    "keywords": "Dusseldorf exhibition stands, Dusseldorf trade show builders, Dusseldorf contractors, Dusseldorf exhibition services, Germany trade shows",
     "ogImage": "/og-image-dusseldorf.png"
   },
   "/exhibition-stands/germany/frankfurt": {
@@ -1308,4 +1308,3 @@
     "ogImage": "/og-image.jpg"
   }
 }
-
