@@ -37,8 +37,7 @@ import {
 import { builderStats } from "@/lib/data/exhibitionBuilders";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import { GLOBAL_EXHIBITION_DATA } from "@/lib/data/globalCities";
-import { ConvexHttpClient } from "convex/browser";
-import { api } from "@/convex/_generated/api";
+import { getBuilders, getCountries, getExhibitions } from "@/lib/supabase";
 
 export default function BuildersDirectoryContent() {
   console.log(
@@ -67,47 +66,28 @@ export default function BuildersDirectoryContent() {
     const loadRealTimeData = async () => {
       setLoading(true);
       try {
-        console.log("🔄 Loading real-time builder data from Convex...");
+        console.log("🔄 Loading real-time builder data from Supabase...");
 
-        // Import Convex client and API
-        const { ConvexHttpClient } = await import("convex/browser");
-        const { api } = await import("@/convex/_generated/api");
+        // Fetch builders from Supabase
+        const buildersData = await getBuilders();
 
-        const convexUrl =
-          process.env.NEXT_PUBLIC_CONVEX_URL ||
-          "https://tame-labrador-80.convex.cloud";
-        const convex = new ConvexHttpClient(convexUrl);
-
-        // Fetch builders from Convex
-        const buildersData = await convex.query(api.builders.getAllBuilders, {
-          limit: 1000,
-          offset: 0,
-        });
-
-        console.log("📡 Raw Convex response:", buildersData);
+        console.log("📡 Raw Supabase response:", buildersData);
         console.log("📊 Response structure:", {
           hasData: !!buildersData,
-          hasBuilders: !!buildersData?.builders,
-          isArray: Array.isArray(buildersData?.builders),
-          length: buildersData?.builders?.length,
-          total: buildersData?.total,
+          isArray: Array.isArray(buildersData),
+          length: buildersData?.length,
         });
 
-        if (
-          buildersData &&
-          buildersData.builders &&
-          Array.isArray(buildersData.builders) &&
-          buildersData.builders.length > 0
-        ) {
-          const allBuilders = buildersData.builders;
-          console.log(`✅ Loaded ${allBuilders.length} builders from Convex`);
+        if (buildersData && Array.isArray(buildersData) && buildersData.length > 0) {
+          const allBuilders = buildersData;
+          console.log(`✅ Loaded ${allBuilders.length} builders from Supabase`);
           console.log(
             "🔍 First 3 builders:",
             allBuilders.slice(0, 3).map((b) => ({
-              id: b._id,
-              name: b.companyName,
-              city: b.headquartersCity,
-              country: b.headquartersCountry,
+              id: b.id,
+              name: b.company_name,
+              city: b.headquarters_city,
+              country: b.headquarters_country,
               source: b.source,
               gmbImported: b.gmbImported || b.importedFromGMB,
             }))
@@ -115,39 +95,39 @@ export default function BuildersDirectoryContent() {
 
           // Convert to public display format - SHOW ALL BUILDERS INCLUDING GMB IMPORTED
           const publicBuilders = allBuilders.map((builder: any) => ({
-            id: builder._id,
-            companyName: builder.companyName,
+            id: builder.id,
+            companyName: builder.company_name,
             slug:
               builder.slug ||
-              builder.companyName.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+              builder.company_name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
             logo: builder.logo || "/images/builders/default-logo.png",
-            establishedYear: builder.establishedYear || 2020,
+            establishedYear: builder.established_year || 2020,
             headquarters: {
-              city: builder.headquartersCity || "Unknown",
-              country: builder.headquartersCountry || "Unknown",
-              countryCode: builder.headquartersCountryCode || "XX",
-              address: builder.headquartersAddress || "",
-              latitude: builder.headquartersLatitude || 0,
-              longitude: builder.headquartersLongitude || 0,
+              city: builder.headquarters_city || "Unknown",
+              country: builder.headquarters_country || "Unknown",
+              countryCode: builder.headquarters_country_code || "XX",
+              address: builder.headquarters_address || "",
+              latitude: builder.headquarters_latitude || 0,
+              longitude: builder.headquarters_longitude || 0,
               isHeadquarters: true,
             },
             serviceLocations: [
               {
                 // Default service location based on headquarters
-                city: builder.headquartersCity || "Unknown",
-                country: builder.headquartersCountry || "Unknown",
-                countryCode: builder.headquartersCountryCode || "XX",
-                address: builder.headquartersAddress || "",
-                latitude: builder.headquartersLatitude || 0,
-                longitude: builder.headquartersLongitude || 0,
+                city: builder.headquarters_city || "Unknown",
+                country: builder.headquarters_country || "Unknown",
+                countryCode: builder.headquarters_country_code || "XX",
+                address: builder.headquarters_address || "",
+                latitude: builder.headquarters_latitude || 0,
+                longitude: builder.headquarters_longitude || 0,
                 isHeadquarters: false,
               },
             ],
             contactInfo: {
-              primaryEmail: builder.primaryEmail || "",
+              primaryEmail: builder.primary_email || "",
               phone: builder.phone || "",
               website: builder.website || "",
-              contactPerson: builder.contactPerson || "Contact Person",
+              contactPerson: builder.contact_person || "Contact Person",
               position: builder.position || "Manager",
             },
             services: [
@@ -296,17 +276,16 @@ export default function BuildersDirectoryContent() {
           // Use the converted builders for display
           setRealTimeBuilders(publicBuilders);
           console.log(
-            `🎉 SUCCESS: Public builders page loaded with ${publicBuilders.length} total builders from Convex (${calculatedStats.importedFromGMB} from GMB)`
+            `🎉 SUCCESS: Public builders page loaded with ${publicBuilders.length} total builders from Supabase (${calculatedStats.importedFromGMB} from GMB)`
           );
         } else {
           console.log(
-            "⚠️ No builders found in Convex or invalid response, using static fallback"
+            "⚠️ No builders found in Supabase or invalid response, using static fallback"
           );
           console.log("Response details:", {
             buildersData,
-            hasBuilders: buildersData?.builders,
-            isArray: Array.isArray(buildersData?.builders),
-            length: buildersData?.builders?.length,
+            isArray: Array.isArray(buildersData),
+            length: buildersData?.length,
           });
           setRealTimeBuilders([]);
           setRealTimeStats({

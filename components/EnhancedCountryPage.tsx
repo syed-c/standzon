@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useState, useEffect } from "react";
+import { getCountries, getBuilders } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,16 +27,41 @@ export default function EnhancedCountryPage({
   countrySlug,
 }: EnhancedCountryPageProps) {
   const [showAllBuilders, setShowAllBuilders] = useState(false);
+  const [countryData, setCountryData] = useState<any>(null);
+  const [builders, setBuilders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const countryData = useQuery(api.locations.getCountryBySlug, {
-    slug: countrySlug,
-  });
-  const builders = useQuery(api.locations.getBuildersForLocation, {
-    country: countryData?.countryName,
-    limit: showAllBuilders ? undefined : 12,
-  });
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        
+        // Get all countries and find the one with matching slug
+        const countries = await getCountries();
+        const country = countries.find(c => c.country_slug === countrySlug);
+        
+        if (country) {
+          setCountryData(country);
+          
+          // Get builders for this country
+          const allBuilders = await getBuilders();
+          const countryBuilders = allBuilders.filter(builder => 
+            builder.headquarters_country === country.country_name
+          );
+          
+          setBuilders(showAllBuilders ? countryBuilders : countryBuilders.slice(0, 12));
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  if (countryData === undefined || builders === undefined) {
+    fetchData();
+  }, [countrySlug, showAllBuilders]);
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
         <div className="max-w-7xl mx-auto">
@@ -74,7 +98,7 @@ export default function EnhancedCountryPage({
 
   // Calculate real stats
   const builderCount = builders?.length || 0;
-  const cityCount = countryData.cities?.length || 0;
+  const cityCount = 0; // We'll need to implement cities separately
   const averageRating = builderCount > 0 ? 4.8 : 0;
   const totalProjects = builderCount * 15; // Estimate
 
@@ -88,12 +112,12 @@ export default function EnhancedCountryPage({
               Exhibition Stand Builders
               <br />
               <span className="text-blue-200">
-                in {countryData.countryName}
+                in {countryData.country_name}
               </span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 opacity-90">
               Connect with {builderCount}+ verified exhibition stand builders in{" "}
-              {countryData.countryName}. Get competitive quotes from local
+              {countryData.country_name}. Get competitive quotes from local
               experts who understand your market.
             </p>
 
@@ -211,10 +235,10 @@ export default function EnhancedCountryPage({
         {countryData.cities && countryData.cities.length > 0 && (
           <section className="mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-8">
-              Exhibition Cities in {countryData.countryName}
+              Exhibition Cities in {countryData.country_name}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {countryData.cities.map((city) => (
+              {countryData.cities.map((city: any) => (
                 <Link
                   key={city._id}
                   href={`/exhibition-stands/${countrySlug}/${city.citySlug}`}
@@ -263,13 +287,13 @@ export default function EnhancedCountryPage({
             {builders && builders.length > 0 ? (
               builders.map((builder: any) => (
                 <Card
-                  key={builder._id}
+                  key={builder.id}
                   className="hover:shadow-lg transition-all duration-300"
                 >
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       <span className="font-semibold">
-                        {builder.companyName || "Builder"}
+                        {builder.company_name || "Builder"}
                       </span>
                       <Badge variant="secondary">Verified</Badge>
                     </CardTitle>
@@ -278,7 +302,7 @@ export default function EnhancedCountryPage({
                     <div className="flex items-center text-gray-600">
                       <Building2 className="w-4 h-4 mr-2" />
                       <span>
-                        {builder.city || "City"}, {builder.country || "Country"}
+                        {builder.headquarters_city || "City"}, {builder.headquarters_country || "Country"}
                       </span>
                     </div>
                     <div className="flex items-center text-gray-600">
@@ -301,7 +325,7 @@ export default function EnhancedCountryPage({
                     </div>
                     <div className="flex items-center text-gray-600">
                       <Mail className="w-4 h-4 mr-2" />
-                      <span>{builder.email || "info@example.com"}</span>
+                      <span>{builder.primary_email || "info@example.com"}</span>
                     </div>
                   </CardContent>
                 </Card>

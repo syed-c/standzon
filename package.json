@@ -13,7 +13,9 @@
     "postbuild": "echo 'Build completed successfully'",
     "migrate:supabase": "node scripts/migrate-simple.js",
     "migrate:setup": "node scripts/migrate-simple.js",
-    "schema:apply": "node scripts/apply-schema.js"
+    "schema:apply": "node scripts/apply-schema.js",
+    "update:italy-cities": "node scripts/update-italy-cities.js",
+    "check:italy-cities": "node scripts/check-italy-cities.js"
   },
   "dependencies": {
     "@convex-dev/auth": "^0.0.88",
