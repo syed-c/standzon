@@ -29,10 +29,9 @@ export function createSupabaseServiceClient() {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   
   if (!url || !serviceKey) {
-    console.error('Missing Supabase service role environment variables:');
-    console.error('SUPABASE_URL:', process.env.SUPABASE_URL);
-    console.error('SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY);
-    throw new Error('Missing Supabase service role environment variables');
+    // Log warning instead of error and return null
+    console.warn('Missing Supabase service role environment variables. Some admin features may not work.');
+    return null;
   }
   
   return createClient(url, serviceKey);
@@ -61,45 +60,63 @@ export class DatabaseService {
   private client: any = null;
 
   constructor() {
-    this.client = supabaseAdmin;
+    this.client = supabaseAdmin || supabase;
     if (!this.client) {
-      throw new Error('Supabase client not initialized. Please check your environment variables.');
+      console.warn('Supabase admin client not available, some admin features may not work properly.');
     }
   }
 
   // Users
   async getUsers() {
-    if (!this.client) throw new Error('Supabase client not initialized');
+    if (!this.client) {
+      console.warn('Supabase client not initialized');
+      return [];
+    }
     const { data, error } = await this.client
       .from('users')
       .select('*')
       .order('created_at', { ascending: false });
     
-    if (error) throw error;
+    if (error) {
+      console.error('Error fetching users:', error);
+      return [];
+    }
     return data;
   }
 
   async getUserById(id: string) {
-    if (!this.client) throw new Error('Supabase client not initialized');
+    if (!this.client) {
+      console.warn('Supabase client not initialized');
+      return null;
+    }
     const { data, error } = await this.client
       .from('users')
       .select('*')
       .eq('id', id)
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error('Error fetching user by ID:', error);
+      return null;
+    }
     return data;
   }
 
   async createUser(user: any) {
-    if (!this.client) throw new Error('Supabase client not initialized');
+    if (!this.client) {
+      console.warn('Supabase client not initialized');
+      return null;
+    }
     const { data, error } = await this.client
       .from('users')
       .insert(user)
       .select()
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error('Error creating user:', error);
+      return null;
+    }
     return data;
   }
 
