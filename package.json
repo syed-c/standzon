@@ -10,7 +10,10 @@
     "start-static": "next build && next start",
     "export": "next build && next export",
     "lint": "next lint",
-    "postbuild": "echo 'Build completed successfully'"
+    "postbuild": "echo 'Build completed successfully'",
+    "migrate:supabase": "node scripts/migrate-simple.js",
+    "migrate:setup": "node scripts/migrate-simple.js",
+    "schema:apply": "node scripts/apply-schema.js"
   },
   "dependencies": {
     "@convex-dev/auth": "^0.0.88",
@@ -64,6 +67,7 @@
     "country-list": "^2.3.0",
     "date-fns": "^3.6.0",
     "date-fns-tz": "^3.2.0",
+    "dotenv": "^17.2.3",
     "embla-carousel-react": "^8.5.2",
     "framer-motion": "^12.6.3",
     "fuse.js": "^7.1.0",
@@ -101,7 +105,7 @@
     "@eslint/eslintrc": "^3",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
-    "@types/node": "^20",
+    "@types/node": "^20.19.22",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -113,6 +117,7 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
     "typescript": "^5",
     "vitest": "^3.1.1"
   },

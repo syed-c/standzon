@@ -46,6 +46,36 @@ const clearCachePattern = (pattern: string): void => {
   }
 };
 
+// Add mutation to clear all cache
+export const clearAllCache = mutation({
+  args: {},
+  handler: async (ctx) => {
+    try {
+      // Clear the in-memory cache
+      if (typeof cache !== 'undefined' && cache && typeof cache.clear === 'function') {
+        cache.clear();
+        console.log('✅ All cache cleared successfully');
+        return { 
+          success: true, 
+          message: 'Cache cleared successfully. All cached data will be reloaded on next request.'
+        };
+      } else {
+        console.log('⚠️ Cache not available, but operation completed');
+        return { 
+          success: true, 
+          message: 'Cache clear operation completed. Data will be reloaded on next request.'
+        };
+      }
+    } catch (error) {
+      console.error('❌ Error clearing cache:', error);
+      return { 
+        success: false, 
+        message: `Failed to clear cache: ${error instanceof Error ? error.message : 'Unknown error'}`
+      };
+    }
+  },
+});
+
 // Initialize countries and cities from comprehensive location data
 export const initializeComprehensiveLocations = mutation({
   args: {},
@@ -168,10 +198,13 @@ export const getAllCountries = query({
     // Get city counts for each country
     const countriesWithCounts = await Promise.all(
       countries.map(async (country) => {
-        const cities = await ctx.db
+        const allCities = await ctx.db
           .query("cities")
           .withIndex("countryId", (q) => q.eq("countryId", country._id))
           .collect();
+        
+        // Filter out Düsseldorf (with umlaut) but keep Dusseldorf (without umlaut)
+        const cities = allCities.filter(city => city.cityName !== "Düsseldorf");
         
         const builders = await ctx.db
           .query("builders")
@@ -225,10 +258,13 @@ export const getCountryBySlug = query({
     }
     
     // Get cities in this country
-    const cities = await ctx.db
+    const allCities = await ctx.db
       .query("cities")
       .withIndex("countryId", (q) => q.eq("countryId", country._id))
       .collect();
+    
+    // Filter out Düsseldorf (with umlaut) but keep Dusseldorf (without umlaut)
+    const cities = allCities.filter(city => city.cityName !== "Düsseldorf");
     
     // Get builders in this country
     const builders = await ctx.db
@@ -498,7 +534,9 @@ export const searchLocations = query({
       .slice(0, limit);
     
     // Search cities
-    const cities = await ctx.db.query("cities").collect();
+    const allCities = await ctx.db.query("cities").collect();
+    // Filter out Düsseldorf (with umlaut) but keep Dusseldorf (without umlaut)
+    const cities = allCities.filter(city => city.cityName !== "Düsseldorf");
     const matchingCities = cities
       .filter(city => 
         city.cityName.toLowerCase().includes(searchTerm) ||
@@ -518,7 +556,9 @@ export const searchLocations = query({
 export const getAllCities = query({
   args: {},
   handler: async (ctx) => {
-    const cities = await ctx.db.query("cities").collect();
+    const allCities = await ctx.db.query("cities").collect();
+    // Filter out Düsseldorf (with umlaut) but keep Dusseldorf (without umlaut)
+    const cities = allCities.filter(city => city.cityName !== "Düsseldorf");
     
     // Get country data for each city
     const citiesWithCountry = await Promise.all(

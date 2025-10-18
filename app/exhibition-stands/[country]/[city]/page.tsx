@@ -7,9 +7,13 @@ import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import { CountryCityPage } from "@/components/CountryCityPage";
 import {
-  getCityBySlug,
-  getCountryBySlug,
+  getCityBySlug as getGlobalCityBySlug,
+  getCountryBySlug as getGlobalCountryBySlug,
 } from "@/lib/data/globalExhibitionDatabase";
+import {
+  getCityBySlug as getComprehensiveCityBySlug,
+  getCountryBySlug as getComprehensiveCountryBySlug,
+} from "@/lib/data/comprehensiveLocationData";
 import { getServerSupabase } from "@/lib/supabase";
 import SimpleQuoteRequestForm from "@/components/SimpleQuoteRequestForm";
 
@@ -64,15 +68,15 @@ export async function generateMetadata({
     const countrySlug = normalize(country);
     const citySlug = normalize(city);
 
-    // Validate country exists
-    const countryData = getCountryBySlug(countrySlug);
+    // Validate country exists - check both sources
+    const countryData = getGlobalCountryBySlug(countrySlug) || getComprehensiveCountryBySlug(countrySlug);
     if (!countryData) {
       console.log("❌ Country not found in metadata:", countrySlug);
       notFound();
     }
 
-    // Try to get city data from global database for better metadata
-    const cityData = getCityBySlug(countrySlug, citySlug);
+    // Try to get city data from global database or comprehensive location data
+    const cityData = getGlobalCityBySlug(countrySlug, citySlug) || getComprehensiveCityBySlug(countrySlug, citySlug);
     if (!cityData) {
       console.log(
         "❌ City not found in metadata:",
@@ -83,7 +87,7 @@ export async function generateMetadata({
       notFound();
     }
 
-    const cityName = cityData.name;
+    const cityName = ('name' in cityData) ? cityData.name : cityData.cityName;
     const countryName = toTitle(countrySlug);
 
     return {
@@ -170,23 +174,23 @@ export default async function CityPage({ params }: CityPageProps) {
     city: citySlug,
   });
 
-  // Validate country exists
-  const countryData = getCountryBySlug(countrySlug);
+  // Validate country exists - check both sources
+  const countryData = getGlobalCountryBySlug(countrySlug) || getComprehensiveCountryBySlug(countrySlug);
   if (!countryData) {
     console.log("❌ Country not found:", countrySlug);
     notFound();
   }
 
-  // Handle Dusseldorf spelling variations
+  // Handle Düsseldorf spelling variations - block Düsseldorf but allow Dusseldorf
   let adjustedCitySlug = citySlug;
-  if (countrySlug === "germany" && citySlug === "Dusseldorf") {
-    // Return 404 for alternative spellings
-    console.log("❌ Alternative Dusseldorf spelling not allowed:", citySlug);
+  if (countrySlug === "germany" && citySlug === "düsseldorf") {
+    // Return 404 for Düsseldorf (with umlaut) - we only want Dusseldorf (without umlaut)
+    console.log("❌ Düsseldorf spelling not allowed, use Dusseldorf instead:", citySlug);
     notFound();
   }
 
-  // Get city data from global database
-  const cityData = getCityBySlug(countrySlug, adjustedCitySlug);
+  // Get city data from global database or comprehensive location data
+  const cityData = getGlobalCityBySlug(countrySlug, adjustedCitySlug) || getComprehensiveCityBySlug(countrySlug, adjustedCitySlug);
 
   // Return 404 if city doesn't exist
   if (!cityData) {
@@ -194,7 +198,7 @@ export default async function CityPage({ params }: CityPageProps) {
     notFound();
   }
 
-  const cityName = cityData.name;
+  const cityName = ('name' in cityData) ? cityData.name : cityData.cityName;
   const countryName = toTitle(countrySlug);
 
   // Try to get CMS content

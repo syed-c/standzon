@@ -251,10 +251,13 @@ export const getAllCities = query({
     console.log('🎯 Admin: Fetching all cities...');
     
     try {
-      const cities = await ctx.db
+      const allCities = await ctx.db
         .query("cities")
         .order("asc")
         .collect();
+      
+      // Filter out Düsseldorf (with umlaut) but keep Dusseldorf (without umlaut)
+      const cities = allCities.filter(city => city.cityName !== "Düsseldorf");
       
       console.log(`📊 Found ${cities.length} cities for admin dashboard`);
       return cities;
@@ -483,7 +486,9 @@ export const getGlobalPagesStatistics = query({
   args: {},
   handler: async (ctx) => {
     const countries = await ctx.db.query("countries").collect();
-    const cities = await ctx.db.query("cities").collect();
+    const allCities = await ctx.db.query("cities").collect();
+    // Filter out Düsseldorf (with umlaut) but keep Dusseldorf (without umlaut)
+    const cities = allCities.filter(city => city.cityName !== "Düsseldorf");
     const builders = await ctx.db.query("builders").collect();
     // TODO: Re-implement after schema deployment
     // const pageContent = await ctx.db.query("pageContent").collect();
@@ -524,7 +529,9 @@ export const generateAllGlobalPages = query({
     console.log('🌍 Generating all global pages configuration...');
     
     const countries = await ctx.db.query("countries").collect();
-    const cities = await ctx.db.query("cities").collect();
+    const allCities = await ctx.db.query("cities").collect();
+    // Filter out Düsseldorf (with umlaut) but keep Dusseldorf (without umlaut)
+    const cities = allCities.filter(city => city.cityName !== "Düsseldorf");
     const builders = await ctx.db.query("builders").collect();
     
     // Generate country page configs
