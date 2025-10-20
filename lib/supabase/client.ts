@@ -52,16 +52,29 @@ export async function getCitiesByCountry(countryCode: string) {
 
 export async function getBuilders() {
   if (!isSupabaseConfigured()) {
-    throw new Error('Supabase not configured');
+    console.warn('Supabase not configured, returning empty builders array');
+    return [];
   }
   
-  const { data, error } = await supabase
-    .from('builder_profiles')
-    .select('*')
-    .order('created_at', { ascending: false });
-  
-  if (error) throw error;
-  return data;
+  try {
+    console.log('Fetching builders from Supabase...');
+    // Using the correct table name as seen in the screenshot
+    const { data, error } = await supabase
+      .from('builders')
+      .select('*')
+      .order('company_name');
+    
+    if (error) {
+      console.error('Error fetching builders:', error);
+      return [];
+    }
+    
+    console.log('Builders fetched successfully:', data?.length || 0, 'builders found');
+    return data || [];
+  } catch (err) {
+    console.error('Exception fetching builders:', err);
+    return [];
+  }
 }
 
 export async function getBuilderBySlug(slug: string) {

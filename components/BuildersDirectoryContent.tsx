@@ -66,97 +66,142 @@ export default function BuildersDirectoryContent() {
     const loadRealTimeData = async () => {
       setLoading(true);
       try {
-        console.log("🔄 Loading real-time builder data from Supabase...");
+        console.log("🔄 Loading real-time builder data from API...");
 
-        // Fetch builders from Supabase
-        const buildersData = await getBuilders();
+        // Fetch builders from API endpoint with increased limit and no country filter
+        const response = await fetch('/api/admin/builders?limit=500&prioritize_real=true&include_all_countries=true');
+        const buildersData = await response.json();
 
-        console.log("📡 Raw Supabase response:", buildersData);
+        console.log("📡 Raw API response:", buildersData);
         console.log("📊 Response structure:", {
           hasData: !!buildersData,
           isArray: Array.isArray(buildersData),
           length: buildersData?.length,
         });
 
-        if (buildersData && Array.isArray(buildersData) && buildersData.length > 0) {
-          const allBuilders = buildersData;
-          console.log(`✅ Loaded ${allBuilders.length} builders from Supabase`);
+        if (buildersData && buildersData.data && Array.isArray(buildersData.data.builders) && buildersData.data.builders.length > 0) {
+          const allBuilders = buildersData.data.builders;
+          console.log(`✅ Loaded ${allBuilders.length} builders from API`);
+          
+          // Transform the API data to match the expected format with all details
+          const transformedBuilders = allBuilders.map(b => {
+            // Log the raw builder object to see all available properties
+            console.log("Raw builder object:", b);
+            
+            return {
+              id: b.id,
+              companyName: b.company_name || b.companyName || "",
+              companyDescription: b.description || b.companyDescription || "",
+              headquarters: {
+                city: b.headquarters_city || b.headquartersCity || (b.headquarters && b.headquarters.city) || "",
+                country: b.headquarters_country || b.headquartersCountry || (b.headquarters && b.headquarters.country) || "",
+                countryCode: b.headquarters_country_code || b.headquartersCountryCode || (b.headquarters && b.headquarters.countryCode) || "",
+                address: b.headquarters_address || b.headquartersAddress || (b.headquarters && b.headquarters.address) || "",
+                latitude: b.headquarters_latitude || b.headquartersLatitude || (b.headquarters && b.headquarters.latitude) || 0,
+                longitude: b.headquarters_longitude || b.headquartersLongitude || (b.headquarters && b.headquarters.longitude) || 0,
+                isHeadquarters: true
+              },
+              serviceLocations: b.serviceLocations || b.service_locations || 
+                (b.headquarters_country ? [{
+                  city: b.headquarters_city || "",
+                  country: b.headquarters_country || "",
+                  countryCode: b.headquarters_country_code || "",
+                }] : []),
+              keyStrengths: b.keyStrengths || b.key_strengths || [],
+              verified: b.verified || b.isVerified || false,
+              rating: b.rating || 0,
+              projectsCompleted: b.projectsCompleted || b.projects_completed || 0,
+              importedFromGMB: b.importedFromGMB || b.gmbImported || false,
+              logo: b.logo || "/images/builders/default-logo.png",
+              establishedYear: b.establishedYear || b.established_year || 2020,
+              teamSize: b.teamSize || b.team_size || 10,
+              reviewCount: b.reviewCount || b.review_count || 0,
+              responseTime: b.responseTime || b.response_time || "Within 24 hours",
+              languages: b.languages || ["English"],
+              premiumMember: b.premiumMember || b.premium_member || false,
+              slug: b.slug || (b.company_name || b.companyName || "").toLowerCase().replace(/[^a-z0-9]/g, "-"),
+              // Add any missing properties that might be in the raw data
+              primary_email: b.primary_email || b.primaryEmail || "",
+              phone: b.phone || "",
+              website: b.website || "",
+              contact_person: b.contact_person || b.contactPerson || "",
+              position: b.position || ""
+            };
+          });
+          
           console.log(
             "🔍 First 3 builders:",
-            allBuilders.slice(0, 3).map((b) => ({
-              id: b.id,
-              name: b.company_name,
-              city: b.headquarters_city,
-              country: b.headquarters_country,
-              source: b.source,
-              gmbImported: b.gmbImported || b.importedFromGMB,
-            }))
+            transformedBuilders.slice(0, 3)
           );
 
           // Convert to public display format - SHOW ALL BUILDERS INCLUDING GMB IMPORTED
-          const publicBuilders = allBuilders.map((builder: any) => ({
+          const publicBuilders = transformedBuilders.map((builder: any) => ({
             id: builder.id,
-            companyName: builder.company_name,
-            slug:
-              builder.slug ||
-              builder.company_name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
-            logo: builder.logo || "/images/builders/default-logo.png",
-            establishedYear: builder.established_year || 2020,
+            companyName: builder.companyName,
+            slug: builder.slug,
+            logo: builder.logo,
+            establishedYear: builder.establishedYear,
             headquarters: {
-              city: builder.headquarters_city || "Unknown",
-              country: builder.headquarters_country || "Unknown",
-              countryCode: builder.headquarters_country_code || "XX",
-              address: builder.headquarters_address || "",
-              latitude: builder.headquarters_latitude || 0,
-              longitude: builder.headquarters_longitude || 0,
+              city: builder.headquarters.city || "Unknown",
+              country: builder.headquarters.country || "Unknown",
+              countryCode: builder.headquarters.countryCode || "XX",
+              address: builder.headquarters.address || "",
+              latitude: builder.headquarters.latitude || 0,
+              longitude: builder.headquarters.longitude || 0,
               isHeadquarters: true,
             },
-            serviceLocations: [
-              {
-                // Default service location based on headquarters
-                city: builder.headquarters_city || "Unknown",
-                country: builder.headquarters_country || "Unknown",
-                countryCode: builder.headquarters_country_code || "XX",
-                address: builder.headquarters_address || "",
-                latitude: builder.headquarters_latitude || 0,
-                longitude: builder.headquarters_longitude || 0,
-                isHeadquarters: false,
-              },
-            ],
+            serviceLocations: builder.serviceLocations && builder.serviceLocations.length > 0 
+              ? builder.serviceLocations 
+              : [
+                {
+                  // Default service location based on headquarters
+                  city: builder.headquarters.city || "Unknown",
+                  country: builder.headquarters.country || "Unknown",
+                  countryCode: builder.headquarters.countryCode || "XX",
+                  address: builder.headquarters.address || "",
+                  latitude: builder.headquarters.latitude || 0,
+                  longitude: builder.headquarters.longitude || 0,
+                  isHeadquarters: false,
+                },
+              ],
             contactInfo: {
-              primaryEmail: builder.primary_email || "",
+              primaryEmail: builder.primaryEmail || builder.primary_email || "",
               phone: builder.phone || "",
               website: builder.website || "",
-              contactPerson: builder.contact_person || "Contact Person",
+              contactPerson: builder.contactPerson || builder.contact_person || "Contact Person",
               position: builder.position || "Manager",
             },
-            services: [
-              {
-                // Default service
-                id: "main-service",
-                name: "Exhibition Services",
-                description: "Professional exhibition services",
-                category: "Design",
-                priceFrom: 300,
-                currency: "USD",
-                unit: "per sqm",
-                popular: true,
-                turnoverTime: "4-6 weeks",
-              },
-            ],
-            specializations: [
-              {
-                // Default specialization
-                id: "general",
-                name: "Exhibition Builder",
-                slug: "general",
-                description: "Professional services",
-                subcategories: [],
-                color: "#3B82F6",
-                icon: "🏗️",
-                annualGrowthRate: 8.5,
-                averageBoothCost: 450,
-                popularCountries: [],
+            services: builder.services && builder.services.length > 0 
+              ? builder.services 
+              : [
+                {
+                  // Default service
+                  id: "main-service",
+                  name: "Exhibition Services",
+                  description: "Professional exhibition services",
+                  category: "Design",
+                  priceFrom: 300,
+                  currency: "USD",
+                  unit: "per sqm",
+                  popular: true,
+                  turnoverTime: "4-6 weeks",
+                },
+              ],
+            specializations: builder.specializations && builder.specializations.length > 0
+              ? builder.specializations
+              : [
+                {
+                  // Default specialization
+                  id: "general",
+                  name: "Exhibition Builder",
+                  slug: "general",
+                  description: "Professional services",
+                  subcategories: [],
+                  color: "#3B82F6",
+                  icon: "🏗️",
+                  annualGrowthRate: 8.5,
+                  averageBoothCost: 450,
+                  popularCountries: [],
               },
             ],
             certifications: [],
@@ -258,16 +303,16 @@ export default function BuildersDirectoryContent() {
             ).length,
             averageRating:
               allBuilders.length > 0
-                ? allBuilders.reduce((sum, b) => sum + (b.rating || 0), 0) /
+                ? allBuilders.reduce((sum, builder) => sum + (builder.rating || 0), 0) /
                   allBuilders.length
                 : 0,
             totalProjectsCompleted: allBuilders.reduce(
-              (sum, b) => sum + (b.projectsCompleted || 0),
+              (sum, builder) => sum + (builder.projectsCompleted || builder.projects_completed || 0),
               0
             ),
             importedFromGMB: allBuilders.filter(
-              (b) =>
-                b.importedFromGMB || b.gmbImported || b.source === "GMB_API"
+              (builder) =>
+                builder.importedFromGMB || builder.gmbImported || builder.source === "GMB_API"
             ).length,
           };
 

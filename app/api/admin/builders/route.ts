@@ -65,16 +65,18 @@ export async function GET(request: Request) {
     const filter = searchParams.get("filter") || "all";
     const action = searchParams.get("action") || "";
     const prioritizeReal = searchParams.get("prioritize_real") === "true";
+    const includeAllCountries = searchParams.get("include_all_countries") === "true";
 
     if (isVerbose) {
-      console.log("📊 Admin builders request:", {
-        page,
-        limit,
-        search,
-        filter,
-        action,
-        prioritizeReal,
-      });
+        console.log("📊 Admin builders request:", {
+          page,
+          limit,
+          search,
+          filter,
+          action,
+          prioritizeReal,
+          includeAllCountries,
+        });
     }
 
     // Handle reload action
@@ -106,6 +108,17 @@ export async function GET(request: Request) {
               `🧹 Filtered to ${buildersToReturn.length} real builders (removed mock data)`
             );
           }
+        }
+        
+        // Apply country filter if needed (default to Germany for now)
+        if ((filter === "all" || filter === "country") && !includeAllCountries) {
+          buildersToReturn = buildersToReturn.filter(
+            (builder) =>
+              builder.headquarters_country === "Germany" ||
+              builder.headquartersCountry === "Germany" ||
+              (builder.headquarters &&
+                builder.headquarters.country === "Germany")
+          );
         }
 
         // Only add static builders if no real builders exist
