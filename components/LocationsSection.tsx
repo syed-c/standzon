@@ -147,7 +147,7 @@ export default function LocationsSection({
         {
           name: 'Japan',
           flag: '🇯🇵',
-          cities: ['Tokyo', 'Osaka', 'Kyoto', 'Yokohama', 'Nagoya', 'Kobe'],
+          cities: ['Tokyo', 'Osaka', 'Chiba'],
           builders: 140,
           rating: 4.8,
           projects: 450,
@@ -167,7 +167,7 @@ export default function LocationsSection({
         {
           name: 'India',
           flag: '🇮🇳',
-          cities: ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Pune'],
+          cities: ['Mumbai', 'New Delhi', 'Bangalore', 'Hyderabad', 'Kolkata'],
           builders: 180,
           rating: 4.6,
           projects: 350,

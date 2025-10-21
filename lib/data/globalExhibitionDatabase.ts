@@ -3108,23 +3108,7 @@ export const GLOBAL_CITIES: GlobalCity[] = [
     countrySlug: "indonesia",
   },
 
-  // INDIA (Adding more cities)
-  {
-    id: "chennai-in",
-    name: "Chennai",
-    country: "India",
-    countryCode: "IN",
-    continent: "Asia",
-    region: "South Asia",
-    population: "11.5M",
-    annualEvents: 320,
-    keyIndustries: ["Automotive", "Healthcare", "IT"],
-    majorVenues: ["Chennai Trade Centre"],
-    builderCount: 65,
-    averageStandCost: 220,
-    slug: "chennai",
-    countrySlug: "india",
-  },
+  // INDIA
   {
     id: "hyderabad-in",
     name: "Hyderabad",
@@ -3139,22 +3123,6 @@ export const GLOBAL_CITIES: GlobalCity[] = [
     builderCount: 55,
     averageStandCost: 200,
     slug: "hyderabad",
-    countrySlug: "india",
-  },
-  {
-    id: "pune-in",
-    name: "Pune",
-    country: "India",
-    countryCode: "IN",
-    continent: "Asia",
-    region: "South Asia",
-    population: "7.4M",
-    annualEvents: 220,
-    keyIndustries: ["Automotive", "IT", "Manufacturing"],
-    majorVenues: ["Pune Exhibition Centre"],
-    builderCount: 45,
-    averageStandCost: 190,
-    slug: "pune",
     countrySlug: "india",
   },
   {
