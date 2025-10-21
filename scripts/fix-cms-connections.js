@@ -466,6 +466,8 @@ function getLanguageForCountry(countryCode) {
 }
 
 // Run the script
+console.log('🚀 Starting CMS connections fix script...');
+console.log('📋 Countries to fix:', countriesToFix.length);
 fixCountriesInCMS()
   .then(() => {
     console.log('✅ CMS connections fixed successfully!');

@@ -90,8 +90,8 @@ async function getCountryPageContent(countrySlug: string) {
     if (sb) {
       console.log('🔍 Server-side: Fetching CMS data for country:', countrySlug);
       
-      // Special handling for Jordan, Lebanon, and Israel to ensure content loads
-      const isSpecialCountry = ['jordan', 'lebanon', 'israel', 'de', 'gb'].includes(countrySlug);
+      // Special handling for countries that need enhanced query strategies
+      const isSpecialCountry = ['jordan', 'lebanon', 'israel', 'de', 'gb', 'uae', 'united-arab-emirates', 'saudi-arabia', 'qatar', 'kuwait', 'bahrain', 'oman', 'egypt', 'morocco', 'iran', 'iraq', 'russia', 'indonesia', 'malaysia', 'china', 'japan', 'south-korea', 'brazil', 'mexico', 'canada', 'south-africa', 'singapore', 'thailand', 'philippines', 'turkey', 'czech-republic', 'hungary', 'nigeria', 'kenya'].includes(countrySlug);
       
       // For special countries, try both with and without the country prefix
       let data, error;

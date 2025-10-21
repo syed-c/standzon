@@ -1327,29 +1327,6 @@ export const tier3Countries: Country[] = [
           accessibility: 'Western Railway to Goregaon for BEC'
         }
       },
-      {
-        name: 'Delhi',
-        slug: 'delhi',
-        population: 32900000,
-        isCapital: true,
-        builderCount: 125,
-        upcomingShows: 240,
-        averageStandCost: 160,
-        majorVenues: [
-          {
-            name: 'India Expo Centre',
-            totalSpace: 150000,
-            hallCount: 16,
-            facilities: ['Capital Region', 'Government Access', 'Modern Facilities'],
-            nearbyBuilderCount: 65
-          }
-        ],
-        transportation: {
-          airports: ['Indira Gandhi International'],
-          publicTransport: ['Metro', 'Buses', 'Auto-rickshaws'],
-          accessibility: 'Delhi Metro Blue Line to Dwarka for India Expo'
-        }
-      }
     ],
     builderCount: 270,
     annualTradeShows: 520,

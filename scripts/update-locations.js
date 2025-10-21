@@ -31,7 +31,6 @@ const citiesToRemove = [
   { country: 'Japan', city: 'Nagoya' },
   // India
   { country: 'India', city: 'Chennai' },
-  { country: 'India', city: 'Delhi' },
   { country: 'India', city: 'Pune' },
   // South Korea
   { country: 'South Korea', city: 'Busan' },
