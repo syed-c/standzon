@@ -90,11 +90,80 @@ async function getCountryPageContent(countrySlug: string) {
     if (sb) {
       console.log('🔍 Server-side: Fetching CMS data for country:', countrySlug);
       
-      const { data, error } = await sb
-        .from('page_contents')
-        .select('content')
-        .eq('id', countrySlug)
-        .single();
+      // Special handling for Jordan, Lebanon, and Israel to ensure content loads
+      const isSpecialCountry = ['jordan', 'lebanon', 'israel'].includes(countrySlug);
+      
+      // For special countries, try both with and without the country prefix
+      let data, error;
+      
+      if (isSpecialCountry) {
+        console.log('🌍 Special handling for country:', countrySlug);
+        
+        // Force cache bypass with headers and timestamp
+        const timestamp = new Date().getTime();
+        const cacheHeaders = {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          'X-Cache-Bust': `${timestamp}`
+        };
+        
+        // Try all possible ID formats with a single query
+        const possibleIds = [
+          countrySlug,
+          `country-${countrySlug}`,
+          `exhibition-stands-${countrySlug}`
+        ];
+        
+        // Direct query with IN operator for all possible IDs
+        const { data: directMatch, error: directError } = await sb
+          .from('page_contents')
+          .select('content, updated_at, id')
+          .in('id', possibleIds)
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .headers(cacheHeaders);
+        
+        if (directMatch?.[0]?.content) {
+          data = directMatch[0];
+          error = null;
+          console.log(`✅ Found content with direct query for: ${countrySlug}, using ID: ${data.id}`);
+        } else {
+          console.log('⚠️ No content found with direct query, trying individual queries for:', countrySlug);
+          
+          // Try each ID format individually as fallback
+          for (const id of possibleIds) {
+            console.log(`🔍 Trying individual query with ID: ${id}`);
+            const individualResult = await sb
+              .from('page_contents')
+              .select('content, updated_at')
+              .eq('id', id)
+              .single()
+              .headers(cacheHeaders);
+                
+            if (individualResult.data?.content) {
+              data = individualResult.data;
+              error = null;
+              console.log(`✅ Found content with individual query using ID: ${id}`);
+              break;
+            }
+          }
+          
+          if (!data?.content) {
+            console.log('⚠️ No content found with any query method for:', countrySlug);
+          }
+        }
+      } else {
+        // Standard query for other countries
+        const result = await sb
+          .from('page_contents')
+          .select('content')
+          .eq('id', countrySlug)
+          .single();
+          
+        data = result.data;
+        error = result.error;
+      }
       
       if (error) {
         console.log('❌ Server-side: Supabase error:', error);

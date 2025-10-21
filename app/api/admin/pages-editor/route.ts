@@ -121,6 +121,7 @@ const STATIC_PAGES: PageItem[] = [
   { title: 'Qatar Exhibition Stands', path: '/exhibition-stands/qatar', type: 'country' },
   { title: 'Kuwait Exhibition Stands', path: '/exhibition-stands/kuwait', type: 'country' },
   { title: 'Oman Exhibition Stands', path: '/exhibition-stands/oman', type: 'country' },
+  { title: 'Exhibition Stands in Sohar, Oman', path: '/exhibition-stands/oman/sohar', type: 'city' },
   { title: 'Bahrain Exhibition Stands', path: '/exhibition-stands/bahrain', type: 'country' },
   { title: 'Egypt Exhibition Stands', path: '/exhibition-stands/egypt', type: 'country' },
   { title: 'Morocco Exhibition Stands', path: '/exhibition-stands/morocco', type: 'country' },
@@ -128,6 +129,10 @@ const STATIC_PAGES: PageItem[] = [
   { title: 'Russia Exhibition Stands', path: '/exhibition-stands/russia', type: 'country' },
   { title: 'Indonesia Exhibition Stands', path: '/exhibition-stands/indonesia', type: 'country' },
   { title: 'Malaysia Exhibition Stands', path: '/exhibition-stands/malaysia', type: 'country' },
+  { title: 'Israel Exhibition Stands', path: '/exhibition-stands/israel', type: 'country' },
+  { title: 'Jordan Exhibition Stands', path: '/exhibition-stands/jordan', type: 'country' },
+  { title: 'Lebanon Exhibition Stands', path: '/exhibition-stands/lebanon', type: 'country' },
+  { title: 'Iraq Exhibition Stands', path: '/exhibition-stands/iraq', type: 'country' },
 ];
 
 export async function GET(request: NextRequest) {
@@ -207,11 +212,47 @@ export async function GET(request: NextRequest) {
       const sb = getServerSupabase();
       if (sb) {
         console.log('🔍 API Debug - Fetching from Supabase for pageId:', pageId);
-        const { data, error } = await sb
-          .from('page_contents')
-          .select('content')
-          .eq('id', pageId)
-          .single();
+        
+        // Check if this is a special country (Jordan, Lebanon, Israel, Iraq)
+        const isSpecialCountry = ['jordan', 'lebanon', 'israel', 'iraq'].includes(pageId);
+        
+        let data, error;
+        
+        if (isSpecialCountry) {
+          console.log('🔍 API Debug - Special country detected:', pageId);
+          // Try multiple query patterns for special countries
+          const result = await sb
+            .from('page_contents')
+            .select('content')
+            .or(`id.eq.${pageId},id.eq.exhibition-stands-${pageId}`)
+            .order('updated_at', { ascending: false })
+            .limit(1);
+            
+          if (result.data?.[0]) {
+            data = result.data[0];
+            error = null;
+          } else {
+            // Fallback to exact match
+            const exactResult = await sb
+              .from('page_contents')
+              .select('content')
+              .eq('id', pageId)
+              .single();
+              
+            data = exactResult.data;
+            error = exactResult.error;
+          }
+        } else {
+          // Standard query for other content
+          const result = await sb
+            .from('page_contents')
+            .select('content')
+            .eq('id', pageId)
+            .single();
+            
+          data = result.data;
+          error = result.error;
+        }
         
         if (error) {
           console.log('❌ Supabase error:', error);
@@ -479,6 +520,62 @@ export async function PUT(request: NextRequest) {
       console.log('❌ Supabase save exception:', e);
     }
 
+    // Special handling for Jordan, Lebanon, and Israel to ensure content updates
+    const isSpecialCountry = ['jordan', 'lebanon', 'israel'].some(country => 
+      pageId === country || pageId.startsWith(`${country}-`)
+    );
+    
+    if (isSpecialCountry) {
+      try {
+        console.log('🔄 Special country detected in pages-editor, forcing Supabase update for:', pageId);
+        const sb = getServerSupabase();
+        
+        if (sb) {
+          // Force a direct update to Supabase with multiple ID formats to ensure it's found
+          const { data, error } = await sb
+            .from('page_contents')
+            .upsert({
+              id: pageId,
+              path,
+              content: updated,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'id' });
+          
+          if (error) {
+            console.error('⚠️ Special country Supabase update error:', error);
+            
+            // Try alternative ID formats as fallback
+            const alternativeIds = [
+              pageId,
+              `country-${pageId}`,
+              pageId.replace('exhibition-stands-', '')
+            ];
+            
+            for (const altId of alternativeIds) {
+              console.log('🔄 Trying alternative ID format:', altId);
+              const { error: altError } = await sb
+                .from('page_contents')
+                .upsert({
+                  id: altId,
+                  path,
+                  content: updated,
+                  updated_at: new Date().toISOString()
+                }, { onConflict: 'id' });
+                
+              if (!altError) {
+                console.log('✅ Alternative ID format successful:', altId);
+                break;
+              }
+            }
+          } else {
+            console.log('✅ Special country direct Supabase update successful for:', pageId);
+          }
+        }
+      } catch (dbError) {
+        console.error('❌ Error during special country database update:', dbError);
+      }
+    }
+    
     if (!savedToSupabase) {
       storageAPI.savePageContent(pageId, updated);
       const current = await readAllPageContentsFromFile();
@@ -487,7 +584,19 @@ export async function PUT(request: NextRequest) {
       try { await commitToGitHub('data/page-contents.json', current); } catch {}
     }
 
-    try { revalidatePath(path); } catch {}
+    try { 
+      // Force revalidation for special countries
+      if (isSpecialCountry) {
+        console.log('🔄 Forcing path revalidation for special country:', path);
+        revalidatePath(path, 'page');
+        revalidatePath('/exhibition-stands/[country]', 'page');
+        if (pageId.includes('-')) {
+          revalidatePath('/exhibition-stands/[country]/[city]', 'page');
+        }
+      } else {
+        revalidatePath(path);
+      }
+    } catch {}
     try {
       const evt = new CustomEvent('global-pages:updated', { detail: { pageId } });
       // no-op on server; clients listen on window

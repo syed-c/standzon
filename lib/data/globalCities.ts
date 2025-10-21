@@ -460,7 +460,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'oman',
     capital: 'Muscat',
     currency: 'OMR',
-    majorCities: ['Muscat', 'Salalah'],
+    majorCities: ['Muscat', 'Salalah', 'Sohar'],
     totalVenues: 8,
     annualEvents: 150,
     keyIndustries: ['Oil & Gas', 'Tourism', 'Agriculture', 'Fisheries', 'Mining'],

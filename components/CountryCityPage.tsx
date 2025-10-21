@@ -414,10 +414,22 @@ export function CountryCityPage({
           : `/exhibition-stands/${countrySlug}`;
 
         console.log("🔍 Loading saved content for path:", path);
-
+        
+        // Special handling for Jordan, Lebanon, and Israel
+        const isSpecialCountry = ['jordan', 'lebanon', 'israel'].includes(countrySlug);
+        
+        // Add cache-busting parameter for special countries to ensure fresh content
+        const cacheBuster = isSpecialCountry ? `&_t=${Date.now()}` : '';
+        
         const response = await fetch(
-          `/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(path)}`,
-          { cache: "no-store" }
+          `/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(path)}${cacheBuster}`,
+          { 
+            cache: "no-store",
+            headers: {
+              'Pragma': 'no-cache',
+              'Cache-Control': 'no-cache, no-store, must-revalidate'
+            }
+          }
         );
         const data = await response.json();
 
@@ -426,6 +438,25 @@ export function CountryCityPage({
           setSavedPageContent(data.data);
         } else {
           console.log("ℹ️ No saved content found for path:", path);
+          
+          // For special countries, try an alternative API endpoint if the first one fails
+          if (isSpecialCountry) {
+            console.log("🔄 Trying alternative content source for special country:", countrySlug);
+            try {
+              const altResponse = await fetch(
+                `/api/admin/global-pages?action=get-content&id=${countrySlug}${city ? `-${city.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")}` : ''}`,
+                { cache: "no-store" }
+              );
+              const altData = await altResponse.json();
+              
+              if (altData.success && altData.data) {
+                console.log("✅ Found content from alternative source");
+                setSavedPageContent(altData.data);
+              }
+            } catch (altError) {
+              console.error("❌ Error with alternative content source:", altError);
+            }
+          }
         }
       } catch (error) {
         console.error("❌ Error loading saved content:", error);
@@ -877,6 +908,12 @@ export function CountryCityPage({
   // Helper function to get other cities in the same country
   function getOtherCitiesInCountry(country: string, currentCity?: string) {
     try {
+      // Skip cities for Jordan, Lebanon, and Israel
+      const countryLower = country.toLowerCase();
+      if (countryLower === 'jordan' || countryLower === 'lebanon' || countryLower === 'israel') {
+        return [];
+      }
+      
       // ✅ FIXED: Use global database instead of broken expandedLocations
       const {
         getCitiesByCountry,
@@ -1100,8 +1137,9 @@ export function CountryCityPage({
         </section>
       )}
 
-      {/* Cities Section placed after builders + pagination - hidden on city pages */}
-      {cities && cities.length > 0 && !hideCitiesSection && (
+      {/* Cities Section placed after builders + pagination - hidden on city pages and specific countries */}
+      {cities && cities.length > 0 && !hideCitiesSection && 
+       !['jordan', 'lebanon', 'israel'].includes(country.toLowerCase()) && (
         <section className="py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-8 text-center">

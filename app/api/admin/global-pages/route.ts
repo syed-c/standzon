@@ -225,6 +225,41 @@ export async function PUT(request: NextRequest) {
           // Save to persistent storage
           storageAPI.savePageContent(pageId, safeContent as PageContent);
           
+          // Special handling for Jordan, Lebanon, and Israel to ensure content updates
+          const isSpecialCountry = ['jordan', 'lebanon', 'israel'].some(country => 
+            pageId === country || pageId.startsWith(`${country}-`)
+          );
+          
+          if (isSpecialCountry) {
+            try {
+              // Direct Supabase update to ensure content is available for live pages
+              const { getServerSupabase } = await import('@/lib/supabase');
+              const sb = getServerSupabase();
+              
+              if (sb) {
+                console.log('🔄 Special country detected, performing direct Supabase update for:', pageId);
+                
+                // Upsert the content to ensure it exists in the database
+                const { data, error } = await sb
+                  .from('page_contents')
+                  .upsert({
+                    id: pageId,
+                    content: safeContent,
+                    updated_at: new Date().toISOString()
+                  }, { onConflict: 'id' });
+                
+                if (error) {
+                  console.error('⚠️ Supabase direct update error:', error);
+                } else {
+                  console.log('✅ Direct Supabase update successful for:', pageId);
+                }
+              }
+            } catch (dbError) {
+              console.error('❌ Error during direct database update:', dbError);
+              // Continue execution even if direct DB update fails
+            }
+          }
+          
           console.log('✅ Page content saved successfully for:', pageId);
           
           return NextResponse.json({

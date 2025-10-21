@@ -124,11 +124,48 @@ async function getCityPageContent(countrySlug: string, citySlug: string) {
         countrySlug
       );
 
-      const { data, error } = await sb
-        .from("page_contents")
-        .select("content")
-        .eq("id", `${countrySlug}-${citySlug}`)
-        .single();
+      // Special handling for Jordan, Lebanon, Israel, and Oman cities
+      const isSpecialCountry = ['jordan', 'lebanon', 'israel', 'oman'].includes(countrySlug);
+      const cityPageId = `${countrySlug}-${citySlug}`;
+      
+      let data, error;
+      
+      if (isSpecialCountry) {
+        console.log('🔍 Special country city detected, using enhanced query strategy:', cityPageId);
+        
+        // Try multiple query patterns for special countries
+        const result = await sb
+          .from("page_contents")
+          .select("content")
+          .or(`id.eq.${cityPageId},id.eq.city-${cityPageId}`)
+          .order('created_at', { ascending: false })
+          .limit(1);
+          
+        if (result.data?.[0]) {
+          data = result.data[0];
+          error = null;
+        } else {
+          // Fallback to exact match if no results from OR query
+          const exactResult = await sb
+            .from("page_contents")
+            .select("content")
+            .eq("id", cityPageId)
+            .single();
+            
+          data = exactResult.data;
+          error = exactResult.error;
+        }
+      } else {
+        // Standard query for other countries
+        const result = await sb
+          .from("page_contents")
+          .select("content")
+          .eq("id", cityPageId)
+          .single();
+          
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) {
         console.log("❌ Server-side: Supabase error:", error);
@@ -136,7 +173,7 @@ async function getCityPageContent(countrySlug: string, citySlug: string) {
       }
 
       if (data?.content) {
-        const key = `${countrySlug}-${citySlug}`;
+        const key = cityPageId;
         const fromCityPages = (data.content as any)?.sections?.cityPages?.[key];
         console.log(
           "✅ Server-side: Found CMS data for city page, cityPages hit:",
