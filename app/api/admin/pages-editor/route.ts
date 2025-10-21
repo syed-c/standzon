@@ -110,6 +110,7 @@ const STATIC_PAGES: PageItem[] = [
   { title: 'Exhibition Stands in New Delhi, India', path: '/exhibition-stands/india/new-delhi', type: 'city' },
   { title: 'Exhibition Stands in Hyderabad, India', path: '/exhibition-stands/india/hyderabad', type: 'city' },
   { title: 'Exhibition Stands in Kolkata, India', path: '/exhibition-stands/india/kolkata', type: 'city' },
+  { title: 'Exhibition Stands in Ahmedabad, India', path: '/exhibition-stands/india/ahmedabad', type: 'city' },
   { title: 'Spain Exhibition Stands', path: '/exhibition-stands/spain', type: 'country' },
   // City pages for Spain
   { title: 'Exhibition Stands in Madrid, Spain', path: '/exhibition-stands/spain/madrid', type: 'city' },

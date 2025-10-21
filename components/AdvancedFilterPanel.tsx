@@ -305,14 +305,14 @@ export default function AdvancedFilterPanel({
                     <SelectValue placeholder="Select countries" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableCountries.map(country => (
-                      <SelectItem key={country} value={country}>{country}</SelectItem>
+                    {availableCountries.map((country, index) => (
+                      <SelectItem key={`country-${country}-${index}`} value={country}>{country}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 <div className="flex flex-wrap gap-1 mt-2">
-                  {filters.countries.map(country => (
-                    <Badge key={country} variant="secondary" className="text-xs">
+                  {filters.countries.map((country, index) => (
+                    <Badge key={`country-badge-${country}-${index}`} variant="secondary" className="text-xs">
                       {country}
                       <Button
                         variant="ghost"
@@ -341,14 +341,14 @@ export default function AdvancedFilterPanel({
                     <SelectValue placeholder="Select cities" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableCities.map(city => (
-                      <SelectItem key={city} value={city}>{city}</SelectItem>
+                    {availableCities.map((city, index) => (
+                      <SelectItem key={`city-${city}-${index}`} value={city}>{city}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 <div className="flex flex-wrap gap-1 mt-2">
-                  {filters.cities.map(city => (
-                    <Badge key={city} variant="secondary" className="text-xs">
+                  {filters.cities.map((city, index) => (
+                    <Badge key={`city-badge-${city}-${index}`} variant="secondary" className="text-xs">
                       <MapPin className="h-3 w-3 mr-1" />
                       {city}
                       <Button

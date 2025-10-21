@@ -115,7 +115,7 @@ export default function AdminPagesEditor() {
     (async () => {
       try {
         const mod = await import('@/lib/data/globalCities');
-        const countries = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).map((c: any) => ({ slug: c.slug, name: c.name }));
+        const countries = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).map((c: any, index: number) => ({ slug: c.slug, name: c.name, index }));
         const cities = (mod.GLOBAL_EXHIBITION_DATA?.cities || []).reduce((acc: Record<string, Array<{ slug: string; name: string }>>, city: any) => {
           const country = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).find((c: any) => c.name === city.country);
           if (!country) return acc;
@@ -1022,8 +1022,8 @@ export default function AdminPagesEditor() {
               <Select value={selectedCountryForGallery} onValueChange={(v)=>setSelectedCountryForGallery(v)}>
                 <SelectTrigger className="w-full"><SelectValue placeholder="Choose a country" /></SelectTrigger>
                 <SelectContent className="max-h-80">
-                  {countryOptions.map(c => (
-                    <SelectItem key={c.slug} value={c.slug}>{c.name}</SelectItem>
+                  {countryOptions.map((c, index) => (
+                    <SelectItem key={`country-${c.slug}-${index}`} value={c.slug}>{c.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -1072,8 +1072,8 @@ export default function AdminPagesEditor() {
               <Select value={selectedCountryForCityGallery} onValueChange={(v)=>{ setSelectedCountryForCityGallery(v); setSelectedCityForGallery(''); }}>
                 <SelectTrigger className="w-full"><SelectValue placeholder="Choose a country" /></SelectTrigger>
                 <SelectContent className="max-h-80">
-                  {countryOptions.map(c => (
-                    <SelectItem key={c.slug} value={c.slug}>{c.name}</SelectItem>
+                  {countryOptions.map((c, index) => (
+                    <SelectItem key={`country-${c.slug}-${index}`} value={c.slug}>{c.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

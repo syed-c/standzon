@@ -282,8 +282,12 @@ export default function BuildersDirectoryContent() {
   const [showFilters, setShowFilters] = useState(true);
   const [sortBy, setSortBy] = useState("rating");
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [buildersPerPage] = useState(12);
+
   const countries = useMemo(
-    () => GLOBAL_EXHIBITION_DATA.countries.map((c) => c.name).sort(),
+    () => Array.from(new Set(GLOBAL_EXHIBITION_DATA.countries.map((c) => c.name))).sort(),
     []
   );
 
@@ -341,10 +345,375 @@ export default function BuildersDirectoryContent() {
     sortBy,
   ]);
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredBuilders.length / buildersPerPage);
+  const startIndex = (currentPage - 1) * buildersPerPage;
+  const endIndex = startIndex + buildersPerPage;
+  const currentBuilders = filteredBuilders.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCountry, selectedCity, minRating, sortBy]);
+
   return (
-    <div className="font-inter min-h-screen bg-gray-50">
+    <div className="font-inter min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       <Navigation />
-      {/* Your UI code continues exactly as before */}
+      
+      {/* Hero Section - Matching location pages style */}
+      <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white pt-24 pb-20">
+        <div className="absolute inset-0 opacity-20">
+          <div className="w-full h-full bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-pink-500/10"></div>
+        </div>
+        
+        <div className="relative container mx-auto px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="flex justify-center mb-6">
+              <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-lg px-4 py-2">
+                <FiUsers className="w-5 h-5 mr-2" />
+                Global Directory
+              </Badge>
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              <span className="block">Exhibition Stand Builders</span>
+              <span className="block bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
+                Directory
+              </span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
+              Find verified exhibition stand builders worldwide. Connect with professionals who deliver exceptional results.
+            </p>
+            
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
+                <div className="flex items-center justify-center mb-3">
+                  <FiUsers className="w-8 h-8 text-blue-400" />
+                </div>
+                <div className="text-2xl font-bold">{realTimeStats.totalBuilders}</div>
+                <div className="text-slate-300 text-sm">Total Builders</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
+                <div className="flex items-center justify-center mb-3">
+                  <FiShield className="w-8 h-8 text-green-400" />
+                </div>
+                <div className="text-2xl font-bold">{realTimeStats.verifiedBuilders}</div>
+                <div className="text-slate-300 text-sm">Verified</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
+                <div className="flex items-center justify-center mb-3">
+                  <FiMapPin className="w-8 h-8 text-purple-400" />
+                </div>
+                <div className="text-2xl font-bold">{realTimeStats.totalCountries}</div>
+                <div className="text-slate-300 text-sm">Countries</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
+                <div className="flex items-center justify-center mb-3">
+                  <FiAward className="w-8 h-8 text-yellow-400" />
+                </div>
+                <div className="text-2xl font-bold">{realTimeStats.totalCities}</div>
+                <div className="text-slate-300 text-sm">Cities</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Search and Filters */}
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Find Your Perfect Builder
+              </h2>
+              <p className="text-gray-600">
+                Use filters to narrow down your search and find builders that match your needs
+              </p>
+            </div>
+
+            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-6">
+              {/* Search */}
+              <div className="flex-1 max-w-md">
+                <div className="relative">
+                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Input
+                    placeholder="Search builders..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 bg-gray-50 border-gray-200 focus:bg-white"
+                  />
+                </div>
+              </div>
+
+              {/* Filters */}
+              <div className="flex flex-wrap gap-3 items-center">
+                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                  <SelectTrigger className="w-48 bg-gray-50 border-gray-200">
+                    <SelectValue placeholder="Select Country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Countries</SelectItem>
+                    {countries.map((country) => (
+                      <SelectItem key={country} value={country}>
+                        {country}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedCity} onValueChange={setSelectedCity}>
+                  <SelectTrigger className="w-48 bg-gray-50 border-gray-200">
+                    <SelectValue placeholder="Select City" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Cities</SelectItem>
+                    {cities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-48 bg-gray-50 border-gray-200">
+                    <SelectValue placeholder="Sort By" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="rating">Rating</SelectItem>
+                    <SelectItem value="projects">Projects</SelectItem>
+                    <SelectItem value="experience">Experience</SelectItem>
+                    <SelectItem value="name">Name</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Button
+                  variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2 border-gray-200"
+                >
+                  <FiFilter />
+                  {showFilters ? 'Hide' : 'Show'} Filters
+                </Button>
+              </div>
+            </div>
+
+            {/* Advanced Filters */}
+            {showFilters && (
+              <div className="p-6 bg-gray-50 rounded-2xl border border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Minimum Rating: {minRating[0].toFixed(1)} ⭐
+                    </label>
+                    <Slider
+                      value={minRating}
+                      onValueChange={setMinRating}
+                      max={5}
+                      min={0}
+                      step={0.1}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Builders Grid */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="max-w-7xl mx-auto">
+            {loading ? (
+              <div className="text-center py-20">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-6"></div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Loading builders...</h3>
+                <p className="text-gray-600">Please wait while we fetch the latest builder data</p>
+              </div>
+            ) : filteredBuilders.length > 0 ? (
+              <>
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                    Found {filteredBuilders.length} Builders
+                  </h2>
+                  <p className="text-lg text-gray-600">
+                    Showing {startIndex + 1}-{Math.min(endIndex, filteredBuilders.length)} of {filteredBuilders.length} builders
+                  </p>
+                </div>
+
+                <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
+                  {currentBuilders.map((builder) => (
+                    <Card key={builder.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white">
+                      <CardHeader className="pb-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="text-xl font-bold mb-3 group-hover:text-blue-600 transition-colors">
+                              {builder.companyName}
+                            </CardTitle>
+                            <div className="flex items-center gap-2 mb-3">
+                              <div className="flex items-center bg-yellow-50 px-2 py-1 rounded-lg">
+                                <FiStar className="w-4 h-4 text-yellow-500 fill-current" />
+                                <span className="ml-1 text-sm font-semibold text-yellow-700">
+                                  {builder.rating.toFixed(1)}
+                                </span>
+                              </div>
+                              <Badge 
+                                variant={builder.verified ? "default" : "secondary"}
+                                className={builder.verified ? "bg-green-100 text-green-800 border-green-200" : ""}
+                              >
+                                {builder.verified ? "Verified" : "Unverified"}
+                              </Badge>
+                              {builder.premiumMember && (
+                                <Badge variant="outline" className="text-purple-600 border-purple-600 bg-purple-50">
+                                  Premium
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center">
+                            <FiAward className="w-7 h-7 text-blue-600" />
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="space-y-4">
+                          <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                            <FiMapPin className="w-4 h-4 mr-2 text-blue-500" />
+                            <span className="font-medium">{builder.headquarters.city}, {builder.headquarters.country}</span>
+                          </div>
+                          
+                          {builder.companyDescription && (
+                            <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                              {builder.companyDescription}
+                            </p>
+                          )}
+
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="flex items-center bg-blue-50 px-3 py-2 rounded-lg">
+                              <FiUsers className="w-4 h-4 mr-2 text-blue-500" />
+                              <span className="font-medium">{builder.projectsCompleted} projects</span>
+                            </div>
+                            <div className="flex items-center bg-green-50 px-3 py-2 rounded-lg">
+                              <FiClock className="w-4 h-4 mr-2 text-green-500" />
+                              <span className="font-medium">{builder.responseTime}</span>
+                            </div>
+                          </div>
+
+                          {builder.keyStrengths && builder.keyStrengths.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {builder.keyStrengths.slice(0, 3).map((strength, index) => (
+                                <Badge key={index} variant="outline" className="text-xs bg-gray-50 text-gray-700 border-gray-200">
+                                  {strength}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+
+                          <div className="flex gap-3 pt-4">
+                            <Link href={`/exhibition-stands/${builder.headquarters.country.toLowerCase().replace(/\s+/g, '-')}`}>
+                              <Button variant="outline" size="sm" className="flex-1 border-gray-200 hover:border-blue-300 hover:text-blue-600">
+                                View Profile
+                              </Button>
+                            </Link>
+                            <Button size="sm" className="flex-1 bg-blue-600 hover:bg-blue-700">
+                              Get Quote
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="mt-16 flex justify-center">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        disabled={currentPage === 1}
+                        className="border-gray-200"
+                      >
+                        <FiArrowRight className="w-4 h-4 mr-1 rotate-180" />
+                        Previous
+                      </Button>
+                      
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                          let pageNum;
+                          if (totalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (currentPage <= 3) {
+                            pageNum = i + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            pageNum = totalPages - 4 + i;
+                          } else {
+                            pageNum = currentPage - 2 + i;
+                          }
+                          
+                          return (
+                            <Button
+                              key={pageNum}
+                              variant={currentPage === pageNum ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setCurrentPage(pageNum)}
+                              className={currentPage === pageNum ? "bg-blue-600 hover:bg-blue-700" : "border-gray-200"}
+                            >
+                              {pageNum}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        disabled={currentPage === totalPages}
+                        className="border-gray-200"
+                      >
+                        Next
+                        <FiArrowRight className="w-4 h-4 ml-1" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-20">
+                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <FiSearch className="w-12 h-12 text-gray-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  No builders found
+                </h3>
+                <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
+                  Try adjusting your search criteria or filters to find more builders
+                </p>
+                <Button 
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedCountry("all");
+                    setSelectedCity("all");
+                    setMinRating([0]);
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 px-8 py-3"
+                >
+                  Clear All Filters
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
       <Footer />
       <WhatsAppFloat />
     </div>

@@ -240,8 +240,8 @@ export default function LocationSelector({
           {allowClear && (
             <SelectItem value="all">All Countries</SelectItem>
           )}
-          {filteredCountries.map((country) => (
-            <SelectItem key={country.id} value={country.name}>
+          {filteredCountries.map((country, index) => (
+            <SelectItem key={`country-${country.id}-${index}`} value={country.name}>
               <div className="flex items-center gap-2">
                 <Globe className="w-4 h-4" />
                 <span>{country.name}</span>
@@ -267,8 +267,8 @@ export default function LocationSelector({
           {allowClear && (
             <SelectItem value="all">All Cities</SelectItem>
           )}
-          {filteredCities.map((city) => (
-            <SelectItem key={city.id} value={city.name}>
+          {filteredCities.map((city, index) => (
+            <SelectItem key={`city-${city.id}-${index}`} value={city.name}>
               <div className="flex items-center gap-2">
                 <Building className="w-4 h-4" />
                 <span>{city.name}</span>
