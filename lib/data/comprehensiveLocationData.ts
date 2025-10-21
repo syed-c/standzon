@@ -26,6 +26,16 @@ export interface CityData {
 // Complete location data with all countries and cities
 export const comprehensiveLocationData: CountryData[] = [
   {
+    countryName: "New Zealand",
+    countryCode: "NZ",
+    countrySlug: "new-zealand",
+    continent: "Oceania",
+    currency: "NZD",
+    timezone: "Pacific/Auckland",
+    language: "English",
+    cities: []
+  },
+  {
     countryName: "United States",
     countryCode: "US",
     countrySlug: "united-states",
@@ -79,8 +89,9 @@ export const comprehensiveLocationData: CountryData[] = [
     cities: [
       { cityName: "Bangalore", citySlug: "bangalore", state: "Karnataka", latitude: 12.9716, longitude: 77.5946, population: 8443675 },
       { cityName: "Mumbai", citySlug: "mumbai", state: "Maharashtra", latitude: 19.0760, longitude: 72.8777, population: 12442373 },
-      { cityName: "New Delhi", citySlug: "new-delhi", state: "Delhi", latitude: 28.6139, longitude: 77.2090, population: 28514000 },
-      { cityName: "Delhi", citySlug: "delhi", state: "Delhi", latitude: 28.7041, longitude: 77.1025, population: 32941308 }
+      { cityName: "New Delhi", citySlug: "new-delhi", state: "Delhi", latitude: 28.6139, longitude: 77.2090, population: 32971776 },
+      { cityName: "Hyderabad", citySlug: "hyderabad", state: "Telangana", latitude: 17.3850, longitude: 78.4867, population: 6809970 },
+      { cityName: "Kolkata", citySlug: "kolkata", state: "West Bengal", latitude: 22.5726, longitude: 88.3639, population: 14974073 }
     ]
   },
   {
@@ -232,18 +243,6 @@ export const comprehensiveLocationData: CountryData[] = [
     ]
   },
   {
-    countryName: "Iran",
-    countryCode: "IR",
-    countrySlug: "iran",
-    continent: "Asia",
-    currency: "IRR",
-    timezone: "Asia/Tehran",
-    language: "Persian",
-    cities: [
-      { cityName: "Tehran", citySlug: "tehran", latitude: 35.6892, longitude: 51.3890, population: 8693706 }
-    ]
-  },
-  {
     countryName: "Indonesia",
     countryCode: "ID",
     countrySlug: "indonesia",
@@ -375,6 +374,8 @@ export const comprehensiveLocationData: CountryData[] = [
     language: "Thai",
     cities: [
       { cityName: "Bangkok", citySlug: "bangkok", latitude: 13.7563, longitude: 100.5018, population: 10539415 }
+    ,
+      { cityName: "Khon Kaen", citySlug: "khon-kaen", latitude: 16.4322, longitude: 102.8236, population: 114459 }
     ]
   },
   {
@@ -389,6 +390,10 @@ export const comprehensiveLocationData: CountryData[] = [
       { cityName: "Amsterdam", citySlug: "amsterdam", latitude: 52.3676, longitude: 4.9041, population: 872680 },
       { cityName: "Rotterdam", citySlug: "rotterdam", latitude: 51.9244, longitude: 4.4777, population: 651446 },
       { cityName: "Utrecht", citySlug: "utrecht", latitude: 52.0907, longitude: 5.1214, population: 357179 }
+    ,
+      { cityName: "Maastricht", citySlug: "maastricht", latitude: 50.8514, longitude: 5.691, population: 122378 }
+    ,
+      { cityName: "Vijfhuizen", citySlug: "vijfhuizen", latitude: 52.35, longitude: 4.6667, population: 5115 }
     ]
   },
   {
@@ -423,9 +428,7 @@ export const comprehensiveLocationData: CountryData[] = [
     currency: "SEK",
     timezone: "Europe/Stockholm",
     language: "Swedish",
-    cities: [
-      { cityName: "Stockholm", citySlug: "stockholm", latitude: 59.3293, longitude: 18.0686, population: 975551 }
-    ]
+    cities: []
   },
   {
     countryName: "Finland",
@@ -472,7 +475,9 @@ export const comprehensiveLocationData: CountryData[] = [
     timezone: "Europe/Warsaw",
     language: "Polish",
     cities: [
-      { cityName: "Warsaw", citySlug: "warsaw", latitude: 52.2297, longitude: 21.0122, population: 1790658 }
+      { cityName: "Warsaw", citySlug: "warsaw", latitude: 52.2297, longitude: 21.0122, population: 1790658 },
+      { cityName: "Kielce", citySlug: "kielce", latitude: 50.8661, longitude: 20.6286, population: 195774 },
+      { cityName: "Poznan", citySlug: "poznan", latitude: 52.4064, longitude: 16.9252, population: 534813 }
     ]
   },
   {
@@ -497,19 +502,8 @@ export const comprehensiveLocationData: CountryData[] = [
     language: "Japanese",
     cities: [
       { cityName: "Tokyo", citySlug: "tokyo", latitude: 35.6762, longitude: 139.6503, population: 37435191 },
-      { cityName: "Osaka", citySlug: "osaka", latitude: 34.6937, longitude: 135.5023, population: 2691185 }
-    ]
-  },
-  {
-    countryName: "South Korea",
-    countryCode: "KR",
-    countrySlug: "south-korea",
-    continent: "Asia",
-    currency: "KRW",
-    timezone: "Asia/Seoul",
-    language: "Korean",
-    cities: [
-      { cityName: "Seoul", citySlug: "seoul", latitude: 37.5665, longitude: 126.9780, population: 9720846 }
+      { cityName: "Osaka", citySlug: "osaka", latitude: 34.6937, longitude: 135.5023, population: 2691185 },
+      { cityName: "Chiba", citySlug: "chiba", latitude: 35.6073, longitude: 140.1063, population: 979768 }
     ]
   },
   {
@@ -544,9 +538,7 @@ export const comprehensiveLocationData: CountryData[] = [
     currency: "VND",
     timezone: "Asia/Ho_Chi_Minh",
     language: "Vietnamese",
-    cities: [
-      { cityName: "Ho Chi Minh City", citySlug: "ho-chi-minh-city", latitude: 10.8231, longitude: 106.6297, population: 8993082 }
-    ]
+    cities: []
   },
   {
     countryName: "Philippines",

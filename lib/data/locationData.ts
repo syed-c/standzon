@@ -25,6 +25,46 @@ export interface CityData {
 // Comprehensive location data based on the provided list
 export const locationData: CountryData[] = [
   {
+    countryName: "Vietnam",
+    countryCode: "VN",
+    countrySlug: "vietnam",
+    continent: "Asia",
+    currency: "VND",
+    timezone: "Asia/Ho_Chi_Minh",
+    language: "Vietnamese",
+    cities: []
+  },
+  {
+    countryName: "New Zealand",
+    countryCode: "NZ",
+    countrySlug: "new-zealand",
+    continent: "Oceania",
+    currency: "NZD",
+    timezone: "Pacific/Auckland",
+    language: "English",
+    cities: []
+  },
+  {
+    countryName: "Hong Kong",
+    countryCode: "HK",
+    countrySlug: "hong-kong",
+    continent: "Asia",
+    currency: "HKD",
+    timezone: "Asia/Hong_Kong",
+    language: "Chinese",
+    cities: []
+  },
+  {
+    countryName: "Taiwan",
+    countryCode: "TW",
+    countrySlug: "taiwan",
+    continent: "Asia",
+    currency: "TWD",
+    timezone: "Asia/Taipei",
+    language: "Chinese",
+    cities: []
+  },
+  {
     countryName: "United States",
     countryCode: "US",
     countrySlug: "united-states",
@@ -72,7 +112,7 @@ export const locationData: CountryData[] = [
       { cityName: "Utah", citySlug: "utah", state: "Utah" },
       { cityName: "Michigan", citySlug: "michigan", state: "Michigan" },
       { cityName: "Alaska", citySlug: "alaska", state: "Alaska" },
-      { cityName: "Georgia", citySlug: "georgia", state: "Georgia" },
+      { cityName: "Georgia", citySlug: "georgia", state: "Georgia" }
     ],
   },
   {
@@ -87,6 +127,8 @@ export const locationData: CountryData[] = [
       { cityName: "Bangalore", citySlug: "bangalore", state: "Karnataka" },
       { cityName: "Mumbai", citySlug: "mumbai", state: "Maharashtra" },
       { cityName: "New Delhi", citySlug: "new-delhi", state: "Delhi" },
+      { cityName: "Hyderabad", citySlug: "hyderabad", state: "Telangana" },
+      { cityName: "Kolkata", citySlug: "kolkata", state: "West Bengal" }
     ],
   },
   {
@@ -101,6 +143,7 @@ export const locationData: CountryData[] = [
       { cityName: "London", citySlug: "london" },
       { cityName: "Birmingham", citySlug: "birmingham" },
       { cityName: "Manchester", citySlug: "manchester" },
+      { cityName: "Glasgow", citySlug: "glasgow" }
     ],
   },
   {
@@ -114,7 +157,7 @@ export const locationData: CountryData[] = [
     cities: [
       { cityName: "Brisbane", citySlug: "brisbane", state: "Queensland" },
       { cityName: "Melbourne", citySlug: "melbourne", state: "Victoria" },
-      { cityName: "Sydney", citySlug: "sydney", state: "New South Wales" },
+      { cityName: "Sydney", citySlug: "sydney", state: "New South Wales" }
     ],
   },
   {
@@ -129,7 +172,7 @@ export const locationData: CountryData[] = [
       { cityName: "Cannes", citySlug: "cannes" },
       { cityName: "Lyon", citySlug: "lyon" },
       { cityName: "Paris", citySlug: "paris" },
-      { cityName: "Strasbourg", citySlug: "strasbourg" },
+      { cityName: "Strasbourg", citySlug: "strasbourg" }
     ],
   },
   {
@@ -142,7 +185,7 @@ export const locationData: CountryData[] = [
     language: "Arabic",
     cities: [
       { cityName: "Riyadh", citySlug: "riyadh" },
-      { cityName: "Jeddah", citySlug: "jeddah" },
+      { cityName: "Jeddah", citySlug: "jeddah" }
     ],
   },
   {
@@ -165,7 +208,7 @@ export const locationData: CountryData[] = [
       { cityName: "Essen", citySlug: "essen" },
       { cityName: "Dusseldorf", citySlug: "dusseldorf" },
       { cityName: "Munich", citySlug: "munich" },
-      { cityName: "Leipzig", citySlug: "leipzig" },
+      { cityName: "Leipzig", citySlug: "leipzig" }
     ],
   },
   {
@@ -183,7 +226,7 @@ export const locationData: CountryData[] = [
       { cityName: "Rimini", citySlug: "rimini" },
       { cityName: "Rome", citySlug: "rome" },
       { cityName: "Verona", citySlug: "verona" },
-      { cityName: "Genoa", citySlug: "genoa" },
+      { cityName: "Genoa", citySlug: "genoa" }
     ],
   },
   {
@@ -217,7 +260,7 @@ export const locationData: CountryData[] = [
       { cityName: "Valladolid", citySlug: "valladolid" },
       { cityName: "Valencia", citySlug: "valencia" },
       { cityName: "Seville", citySlug: "seville" },
-      { cityName: "Palma de Mallorca", citySlug: "palma-de-mallorca" },
+      { cityName: "Palma de Mallorca", citySlug: "palma-de-mallorca" }
     ],
   },
   {
@@ -231,41 +274,7 @@ export const locationData: CountryData[] = [
     cities: [
       { cityName: "Dubai", citySlug: "dubai" },
       { cityName: "Abu Dhabi", citySlug: "abu-dhabi" },
-      { cityName: "Sharjah", citySlug: "sharjah" },
-    ],
-  },
-  {
-    countryName: "Iran",
-    countryCode: "IR",
-    countrySlug: "iran",
-    continent: "Asia",
-    currency: "IRR",
-    timezone: "Asia/Tehran",
-    language: "Persian",
-    cities: [
-      { cityName: "Tehran", citySlug: "tehran" },
-      { cityName: "Isfahan", citySlug: "isfahan" },
-      { cityName: "Shiraz", citySlug: "shiraz" },
-      { cityName: "Mashhad", citySlug: "mashhad" },
-      { cityName: "Tabriz", citySlug: "tabriz" },
-      { cityName: "Qom", citySlug: "qom" },
-    ],
-  },
-  {
-    countryName: "Iraq",
-    countryCode: "IQ",
-    countrySlug: "iraq",
-    continent: "Asia",
-    currency: "IQD",
-    timezone: "Asia/Baghdad",
-    language: "Arabic",
-    cities: [
-      { cityName: "Baghdad", citySlug: "baghdad" },
-      { cityName: "Basra", citySlug: "basra" },
-      { cityName: "Mosul", citySlug: "mosul" },
-      { cityName: "Erbil", citySlug: "erbil" },
-      { cityName: "Najaf", citySlug: "najaf" },
-      { cityName: "Karbala", citySlug: "karbala" },
+      { cityName: "Sharjah", citySlug: "sharjah" }
     ],
   },
   {
@@ -281,7 +290,7 @@ export const locationData: CountryData[] = [
       { cityName: "Aqaba", citySlug: "aqaba" },
       { cityName: "Irbid", citySlug: "irbid" },
       { cityName: "Zarqa", citySlug: "zarqa" },
-      { cityName: "Madaba", citySlug: "madaba" },
+      { cityName: "Madaba", citySlug: "madaba" }
     ],
   },
   {
@@ -297,7 +306,7 @@ export const locationData: CountryData[] = [
       { cityName: "Tripoli", citySlug: "tripoli" },
       { cityName: "Sidon", citySlug: "sidon" },
       { cityName: "Tyre", citySlug: "tyre" },
-      { cityName: "Byblos", citySlug: "byblos" },
+      { cityName: "Byblos", citySlug: "byblos" }
     ],
   },
   {
@@ -313,7 +322,7 @@ export const locationData: CountryData[] = [
       { cityName: "Tel Aviv", citySlug: "tel-aviv" },
       { cityName: "Haifa", citySlug: "haifa" },
       { cityName: "Eilat", citySlug: "eilat" },
-      { cityName: "Nazareth", citySlug: "nazareth" },
+      { cityName: "Nazareth", citySlug: "nazareth" }
     ],
   },
   {
@@ -326,7 +335,7 @@ export const locationData: CountryData[] = [
     language: "Indonesian",
     cities: [
       { cityName: "Bali", citySlug: "bali" },
-      { cityName: "Jakarta", citySlug: "jakarta" },
+      { cityName: "Jakarta", citySlug: "jakarta" }
     ],
   },
   {
@@ -359,7 +368,7 @@ export const locationData: CountryData[] = [
     language: "Russian",
     cities: [
       { cityName: "Moscow", citySlug: "moscow" },
-      { cityName: "St. Petersburg", citySlug: "st-petersburg" },
+      { cityName: "St. Petersburg", citySlug: "st-petersburg" }
     ],
   },
   {
@@ -382,7 +391,7 @@ export const locationData: CountryData[] = [
     language: "Chinese",
     cities: [
       { cityName: "Beijing", citySlug: "beijing" },
-      { cityName: "Guangzhou", citySlug: "guangzhou" },
+      { cityName: "Guangzhou", citySlug: "guangzhou" }
     ],
   },
   {
@@ -396,7 +405,7 @@ export const locationData: CountryData[] = [
     cities: [
       { cityName: "Montreal", citySlug: "montreal" },
       { cityName: "Toronto", citySlug: "toronto" },
-      { cityName: "Vancouver", citySlug: "vancouver" },
+      { cityName: "Vancouver", citySlug: "vancouver" }
     ],
   },
   {
@@ -413,7 +422,7 @@ export const locationData: CountryData[] = [
       { cityName: "Basel", citySlug: "basel" },
       { cityName: "Sirnach", citySlug: "sirnach" },
       { cityName: "Bern", citySlug: "bern" },
-      { cityName: "Lugano", citySlug: "lugano" },
+      { cityName: "Lugano", citySlug: "lugano" }
     ],
   },
   {
@@ -426,10 +435,209 @@ export const locationData: CountryData[] = [
     language: "Dutch",
     cities: [
       { cityName: "Brussels", citySlug: "brussels" },
-      { cityName: "Kortrijk", citySlug: "kortrijk" },
+      { cityName: "Kortrijk", citySlug: "kortrijk" }
     ],
   },
-];
+  {
+    countryName: "Netherlands",
+    countryCode: "NL",
+    countrySlug: "netherlands",
+    continent: "Europe",
+    currency: "EUR",
+    timezone: "Europe/Amsterdam",
+    language: "Dutch",
+    cities: [
+      { cityName: "Amsterdam", citySlug: "amsterdam" },
+      { cityName: "Rotterdam", citySlug: "rotterdam" },
+      { cityName: "Maastricht", citySlug: "maastricht" },
+      { cityName: "Vijfhuizen", citySlug: "vijfhuizen" }
+    ],
+  },
+  {
+    countryName: "Thailand",
+    countryCode: "TH",
+    countrySlug: "thailand",
+    continent: "Asia",
+    currency: "THB",
+    timezone: "Asia/Bangkok",
+    language: "Thai",
+    cities: [
+      { cityName: "Bangkok", citySlug: "bangkok" },
+      { cityName: "Khon Kaen", citySlug: "khon-kaen" }
+    ],
+  },
+  {
+    countryName: "Philippines",
+    countryCode: "PH",
+    countrySlug: "philippines",
+    continent: "Asia",
+    currency: "PHP",
+    timezone: "Asia/Manila",
+    language: "Filipino",
+    cities: [
+      { cityName: "Manila", citySlug: "manila" }
+    ],
+  },
+  {
+    countryName: "Japan",
+    countryCode: "JP",
+    countrySlug: "japan",
+    continent: "Asia",
+    currency: "JPY",
+    timezone: "Asia/Tokyo",
+    language: "Japanese",
+    cities: [
+      { cityName: "Tokyo", citySlug: "tokyo" },
+      { cityName: "Osaka", citySlug: "osaka" },
+      { cityName: "Chiba", citySlug: "chiba" }
+    ],
+  },
+  {
+    countryName: "Sweden",
+    countryCode: "SE",
+    countrySlug: "sweden",
+    continent: "Europe",
+    currency: "SEK",
+    timezone: "Europe/Stockholm",
+    language: "Swedish",
+    cities: [],
+  },
+  {
+    countryName: "Norway",
+    countryCode: "NO",
+    countrySlug: "norway",
+    continent: "Europe",
+    currency: "NOK",
+    timezone: "Europe/Oslo",
+    language: "Norwegian",
+    cities: [
+      { cityName: "Oslo", citySlug: "oslo" }
+    ],
+  },
+  {
+    countryName: "Denmark",
+    countryCode: "DK",
+    countrySlug: "denmark",
+    continent: "Europe",
+    currency: "DKK",
+    timezone: "Europe/Copenhagen",
+    language: "Danish",
+    cities: [
+      { cityName: "Copenhagen", citySlug: "copenhagen" }
+    ],
+  },
+  {
+    countryName: "Finland",
+    countryCode: "FI",
+    countrySlug: "finland",
+    continent: "Europe",
+    currency: "EUR",
+    timezone: "Europe/Helsinki",
+    language: "Finnish",
+    cities: [
+      { cityName: "Helsinki", citySlug: "helsinki" }
+    ],
+  },
+  {
+    countryName: "Poland",
+    countryCode: "PL",
+    countrySlug: "poland",
+    continent: "Europe",
+    currency: "PLN",
+    timezone: "Europe/Warsaw",
+    language: "Polish",
+    cities: [
+      { cityName: "Warsaw", citySlug: "warsaw" },
+      { cityName: "Kielce", citySlug: "kielce" },
+      { cityName: "Poznan", citySlug: "poznan" }
+    ],
+  },
+  {
+    countryName: "Austria",
+    countryCode: "AT",
+    countrySlug: "austria",
+    continent: "Europe",
+    currency: "EUR",
+    timezone: "Europe/Vienna",
+    language: "German",
+    cities: [
+      { cityName: "Vienna", citySlug: "vienna" }
+    ],
+  },
+  {
+    countryName: "Czech Republic",
+    countryCode: "CZ",
+    countrySlug: "czech-republic",
+    continent: "Europe",
+    currency: "CZK",
+    timezone: "Europe/Prague",
+    language: "Czech",
+    cities: [
+      { cityName: "Prague", citySlug: "prague" }
+    ],
+  },
+  {
+    countryName: "Hungary",
+    countryCode: "HU",
+    countrySlug: "hungary",
+    continent: "Europe",
+    currency: "HUF",
+    timezone: "Europe/Budapest",
+    language: "Hungarian",
+    cities: [
+      { cityName: "Budapest", citySlug: "budapest" }
+    ],
+  },
+  {
+    countryName: "Nigeria",
+    countryCode: "NG",
+    countrySlug: "nigeria",
+    continent: "Africa",
+    currency: "NGN",
+    timezone: "Africa/Lagos",
+    language: "English",
+    cities: [
+      { cityName: "Lagos", citySlug: "lagos" }
+    ],
+  },
+  {
+    countryName: "Kenya",
+    countryCode: "KE",
+    countrySlug: "kenya",
+    continent: "Africa",
+    currency: "KES",
+    timezone: "Africa/Nairobi",
+    language: "English",
+    cities: [
+      { cityName: "Nairobi", citySlug: "nairobi" }
+    ],
+  },
+  {
+    countryName: "Brazil",
+    countryCode: "BR",
+    countrySlug: "brazil",
+    continent: "South America",
+    currency: "BRL",
+    timezone: "America/Sao_Paulo",
+    language: "Portuguese",
+    cities: [
+      { cityName: "São Paulo", citySlug: "sao-paulo" },
+      { cityName: "Rio de Janeiro", citySlug: "rio-de-janeiro" }
+    ],
+  },
+  {
+    countryName: "Mexico",
+    countryCode: "MX",
+    countrySlug: "mexico",
+    continent: "North America",
+    currency: "MXN",
+    timezone: "America/Mexico_City",
+    language: "Spanish",
+    cities: [
+      { cityName: "Mexico City", citySlug: "mexico-city" }
+    ],
+  }
+    ];
 
 // Helper functions for location data
 export const getCountryBySlug = (slug: string): CountryData | undefined => {
@@ -468,8 +676,8 @@ export const globalExhibitionStats = {
     "United Kingdom",
     "France",
     "Italy",
-    "Spain",
-  ],
+    "Spain"
+    ],
   tier1Stats: {
     countries: 6,
     cities: locationData
@@ -480,8 +688,8 @@ export const globalExhibitionStats = {
           "United Kingdom",
           "France",
           "Italy",
-          "Spain",
-        ].includes(country.countryName)
+          "Spain"
+    ].includes(country.countryName)
       )
       .reduce((sum, country) => sum + country.cities.length, 0),
   },

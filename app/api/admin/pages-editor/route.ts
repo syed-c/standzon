@@ -104,17 +104,70 @@ const STATIC_PAGES: PageItem[] = [
   { title: 'United States Exhibition Stands', path: '/exhibition-stands/united-states', type: 'country' },
   { title: 'United Kingdom Exhibition Stands', path: '/exhibition-stands/united-kingdom', type: 'country' },
   { title: 'India Exhibition Stands', path: '/exhibition-stands/india', type: 'country' },
+  // City pages for India
+  { title: 'Exhibition Stands in Bangalore, India', path: '/exhibition-stands/india/bangalore', type: 'city' },
+  { title: 'Exhibition Stands in Mumbai, India', path: '/exhibition-stands/india/mumbai', type: 'city' },
+  { title: 'Exhibition Stands in New Delhi, India', path: '/exhibition-stands/india/new-delhi', type: 'city' },
+  { title: 'Exhibition Stands in Hyderabad, India', path: '/exhibition-stands/india/hyderabad', type: 'city' },
+  { title: 'Exhibition Stands in Kolkata, India', path: '/exhibition-stands/india/kolkata', type: 'city' },
   { title: 'Spain Exhibition Stands', path: '/exhibition-stands/spain', type: 'country' },
+  // City pages for Spain
+  { title: 'Exhibition Stands in Madrid, Spain', path: '/exhibition-stands/spain/madrid', type: 'city' },
+  { title: 'Exhibition Stands in Barcelona, Spain', path: '/exhibition-stands/spain/barcelona', type: 'city' },
+  { title: 'Exhibition Stands in Valencia, Spain', path: '/exhibition-stands/spain/valencia', type: 'city' },
+  { title: 'Exhibition Stands in Seville, Spain', path: '/exhibition-stands/spain/seville', type: 'city' },
+  { title: 'Exhibition Stands in Bilbao, Spain', path: '/exhibition-stands/spain/bilbao', type: 'city' },
+  { title: 'Exhibition Stands in Malaga, Spain', path: '/exhibition-stands/spain/malaga', type: 'city' },
+  { title: 'Exhibition Stands in Alicante, Spain', path: '/exhibition-stands/spain/alicante', type: 'city' },
+  { title: 'Exhibition Stands in Zaragoza, Spain', path: '/exhibition-stands/spain/zaragoza', type: 'city' },
+  { title: 'Exhibition Stands in Valladolid, Spain', path: '/exhibition-stands/spain/valladolid', type: 'city' },
+  { title: 'Exhibition Stands in Vigo, Spain', path: '/exhibition-stands/spain/vigo', type: 'city' },
+  { title: 'Exhibition Stands in Coruna, Spain', path: '/exhibition-stands/spain/coruna', type: 'city' },
+  { title: 'Exhibition Stands in Jaen, Spain', path: '/exhibition-stands/spain/jaen', type: 'city' },
+  { title: 'Exhibition Stands in Palma de Mallorca, Spain', path: '/exhibition-stands/spain/palma-de-mallorca', type: 'city' },
   { title: 'Italy Exhibition Stands', path: '/exhibition-stands/italy', type: 'country' },
   { title: 'France Exhibition Stands', path: '/exhibition-stands/france', type: 'country' },
+  // City pages for France
+  { title: 'Exhibition Stands in Paris, France', path: '/exhibition-stands/france/paris', type: 'city' },
+  { title: 'Exhibition Stands in Lyon, France', path: '/exhibition-stands/france/lyon', type: 'city' },
+  { title: 'Exhibition Stands in Cannes, France', path: '/exhibition-stands/france/cannes', type: 'city' },
+  { title: 'Exhibition Stands in Strasbourg, France', path: '/exhibition-stands/france/strasbourg', type: 'city' },
   { title: 'Netherlands Exhibition Stands', path: '/exhibition-stands/netherlands', type: 'country' },
+  // City pages for Netherlands
+  { title: 'Exhibition Stands in Amsterdam, Netherlands', path: '/exhibition-stands/netherlands/amsterdam', type: 'city' },
+  { title: 'Exhibition Stands in Rotterdam, Netherlands', path: '/exhibition-stands/netherlands/rotterdam', type: 'city' },
+  { title: 'Exhibition Stands in Maastricht, Netherlands', path: '/exhibition-stands/netherlands/maastricht', type: 'city' },
+  { title: 'Exhibition Stands in Vijfhuizen, Netherlands', path: '/exhibition-stands/netherlands/vijfhuizen', type: 'city' },
   { title: 'Switzerland Exhibition Stands', path: '/exhibition-stands/switzerland', type: 'country' },
+  // City pages for Switzerland
+  { title: 'Exhibition Stands in Zurich, Switzerland', path: '/exhibition-stands/switzerland/zurich', type: 'city' },
+  { title: 'Exhibition Stands in Geneva, Switzerland', path: '/exhibition-stands/switzerland/geneva', type: 'city' },
+  { title: 'Exhibition Stands in Basel, Switzerland', path: '/exhibition-stands/switzerland/basel', type: 'city' },
+  { title: 'Exhibition Stands in Bern, Switzerland', path: '/exhibition-stands/switzerland/bern', type: 'city' },
+  { title: 'Exhibition Stands in Lugano, Switzerland', path: '/exhibition-stands/switzerland/lugano', type: 'city' },
+  { title: 'Exhibition Stands in Sirnach, Switzerland', path: '/exhibition-stands/switzerland/sirnach', type: 'city' },
   { title: 'Belgium Exhibition Stands', path: '/exhibition-stands/belgium', type: 'country' },
+  // City pages for Belgium
+  { title: 'Exhibition Stands in Brussels, Belgium', path: '/exhibition-stands/belgium/brussels', type: 'city' },
+  { title: 'Exhibition Stands in Kortrijk, Belgium', path: '/exhibition-stands/belgium/kortrijk', type: 'city' },
+  { title: 'Austria Exhibition Stands', path: '/exhibition-stands/austria', type: 'country' },
+  // City pages for Austria
+  { title: 'Exhibition Stands in Vienna, Austria', path: '/exhibition-stands/austria/vienna', type: 'city' },
   { title: 'Australia Exhibition Stands', path: '/exhibition-stands/australia', type: 'country' },
+  // City pages for Australia
+  { title: 'Exhibition Stands in Sydney, Australia', path: '/exhibition-stands/australia/sydney', type: 'city' },
+  { title: 'Exhibition Stands in Melbourne, Australia', path: '/exhibition-stands/australia/melbourne', type: 'city' },
+  { title: 'Exhibition Stands in Brisbane, Australia', path: '/exhibition-stands/australia/brisbane', type: 'city' },
   { title: 'Canada Exhibition Stands', path: '/exhibition-stands/canada', type: 'country' },
   { title: 'South Africa Exhibition Stands', path: '/exhibition-stands/south-africa', type: 'country' },
   { title: 'Singapore Exhibition Stands', path: '/exhibition-stands/singapore', type: 'country' },
   { title: 'Thailand Exhibition Stands', path: '/exhibition-stands/thailand', type: 'country' },
+  // City pages for Thailand
+  { title: 'Exhibition Stands in Bangkok, Thailand', path: '/exhibition-stands/thailand/bangkok', type: 'city' },
+  { title: 'Exhibition Stands in Khon Kaen, Thailand', path: '/exhibition-stands/thailand/khon-kaen', type: 'city' },
+  { title: 'Philippines Exhibition Stands', path: '/exhibition-stands/philippines', type: 'country' },
+  // City pages for Philippines
+  { title: 'Exhibition Stands in Manila, Philippines', path: '/exhibition-stands/philippines/manila', type: 'city' },
   { title: 'Turkey Exhibition Stands', path: '/exhibition-stands/turkey', type: 'country' },
   { title: 'United Arab Emirates Exhibition Stands', path: '/exhibition-stands/united-arab-emirates', type: 'country' },
   { title: 'Saudi Arabia Exhibition Stands', path: '/exhibition-stands/saudi-arabia', type: 'country' },
@@ -133,6 +186,103 @@ const STATIC_PAGES: PageItem[] = [
   { title: 'Jordan Exhibition Stands', path: '/exhibition-stands/jordan', type: 'country' },
   { title: 'Lebanon Exhibition Stands', path: '/exhibition-stands/lebanon', type: 'country' },
   { title: 'Iraq Exhibition Stands', path: '/exhibition-stands/iraq', type: 'country' },
+  // New countries added
+  { title: 'Vietnam Exhibition Stands', path: '/exhibition-stands/vn', type: 'country' },
+  { title: 'Sweden Exhibition Stands', path: '/exhibition-stands/se', type: 'country' },
+  { title: 'Norway Exhibition Stands', path: '/exhibition-stands/no', type: 'country' },
+  { title: 'Denmark Exhibition Stands', path: '/exhibition-stands/dk', type: 'country' },
+  { title: 'Finland Exhibition Stands', path: '/exhibition-stands/fi', type: 'country' },
+  { title: 'Poland Exhibition Stands', path: '/exhibition-stands/pl', type: 'country' },
+  { title: 'Taiwan Exhibition Stands', path: '/exhibition-stands/tw', type: 'country' },
+  { title: 'Hong Kong Exhibition Stands', path: '/exhibition-stands/hk', type: 'country' },
+  { title: 'New Zealand Exhibition Stands', path: '/exhibition-stands/nz', type: 'country' },
+  { title: 'Austria Exhibition Stands', path: '/exhibition-stands/at', type: 'country' },
+  // City pages for Germany
+  { title: 'Exhibition Stands in Frankfurt, Germany', path: '/exhibition-stands/de/frankfurt', type: 'city' },
+  { title: 'Exhibition Stands in Stuttgart, Germany', path: '/exhibition-stands/de/stuttgart', type: 'city' },
+  { title: 'Exhibition Stands in Berlin, Germany', path: '/exhibition-stands/de/berlin', type: 'city' },
+  { title: 'Exhibition Stands in Cologne, Germany', path: '/exhibition-stands/de/cologne', type: 'city' },
+  { title: 'Exhibition Stands in Dortmund, Germany', path: '/exhibition-stands/de/dortmund', type: 'city' },
+  { title: 'Exhibition Stands in Nuremberg, Germany', path: '/exhibition-stands/de/nuremberg', type: 'city' },
+  { title: 'Exhibition Stands in Hannover, Germany', path: '/exhibition-stands/de/hannover', type: 'city' },
+  { title: 'Exhibition Stands in Hamburg, Germany', path: '/exhibition-stands/de/hamburg', type: 'city' },
+  { title: 'Exhibition Stands in Essen, Germany', path: '/exhibition-stands/de/essen', type: 'city' },
+  { title: 'Exhibition Stands in Dusseldorf, Germany', path: '/exhibition-stands/de/dusseldorf', type: 'city' },
+  { title: 'Exhibition Stands in Munich, Germany', path: '/exhibition-stands/de/munich', type: 'city' },
+  { title: 'Exhibition Stands in Leipzig, Germany', path: '/exhibition-stands/de/leipzig', type: 'city' },
+  // City pages for UK
+  { title: 'Exhibition Stands in London, UK', path: '/exhibition-stands/gb/london', type: 'city' },
+  { title: 'Exhibition Stands in Birmingham, UK', path: '/exhibition-stands/gb/birmingham', type: 'city' },
+  { title: 'Exhibition Stands in Manchester, UK', path: '/exhibition-stands/gb/manchester', type: 'city' },
+  { title: 'Exhibition Stands in Glasgow, UK', path: '/exhibition-stands/gb/glasgow', type: 'city' },
+  // City pages for Poland
+  { title: 'Exhibition Stands in Warsaw, Poland', path: '/exhibition-stands/pl/warsaw', type: 'city' },
+  { title: 'Exhibition Stands in Kielce, Poland', path: '/exhibition-stands/pl/kielce', type: 'city' },
+  { title: 'Exhibition Stands in Poznan, Poland', path: '/exhibition-stands/pl/poznan', type: 'city' },
+  // City pages for Norway
+  { title: 'Exhibition Stands in Oslo, Norway', path: '/exhibition-stands/no/oslo', type: 'city' },
+  // City pages for Denmark
+  { title: 'Exhibition Stands in Copenhagen, Denmark', path: '/exhibition-stands/dk/copenhagen', type: 'city' },
+  // City pages for Finland
+  { title: 'Exhibition Stands in Helsinki, Finland', path: '/exhibition-stands/fi/helsinki', type: 'city' },
+  // City pages for Austria
+  { title: 'Exhibition Stands in Vienna, Austria', path: '/exhibition-stands/at/vienna', type: 'city' },
+  // City pages for Spain
+  { title: 'Exhibition Stands in Madrid, Spain', path: '/exhibition-stands/es/madrid', type: 'city' },
+  { title: 'Exhibition Stands in Barcelona, Spain', path: '/exhibition-stands/es/barcelona', type: 'city' },
+  { title: 'Exhibition Stands in Valencia, Spain', path: '/exhibition-stands/es/valencia', type: 'city' },
+  { title: 'Exhibition Stands in Seville, Spain', path: '/exhibition-stands/es/seville', type: 'city' },
+  { title: 'Exhibition Stands in Bilbao, Spain', path: '/exhibition-stands/es/bilbao', type: 'city' },
+  { title: 'Exhibition Stands in Malaga, Spain', path: '/exhibition-stands/es/malaga', type: 'city' },
+  { title: 'Exhibition Stands in Alicante, Spain', path: '/exhibition-stands/es/alicante', type: 'city' },
+  { title: 'Exhibition Stands in Zaragoza, Spain', path: '/exhibition-stands/es/zaragoza', type: 'city' },
+  { title: 'Exhibition Stands in Valladolid, Spain', path: '/exhibition-stands/es/valladolid', type: 'city' },
+  { title: 'Exhibition Stands in Vigo, Spain', path: '/exhibition-stands/es/vigo', type: 'city' },
+  { title: 'Exhibition Stands in Coruna, Spain', path: '/exhibition-stands/es/coruna', type: 'city' },
+  { title: 'Exhibition Stands in Jaen, Spain', path: '/exhibition-stands/es/jaen', type: 'city' },
+  { title: 'Exhibition Stands in Palma de Mallorca, Spain', path: '/exhibition-stands/es/palma-de-mallorca', type: 'city' },
+  // City pages for Switzerland
+  { title: 'Exhibition Stands in Zurich, Switzerland', path: '/exhibition-stands/ch/zurich', type: 'city' },
+  { title: 'Exhibition Stands in Geneva, Switzerland', path: '/exhibition-stands/ch/geneva', type: 'city' },
+  { title: 'Exhibition Stands in Basel, Switzerland', path: '/exhibition-stands/ch/basel', type: 'city' },
+  { title: 'Exhibition Stands in Bern, Switzerland', path: '/exhibition-stands/ch/bern', type: 'city' },
+  { title: 'Exhibition Stands in Lugano, Switzerland', path: '/exhibition-stands/ch/lugano', type: 'city' },
+  { title: 'Exhibition Stands in Sirnach, Switzerland', path: '/exhibition-stands/ch/sirnach', type: 'city' },
+  // City pages for Australia
+  { title: 'Exhibition Stands in Sydney, Australia', path: '/exhibition-stands/au/sydney', type: 'city' },
+  { title: 'Exhibition Stands in Melbourne, Australia', path: '/exhibition-stands/au/melbourne', type: 'city' },
+  { title: 'Exhibition Stands in Brisbane, Australia', path: '/exhibition-stands/au/brisbane', type: 'city' },
+  // City pages for Taiwan
+  { title: 'Exhibition Stands in Taipei, Taiwan', path: '/exhibition-stands/tw/taipei', type: 'city' },
+  // City pages for Hong Kong
+  { title: 'Exhibition Stands in Hong Kong', path: '/exhibition-stands/hk/hong-kong', type: 'city' },
+  // City pages for Philippines
+  { title: 'Exhibition Stands in Manila, Philippines', path: '/exhibition-stands/ph/manila', type: 'city' },
+  // Additional missing countries
+  { title: 'Czech Republic Exhibition Stands', path: '/exhibition-stands/cz', type: 'country' },
+  { title: 'Hungary Exhibition Stands', path: '/exhibition-stands/hu', type: 'country' },
+  { title: 'Nigeria Exhibition Stands', path: '/exhibition-stands/ng', type: 'country' },
+  { title: 'Kenya Exhibition Stands', path: '/exhibition-stands/ke', type: 'country' },
+  { title: 'Brazil Exhibition Stands', path: '/exhibition-stands/br', type: 'country' },
+  { title: 'Mexico Exhibition Stands', path: '/exhibition-stands/mx', type: 'country' },
+  // City pages for Czech Republic
+  { title: 'Exhibition Stands in Prague, Czech Republic', path: '/exhibition-stands/cz/prague', type: 'city' },
+  // City pages for Hungary
+  { title: 'Exhibition Stands in Budapest, Hungary', path: '/exhibition-stands/hu/budapest', type: 'city' },
+  // City pages for Nigeria
+  { title: 'Exhibition Stands in Lagos, Nigeria', path: '/exhibition-stands/ng/lagos', type: 'city' },
+  // City pages for Kenya
+  { title: 'Exhibition Stands in Nairobi, Kenya', path: '/exhibition-stands/ke/nairobi', type: 'city' },
+  // City pages for South Africa
+  { title: 'Exhibition Stands in Cape Town, South Africa', path: '/exhibition-stands/za/cape-town', type: 'city' },
+  { title: 'Exhibition Stands in Johannesburg, South Africa', path: '/exhibition-stands/za/johannesburg', type: 'city' },
+  // City pages for Morocco
+  { title: 'Exhibition Stands in Casablanca, Morocco', path: '/exhibition-stands/ma/casablanca', type: 'city' },
+  // City pages for Brazil
+  { title: 'Exhibition Stands in São Paulo, Brazil', path: '/exhibition-stands/br/sao-paulo', type: 'city' },
+  { title: 'Exhibition Stands in Rio de Janeiro, Brazil', path: '/exhibition-stands/br/rio-de-janeiro', type: 'city' },
+  // City pages for Mexico
+  { title: 'Exhibition Stands in Mexico City, Mexico', path: '/exhibition-stands/mx/mexico-city', type: 'city' },
 ];
 
 export async function GET(request: NextRequest) {

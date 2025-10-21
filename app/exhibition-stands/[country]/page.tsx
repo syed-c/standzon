@@ -13,9 +13,9 @@ import { getServerSupabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 
 interface PageProps {
-  params: Promise<{
+  params: {
     country: string;
-  }>;
+  };
 }
 
 // Default fallback content for each country
@@ -44,9 +44,9 @@ const getDefaultCountryContent = (countryName: string, countrySlug: string) => (
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ country: string }>;
+  params: { country: string };
 }): Promise<Metadata> {
-  const { country } = await params;
+  const { country } = params;
   const sanitized = sanitizeCountrySlug(country);
   const isValid = isValidCountrySlug(sanitized);
   
@@ -91,7 +91,7 @@ async function getCountryPageContent(countrySlug: string) {
       console.log('🔍 Server-side: Fetching CMS data for country:', countrySlug);
       
       // Special handling for Jordan, Lebanon, and Israel to ensure content loads
-      const isSpecialCountry = ['jordan', 'lebanon', 'israel'].includes(countrySlug);
+      const isSpecialCountry = ['jordan', 'lebanon', 'israel', 'de', 'gb'].includes(countrySlug);
       
       // For special countries, try both with and without the country prefix
       let data, error;
@@ -121,8 +121,7 @@ async function getCountryPageContent(countrySlug: string) {
           .select('content, updated_at, id')
           .in('id', possibleIds)
           .order('updated_at', { ascending: false })
-          .limit(1)
-          .headers(cacheHeaders);
+          .limit(1);
         
         if (directMatch?.[0]?.content) {
           data = directMatch[0];
@@ -138,8 +137,7 @@ async function getCountryPageContent(countrySlug: string) {
               .from('page_contents')
               .select('content, updated_at')
               .eq('id', id)
-              .single()
-              .headers(cacheHeaders);
+              .single();
                 
             if (individualResult.data?.content) {
               data = individualResult.data;
@@ -183,7 +181,7 @@ async function getCountryPageContent(countrySlug: string) {
 }
 
 export default async function CountryPage({ params }: PageProps) {
-  const { country } = await params;
+  const { country } = params;
   const sanitized = sanitizeCountrySlug(country);
   
   // Validate country slug immediately to prevent template flash
@@ -304,6 +302,10 @@ export default async function CountryPage({ params }: PageProps) {
     console.error('❌ Server-side: Error fetching builders:', error);
   }
 
+  // Countries without city sections
+  const countriesWithoutCities = ['tw', 'hk', 'nz', 'vn', 'se', 'no', 'dk', 'fi', 'id', 'ph', 'in', 'au', 'es', 'ch', 'at'];
+  const hideCitiesSection = countriesWithoutCities.includes(sanitized);
+  
   try {
     const displayName = countryName;
 
@@ -313,6 +315,7 @@ export default async function CountryPage({ params }: PageProps) {
         <CountryCityPage
           country={displayName}
           initialBuilders={builders}
+          hideCitiesSection={hideCitiesSection}
           initialContent={{
             id: `${sanitized}-main`,
             title: `Exhibition Stand Builders in ${displayName}`,
@@ -334,12 +337,14 @@ export default async function CountryPage({ params }: PageProps) {
       </div>
     );
   } catch (error) {
+    console.error('❌ Error rendering country page:', error);
     return (
       <div className="font-inter">
         <Navigation />
         <CountryCityPage
           country={countryName}
           initialBuilders={builders}
+          hideCitiesSection={hideCitiesSection}
           initialContent={{
             id: `${sanitized}-main`,
             title: `Exhibition Stand Builders in ${countryName}`,

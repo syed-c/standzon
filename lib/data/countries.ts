@@ -1026,6 +1026,29 @@ export const tier2Countries: Country[] = [
         }
       },
       {
+        name: 'Chiba',
+        slug: 'chiba',
+        population: 6200000,
+        isCapital: false,
+        builderCount: 65,
+        upcomingShows: 85,
+        averageStandCost: 490,
+        majorVenues: [
+          {
+            name: 'Makuhari Messe',
+            totalSpace: 210000,
+            hallCount: 11,
+            facilities: ['International Events', 'Convention Center', 'Exhibition Halls'],
+            nearbyBuilderCount: 45
+          }
+        ],
+        transportation: {
+          airports: ['Narita'],
+          publicTransport: ['JR', 'Buses'],
+          accessibility: 'Keiyo Line to Makuhari Messe'
+        }
+      },
+      {
         name: 'Osaka',
         slug: 'osaka',
         population: 19300000,
