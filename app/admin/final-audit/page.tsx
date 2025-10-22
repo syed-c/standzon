@@ -1,11 +1,12 @@
 import FinalAuditReport from '@/components/FinalAuditReport';
+import AdminLayout from '@/components/admin/AdminLayout';
+import Sidebar from '@/components/admin/Sidebar';
+import Topbar from '@/components/admin/Topbar';
 
 export default function FinalAuditPage() {
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <FinalAuditReport />
-      </div>
-    </div>
+    <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
+      <FinalAuditReport />
+    </AdminLayout>
   );
 }

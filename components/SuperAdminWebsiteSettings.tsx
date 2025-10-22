@@ -19,8 +19,8 @@ import { toast } from "@/hooks/use-toast";
 export default function SuperAdminWebsiteSettings() {
   console.log("🔧 SuperAdminWebsiteSettings: Component rendered");
 
-  const currentUser = useQuery(api.auth.currentUser);
-  const settings = useQuery(api.siteSettings.getSiteSettings, currentUser ? {} : "skip");
+  const currentUser = useQuery(api.auth.currentUser, {}, { enabled: false });
+  const settings = useQuery(api.siteSettings.getSiteSettings, {});
   const upsertSettings = useMutation(api.siteSettings.upsertSiteSettings);
   const seedSettings = useMutation(api.siteSettings.seedInitialSettings);
   

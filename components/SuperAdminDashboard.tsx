@@ -126,11 +126,13 @@ import EnhancedSuperAdminControls from "@/components/EnhancedSuperAdminControls"
 interface SuperAdminDashboardProps {
   adminId: string;
   permissions: string[];
+  hideSidebar?: boolean;
 }
 
 export default function SuperAdminDashboard({
   adminId,
   permissions,
+  hideSidebar = false,
 }: SuperAdminDashboardProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const [loading, setLoading] = useState(false);
@@ -292,8 +294,9 @@ export default function SuperAdminDashboard({
   }
 
   return (
-    <div className="flex bg-[#f9fafb] h-screen w-screen">
+    <div className="flex bg-[#f9fafb] min-h-screen w-full overflow-hidden">
       {/* Left Sidebar */}
+      {!hideSidebar && (
       <div className="w-[260px] bg-[#0c111d] shadow-2xl border-r border-[#0c111d] flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-slate-700">
@@ -778,6 +781,7 @@ export default function SuperAdminDashboard({
           </div>
         </div>
       </div>
+      )}
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">

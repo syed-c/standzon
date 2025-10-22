@@ -20,6 +20,9 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import AdminLayout from '@/components/admin/AdminLayout';
+import Sidebar from '@/components/admin/Sidebar';
+import Topbar from '@/components/admin/Topbar';
 
 export default function BuildersManagementPage() {
   const { builders, loading, error, deleteBuilder } = useBuilders();
@@ -72,8 +75,8 @@ export default function BuildersManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4">
+    <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
+      <div className="px-0">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -227,6 +230,6 @@ export default function BuildersManagementPage() {
           </div>
         )}
       </div>
-    </div>
+    </AdminLayout>
   );
 }

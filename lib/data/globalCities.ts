@@ -510,6 +510,25 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     }
   },
   {
+    id: 'south-korea',
+    name: 'South Korea',
+    countryCode: 'KR',
+    continent: 'Asia',
+    slug: 'south-korea',
+    capital: 'Seoul',
+    currency: 'KRW',
+    majorCities: ['Seoul', 'Busan', 'Incheon'],
+    totalVenues: 35,
+    annualEvents: 580,
+    keyIndustries: ['Technology', 'Automotive', 'Electronics', 'Gaming', 'Cosmetics'],
+    exhibitionRanking: 8,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in South Korea | Seoul Busan Incheon Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in South Korea. Professional displays for Seoul, Busan, Incheon.',
+      keywords: ['South Korea exhibitions', 'Seoul trade shows', 'Korean displays', 'Korea exhibitions']
+    }
+  },
+  {
     id: 'turkey',
     name: 'Turkey',
     countryCode: 'TR',
@@ -900,7 +919,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'australia',
     capital: 'Canberra',
     currency: 'AUD',
-    majorCities: ['Sydney', 'Melbourne', 'Brisbane'],
+    majorCities: ['Sydney', 'Melbourne', 'Brisbane', 'Perth'],
     totalVenues: 25,
     annualEvents: 420,
     keyIndustries: ['Mining', 'Agriculture', 'Technology', 'Healthcare', 'Tourism'],
@@ -1083,7 +1102,9 @@ const generateExhibitionCities = (): ExhibitionCity[] => {
           'tokyo': {lat: 35.6762, lng: 139.6503},
           'new-york': {lat: 40.7128, lng: -74.0060},
           'shanghai': {lat: 31.2304, lng: 121.4737},
-          'sydney': {lat: -33.8688, lng: 151.2093}
+          'sydney': {lat: -33.8688, lng: 151.2093},
+          'seoul': {lat: 37.5665, lng: 126.9780},
+          'perth': {lat: -31.9505, lng: 115.8605}
         };
         return coords[city.toLowerCase().replace(/\s+/g, '-')] || {lat: 0, lng: 0};
       };

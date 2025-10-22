@@ -66,6 +66,7 @@ export default function SmartAdminDashboardPage() {
           <SuperAdminDashboard 
             adminId={mockAdmin.id}
             permissions={mockAdmin.permissions}
+            hideSidebar
           />
         </div>
 

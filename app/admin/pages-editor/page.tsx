@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import AdminLayout from '@/components/admin/AdminLayout';
+import Sidebar from '@/components/admin/Sidebar';
+import Topbar from '@/components/admin/Topbar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +22,8 @@ type PageItem = {
 };
 
 export default function AdminPagesEditor() {
+  console.log('🎯 AdminPagesEditor component rendered');
+  
   // Simple client-side guard: require admin session in localStorage
   React.useEffect(() => {
     try {
@@ -94,13 +97,65 @@ export default function AdminPagesEditor() {
   const [loadingCityGallery, setLoadingCityGallery] = useState<boolean>(false);
   const [savingCityGallery, setSavingCityGallery] = useState<boolean>(false);
 
+  const loadPages = async () => {
+    setLoading(true);
+    try {
+      console.log('🔄 Loading pages from API...');
+      const res = await fetch('/api/admin/pages-editor?action=list', { cache: 'no-store' });
+      const data = await res.json();
+      console.log('📊 API Response:', { success: data.success, dataLength: data.data?.length, data: data.data });
+      
+      if (data.success && Array.isArray(data.data)) {
+        console.log('✅ Setting pages from API data:', data.data.length, 'pages');
+        setPages(data.data);
+      } else {
+        console.log('⚠️ API data not valid, using fallback...');
+        // Client fallback: generate pages list from global dataset so Cities tab is not empty
+        try {
+          const mod = await import('@/lib/data/globalCities');
+          const countries = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).map((c: any) => ({
+            title: `${c.name} Exhibition Stands`,
+            path: `/exhibition-stands/${c.slug}`,
+            type: 'country'
+          }));
+          const cities = (mod.GLOBAL_EXHIBITION_DATA?.cities || []).map((city: any) => {
+            const country = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).find((c: any) => c.name === city.country);
+            return country ? {
+              title: `Exhibition Stands in ${city.name}, ${country.name}`,
+              path: `/exhibition-stands/${country.slug}/${city.slug}`,
+              type: 'city'
+            } : null;
+          }).filter(Boolean) as any[];
+          const fallbackPages = [...(countries as any[]), ...cities];
+          console.log('🔄 Setting fallback pages:', fallbackPages.length, 'pages');
+          setPages(fallbackPages);
+        } catch (err) {
+          console.warn('Fallback generation failed:', err);
+          setPages([]);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load pages', e);
+      setPages([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    loadPages();
+    console.log('🚀 useEffect triggered - loading pages...');
+    try {
+      loadPages();
+    } catch (error) {
+      console.error('❌ Error in loadPages:', error);
+    }
+    
     // Load footer data
     fetch('/api/admin/footer')
       .then(r=>r.json())
       .then(j=>{ if(j?.data) setFooter(j.data); })
       .catch(()=>{});
+      
     // Load any saved typography (kept inside sections.typography)
     fetch('/api/admin/pages-editor?action=get-content&path=%2F')
       .then(r=>r.json())
@@ -274,44 +329,8 @@ export default function AdminPagesEditor() {
     }
   };
 
-  const loadPages = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/admin/pages-editor?action=list', { cache: 'no-store' });
-      const data = await res.json();
-      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-        setPages(data.data || []);
-      } else {
-        // Client fallback: generate pages list from global dataset so Cities tab is not empty
-        try {
-          const mod = await import('@/lib/data/globalCities');
-          const countries = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).map((c: any) => ({
-            title: `${c.name} Exhibition Stands`,
-            path: `/exhibition-stands/${c.slug}`,
-            type: 'country'
-          }));
-          const cities = (mod.GLOBAL_EXHIBITION_DATA?.cities || []).map((city: any) => {
-            const country = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).find((c: any) => c.name === city.country);
-            return country ? {
-              title: `Exhibition Stands in ${city.name}, ${country.name}`,
-              path: `/exhibition-stands/${country.slug}/${city.slug}`,
-              type: 'city'
-            } : null;
-          }).filter(Boolean) as any[];
-          setPages([...(countries as any[]), ...cities]);
-        } catch (err) {
-          console.warn('Fallback generation failed:', err);
-          setPages([]);
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load pages', e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const filtered = useMemo(() => {
+    console.log('🔍 Filtering pages:', { totalPages: pages.length, search, loading });
     const q = search.toLowerCase();
     return pages.filter(p => {
       // Apply search filter
@@ -920,10 +939,8 @@ export default function AdminPagesEditor() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9fafb]">
-      <Navigation />
-
-      <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+    <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
+      <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 pages-editor">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="flex items-center justify-between">
             <div>
@@ -983,7 +1000,7 @@ export default function AdminPagesEditor() {
                 </div>
               </div>
               {loading ? (
-                <div className="text-gray-500">Loading pages…</div>
+                <div className="text-gray-500">Loading pages… (Debug: loading={String(loading)}, pages={pages.length})</div>
               ) : (
                 <div className="space-y-3">
                   {filtered.map((p) => (
@@ -2400,216 +2417,194 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
                     </Accordion>
                   ) : editingPath?.startsWith('/exhibition-stands/') ? (
-                    <div className="space-y-6">
-                      <Accordion type="multiple" className="bg-transparent">
-                        <AccordionItem value="countryPages" className="border-2 border-blue-200 rounded-lg">
-                          <AccordionTrigger className="text-xl font-semibold px-6 py-4 bg-blue-50 hover:bg-blue-100 rounded-t-lg">
-                            🌍 Country Pages Content
-                          </AccordionTrigger>
-                          <AccordionContent className="px-6 pb-6">
-                            <div className="space-y-8">
-                              {Object.entries(sections.countryPages || {}).map(([countrySlug, countryData]: [string, any]) => (
-                                <div key={countrySlug} className="border-2 border-gray-200 rounded-xl p-8 bg-gradient-to-br from-gray-50 to-white shadow-sm">
-                                  <h4 className="text-2xl font-bold mb-6 text-gray-800 capitalize border-b border-gray-200 pb-3">
-                                    🏳️ {countrySlug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                                  </h4>
+                    <div className="space-y-8">
+                      <div className="bg-white rounded-lg border border-gray-200 p-8">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                          <span className="text-3xl mr-3">🌍</span>
+                          Country Pages Editor
+                        </h3>
+                        <p className="text-gray-600 mb-6">Edit content for country-specific exhibition stand pages. All sections are organized in collapsible dropdowns for easy navigation.</p>
+                        
+                        <Accordion type="multiple" className="w-full">
+                          {Object.entries(sections.countryPages || {}).map(([countrySlug, countryData]: [string, any]) => (
+                            <AccordionItem key={countrySlug} value={countrySlug} className="border border-gray-200 rounded-lg mb-4">
+                              <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg">
+                                <div className="flex items-center">
+                                  <span className="text-2xl mr-3">🏳️</span>
+                                  <span className="text-xl font-semibold text-gray-800 capitalize">
+                                    {countrySlug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                                  </span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-6 pb-8">
+                                <div className="space-y-5">
                                   
-                                  {/* Why Choose Local Section */}
-                                  <div className="mb-8 p-6 bg-white rounded-lg border border-gray-100">
-                                    <h5 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
-                                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                                      Why Choose Local Builders
-                                    </h5>
-                                    <div className="space-y-4">
-                                      {/* Hero Description (country) */}
-                                      <div>
-                                        <Label className="text-sm font-medium text-gray-600">Hero Description</Label>
-                                        <Textarea
-                                          className="mt-1"
-                                          rows={3}
-                                          value={countryData?.heroDescription || ''}
-                                          onChange={(e) => setSections((s: any) => ({
-                                            ...s,
-                                            countryPages: {
-                                              ...(s.countryPages || {}),
-                                              [countrySlug]: {
-                                                ...(s.countryPages?.[countrySlug] || {}),
-                                                heroDescription: e.target.value
-                                              }
-                                            }
-                                          }))}
-                                        />
-                                        {(countryData?.heroDescription) && (
-                                          <div className="prose mt-2 text-sm text-gray-600" dangerouslySetInnerHTML={{ __html: (countryData.heroDescription || '').replace(/\r?\n/g, '<br/>') }} />
-                                        )}
+                                  {/* Hero Section */}
+                                  <AccordionItem value={`${countrySlug}-hero`} className="border border-gray-200 rounded-lg mb-6">
+                                    <AccordionTrigger className="px-5 py-4 hover:bg-gray-50">
+                                      <div className="flex items-center">
+                                        <span className="text-xl mr-3">🎯</span>
+                                        <span className="font-semibold">Hero Section</span>
                                       </div>
-                                      <div>
-                                        <Label className="text-sm font-medium text-gray-600">Section Heading</Label>
-                                        <Input 
-                                          className="mt-1"
-                                          value={countryData?.whyChooseHeading || ''} 
-                                          onChange={(e) => setSections((s: any) => ({
-                                            ...s,
-                                            countryPages: {
-                                              ...(s.countryPages || {}),
-                                              [countrySlug]: {
-                                                ...(s.countryPages?.[countrySlug] || {}),
-                                                whyChooseHeading: e.target.value
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-5 pb-6">
+                                      <div className="space-y-5">
+                                        <div>
+                                          <Label className="text-sm font-medium text-gray-600">Hero Description</Label>
+                                          <Textarea
+                                            className="mt-1"
+                                            rows={3}
+                                            value={countryData?.heroDescription || ''}
+                                            onChange={(e) => setSections((s: any) => ({
+                                              ...s,
+                                              countryPages: {
+                                                ...(s.countryPages || {}),
+                                                [countrySlug]: {
+                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                                  heroDescription: e.target.value
+                                                }
                                               }
-                                            }
-                                          }))}
-                                        />
-                                      </div>
-                                      <div>
-                                        <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
-                                        <Textarea 
-                                          className="mt-1"
-                                          rows={3} 
-                                          value={countryData?.whyChooseParagraph || ''} 
-                                          onChange={(e) => setSections((s: any) => ({
-                                            ...s,
-                                            countryPages: {
-                                              ...(s.countryPages || {}),
-                                              [countrySlug]: {
-                                                ...(s.countryPages?.[countrySlug] || {}),
-                                                whyChooseParagraph: e.target.value
-                                              }
-                                            }
-                                          }))}
-                                        />
-                                      </div>
-                                      
-                                                                          {/* Info Cards */}
-                                    <div className="mt-10 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-200">
-                                      <div className="flex items-center justify-between mb-8">
-                                        <div className="flex items-center">
-                                          <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-4">
-                                            <span className="text-white font-bold text-sm">3</span>
-                                          </div>
-                                          <div>
-                                            <h6 className="text-xl font-bold text-gray-800">Info Cards</h6>
-                                            <p className="text-sm text-gray-600">Customize the three key advantages for local builders</p>
-                                          </div>
+                                            }))}
+                                          />
                                         </div>
-                                        <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-300">
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+
+                                  {/* Why Choose Local Section */}
+                                  <AccordionItem value={`${countrySlug}-why-choose`} className="border border-gray-200 rounded-lg mb-6">
+                                    <AccordionTrigger className="px-5 py-4 hover:bg-gray-50">
+                                      <div className="flex items-center">
+                                        <span className="text-xl mr-3">💡</span>
+                                        <span className="font-semibold">Why Choose Local Builders</span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-5 pb-6">
+                                      <div className="space-y-5">
+                                        <div>
+                                          <Label className="text-sm font-medium text-gray-600">Section Heading</Label>
+                                          <Input 
+                                            className="mt-1"
+                                            value={countryData?.whyChooseHeading || ''} 
+                                            onChange={(e) => setSections((s: any) => ({
+                                              ...s,
+                                              countryPages: {
+                                                ...(s.countryPages || {}),
+                                                [countrySlug]: {
+                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                                  whyChooseHeading: e.target.value
+                                                }
+                                              }
+                                            }))}
+                                          />
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
+                                          <Textarea 
+                                            className="mt-1"
+                                            rows={3} 
+                                            value={countryData?.whyChooseParagraph || ''} 
+                                            onChange={(e) => setSections((s: any) => ({
+                                              ...s,
+                                              countryPages: {
+                                                ...(s.countryPages || {}),
+                                                [countrySlug]: {
+                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                                  whyChooseParagraph: e.target.value
+                                                }
+                                              }
+                                            }))}
+                                          />
+                                        </div>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+
+                                  {/* Info Cards Section */}
+                                  <AccordionItem value={`${countrySlug}-info-cards`} className="border border-gray-200 rounded-lg mb-6">
+                                    <AccordionTrigger className="px-5 py-4 hover:bg-gray-50">
+                                      <div className="flex items-center">
+                                        <span className="text-xl mr-3">🎯</span>
+                                        <span className="font-semibold">Info Cards (3 Key Advantages)</span>
+                                        <Badge variant="secondary" className="ml-3 bg-green-100 text-green-800">
                                           Core Content
                                         </Badge>
                                       </div>
-                                      
-                                      <div className="space-y-8">
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-5 pb-6">
                                         {(countryData?.infoCards || []).map((card: any, idx: number) => (
-                                          <div key={idx} className="group relative">
-                                            {/* Card Container */}
-                                            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-gray-100 hover:border-blue-300 group-hover:scale-[1.01] w-full">
-                                              {/* Card Header */}
-                                              <div className="flex items-center justify-between mb-8">
-                                                <div className="flex items-center">
-                                                  <div className={`w-8 h-8 rounded-full mr-4 flex items-center justify-center ${
-                                                    idx === 0 ? 'bg-blue-500' : 
-                                                    idx === 1 ? 'bg-green-500' : 'bg-purple-500'
-                                                  }`}>
-                                                    <span className="text-white font-bold text-lg">{idx + 1}</span>
-                                                  </div>
-                                                  <div>
-                                                    <span className="text-xl font-bold text-gray-800">Card {idx + 1}</span>
-                                                    <div className="text-sm text-gray-600 mt-1">
-                                                      {idx === 0 ? "Market Knowledge" : idx === 1 ? "Project Delivery" : "Cost Solutions"}
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                                <Badge variant="outline" className={`${
-                                                  idx === 0 ? 'border-blue-300 text-blue-700 bg-blue-50' : 
-                                                  idx === 1 ? 'border-green-300 text-green-700 bg-green-50' : 
-                                                  'border-purple-300 text-purple-700 bg-purple-50'
-                                                } px-4 py-2 text-sm`}>
-                                                  {idx === 0 ? "Market Knowledge" : idx === 1 ? "Project Delivery" : "Cost Solutions"}
-                                                </Badge>
+                                          <div key={idx} className="bg-white border border-gray-200 rounded-lg p-5">
+                                            <div className="flex items-center mb-5">
+                                              <div className={`w-6 h-6 rounded-full mr-3 flex items-center justify-center ${
+                                                idx === 0 ? 'bg-blue-500' : 
+                                                idx === 1 ? 'bg-green-500' : 'bg-purple-500'
+                                              }`}>
+                                                <span className="text-white font-bold text-sm">{idx + 1}</span>
                                               </div>
-                                              
-                                              {/* Card Content */}
-                                              <div className="space-y-8">
-                                                <div>
-                                                  <Label className="text-lg font-semibold text-gray-700 mb-4 block flex items-center">
-                                                    <span className="w-3 h-3 bg-gray-400 rounded-full mr-3"></span>
-                                                    Card Title
-                                                  </Label>
-                                                  <Input 
-                                                    className="text-base h-14 border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 w-full"
-                                                    placeholder="e.g., Local Market Knowledge"
-                                                    value={card.title || ''} 
-                                                    onChange={(e) => {
-                                                      const arr = [...(countryData?.infoCards || [])];
-                                                      arr[idx] = { ...arr[idx], title: e.target.value };
-                                                      setSections((s: any) => ({
-                                                        ...s,
-                                                        countryPages: {
-                                                          ...(s.countryPages || {}),
-                                                          [countrySlug]: {
-                                                            ...(s.countryPages?.[countrySlug] || {}),
-                                                            infoCards: arr
-                                                          }
-                                                        }
-                                                      }));
-                                                    }}
-                                                  />
-                                                </div>
-                                                
-                                                <div>
-                                                  <Label className="text-lg font-semibold text-gray-700 mb-4 block flex items-center">
-                                                    <span className="w-3 h-3 bg-gray-400 rounded-full mr-3"></span>
-                                                    Description
-                                                  </Label>
-                                                  <Textarea 
-                                                    className="text-base border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 resize-none w-full"
-                                                    rows={6} 
-                                                    placeholder="Describe the advantage or benefit that local builders provide..."
-                                                    value={card.text || ''} 
-                                                    onChange={(e) => {
-                                                      const arr = [...(countryData?.infoCards || [])];
-                                                      arr[idx] = { ...arr[idx], text: e.target.value };
-                                                      setSections((s: any) => ({
-                                                        ...s,
-                                                        countryPages: {
-                                                          ...(s.countryPages || {}),
-                                                          [countrySlug]: {
-                                                            ...(s.countryPages?.[countrySlug] || {}),
-                                                            infoCards: arr
-                                                          }
-                                                        }
-                                                      }));
-                                                    }}
-                                                  />
-                                                </div>
-                                              </div>
-                                              
-                                              {/* Card Footer */}
-                                              <div className="mt-8 pt-6 border-t border-gray-100">
-                                                <div className="text-sm text-gray-500 text-center bg-gray-50 rounded-lg p-3">
-                                                  This card will appear in the "Why Choose Local Builders" section
-                                                </div>
-                                              </div>
+                                              <h4 className="font-semibold text-gray-800">Card {idx + 1}</h4>
                                             </div>
                                             
-                                            {/* Hover Effect Overlay */}
-                                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                                            <div className="space-y-5">
+                                              <div>
+                                                <Label className="text-sm font-medium text-gray-600">Card Title</Label>
+                                                <Input 
+                                                  className="mt-1"
+                                                  placeholder="e.g., Local Market Knowledge"
+                                                  value={card.title || ''} 
+                                                  onChange={(e) => {
+                                                    const arr = [...(countryData?.infoCards || [])];
+                                                    arr[idx] = { ...arr[idx], title: e.target.value };
+                                                    setSections((s: any) => ({
+                                                      ...s,
+                                                      countryPages: {
+                                                        ...(s.countryPages || {}),
+                                                        [countrySlug]: {
+                                                          ...(s.countryPages?.[countrySlug] || {}),
+                                                          infoCards: arr
+                                                        }
+                                                      }
+                                                    }));
+                                                  }}
+                                                />
+                                              </div>
+                                              
+                                              <div>
+                                                <Label className="text-sm font-medium text-gray-600">Description</Label>
+                                                <Textarea 
+                                                  className="mt-1"
+                                                  rows={4} 
+                                                  placeholder="Describe the advantage or benefit that local builders provide..."
+                                                  value={card.text || ''} 
+                                                  onChange={(e) => {
+                                                    const arr = [...(countryData?.infoCards || [])];
+                                                    arr[idx] = { ...arr[idx], text: e.target.value };
+                                                    setSections((s: any) => ({
+                                                      ...s,
+                                                      countryPages: {
+                                                        ...(s.countryPages || {}),
+                                                        [countrySlug]: {
+                                                          ...(s.countryPages?.[countrySlug] || {}),
+                                                          infoCards: arr
+                                                        }
+                                                      }
+                                                    }));
+                                                  }}
+                                                />
+                                              </div>
+                                            </div>
                                           </div>
                                         ))}
-                                      </div>
-                                      
-                                      {/* Add/Remove Cards Controls */}
-                                      <div className="mt-8 flex justify-center">
-                                        <div className="bg-white rounded-xl p-4 shadow-md border border-gray-200">
-                                          <div className="text-sm text-gray-600 text-center mb-3">
+                                        
+                                        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                                          <div className="text-sm text-gray-600 text-center mb-4">
                                             Info cards are automatically managed - you can edit the content above
                                           </div>
-                                          <div className="flex gap-2 justify-center">
+                                          <div className="flex justify-center">
                                             <Button 
                                               type="button" 
                                               variant="outline" 
                                               size="sm"
-                                              className="border-blue-300 text-blue-700 hover:bg-blue-50"
                                               onClick={() => {
-                                                // Reset cards to default content
                                                 const defaultCards = [
                                                   {
                                                     title: "Local Market Knowledge",
@@ -2640,52 +2635,73 @@ export default function AdminPagesEditor() {
                                             </Button>
                                           </div>
                                         </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+
+                                  {/* Services Section */}
+                                  <AccordionItem value={`${countrySlug}-services`} className="border border-gray-200 rounded-lg">
+                                    <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+                                      <div className="flex items-center">
+                                        <span className="text-xl mr-3">🛠️</span>
+                                        <span className="font-semibold">Services Section</span>
                                       </div>
-                                    </div>
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Get Quotes Section */}
-                                  <div className="mb-8 p-6 bg-white rounded-lg border border-gray-100">
-                                    <h5 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
-                                      <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
-                                      Get Quotes Section
-                                    </h5>
-                                    <div>
-                                      <Label className="text-sm font-medium text-gray-600">Paragraph</Label>
-                                      <Textarea 
-                                        className="mt-1"
-                                        rows={3} 
-                                        value={countryData?.quotesParagraph || ''} 
-                                        onChange={(e) => setSections((s: any) => ({
-                                          ...s,
-                                          countryPages: {
-                                            ...(s.countryPages || {}),
-                                            [countrySlug]: {
-                                              ...(s.countryPages?.[countrySlug] || {}),
-                                              quotesParagraph: e.target.value
-                                            }
-                                          }
-                                        }))}
-                                      />
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Services Overview Section */}
-                                  <div className="p-6 bg-white rounded-lg border border-gray-100">
-                                    <h5 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
-                                      <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
-                                      Services Overview
-                                    </h5>
-                                    {/* New Builders Intro (Heading + content) displayed above builders grid */}
-                                    <div className="mb-8 p-4 rounded-md border border-gray-100 bg-gray-50">
-                                      <h6 className="font-semibold mb-3 text-gray-800">Builders Intro (heading + rich content)</h6>
-                                      <div className="grid md:grid-cols-2 gap-4">
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-4 pb-4">
+                                      <div className="space-y-4">
+                                        <div>
+                                          <Label className="text-sm font-medium text-gray-600">Services Heading</Label>
+                                          <Input 
+                                            className="mt-1"
+                                            value={countryData?.servicesHeading || ''} 
+                                            onChange={(e) => setSections((s: any) => ({
+                                              ...s,
+                                              countryPages: {
+                                                ...(s.countryPages || {}),
+                                                [countrySlug]: {
+                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                                  servicesHeading: e.target.value
+                                                }
+                                              }
+                                            }))}
+                                          />
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm font-medium text-gray-600">Services Paragraph</Label>
+                                          <Textarea 
+                                            className="mt-1"
+                                            rows={4} 
+                                            value={countryData?.servicesParagraph || ''} 
+                                            onChange={(e) => setSections((s: any) => ({
+                                              ...s,
+                                              countryPages: {
+                                                ...(s.countryPages || {}),
+                                                [countrySlug]: {
+                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                                  servicesParagraph: e.target.value
+                                                }
+                                              }
+                                            }))}
+                                          />
+                                        </div>
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+
+                                  {/* Builders Section */}
+                                  <AccordionItem value={`${countrySlug}-builders`} className="border border-gray-200 rounded-lg">
+                                    <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+                                      <div className="flex items-center">
+                                        <span className="text-xl mr-3">👥</span>
+                                        <span className="font-semibold">Builders Section</span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-4 pb-4">
+                                      <div className="space-y-4">
                                         <div>
                                           <Label className="text-sm font-medium text-gray-600">Builders Heading</Label>
                                           <Input 
                                             className="mt-1"
-                                            value={countryData?.buildersHeading || ''}
+                                            value={countryData?.buildersHeading || ''} 
                                             onChange={(e) => setSections((s: any) => ({
                                               ...s,
                                               countryPages: {
@@ -2699,11 +2715,11 @@ export default function AdminPagesEditor() {
                                           />
                                         </div>
                                         <div>
-                                          <Label className="text-sm font-medium text-gray-600">Builders Intro (accepts basic HTML)</Label>
+                                          <Label className="text-sm font-medium text-gray-600">Builders Introduction</Label>
                                           <Textarea 
                                             className="mt-1"
-                                            rows={4}
-                                            value={countryData?.buildersIntro || ''}
+                                            rows={4} 
+                                            value={countryData?.buildersIntro || ''} 
                                             onChange={(e) => setSections((s: any) => ({
                                               ...s,
                                               countryPages: {
@@ -2715,305 +2731,174 @@ export default function AdminPagesEditor() {
                                               }
                                             }))}
                                           />
-                                          <div className="flex gap-2 mt-2">
-                                            <Button type="button" variant="outline" size="sm" onClick={() => {
-                                              const current = countryData?.buildersIntro || '';
-                                              setSections((s: any) => ({
-                                                ...s,
-                                                countryPages: {
-                                                  ...(s.countryPages || {}),
-                                                  [countrySlug]: {
-                                                    ...(s.countryPages?.[countrySlug] || {}),
-                                                    buildersIntro: current + (current ? "\n" : '') + '<p>Intro paragraph...</p>'
-                                                  }
-                                                }
-                                              }));
-                                            }}>P</Button>
-                                            <Button type="button" variant="outline" size="sm" onClick={() => {
-                                              const current = countryData?.buildersIntro || '';
-                                              setSections((s: any) => ({
-                                                ...s,
-                                                countryPages: {
-                                                  ...(s.countryPages || {}),
-                                                  [countrySlug]: {
-                                                    ...(s.countryPages?.[countrySlug] || {}),
-                                                    buildersIntro: current + (current ? "\n" : '') + '<ul>\n  <li>Point</li>\n</ul>'
-                                                  }
-                                                }
-                                              }));
-                                            }}>UL</Button>
-                                            <Button type="button" variant="outline" size="sm" onClick={() => {
-                                              const current = countryData?.buildersIntro || '';
-                                              setSections((s: any) => ({
-                                                ...s,
-                                                countryPages: {
-                                                  ...(s.countryPages || {}),
-                                                  [countrySlug]: {
-                                                    ...(s.countryPages?.[countrySlug] || {}),
-                                                    buildersIntro: current + (current ? "\n" : '') + '<ol>\n  <li>Step</li>\n</ol>'
-                                                  }
-                                                }
-                                              }));
-                                            }}>OL</Button>
-                                          </div>
                                         </div>
                                       </div>
-                                    </div>
-                                    <div className="space-y-4">
-                                      <div>
-                                        <Label className="text-sm font-medium text-gray-600">Section Heading</Label>
-                                        <Input 
-                                          className="mt-1"
-                                          value={countryData?.servicesHeading || ''} 
-                                          onChange={(e) => setSections((s: any) => ({
-                                            ...s,
-                                            countryPages: {
-                                              ...(s.countryPages || {}),
-                                              [countrySlug]: {
-                                                ...(s.countryPages?.[countrySlug] || {}),
-                                                servicesHeading: e.target.value
-                                              }
-                                            }
-                                          }))}
-                                        />
+                                    </AccordionContent>
+                                  </AccordionItem>
+
+                                  {/* Get Quotes Section */}
+                                  <AccordionItem value={`${countrySlug}-quotes`} className="border border-gray-200 rounded-lg">
+                                    <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+                                      <div className="flex items-center">
+                                        <span className="text-xl mr-3">💬</span>
+                                        <span className="font-semibold">Get Quotes Section</span>
                                       </div>
-                                      <div>
-                                        <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
-                                        {/* Simple rich controls */}
-                                        <div className="flex gap-2 mb-2">
-                                          <Button type="button" variant="outline" size="sm" onClick={() => {
-                                            const current = countryData?.servicesParagraph || '';
-                                            setSections((s: any) => ({
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-4 pb-4">
+                                      <div className="space-y-4">
+                                        <div>
+                                          <Label className="text-sm font-medium text-gray-600">Paragraph</Label>
+                                          <Textarea 
+                                            className="mt-1"
+                                            rows={3} 
+                                            value={countryData?.quotesParagraph || ''} 
+                                            onChange={(e) => setSections((s: any) => ({
                                               ...s,
                                               countryPages: {
                                                 ...(s.countryPages || {}),
                                                 [countrySlug]: {
                                                   ...(s.countryPages?.[countrySlug] || {}),
-                                                  servicesParagraph: current + (current ? "\n" : '') + '<h2>Heading</h2>'
+                                                  quotesParagraph: e.target.value
                                                 }
                                               }
-                                            }));
-                                          }}>H2</Button>
-                                          <Button type="button" variant="outline" size="sm" onClick={() => {
-                                            const current = countryData?.servicesParagraph || '';
-                                            setSections((s: any) => ({
-                                              ...s,
-                                              countryPages: {
-                                                ...(s.countryPages || {}),
-                                                [countrySlug]: {
-                                                  ...(s.countryPages?.[countrySlug] || {}),
-                                                  servicesParagraph: current + (current ? "\n" : '') + '<h3>Subheading</h3>'
-                                                }
-                                              }
-                                            }));
-                                          }}>H3</Button>
-                                          <Button type="button" variant="outline" size="sm" onClick={() => {
-                                            const current = countryData?.servicesParagraph || '';
-                                            setSections((s: any) => ({
-                                              ...s,
-                                              countryPages: {
-                                                ...(s.countryPages || {}),
-                                                [countrySlug]: {
-                                                  ...(s.countryPages?.[countrySlug] || {}),
-                                                  servicesParagraph: current + (current ? "\n" : '') + '<ul>\n  <li>List item</li>\n</ul>'
-                                                }
-                                              }
-                                            }));
-                                          }}>UL</Button>
-                                          <Button type="button" variant="outline" size="sm" onClick={() => {
-                                            const current = countryData?.servicesParagraph || '';
-                                            setSections((s: any) => ({
-                                              ...s,
-                                              countryPages: {
-                                                ...(s.countryPages || {}),
-                                                [countrySlug]: {
-                                                  ...(s.countryPages?.[countrySlug] || {}),
-                                                  servicesParagraph: current + (current ? "\n" : '') + '<ol>\n  <li>Numbered</li>\n</ol>'
-                                                }
-                                              }
-                                            }));
-                                          }}>OL</Button>
-                                          <Button type="button" variant="outline" size="sm" onClick={() => {
-                                            const current = countryData?.servicesParagraph || '';
-                                            setSections((s: any) => ({
-                                              ...s,
-                                              countryPages: {
-                                                ...(s.countryPages || {}),
-                                                [countrySlug]: {
-                                                  ...(s.countryPages?.[countrySlug] || {}),
-                                                  servicesParagraph: current + (current ? "\n" : '') + '<p><strong>Bold</strong> and <em>italic</em> text</p>'
-                                                }
-                                              }
-                                            }));
-                                          }}>Format</Button>
+                                            }))}
+                                          />
                                         </div>
-                                        <Textarea 
-                                          className="mt-1"
-                                          rows={6} 
-                                          value={countryData?.servicesParagraph || ''} 
-                                          onChange={(e) => setSections((s: any) => ({
-                                            ...s,
-                                            countryPages: {
-                                              ...(s.countryPages || {}),
-                                              [countrySlug]: {
-                                                ...(s.countryPages?.[countrySlug] || {}),
-                                                servicesParagraph: e.target.value
-                                              }
-                                            }
-                                          }))}
-                                        />
                                       </div>
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Final CTA Section */}
-                                  <div className="mt-8 p-6 bg-white rounded-lg border border-gray-100">
-                                    <h5 className="text-lg font-semibold mb-4 text-gray-700 flex items-center">
-                                      <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
-                                      Final Call-to-Action
-                                    </h5>
-                                    <div className="space-y-4">
-                                      <div>
-                                        <Label className="text-sm font-medium text-gray-600">Section Heading</Label>
-                                        <Input 
-                                          className="mt-1"
-                                          value={countryData?.finalCtaHeading || ''} 
-                                          onChange={(e) => setSections((s: any) => ({
-                                            ...s,
-                                            countryPages: {
-                                              ...(s.countryPages || {}),
-                                              [countrySlug]: {
-                                                ...(s.countryPages?.[countrySlug] || {}),
-                                                finalCtaHeading: e.target.value
-                                              }
-                                            }
-                                          }))}
-                                        />
-                                      </div>
-                                      <div>
-                                        <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
-                                        <Textarea 
-                                          className="mt-1"
-                                          rows={3} 
-                                          value={countryData?.finalCtaParagraph || ''} 
-                                          onChange={(e) => setSections((s: any) => ({
-                                            ...s,
-                                            countryPages: {
-                                              ...(s.countryPages || {}),
-                                              [countrySlug]: {
-                                                ...(s.countryPages?.[countrySlug] || {}),
-                                                finalCtaParagraph: e.target.value
-                                              }
-                                            }
-                                          }))}
-                                        />
-                                      </div>
-                                      <div>
-                                        <Label className="text-sm font-medium text-gray-600">Primary Button Text</Label>
-                                        <Input 
-                                          className="mt-1"
-                                          value={countryData?.finalCtaButtonText || ''} 
-                                          onChange={(e) => setSections((s: any) => ({
-                                            ...s,
-                                            countryPages: {
-                                              ...(s.countryPages || {}),
-                                              [countrySlug]: {
-                                                ...(s.countryPages?.[countrySlug] || {}),
-                                                finalCtaButtonText: e.target.value
-                                              }
-                                            }
-                                          }))}
-                                        />
-                                      </div>
-                                      <div>
-                                        <Label className="text-sm font-medium text-gray-600">Back to Top Button Text</Label>
-                                        <Input 
-                                          className="mt-1"
-                                          value={countryData?.backToTopButtonText || ''} 
-                                          onChange={(e) => setSections((s: any) => ({
-                                            ...s,
-                                            countryPages: {
-                                              ...(s.countryPages || {}),
-                                              [countrySlug]: {
-                                                ...(s.countryPages?.[countrySlug] || {}),
-                                                backToTopButtonText: e.target.value
-                                              }
-                                            }
-                                          }))}
-                                        />
-                                      </div>
-                                    </div>
-                                  </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
                                 </div>
-                              ))}
-                            </div>
-                          </AccordionContent>
-                                              </AccordionItem>
-                    </Accordion>
-                  </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
+                      </div>
+                    </div>
                 ) : editingPath.startsWith('/exhibition-stands/') && editingPath.split('/').filter(Boolean).length === 3 ? (
                   // City page editor panel
-                  <div className="space-y-6">
-                    <Accordion type="single" collapsible className="w-full">
-                      <AccordionItem value="cityServices">
-                        <AccordionTrigger>City Content</AccordionTrigger>
-                        <AccordionContent>
-                          {(() => {
-                            const parts = editingPath.split('/').filter(Boolean);
-                            const countrySlug = parts[1];
-                            const citySlug = parts[2];
-                            const key = `${countrySlug}-${citySlug}`;
-                            const cityData = (sections.cityPages?.[key] as any) || {};
-                            return (
-                              <div className="space-y-6 bg-white border rounded-md p-4">
-                                {/* Builders Intro for city */}
-                                <div className="mb-4 p-4 rounded-md border border-gray-100 bg-gray-50">
-                                  <h6 className="font-semibold mb-3 text-gray-800">Builders Intro (heading + rich content)</h6>
-                                  <div className="grid md:grid-cols-2 gap-4">
-                                    <div>
-                                      <Label className="text-sm font-medium text-gray-600">Builders Heading</Label>
-                                      <Input
-                                        className="mt-1"
-                                        value={cityData?.buildersHeading || ''}
-                                        onChange={(e) => setSections((s: any) => ({
-                                          ...s,
-                                          cityPages: {
-                                            ...(s.cityPages || {}),
-                                            [key]: {
-                                              ...(s.cityPages?.[key] || {}),
-                                              buildersHeading: e.target.value
-                                            }
+                  <div className="space-y-8">
+                    {(() => {
+                      const parts = editingPath.split('/').filter(Boolean);
+                      const countrySlug = parts[1];
+                      const citySlug = parts[2];
+                      const key = `${countrySlug}-${citySlug}`;
+                      const cityData = (sections.cityPages?.[key] as any) || {};
+                      const cityName = citySlug.split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                      
+                      return (
+                        <div className="bg-white rounded-lg border border-gray-200 p-8">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                            <span className="text-3xl mr-3">🏙️</span>
+                            {cityName} Page Editor
+                          </h3>
+                          <p className="text-gray-600 mb-6">Edit content for {cityName} exhibition stand services. All sections are organized in collapsible dropdowns for easy navigation.</p>
+                          
+                          <Accordion type="multiple" className="w-full space-y-2">
+                            {/* Hero Section */}
+                            <AccordionItem value="hero" className="border border-gray-200 rounded-lg mb-6">
+                              <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg">
+                                <div className="flex items-center">
+                                  <span className="text-xl mr-3">🎯</span>
+                                  <span className="font-semibold">Hero Section</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-6 pb-8">
+                                <div className="space-y-5">
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Hero Description</Label>
+                                    <Textarea
+                                      className="mt-1"
+                                      rows={3}
+                                      placeholder="Describe the exhibition stand services available in this city..."
+                                      value={cityData?.heroDescription || ''}
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        cityPages: {
+                                          ...(s.cityPages || {}),
+                                          [key]: {
+                                            ...(s.cityPages?.[key] || {}),
+                                            heroDescription: e.target.value
                                           }
-                                        }))}
-                                      />
-                                    </div>
-                                    <div>
-                                      <Label className="text-sm font-medium text-gray-600">Builders Intro (accepts basic HTML)</Label>
-                                      <Textarea
-                                        className="mt-1"
-                                        rows={4}
-                                        value={cityData?.buildersIntro || ''}
-                                        onChange={(e) => setSections((s: any) => ({
-                                          ...s,
-                                          cityPages: {
-                                            ...(s.cityPages || {}),
-                                            [key]: {
-                                              ...(s.cityPages?.[key] || {}),
-                                              buildersIntro: e.target.value
-                                            }
-                                          }
-                                        }))}
-                                      />
-                                    </div>
+                                        }
+                                      }))}
+                                    />
+                                    {cityData?.heroDescription && (
+                                      <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                                        <p className="text-xs text-gray-500 mb-1">Preview:</p>
+                                        <div className="prose text-sm text-gray-600" dangerouslySetInnerHTML={{ __html: (cityData.heroDescription || '').replace(/\r?\n/g, '<br/>') }} />
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
+                              </AccordionContent>
+                            </AccordionItem>
 
-                                {/* Services editor for city */}
-                                <div className="space-y-4">
+                            {/* Builders Section */}
+                            <AccordionItem value="builders" className="border border-gray-200 rounded-lg mb-6">
+                              <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg">
+                                <div className="flex items-center">
+                                  <span className="text-xl mr-3">👥</span>
+                                  <span className="font-semibold">Builders Section</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-6 pb-8">
+                                <div className="space-y-5">
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Builders Heading</Label>
+                                    <Input
+                                      className="mt-1"
+                                      placeholder="e.g., Top Exhibition Stand Builders in [City]"
+                                      value={cityData?.buildersHeading || ''}
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        cityPages: {
+                                          ...(s.cityPages || {}),
+                                          [key]: {
+                                            ...(s.cityPages?.[key] || {}),
+                                            buildersHeading: e.target.value
+                                          }
+                                        }
+                                      }))}
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Builders Introduction (accepts basic HTML)</Label>
+                                    <Textarea
+                                      className="mt-1"
+                                      rows={4}
+                                      placeholder="Introduce the local exhibition stand builders and their expertise..."
+                                      value={cityData?.buildersIntro || ''}
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        cityPages: {
+                                          ...(s.cityPages || {}),
+                                          [key]: {
+                                            ...(s.cityPages?.[key] || {}),
+                                            buildersIntro: e.target.value
+                                          }
+                                        }
+                                      }))}
+                                    />
+                                  </div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+
+                            {/* Services Section */}
+                            <AccordionItem value="services" className="border border-gray-200 rounded-lg mb-6">
+                              <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg">
+                                <div className="flex items-center">
+                                  <span className="text-xl mr-3">🛠️</span>
+                                  <span className="font-semibold">Services Section</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-6 pb-8">
+                                <div className="space-y-5">
                                   <div>
                                     <Label className="text-sm font-medium text-gray-600">Services Heading</Label>
                                     <Input
                                       className="mt-1"
+                                      placeholder="e.g., Our Exhibition Stand Services"
                                       value={cityData?.servicesHeading || ''}
                                       onChange={(e) => setSections((s: any) => ({
                                         ...s,
@@ -3032,6 +2917,7 @@ export default function AdminPagesEditor() {
                                     <Textarea
                                       className="mt-1"
                                       rows={6}
+                                      placeholder="Detail the services offered by local builders..."
                                       value={cityData?.servicesParagraph || ''}
                                       onChange={(e) => setSections((s: any) => ({
                                         ...s,
@@ -3045,158 +2931,124 @@ export default function AdminPagesEditor() {
                                       }))}
                                     />
                                   </div>
-                                  {/* Hero Description (city) */}
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+
+                            {/* Final CTA Section */}
+                            <AccordionItem value="final-cta" className="border border-gray-200 rounded-lg mb-6">
+                              <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg">
+                                <div className="flex items-center">
+                                  <span className="text-xl mr-3">💬</span>
+                                  <span className="font-semibold">Final Call-to-Action</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-6 pb-8">
+                                <div className="space-y-5">
                                   <div>
-                                    <Label className="text-sm font-medium text-gray-600">Hero Description</Label>
-                                    <Textarea
+                                    <Label className="text-sm font-medium text-gray-600">CTA Heading</Label>
+                                    <Input
                                       className="mt-1"
-                                      rows={3}
-                                      value={cityData?.heroDescription || ''}
+                                      placeholder="e.g., Ready to Build Your Exhibition Stand?"
+                                      value={cityData?.finalCtaHeading || ''}
                                       onChange={(e) => setSections((s: any) => ({
                                         ...s,
                                         cityPages: {
                                           ...(s.cityPages || {}),
                                           [key]: {
                                             ...(s.cityPages?.[key] || {}),
-                                            heroDescription: e.target.value
+                                            finalCtaHeading: e.target.value
                                           }
                                         }
                                       }))}
                                     />
-                                    {/* Preview (sanitized) */}
-                                    {(cityData?.heroDescription) && (
-                                      <div className="prose mt-2 text-sm text-gray-600" dangerouslySetInnerHTML={{ __html: (cityData.heroDescription || '').replace(/\r?\n/g, '<br/>') }} />
-                                    )}
                                   </div>
-                                  {/* Final CTA for city */}
-                                  <div className="mt-6 p-4 rounded-md border border-gray-100 bg-gray-50">
-                                    <h6 className="font-semibold mb-3 text-gray-800">Final CTA</h6>
-                                    <div className="space-y-3">
-                                      <div>
-                                        <Label className="text-sm font-medium text-gray-600">Final CTA Heading</Label>
-                                        <Input
-                                          className="mt-1"
-                                          value={cityData?.finalCtaHeading || ''}
-                                          onChange={(e) => setSections((s: any) => ({
-                                            ...s,
-                                            cityPages: {
-                                              ...(s.cityPages || {}),
-                                              [key]: {
-                                                ...(s.cityPages?.[key] || {}),
-                                                finalCtaHeading: e.target.value
-                                              }
-                                            }
-                                          }))}
-                                        />
-                                      </div>
-                                      <div>
-                                        <Label className="text-sm font-medium text-gray-600">Final CTA Paragraph</Label>
-                                        <Textarea
-                                          className="mt-1"
-                                          rows={4}
-                                          value={cityData?.finalCtaParagraph || ''}
-                                          onChange={(e) => setSections((s: any) => ({
-                                            ...s,
-                                            cityPages: {
-                                              ...(s.cityPages || {}),
-                                              [key]: {
-                                                ...(s.cityPages?.[key] || {}),
-                                                finalCtaParagraph: e.target.value
-                                              }
-                                            }
-                                          }))}
-                                        />
-                                      </div>
-                                      <div>
-                                        <Label className="text-sm font-medium text-gray-600">Final CTA Button Text</Label>
-                                        <Input
-                                          className="mt-1"
-                                          value={cityData?.finalCtaButtonText || ''}
-                                          onChange={(e) => setSections((s: any) => ({
-                                            ...s,
-                                            cityPages: {
-                                              ...(s.cityPages || {}),
-                                              [key]: {
-                                                ...(s.cityPages?.[key] || {}),
-                                                finalCtaButtonText: e.target.value
-                                              }
-                                            }
-                                          }))}
-                                        />
-                                      </div>
-                                    </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">CTA Paragraph</Label>
+                                    <Textarea
+                                      className="mt-1"
+                                      rows={4}
+                                      placeholder="Encourage visitors to take action..."
+                                      value={cityData?.finalCtaParagraph || ''}
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        cityPages: {
+                                          ...(s.cityPages || {}),
+                                          [key]: {
+                                            ...(s.cityPages?.[key] || {}),
+                                            finalCtaParagraph: e.target.value
+                                          }
+                                        }
+                                      }))}
+                                    />
                                   </div>
-
-                                  {/* Gallery Images Management (country) */}
-                                  <div className="mt-6 p-4 rounded-md border border-gray-100 bg-gray-50">
-                                    <h6 className="font-semibold mb-3 text-gray-800">Gallery Images</h6>
-                                    <div className="space-y-3">
-                                      <div className="text-sm text-gray-600 mb-2">
-                                        Add image URLs for the gallery (one per line):
-                                      </div>
-                                      <Textarea
-                                        className="mt-1"
-                                        rows={4}
-                                        placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
-                                        value={((sections.countryPages?.[countrySlug]?.galleryImages || []) as string[]).join('\n')}
-                                        onChange={(e) => {
-                                          const urls = e.target.value.split('\n').map(url => url.trim()).filter(Boolean);
-                                          setSections((s: any) => ({
-                                            ...s,
-                                            countryPages: {
-                                              ...(s.countryPages || {}),
-                                              [countrySlug]: {
-                                                ...(s.countryPages?.[countrySlug] || {}),
-                                                galleryImages: urls
-                                              }
-                                            }
-                                          }));
-                                        }}
-                                      />
-                                      <div className="text-xs text-gray-500">
-                                        Current: {((sections.countryPages?.[countrySlug]?.galleryImages || []) as string[]).length} images
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  {/* Gallery Images Management (city) */}
-                                  <div className="mt-6 p-4 rounded-md border border-gray-100 bg-gray-50">
-                                    <h6 className="font-semibold mb-3 text-gray-800">Gallery Images</h6>
-                                    <div className="space-y-3">
-                                      <div className="text-sm text-gray-600 mb-2">
-                                        Add image URLs for the gallery (one per line):
-                                      </div>
-                                      <Textarea
-                                        className="mt-1"
-                                        rows={4}
-                                        placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
-                                        value={((sections.cityPages?.[key]?.galleryImages || []) as string[]).join('\n')}
-                                        onChange={(e) => {
-                                          const urls = e.target.value.split('\n').map(url => url.trim()).filter(Boolean);
-                                          setSections((s: any) => ({
-                                            ...s,
-                                            cityPages: {
-                                              ...(s.cityPages || {}),
-                                              [key]: {
-                                                ...(s.cityPages?.[key] || {}),
-                                                galleryImages: urls
-                                              }
-                                            }
-                                          }));
-                                        }}
-                                      />
-                                      <div className="text-xs text-gray-500">
-                                        Current: {((sections.cityPages?.[key]?.galleryImages || []) as string[]).length} images
-                                      </div>
-                                    </div>
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">CTA Button Text</Label>
+                                    <Input
+                                      className="mt-1"
+                                      placeholder="e.g., Get a Free Quote"
+                                      value={cityData?.finalCtaButtonText || ''}
+                                      onChange={(e) => setSections((s: any) => ({
+                                        ...s,
+                                        cityPages: {
+                                          ...(s.cityPages || {}),
+                                          [key]: {
+                                            ...(s.cityPages?.[key] || {}),
+                                            finalCtaButtonText: e.target.value
+                                          }
+                                        }
+                                      }))}
+                                    />
                                   </div>
                                 </div>
-                              </div>
-                            );
-                          })()}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                              </AccordionContent>
+                            </AccordionItem>
+
+                            {/* Gallery Section */}
+                            <AccordionItem value="gallery" className="border border-gray-200 rounded-lg mb-6">
+                              <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg">
+                                <div className="flex items-center">
+                                  <span className="text-xl mr-3">🖼️</span>
+                                  <span className="font-semibold">Gallery Images</span>
+                                  <Badge variant="secondary" className="ml-3">
+                                    {((sections.cityPages?.[key]?.galleryImages || []) as string[]).length} images
+                                  </Badge>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-6 pb-6">
+                                <div className="space-y-4">
+                                  <div className="text-sm text-gray-600 mb-2">
+                                    Add image URLs for the gallery (one per line):
+                                  </div>
+                                  <Textarea
+                                    className="mt-1"
+                                    rows={6}
+                                    placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
+                                    value={((sections.cityPages?.[key]?.galleryImages || []) as string[]).join('\n')}
+                                    onChange={(e) => {
+                                      const urls = e.target.value.split('\n').map(url => url.trim()).filter(Boolean);
+                                      setSections((s: any) => ({
+                                        ...s,
+                                        cityPages: {
+                                          ...(s.cityPages || {}),
+                                          [key]: {
+                                            ...(s.cityPages?.[key] || {}),
+                                            galleryImages: urls
+                                          }
+                                        }
+                                      }));
+                                    }}
+                                  />
+                                  <div className="flex items-center justify-between text-xs text-gray-500 mt-2 p-3 bg-gray-50 rounded-lg">
+                                    <span>Currently {((sections.cityPages?.[key]?.galleryImages || []) as string[]).length} images in gallery</span>
+                                  </div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                        </div>
+                      );
+                    })()}
                   </div>
                 ) : editingPath === '/3d-rendering-and-concept-development' ? (
                   <div className="space-y-6">
@@ -3684,9 +3536,7 @@ export default function AdminPagesEditor() {
           </div>
         </div>
       )}
-
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 }
 

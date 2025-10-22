@@ -4,15 +4,16 @@ import React from 'react';
 import DataAuditSystem from '@/components/DataAuditSystem';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import AdminLayout from '@/components/admin/AdminLayout';
+import Sidebar from '@/components/admin/Sidebar';
+import Topbar from '@/components/admin/Topbar';
 
 export default function DataAuditPage() {
   console.log('🔍 Loading Data Audit Admin Page');
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      <Navigation />
-      
-      {/* Header Section */}
+    <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
+      {/* main content only, no old Navigation/Footer. */}
       <section className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
@@ -46,8 +47,6 @@ export default function DataAuditPage() {
           <DataAuditSystem />
         </div>
       </section>
-
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 }

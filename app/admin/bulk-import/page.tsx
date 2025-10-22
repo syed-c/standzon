@@ -1,6 +1,7 @@
 import React from 'react';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import AdminLayout from '@/components/admin/AdminLayout';
+import Sidebar from '@/components/admin/Sidebar';
+import Topbar from '@/components/admin/Topbar';
 import BulkBuilderImporter from '@/components/BulkBuilderImporter';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,9 +20,8 @@ import Link from 'next/link';
 
 export default function BulkImportPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
+    <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
+      {/* All prior page content except <Navigation /> and <Footer /> */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -204,9 +204,7 @@ export default function BulkImportPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
-      
-      <Footer />
-    </div>
+      </div> 
+    </AdminLayout>
   );
 }

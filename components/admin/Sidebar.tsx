@@ -11,7 +11,6 @@ const sections: Section[] = [
   {
     title: 'DATA MANAGEMENT & IMPORT',
     items: [
-      { label: 'Bulk Upload System', href: '/admin/bulk-data-import', badge: 'CSV' },
       { label: 'Bulk Builder Import', href: '/admin/bulk-import', badge: 'FIX' },
       { label: 'Data Audit System', href: '/admin/data-audit' },
       { label: 'Data Completeness', href: '/admin/data-summary' },
@@ -33,7 +32,6 @@ const sections: Section[] = [
       { label: 'Builders', href: '/admin/builders' },
       { label: 'Leads', href: '/admin/leads' },
       { label: 'Users', href: '/admin/users' },
-      { label: 'Website Pages', href: '/admin/website-pages' },
       { label: 'Website Settings', href: '/admin/website-settings' },
     ],
   },
