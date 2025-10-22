@@ -5,6 +5,37 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import { CountryCityPage } from '@/components/CountryCityPage';
+import { getServerSupabase } from '@/lib/supabase';
+
+// Fetch CMS content for the Jordan page
+async function getJordanPageContent() {
+  try {
+    const sb = getServerSupabase();
+    if (sb) {
+      console.log('🔍 Server-side: Fetching CMS data for Jordan...');
+      
+      const result = await sb
+        .from('page_contents')
+        .select('content')
+        .eq('id', 'jordan')
+        .single();
+        
+      if (result.error) {
+        console.log('❌ Server-side: Supabase error:', result.error);
+        return null;
+      }
+      
+      if (result.data?.content) {
+        console.log('✅ Server-side: Found CMS data for Jordan');
+        return result.data.content;
+      }
+    }
+  } catch (error) {
+    console.error('❌ Server-side: Error fetching CMS data:', error);
+  }
+  
+  return null;
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -31,21 +62,32 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function JordanPage() {
   console.log('🇯🇴 Loading Jordan page with modern UI...');
   
+  const cmsContent = await getJordanPageContent();
+  
+  const defaultContent = {
+    id: 'jordan-main',
+    title: 'Exhibition Stand Builders in Jordan',
+    metaTitle: 'Jordan Exhibition Stand Builders | Trade Show Booth Design',
+    metaDescription: 'Leading exhibition stand builders across Jordan. Custom trade show displays, booth design, and professional exhibition services.',
+    description: 'Jordan is a thriving center for innovation and trade shows in the Middle East, hosting significant events throughout the country. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Jordan\'s dynamic exhibition landscape.',
+    heroContent: 'Partner with Jordan\'s premier exhibition stand builders for trade show success across the country.',
+    seoKeywords: ['Jordan exhibition stands', 'Jordan trade show builders', 'Jordan exhibition builders', 'Jordan booth design', 'Jordan exhibition services']
+  };
+  
+  const countryBlock = cmsContent?.sections?.countryPages?.jordan || cmsContent || null;
+  const mergedContent = {
+    ...defaultContent,
+    ...(countryBlock || {})
+  };
+  
   return (
     <div className="font-inter">
       <Navigation />
       <CountryCityPage
         country="Jordan"
         initialBuilders={[]}
-        initialContent={{
-          id: 'jordan-main',
-          title: 'Exhibition Stand Builders in Jordan',
-          metaTitle: 'Jordan Exhibition Stand Builders | Trade Show Booth Design',
-          metaDescription: 'Leading exhibition stand builders across Jordan. Custom trade show displays, booth design, and professional exhibition services.',
-          description: 'Jordan is an important center for trade shows and exhibitions in the Middle East, hosting significant events throughout the country. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Jordan\'s growing exhibition landscape.',
-          heroContent: 'Partner with Jordan\'s premier exhibition stand builders for trade show success across the country.',
-          seoKeywords: ['Jordan exhibition stands', 'Jordan trade show builders', 'Jordan exhibition builders', 'Jordan booth design', 'Jordan exhibition services', 'Middle East trade show displays']
-        }}
+        initialContent={mergedContent}
+        cmsContent={cmsContent}
       />
       <Footer />
       <WhatsAppFloat />

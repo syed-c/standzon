@@ -5,6 +5,37 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import { CountryCityPage } from '@/components/CountryCityPage';
+import { getServerSupabase } from '@/lib/supabase';
+
+// Fetch CMS content for the Spain page
+async function getSpainPageContent() {
+  try {
+    const sb = getServerSupabase();
+    if (sb) {
+      console.log('🔍 Server-side: Fetching CMS data for Spain...');
+      
+      const result = await sb
+        .from('page_contents')
+        .select('content')
+        .eq('id', 'es')
+        .single();
+        
+      if (result.error) {
+        console.log('❌ Server-side: Supabase error:', result.error);
+        return null;
+      }
+      
+      if (result.data?.content) {
+        console.log('✅ Server-side: Found CMS data for Spain');
+        return result.data.content;
+      }
+    }
+  } catch (error) {
+    console.error('❌ Server-side: Error fetching CMS data:', error);
+  }
+  
+  return null;
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -31,21 +62,32 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function SpainPage() {
   console.log('🇪🇸 Loading Spain page with modern UI...');
   
+  const cmsContent = await getSpainPageContent();
+  
+  const defaultContent = {
+    id: 'es-main',
+    title: 'Exhibition Stand Builders in Spain',
+    metaTitle: 'Spain Exhibition Stand Builders | Trade Show Booth Design',
+    metaDescription: 'Leading exhibition stand builders across Spain. Custom trade show displays, booth design, and professional exhibition services.',
+    description: 'Spain is a major hub for international trade shows and exhibitions, hosting significant events throughout the country. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Spain\'s dynamic exhibition landscape.',
+    heroContent: 'Partner with Spain\'s premier exhibition stand builders for trade show success across the country.',
+    seoKeywords: ['Spain exhibition stands', 'Spain trade show builders', 'Spain exhibition builders', 'Spain booth design', 'Spain exhibition services']
+  };
+  
+  const countryBlock = cmsContent?.sections?.countryPages?.es || cmsContent || null;
+  const mergedContent = {
+    ...defaultContent,
+    ...(countryBlock || {})
+  };
+  
   return (
     <div className="font-inter">
       <Navigation />
       <CountryCityPage
         country="Spain"
         initialBuilders={[]}
-        initialContent={{
-          id: 'es-main',
-          title: 'Exhibition Stand Builders in Spain',
-          metaTitle: 'Spain Exhibition Stand Builders | Trade Show Booth Design',
-          metaDescription: 'Leading exhibition stand builders across Spain. Custom trade show displays, booth design, and professional exhibition services.',
-          description: 'Spain is a thriving center for innovation and trade shows in Southern Europe, hosting significant events throughout the country. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Spain\'s dynamic exhibition landscape.',
-          heroContent: 'Partner with Spain\'s premier exhibition stand builders for trade show success across the country.',
-          seoKeywords: ['Spain exhibition stands', 'Spain trade show builders', 'Spain exhibition builders', 'Spain booth design', 'Spain exhibition services', 'Southern Europe trade show displays']
-        }}
+        initialContent={mergedContent}
+        cmsContent={cmsContent}
       />
       <Footer />
       <WhatsAppFloat />

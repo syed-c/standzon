@@ -121,6 +121,36 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    const map = {
+      // Americas
+      us: 'united-states', ca: 'canada', mx: 'mexico', br: 'brazil',
+      // Europe
+      uk: 'united-kingdom', gb: 'united-kingdom', de: 'germany', fr: 'france', it: 'italy', es: 'spain', nl: 'netherlands', be: 'belgium', ch: 'switzerland', at: 'austria', se: 'sweden', no: 'norway', dk: 'denmark', fi: 'finland', pl: 'poland', cz: 'czech-republic', hu: 'hungary',
+      // Middle East & Africa
+      ae: 'united-arab-emirates', uae: 'united-arab-emirates', sa: 'saudi-arabia', qa: 'qatar', kw: 'kuwait', bh: 'bahrain', om: 'oman', eg: 'egypt', ma: 'morocco', ng: 'nigeria', ke: 'kenya', il: 'israel', lb: 'lebanon', jo: 'jordan',
+      // Asia-Pacific
+      cn: 'china', hk: 'hong-kong', jp: 'japan', kr: 'south-korea', in: 'india', id: 'indonesia', my: 'malaysia', sg: 'singapore', th: 'thailand', ph: 'philippines', vn: 'vietnam', tw: 'taiwan', ru: 'russia', au: 'australia', nz: 'new-zealand', tr: 'turkey',
+      // Other common variants
+      za: 'south-africa'
+    };
+    const redirects = [];
+    for (const [code, full] of Object.entries(map)) {
+      redirects.push(
+        {
+          source: `/exhibition-stands/${code}`,
+          destination: `/exhibition-stands/${full}`,
+          permanent: true,
+        },
+        {
+          source: `/exhibition-stands/${code}/:path*`,
+          destination: `/exhibition-stands/${full}/:path*`,
+          permanent: true,
+        }
+      );
+    }
+    return redirects;
+  },
   allowedDevOrigins: [
     "*.macaly.dev",
     "*.macaly.app",
