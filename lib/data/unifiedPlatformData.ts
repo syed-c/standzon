@@ -248,7 +248,7 @@ class UnifiedDataManager {
   }
 
   // Builders Management  
-  addBuilder(builder: ExhibitionBuilder, source: 'admin' | 'website' = 'admin'): { success: boolean; data?: ExhibitionBuilder; error?: string } {
+  addBuilder(builder: any, source: 'admin' | 'website' = 'admin'): { success: boolean; data?: ExhibitionBuilder; error?: string } {
     console.log('➕ Adding builder to unified system:', builder.companyName);
     
     try {
@@ -260,8 +260,72 @@ class UnifiedDataManager {
         return { success: false, error: `Builder already exists: ${builder.companyName}` };
       }
 
+      // Normalize to ExhibitionBuilder shape with safe defaults
+      const normalized: ExhibitionBuilder = {
+        id: builder.id,
+        companyName: builder.companyName || builder.company_name || 'Unnamed Builder',
+        slug: (builder.slug || '').toString(),
+        logo: builder.logo || '/images/builders/default-logo.png',
+        establishedYear: builder.establishedYear || new Date().getFullYear(),
+        headquarters: builder.headquarters || {
+          city: builder.city || 'Unknown',
+          country: builder.country || 'Unknown',
+          countryCode: builder.countryCode || 'XX',
+          address: builder.address || '',
+          latitude: 0,
+          longitude: 0,
+          isHeadquarters: true,
+        },
+        serviceLocations: builder.serviceLocations || [],
+        contactInfo: builder.contactInfo || {
+          primaryEmail: builder.primaryEmail || builder.email || '',
+          phone: builder.phone || '',
+          website: builder.website || '',
+          contactPerson: builder.contactPerson || '',
+          position: builder.position || '',
+        },
+        services: builder.services || [],
+        specializations: builder.specializations || [],
+        certifications: builder.certifications || [],
+        awards: builder.awards || [],
+        portfolio: builder.portfolio || [],
+        teamSize: builder.teamSize || 0,
+        projectsCompleted: builder.projectsCompleted || 0,
+        rating: builder.rating || 0,
+        reviewCount: builder.reviewCount || 0,
+        responseTime: builder.responseTime || 'New to platform',
+        languages: builder.languages || ['English'],
+        verified: !!builder.verified,
+        premiumMember: !!builder.premiumMember,
+        tradeshowExperience: builder.tradeshowExperience || [],
+        priceRange: builder.priceRange || { currency: 'USD', min: 0, max: 0, unit: 'per project' },
+        companyDescription: builder.companyDescription || '',
+        whyChooseUs: builder.whyChooseUs || [],
+        clientTestimonials: builder.clientTestimonials || [],
+        socialMedia: builder.socialMedia || { website: '', linkedin: '', facebook: '', instagram: '', twitter: '' },
+        businessLicense: builder.businessLicense || '',
+        insurance: builder.insurance || { provider: '', policyNumber: '', validUntil: '' },
+        sustainability: builder.sustainability || { certified: false, initiatives: [] },
+        keyStrengths: builder.keyStrengths || [],
+        recentProjects: builder.recentProjects || [],
+        claimed: builder.claimed,
+        claimStatus: builder.claimStatus,
+        claimedAt: builder.claimedAt,
+        claimedBy: builder.claimedBy,
+        planType: builder.planType || 'free',
+        verificationData: builder.verificationData,
+        gmbImported: builder.gmbImported,
+        importedFromGMB: builder.importedFromGMB,
+        source: builder.source || 'registration',
+        importedAt: builder.importedAt,
+        lastUpdated: builder.lastUpdated || new Date().toISOString(),
+        status: builder.status || 'active',
+        plan: builder.plan || 'free',
+        contactEmail: builder.contactEmail || builder.contactInfo?.primaryEmail || '',
+      };
+
       // Add to memory
-      this.data.builders.push(builder);
+      this.data.builders.push(normalized);
       
       // Update stats
       this.data.stats.totalBuilders = this.data.builders.length;
@@ -276,7 +340,7 @@ class UnifiedDataManager {
       });
 
       console.log('✅ Builder added to memory');
-      return { success: true, data: builder };
+      return { success: true, data: normalized };
     } catch (error) {
       console.error('❌ Error adding builder:', error);
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };

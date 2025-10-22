@@ -152,11 +152,34 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
   const [editMode, setEditMode] = useState<string | null>(null);
   const [leads, setLeads] = useState<any[]>([]);
   const [syncStatus, setSyncStatus] = useState<'synced' | 'syncing' | 'error'>('synced');
+  const [availableCitiesByCountry, setAvailableCitiesByCountry] = useState<Record<string, string[]>>({});
 
   // Load unified profile data
   useEffect(() => {
     loadUnifiedProfile();
   }, [builderId]);
+
+  // Load country->cities map for selector
+  useEffect(() => {
+    const loadCities = async () => {
+      try {
+        const res = await fetch('/api/admin/initialize-locations');
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.success && Array.isArray(data?.data?.countries)) {
+            const map: Record<string, string[]> = {};
+            for (const c of data.data.countries) {
+              const key = c.name || c.countryName || c.country || c.code;
+              const list = (c.cities || []).map((x: any) => x.name || x.cityName || x).filter(Boolean);
+              if (key) map[key] = list;
+            }
+            setAvailableCitiesByCountry(map);
+          }
+        }
+      } catch {}
+    };
+    loadCities();
+  }, []);
 
   const loadUnifiedProfile = async () => {
     setLoading(true);
@@ -203,7 +226,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
         }
       }
       
-      // Create unified profile structure
+      // Create unified profile structure (prefer real values, avoid demo defaults)
       if (userData) {
         const unifiedProfile: UnifiedBuilderProfile = {
           id: userData.id || newUserId || 'unified-builder-001',
@@ -223,10 +246,10 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
           projectsCompleted: userData.profile?.projectsCompleted || userData.projectsCompleted || 25,
           
           headquarters: {
-            country: userData.profile?.country || userData.country || 'United States',
-            city: userData.profile?.city || userData.city || 'Las Vegas',
-            address: userData.profile?.address || userData.address || '123 Business Street',
-            postalCode: userData.profile?.postalCode || userData.postalCode || '12345'
+            country: userData.profile?.country || userData.country || 'Unknown',
+            city: userData.profile?.city || userData.city || 'Unknown',
+            address: userData.profile?.address || userData.address || '',
+            postalCode: userData.profile?.postalCode || userData.postalCode || ''
           },
           
           services: userData.services || userData.profile?.services || [
@@ -238,15 +261,10 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             }
           ],
           
-          serviceLocations: userData.profile?.serviceLocations || userData.serviceCountries?.map((country: string) => ({
+          serviceLocations: userData.profile?.serviceLocations || (userData.serviceCountries?.map((country: string) => ({
             country,
-            cities: [userData.profile?.city || userData.city || 'Las Vegas']
-          })) || [
-            {
-              country: 'United States',
-              cities: ['Las Vegas', 'Los Angeles']
-            }
-          ],
+            cities: userData.serviceCities && userData.serviceCities.length ? userData.serviceCities : (userData.city ? [userData.city] : [])
+          })) || []),
           
           specializations: userData.profile?.specializations || userData.specializations || ['Custom Stand Design'],
           
@@ -270,8 +288,39 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
         console.log('✅ Unified profile loaded:', unifiedProfile.companyName);
       } else {
         // Create demo profile for testing
-        console.log('⚠️ No user data found, creating demo profile for testing');
-        createDemoProfile();
+        console.log('⚠️ No user data found. Showing empty profile shell without demo data');
+        setProfile({
+          id: 'new-builder',
+          companyName: '',
+          slug: '',
+          contactName: '',
+          email: '',
+          phone: '',
+          website: '',
+          description: '',
+          logo: '/images/builders/default-logo.png',
+          establishedYear: new Date().getFullYear(),
+          businessType: 'company',
+          teamSize: '',
+          yearsOfExperience: 0,
+          projectsCompleted: 0,
+          headquarters: { country: 'Unknown', city: 'Unknown', address: '', postalCode: '' },
+          services: [],
+          serviceLocations: [],
+          specializations: [],
+          verified: false,
+          claimed: true,
+          subscriptionPlan: 'free',
+          subscriptionExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          profileViews: 0,
+          leadCount: 0,
+          responseRate: 0,
+          rating: 0,
+          reviewCount: 0,
+          createdAt: new Date().toISOString(),
+          lastUpdated: new Date().toISOString(),
+          source: 'registration'
+        });
       }
       
     } catch (error) {
@@ -1020,13 +1069,32 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
                     </div>
                     
                     <div>
-                      <Label>Cities (comma-separated)</Label>
-                      <Input
-                        placeholder="Las Vegas, Los Angeles, New York"
-                        value={location.cities.join(', ')}
-                        onChange={(e) => updateServiceLocation(index, 'cities', e.target.value.split(',').map(c => c.trim()))}
-                        className="mt-1"
-                      />
+                      <Label>Cities</Label>
+                      <Select onValueChange={(value) => {
+                        const arr = Array.isArray(location.cities) ? [...location.cities] : [];
+                        if (!arr.includes(value)) {
+                          arr.push(value);
+                          updateServiceLocation(index, 'cities', arr);
+                        }
+                      }}>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Select city to add" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(availableCitiesByCountry[location.country] || []).map((c: string) => (
+                            <SelectItem key={c} value={c}>{c}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {Array.isArray(location.cities) && location.cities.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {location.cities.map((c: string) => (
+                            <Badge key={c} variant="secondary" className="cursor-pointer" onClick={() => updateServiceLocation(index, 'cities', location.cities.filter((x: string) => x !== c))}>
+                              {c} ×
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     
                     <Button
@@ -1087,14 +1155,30 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
                     <h3 className="font-semibold">{profile.subscriptionPlan.charAt(0).toUpperCase() + profile.subscriptionPlan.slice(1)} Plan</h3>
                     <p className="text-sm text-gray-600">
                       Expires: {new Date(profile.subscriptionExpiry).toLocaleDateString()}
                     </p>
                   </div>
-                  <Button>
+                    <Button onClick={async () => {
+                      try {
+                        const res = await fetch('/api/subscription/upgrade', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ builderId: profile.id, builderEmail: profile.email, planId: 'professional' })
+                        });
+                        const data = await res.json();
+                        if (data?.success) {
+                          setProfile({ ...profile, subscriptionPlan: 'professional' });
+                        } else {
+                          console.error('Upgrade failed', data);
+                        }
+                      } catch (e) {
+                        console.error('Upgrade error', e);
+                      }
+                    }}>
                     <CreditCard className="h-4 w-4 mr-2" />
                     Upgrade Plan
                   </Button>

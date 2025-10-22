@@ -36,17 +36,17 @@ export default async function BuilderProfilePage({
           builder = {
             id: supabaseBuilder.id,
             companyName: supabaseBuilder.company_name,
-            slug: supabaseBuilder.slug || slug,
+            slug: (supabaseBuilder.slug || slug || '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''),
             logo: supabaseBuilder.logo || "/images/builders/default-logo.png",
             establishedYear: supabaseBuilder.established_year || 2020,
             headquarters: {
-              city: supabaseBuilder.headquarters_city || "Unknown",
-              country: supabaseBuilder.headquarters_country || "Unknown",
+              city: supabaseBuilder.headquarters_city || (supabaseBuilder as any).city || "Unknown",
+              country: supabaseBuilder.headquarters_country || (supabaseBuilder as any).country || "Unknown",
             },
             serviceLocations: [
               {
-                city: supabaseBuilder.headquarters_city || "Unknown",
-                country: supabaseBuilder.headquarters_country || "Unknown",
+                city: supabaseBuilder.headquarters_city || (supabaseBuilder as any).city || "Unknown",
+                country: supabaseBuilder.headquarters_country || (supabaseBuilder as any).country || "Unknown",
               }
             ],
             contactInfo: {

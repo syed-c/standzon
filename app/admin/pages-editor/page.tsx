@@ -145,7 +145,7 @@ export default function AdminPagesEditor() {
   useEffect(() => {
     console.log('🚀 useEffect triggered - loading pages...');
     try {
-      loadPages();
+    loadPages();
     } catch (error) {
       console.error('❌ Error in loadPages:', error);
     }
@@ -2426,7 +2426,7 @@ export default function AdminPagesEditor() {
                         <p className="text-gray-600 mb-6">Edit content for country-specific exhibition stand pages. All sections are organized in collapsible dropdowns for easy navigation.</p>
                         
                         <Accordion type="multiple" className="w-full">
-                          {Object.entries(sections.countryPages || {}).map(([countrySlug, countryData]: [string, any]) => (
+                              {Object.entries(sections.countryPages || {}).map(([countrySlug, countryData]: [string, any]) => (
                             <AccordionItem key={countrySlug} value={countrySlug} className="border border-gray-200 rounded-lg mb-4">
                               <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg">
                                 <div className="flex items-center">
@@ -2449,24 +2449,24 @@ export default function AdminPagesEditor() {
                                     </AccordionTrigger>
                                     <AccordionContent className="px-5 pb-6">
                                       <div className="space-y-5">
-                                        <div>
-                                          <Label className="text-sm font-medium text-gray-600">Hero Description</Label>
-                                          <Textarea
-                                            className="mt-1"
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Hero Description</Label>
+                                        <Textarea
+                                          className="mt-1"
                                             rows={3}
-                                            value={countryData?.heroDescription || ''}
-                                            onChange={(e) => setSections((s: any) => ({
-                                              ...s,
-                                              countryPages: {
-                                                ...(s.countryPages || {}),
-                                                [countrySlug]: {
-                                                  ...(s.countryPages?.[countrySlug] || {}),
-                                                  heroDescription: e.target.value
-                                                }
+                                          value={countryData?.heroDescription || ''}
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                heroDescription: e.target.value
                                               }
-                                            }))}
-                                          />
-                                        </div>
+                                            }
+                                          }))}
+                                        />
+                                      </div>
                                       </div>
                                     </AccordionContent>
                                   </AccordionItem>
@@ -2481,41 +2481,41 @@ export default function AdminPagesEditor() {
                                     </AccordionTrigger>
                                     <AccordionContent className="px-5 pb-6">
                                       <div className="space-y-5">
-                                        <div>
-                                          <Label className="text-sm font-medium text-gray-600">Section Heading</Label>
-                                          <Input 
-                                            className="mt-1"
-                                            value={countryData?.whyChooseHeading || ''} 
-                                            onChange={(e) => setSections((s: any) => ({
-                                              ...s,
-                                              countryPages: {
-                                                ...(s.countryPages || {}),
-                                                [countrySlug]: {
-                                                  ...(s.countryPages?.[countrySlug] || {}),
-                                                  whyChooseHeading: e.target.value
-                                                }
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Section Heading</Label>
+                                        <Input 
+                                          className="mt-1"
+                                          value={countryData?.whyChooseHeading || ''} 
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                whyChooseHeading: e.target.value
                                               }
-                                            }))}
-                                          />
-                                        </div>
-                                        <div>
-                                          <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
-                                          <Textarea 
-                                            className="mt-1"
-                                            rows={3} 
-                                            value={countryData?.whyChooseParagraph || ''} 
-                                            onChange={(e) => setSections((s: any) => ({
-                                              ...s,
-                                              countryPages: {
-                                                ...(s.countryPages || {}),
-                                                [countrySlug]: {
-                                                  ...(s.countryPages?.[countrySlug] || {}),
-                                                  whyChooseParagraph: e.target.value
-                                                }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-gray-600">Section Paragraph</Label>
+                                        <Textarea 
+                                          className="mt-1"
+                                          rows={3} 
+                                          value={countryData?.whyChooseParagraph || ''} 
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                whyChooseParagraph: e.target.value
                                               }
-                                            }))}
-                                          />
-                                        </div>
+                                            }
+                                          }))}
+                                        />
+                                      </div>
                                       </div>
                                     </AccordionContent>
                                   </AccordionItem>
@@ -2557,18 +2557,18 @@ export default function AdminPagesEditor() {
                                                     setSections((s: any) => ({
                                                       ...s,
                                                       countryPages: {
-                                                        ...(s.countryPages || {}),
-                                                        [countrySlug]: {
-                                                          ...(s.countryPages?.[countrySlug] || {}),
-                                                          infoCards: arr
+                                                          ...(s.countryPages || {}),
+                                                          [countrySlug]: {
+                                                            ...(s.countryPages?.[countrySlug] || {}),
+                                                            infoCards: arr
+                                                          }
                                                         }
-                                                      }
-                                                    }));
-                                                  }}
-                                                />
-                                              </div>
-                                              
-                                              <div>
+                                                      }));
+                                                    }}
+                                                  />
+                                                </div>
+                                                
+                                                <div>
                                                 <Label className="text-sm font-medium text-gray-600">Description</Label>
                                                 <Textarea 
                                                   className="mt-1"
@@ -2598,7 +2598,7 @@ export default function AdminPagesEditor() {
                                         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                                           <div className="text-sm text-gray-600 text-center mb-4">
                                             Info cards are automatically managed - you can edit the content above
-                                          </div>
+                                    </div>
                                           <div className="flex justify-center">
                                             <Button 
                                               type="button" 
@@ -2619,16 +2619,16 @@ export default function AdminPagesEditor() {
                                                     text: "Lower transportation costs, established supplier networks, and competitive local pricing structures."
                                                   }
                                                 ];
-                                                setSections((s: any) => ({
-                                                  ...s,
-                                                  countryPages: {
-                                                    ...(s.countryPages || {}),
-                                                    [countrySlug]: {
-                                                      ...(s.countryPages?.[countrySlug] || {}),
+                                              setSections((s: any) => ({
+                                                ...s,
+                                                countryPages: {
+                                                  ...(s.countryPages || {}),
+                                                  [countrySlug]: {
+                                                    ...(s.countryPages?.[countrySlug] || {}),
                                                       infoCards: defaultCards
-                                                    }
                                                   }
-                                                }));
+                                                }
+                                              }));
                                               }}
                                             >
                                               Reset to Default
@@ -2647,43 +2647,43 @@ export default function AdminPagesEditor() {
                                       </div>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-4 pb-4">
-                                      <div className="space-y-4">
-                                        <div>
+                                    <div className="space-y-4">
+                                      <div>
                                           <Label className="text-sm font-medium text-gray-600">Services Heading</Label>
-                                          <Input 
-                                            className="mt-1"
-                                            value={countryData?.servicesHeading || ''} 
-                                            onChange={(e) => setSections((s: any) => ({
-                                              ...s,
-                                              countryPages: {
-                                                ...(s.countryPages || {}),
-                                                [countrySlug]: {
-                                                  ...(s.countryPages?.[countrySlug] || {}),
-                                                  servicesHeading: e.target.value
-                                                }
+                                        <Input 
+                                          className="mt-1"
+                                          value={countryData?.servicesHeading || ''} 
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                servicesHeading: e.target.value
                                               }
-                                            }))}
-                                          />
-                                        </div>
-                                        <div>
-                                          <Label className="text-sm font-medium text-gray-600">Services Paragraph</Label>
-                                          <Textarea 
-                                            className="mt-1"
-                                            rows={4} 
-                                            value={countryData?.servicesParagraph || ''} 
-                                            onChange={(e) => setSections((s: any) => ({
-                                              ...s,
-                                              countryPages: {
-                                                ...(s.countryPages || {}),
-                                                [countrySlug]: {
-                                                  ...(s.countryPages?.[countrySlug] || {}),
-                                                  servicesParagraph: e.target.value
-                                                }
-                                              }
-                                            }))}
-                                          />
-                                        </div>
+                                            }
+                                          }))}
+                                        />
                                       </div>
+                                      <div>
+                                          <Label className="text-sm font-medium text-gray-600">Services Paragraph</Label>
+                                        <Textarea 
+                                          className="mt-1"
+                                            rows={4} 
+                                          value={countryData?.servicesParagraph || ''} 
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
+                                                servicesParagraph: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                    </div>
                                     </AccordionContent>
                                   </AccordionItem>
 
@@ -2696,42 +2696,42 @@ export default function AdminPagesEditor() {
                                       </div>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-4 pb-4">
-                                      <div className="space-y-4">
-                                        <div>
+                                    <div className="space-y-4">
+                                      <div>
                                           <Label className="text-sm font-medium text-gray-600">Builders Heading</Label>
-                                          <Input 
-                                            className="mt-1"
+                                        <Input 
+                                          className="mt-1"
                                             value={countryData?.buildersHeading || ''} 
-                                            onChange={(e) => setSections((s: any) => ({
-                                              ...s,
-                                              countryPages: {
-                                                ...(s.countryPages || {}),
-                                                [countrySlug]: {
-                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
                                                   buildersHeading: e.target.value
-                                                }
                                               }
-                                            }))}
-                                          />
-                                        </div>
-                                        <div>
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                      <div>
                                           <Label className="text-sm font-medium text-gray-600">Builders Introduction</Label>
-                                          <Textarea 
-                                            className="mt-1"
+                                        <Textarea 
+                                          className="mt-1"
                                             rows={4} 
                                             value={countryData?.buildersIntro || ''} 
-                                            onChange={(e) => setSections((s: any) => ({
-                                              ...s,
-                                              countryPages: {
-                                                ...(s.countryPages || {}),
-                                                [countrySlug]: {
-                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
                                                   buildersIntro: e.target.value
-                                                }
                                               }
-                                            }))}
-                                          />
-                                        </div>
+                                            }
+                                          }))}
+                                        />
+                                      </div>
                                       </div>
                                     </AccordionContent>
                                   </AccordionItem>
@@ -2746,46 +2746,46 @@ export default function AdminPagesEditor() {
                                     </AccordionTrigger>
                                     <AccordionContent className="px-4 pb-4">
                                       <div className="space-y-4">
-                                        <div>
+                                      <div>
                                           <Label className="text-sm font-medium text-gray-600">Paragraph</Label>
                                           <Textarea 
-                                            className="mt-1"
+                                          className="mt-1"
                                             rows={3} 
                                             value={countryData?.quotesParagraph || ''} 
-                                            onChange={(e) => setSections((s: any) => ({
-                                              ...s,
-                                              countryPages: {
-                                                ...(s.countryPages || {}),
-                                                [countrySlug]: {
-                                                  ...(s.countryPages?.[countrySlug] || {}),
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            countryPages: {
+                                              ...(s.countryPages || {}),
+                                              [countrySlug]: {
+                                                ...(s.countryPages?.[countrySlug] || {}),
                                                   quotesParagraph: e.target.value
-                                                }
                                               }
-                                            }))}
-                                          />
-                                        </div>
+                                            }
+                                          }))}
+                                        />
                                       </div>
+                                    </div>
                                     </AccordionContent>
                                   </AccordionItem>
-                                </div>
-                              </AccordionContent>
-                            </AccordionItem>
+                            </div>
+                          </AccordionContent>
+                                              </AccordionItem>
                           ))}
-                        </Accordion>
+                    </Accordion>
                       </div>
-                    </div>
+                  </div>
                 ) : editingPath.startsWith('/exhibition-stands/') && editingPath.split('/').filter(Boolean).length === 3 ? (
                   // City page editor panel
                   <div className="space-y-8">
-                    {(() => {
-                      const parts = editingPath.split('/').filter(Boolean);
-                      const countrySlug = parts[1];
-                      const citySlug = parts[2];
-                      const key = `${countrySlug}-${citySlug}`;
-                      const cityData = (sections.cityPages?.[key] as any) || {};
+                          {(() => {
+                            const parts = editingPath.split('/').filter(Boolean);
+                            const countrySlug = parts[1];
+                            const citySlug = parts[2];
+                            const key = `${countrySlug}-${citySlug}`;
+                            const cityData = (sections.cityPages?.[key] as any) || {};
                       const cityName = citySlug.split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
                       
-                      return (
+                            return (
                         <div className="bg-white rounded-lg border border-gray-200 p-8">
                           <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                             <span className="text-3xl mr-3">🏙️</span>
@@ -2843,44 +2843,44 @@ export default function AdminPagesEditor() {
                               </AccordionTrigger>
                               <AccordionContent className="px-6 pb-8">
                                 <div className="space-y-5">
-                                  <div>
-                                    <Label className="text-sm font-medium text-gray-600">Builders Heading</Label>
-                                    <Input
-                                      className="mt-1"
+                                    <div>
+                                      <Label className="text-sm font-medium text-gray-600">Builders Heading</Label>
+                                      <Input
+                                        className="mt-1"
                                       placeholder="e.g., Top Exhibition Stand Builders in [City]"
-                                      value={cityData?.buildersHeading || ''}
-                                      onChange={(e) => setSections((s: any) => ({
-                                        ...s,
-                                        cityPages: {
-                                          ...(s.cityPages || {}),
-                                          [key]: {
-                                            ...(s.cityPages?.[key] || {}),
-                                            buildersHeading: e.target.value
+                                        value={cityData?.buildersHeading || ''}
+                                        onChange={(e) => setSections((s: any) => ({
+                                          ...s,
+                                          cityPages: {
+                                            ...(s.cityPages || {}),
+                                            [key]: {
+                                              ...(s.cityPages?.[key] || {}),
+                                              buildersHeading: e.target.value
+                                            }
                                           }
-                                        }
-                                      }))}
-                                    />
-                                  </div>
-                                  <div>
+                                        }))}
+                                      />
+                                    </div>
+                                    <div>
                                     <Label className="text-sm font-medium text-gray-600">Builders Introduction (accepts basic HTML)</Label>
-                                    <Textarea
-                                      className="mt-1"
-                                      rows={4}
+                                      <Textarea
+                                        className="mt-1"
+                                        rows={4}
                                       placeholder="Introduce the local exhibition stand builders and their expertise..."
-                                      value={cityData?.buildersIntro || ''}
-                                      onChange={(e) => setSections((s: any) => ({
-                                        ...s,
-                                        cityPages: {
-                                          ...(s.cityPages || {}),
-                                          [key]: {
-                                            ...(s.cityPages?.[key] || {}),
-                                            buildersIntro: e.target.value
+                                        value={cityData?.buildersIntro || ''}
+                                        onChange={(e) => setSections((s: any) => ({
+                                          ...s,
+                                          cityPages: {
+                                            ...(s.cityPages || {}),
+                                            [key]: {
+                                              ...(s.cityPages?.[key] || {}),
+                                              buildersIntro: e.target.value
+                                            }
                                           }
-                                        }
-                                      }))}
-                                    />
+                                        }))}
+                                      />
+                                    </div>
                                   </div>
-                                </div>
                               </AccordionContent>
                             </AccordionItem>
 
@@ -2931,7 +2931,7 @@ export default function AdminPagesEditor() {
                                       }))}
                                     />
                                   </div>
-                                </div>
+                                  </div>
                               </AccordionContent>
                             </AccordionItem>
 
@@ -2945,62 +2945,62 @@ export default function AdminPagesEditor() {
                               </AccordionTrigger>
                               <AccordionContent className="px-6 pb-8">
                                 <div className="space-y-5">
-                                  <div>
+                                      <div>
                                     <Label className="text-sm font-medium text-gray-600">CTA Heading</Label>
-                                    <Input
-                                      className="mt-1"
+                                        <Input
+                                          className="mt-1"
                                       placeholder="e.g., Ready to Build Your Exhibition Stand?"
-                                      value={cityData?.finalCtaHeading || ''}
-                                      onChange={(e) => setSections((s: any) => ({
-                                        ...s,
-                                        cityPages: {
-                                          ...(s.cityPages || {}),
-                                          [key]: {
-                                            ...(s.cityPages?.[key] || {}),
-                                            finalCtaHeading: e.target.value
-                                          }
-                                        }
-                                      }))}
-                                    />
-                                  </div>
-                                  <div>
+                                          value={cityData?.finalCtaHeading || ''}
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            cityPages: {
+                                              ...(s.cityPages || {}),
+                                              [key]: {
+                                                ...(s.cityPages?.[key] || {}),
+                                                finalCtaHeading: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                      <div>
                                     <Label className="text-sm font-medium text-gray-600">CTA Paragraph</Label>
-                                    <Textarea
-                                      className="mt-1"
-                                      rows={4}
+                                        <Textarea
+                                          className="mt-1"
+                                          rows={4}
                                       placeholder="Encourage visitors to take action..."
-                                      value={cityData?.finalCtaParagraph || ''}
-                                      onChange={(e) => setSections((s: any) => ({
-                                        ...s,
-                                        cityPages: {
-                                          ...(s.cityPages || {}),
-                                          [key]: {
-                                            ...(s.cityPages?.[key] || {}),
-                                            finalCtaParagraph: e.target.value
-                                          }
-                                        }
-                                      }))}
-                                    />
-                                  </div>
-                                  <div>
+                                          value={cityData?.finalCtaParagraph || ''}
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            cityPages: {
+                                              ...(s.cityPages || {}),
+                                              [key]: {
+                                                ...(s.cityPages?.[key] || {}),
+                                                finalCtaParagraph: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                      <div>
                                     <Label className="text-sm font-medium text-gray-600">CTA Button Text</Label>
-                                    <Input
-                                      className="mt-1"
+                                        <Input
+                                          className="mt-1"
                                       placeholder="e.g., Get a Free Quote"
-                                      value={cityData?.finalCtaButtonText || ''}
-                                      onChange={(e) => setSections((s: any) => ({
-                                        ...s,
-                                        cityPages: {
-                                          ...(s.cityPages || {}),
-                                          [key]: {
-                                            ...(s.cityPages?.[key] || {}),
-                                            finalCtaButtonText: e.target.value
-                                          }
-                                        }
-                                      }))}
-                                    />
-                                  </div>
-                                </div>
+                                          value={cityData?.finalCtaButtonText || ''}
+                                          onChange={(e) => setSections((s: any) => ({
+                                            ...s,
+                                            cityPages: {
+                                              ...(s.cityPages || {}),
+                                              [key]: {
+                                                ...(s.cityPages?.[key] || {}),
+                                                finalCtaButtonText: e.target.value
+                                              }
+                                            }
+                                          }))}
+                                        />
+                                      </div>
+                                    </div>
                               </AccordionContent>
                             </AccordionItem>
 
@@ -3013,39 +3013,39 @@ export default function AdminPagesEditor() {
                                   <Badge variant="secondary" className="ml-3">
                                     {((sections.cityPages?.[key]?.galleryImages || []) as string[]).length} images
                                   </Badge>
-                                </div>
+                                      </div>
                               </AccordionTrigger>
                               <AccordionContent className="px-6 pb-6">
                                 <div className="space-y-4">
-                                  <div className="text-sm text-gray-600 mb-2">
-                                    Add image URLs for the gallery (one per line):
-                                  </div>
-                                  <Textarea
-                                    className="mt-1"
+                                      <div className="text-sm text-gray-600 mb-2">
+                                        Add image URLs for the gallery (one per line):
+                                      </div>
+                                      <Textarea
+                                        className="mt-1"
                                     rows={6}
-                                    placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
-                                    value={((sections.cityPages?.[key]?.galleryImages || []) as string[]).join('\n')}
-                                    onChange={(e) => {
-                                      const urls = e.target.value.split('\n').map(url => url.trim()).filter(Boolean);
-                                      setSections((s: any) => ({
-                                        ...s,
-                                        cityPages: {
-                                          ...(s.cityPages || {}),
-                                          [key]: {
-                                            ...(s.cityPages?.[key] || {}),
-                                            galleryImages: urls
-                                          }
-                                        }
-                                      }));
-                                    }}
-                                  />
+                                        placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
+                                        value={((sections.cityPages?.[key]?.galleryImages || []) as string[]).join('\n')}
+                                        onChange={(e) => {
+                                          const urls = e.target.value.split('\n').map(url => url.trim()).filter(Boolean);
+                                          setSections((s: any) => ({
+                                            ...s,
+                                            cityPages: {
+                                              ...(s.cityPages || {}),
+                                              [key]: {
+                                                ...(s.cityPages?.[key] || {}),
+                                                galleryImages: urls
+                                              }
+                                            }
+                                          }));
+                                        }}
+                                      />
                                   <div className="flex items-center justify-between text-xs text-gray-500 mt-2 p-3 bg-gray-50 rounded-lg">
                                     <span>Currently {((sections.cityPages?.[key]?.galleryImages || []) as string[]).length} images in gallery</span>
-                                  </div>
-                                </div>
-                              </AccordionContent>
-                            </AccordionItem>
-                          </Accordion>
+                                      </div>
+                                    </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                         </div>
                       );
                     })()}

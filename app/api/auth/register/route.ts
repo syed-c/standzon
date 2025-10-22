@@ -90,10 +90,16 @@ export async function POST(request: NextRequest) {
     if (userType === 'builder' && companyName) {
       const builderId = `builder_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
+      // sanitize slug: collapse non-alphanumerics to '-' and trim leading/trailing '-'
+      const sanitizedSlug = companyName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
       const builderProfile = {
         id: builderId,
         companyName,
-        slug: companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        slug: sanitizedSlug,
         contactInfo: {
           primaryEmail: email,
           contactPerson: `${firstName} ${lastName}`,
@@ -140,8 +146,34 @@ export async function POST(request: NextRequest) {
 
       console.log('🏗️ Creating builder profile:', { builderId, companyName });
       
-      // Add builder to unified platform
+      // Add builder to unified platform (in-memory)
       unifiedPlatformAPI.addBuilder(builderProfile);
+      
+      // Persist to Supabase if server creds are available
+      try {
+        const sb = (await import('@/lib/supabase')).getServerSupabase();
+        if (sb) {
+          await sb.from('builder_profiles').insert({
+            id: builderId,
+            company_name: companyName,
+            slug: sanitizedSlug,
+            primary_email: email,
+            phone,
+            contact_person: `${firstName} ${lastName}`,
+            company_description: `${companyName} - Professional exhibition stand builder`,
+            headquarters_city: 'Unknown',
+            headquarters_country: 'Unknown',
+            verified: false,
+            claimed: true,
+            claim_status: 'verified',
+            premium_member: false,
+            created_at: new Date().toISOString(),
+            source: 'registration_form'
+          });
+        }
+      } catch (persistErr) {
+        console.error('⚠️ Failed to persist builder to Supabase (non-fatal):', persistErr);
+      }
       
       console.log('✅ Builder profile created in unified platform');
     }
