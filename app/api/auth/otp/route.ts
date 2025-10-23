@@ -50,13 +50,13 @@ export async function POST(request: NextRequest) {
       // Generate 6-digit OTP
       const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
       console.log("Generated OTP:", otpCode);
-      const expiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+      const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes (increased from 5)
 
       // Store OTP
       otpStorage.set(email, { code: otpCode, expiry, userType });
 
       console.log(
-        `🔐 Generated OTP ${otpCode} for ${email} (expires: ${expiry.toISOString()})`
+        `🔐 Generated OTP ${otpCode} for ${email} (expires: ${expiry.toISOString()}) userType: ${userType}`
       );
 
       // ✅ DEMO MODE: Return OTP in response for testing
@@ -157,7 +157,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             success: false,
-            error: "OTP has expired",
+            error: "OTP has expired. Please request a new one.",
+            debug: process.env.NODE_ENV === "development" ? {
+              expiredAt: storedData.expiry.toISOString(),
+              currentTime: new Date().toISOString()
+            } : undefined
           },
           { status: 400 }
         );
@@ -166,6 +170,15 @@ export async function POST(request: NextRequest) {
       // More lenient OTP verification - allow case-insensitive comparison and trim whitespace
       const normalizedStoredOTP = storedData.code ? storedData.code.trim() : '';
       const normalizedInputOTP = otp ? otp.trim() : '';
+      
+      console.log("🔍 OTP Verification Debug:");
+      console.log("- Email:", email);
+      console.log("- Stored OTP:", normalizedStoredOTP);
+      console.log("- Input OTP:", normalizedInputOTP);
+      console.log("- Stored userType:", storedData.userType);
+      console.log("- Input userType:", userType);
+      console.log("- OTP Match:", normalizedStoredOTP === normalizedInputOTP);
+      console.log("- UserType Match:", storedData.userType === userType);
       
       if (normalizedStoredOTP !== normalizedInputOTP || storedData.userType !== userType) {
         console.log("❌ Invalid OTP or user type for email:", email);
@@ -212,11 +225,52 @@ export async function POST(request: NextRequest) {
             };
           }
         } else if (userType === "builder") {
+          let builder = null;
+          
+          // First try unified platform
           const builders = unifiedPlatformAPI.getBuilders();
-          const builder = builders?.find(
+          builder = builders?.find(
             (b) =>
               b?.contactInfo?.primaryEmail?.toLowerCase() === email.toLowerCase()
           );
+
+          // If not found in unified platform, check Supabase directly
+          if (!builder) {
+            try {
+              const { getServerSupabase } = await import('@/lib/supabase');
+              const sb = getServerSupabase();
+              
+              if (sb) {
+                console.log('🔍 Checking Supabase for builder with email:', email);
+                const { data: supabaseBuilder, error } = await sb
+                  .from('builder_profiles')
+                  .select('*')
+                  .eq('primary_email', email.toLowerCase())
+                  .single();
+                
+                if (error) {
+                  console.log('❌ Supabase error:', error);
+                } else if (supabaseBuilder) {
+                  builder = {
+                    id: supabaseBuilder.id,
+                    companyName: supabaseBuilder.company_name,
+                    contactInfo: {
+                      primaryEmail: supabaseBuilder.primary_email,
+                      contactPerson: supabaseBuilder.contact_person || '',
+                    },
+                    verified: supabaseBuilder.verified || false,
+                    // Add default auth data since Supabase doesn't store passwords
+                    authData: {
+                      password: 'password' // Default password for Supabase builders
+                    }
+                  };
+                  console.log('✅ Found builder in Supabase:', builder.companyName);
+                }
+              }
+            } catch (supabaseError) {
+              console.error('❌ Error checking Supabase:', supabaseError);
+            }
+          }
 
           if (builder) {
             user = {

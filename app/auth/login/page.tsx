@@ -18,13 +18,13 @@ function LoginContent() {
   const [error, setError] = useState('');
   const searchParams = useSearchParams();
   
-  // Get userType from search params, default to 'client'
-  const userType = (searchParams.get('type') as 'admin' | 'builder' | 'client') || 'client';
+  // Get userType from search params, default to 'builder' so /auth/login works for builders
+  const userType = ((searchParams?.get?.('type') as 'admin' | 'builder' | 'client') || 'builder');
 
   useEffect(() => {
     // Pre-fill email if coming from claim process
-    const prefilledEmail = searchParams.get('email');
-    const claimed = searchParams.get('claimed');
+    const prefilledEmail = searchParams?.get?.('email');
+    const claimed = searchParams?.get?.('claimed');
     
     if (prefilledEmail) {
       setEmail(prefilledEmail);
