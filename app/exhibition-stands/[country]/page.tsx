@@ -63,12 +63,12 @@ async function getCountryPageContent(countrySlug: string) {
     if (sb) {
       console.log(`🔍 Server-side: Fetching CMS data for ${countrySlug}...`);
       
-      const result = await sb
-        .from('page_contents')
-        .select('content')
-        .eq('id', countrySlug)
-        .single();
-        
+        const result = await sb
+          .from('page_contents')
+          .select('content')
+          .eq('id', countrySlug)
+          .single();
+          
       if (result.error) {
         console.log('❌ Server-side: Supabase error:', result.error);
         return null;
@@ -152,18 +152,18 @@ export default async function CountryPage({ params }: { params: { country: strin
     ...defaultContent,
     ...(countryBlock || {})
   };
-  
-  return (
-    <div className="font-inter">
-      <Navigation />
-      <CountryCityPage
+
+    return (
+      <div className="font-inter">
+        <Navigation />
+        <CountryCityPage
         country={countryInfo.name}
         initialBuilders={[]}
         initialContent={mergedContent}
         cmsContent={cmsContent}
-      />
-      <Footer />
-      <WhatsAppFloat />
-    </div>
-  );
-}
+        />
+        <Footer />
+        <WhatsAppFloat />
+      </div>
+    );
+  }

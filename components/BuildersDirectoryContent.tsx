@@ -615,7 +615,7 @@ export default function BuildersDirectoryContent() {
                           )}
 
                           <div className="flex gap-3 pt-4">
-                            <Link href={`/exhibition-stands/${builder.headquarters.country.toLowerCase().replace(/\s+/g, '-')}`}>
+                            <Link href={`/builders/${builder.slug}`}>
                               <Button variant="outline" size="sm" className="flex-1 border-gray-200 hover:border-blue-300 hover:text-blue-600">
                                 View Profile
                               </Button>

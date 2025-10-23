@@ -121,13 +121,11 @@ export async function GET(request: Request) {
           );
         }
 
-        // Only add static builders if no real builders exist
+        // NO FALLBACK TO STATIC DATA - Only return real builders
         if (buildersToReturn.length === 0) {
-          const staticBuilders = getExhibitionBuilders();
-          buildersToReturn.push(...staticBuilders);
           if (isVerbose) {
             console.log(
-              `📂 No real data found, using ${staticBuilders.length} static builders as fallback`
+              `📂 No real data found - returning empty array (no static fallback)`
             );
           }
         }
@@ -179,128 +177,127 @@ export async function GET(request: Request) {
       });
     }
 
-    // Try Convex first for real builders
+    // Try Supabase first for real builders (prioritize Supabase over Convex)
     let buildersSource: any[] = [];
+    
     try {
-      const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
-      if (convexUrl) {
-        const convex = new ConvexHttpClient(convexUrl);
-        const convexData = await convex.query(api.builders.getAllBuilders, { limit: 10000, offset: 0 });
-        const convexBuilders = Array.isArray(convexData?.builders) ? convexData.builders : [];
-        if (isVerbose) {
-          console.log(`📡 Convex returned ${convexBuilders.length} builders`);
-        }
-        if (convexBuilders.length > 0) {
-          // Map Convex format to unified shape expected by clients of this endpoint
-          buildersSource = convexBuilders.map((b: any) => ({
-            id: b._id,
-            companyName: b.companyName,
-            slug: b.slug || b.companyName?.toLowerCase()?.replace(/[^a-z0-9]/g, "-") || "",
+      // Try Supabase first for real builders
+      const { getServerSupabase } = await import('@/lib/supabase');
+      const sb = getServerSupabase();
+      if (sb) {
+        const { data: supabaseBuilders, error } = await sb
+          .from('builder_profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (!error && supabaseBuilders && supabaseBuilders.length > 0) {
+          buildersSource = supabaseBuilders.map((b: any) => ({
+            id: b.id,
+            companyName: b.company_name,
+            slug: b.slug,
             rating: b.rating || 0,
-            reviewCount: b.reviewCount || 0,
+            reviewCount: b.review_count || 0,
             verified: !!b.verified,
             claimed: !!b.claimed,
-            premiumMember: !!b.premiumMember,
-            projectsCompleted: b.projectsCompleted || 0,
-            responseTime: b.responseTime || "Within 24 hours",
+            premiumMember: !!b.premium_member,
+            projectsCompleted: b.projects_completed || 0,
+            responseTime: b.response_time || "Within 24 hours",
             languages: b.languages || ["English"],
-            createdAt: b.createdAt,
-            source: b.source,
-            gmbImported: !!(b.gmbImported || b.importedFromGMB || b.source === "GMB_API"),
+            createdAt: b.created_at,
+            source: b.source || 'supabase',
+            gmbImported: false,
             headquarters: {
-              city: b.headquartersCity || "Unknown",
-              country: b.headquartersCountry || "Unknown",
-              countryCode: b.headquartersCountryCode || "XX",
-              address: b.headquartersAddress || "",
+              city: b.headquarters_city || "Unknown",
+              country: b.headquarters_country || "Unknown",
+              countryCode: b.headquarters_country_code || "XX",
+              address: b.headquarters_address || "",
             },
+            contactInfo: {
+              primaryEmail: b.primary_email || '',
+              phone: b.phone || '',
+              website: b.website || '',
+              contactPerson: b.contact_person || '',
+              position: b.position || '',
+            },
+            companyDescription: b.company_description || '',
+            logo: b.logo || '/images/builders/default-logo.png',
+            establishedYear: b.established_year || new Date().getFullYear(),
+            teamSize: b.team_size || 0,
           }));
+          
+          if (isVerbose) {
+            console.log(`📊 Retrieved ${buildersSource.length} builders from Supabase`);
+          }
         }
       }
-    } catch (e) {
-      if (isVerbose) console.warn("⚠️ Convex builders fetch failed, falling back", e);
-      buildersSource = [];
+    } catch (supabaseErr) {
+      if (isVerbose) {
+        console.warn('⚠️ Supabase fetch failed, trying Convex:', supabaseErr);
+      }
     }
 
-    // If Convex had no data, try Supabase first, then persistent storage
+    // If Supabase had no data, try Convex as fallback
     if (buildersSource.length === 0) {
       try {
-        // Try Supabase first for real builders
-        const { getServerSupabase } = await import('@/lib/supabase');
-        const sb = getServerSupabase();
-        if (sb) {
-          const { data: supabaseBuilders, error } = await sb
-            .from('builder_profiles')
-            .select('*')
-            .order('created_at', { ascending: false });
-          
-          if (!error && supabaseBuilders && supabaseBuilders.length > 0) {
-            buildersSource = supabaseBuilders.map((b: any) => ({
-              id: b.id,
-              companyName: b.company_name,
-              slug: b.slug,
+        const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+        if (convexUrl) {
+          const convex = new ConvexHttpClient(convexUrl);
+          const convexData = await convex.query(api.builders.getAllBuilders, { limit: 10000, offset: 0 });
+          const convexBuilders = Array.isArray(convexData?.builders) ? convexData.builders : [];
+          if (isVerbose) {
+            console.log(`📡 Convex returned ${convexBuilders.length} builders`);
+          }
+          if (convexBuilders.length > 0) {
+            // Map Convex format to unified shape expected by clients of this endpoint
+            buildersSource = convexBuilders.map((b: any) => ({
+              id: b._id,
+              companyName: b.companyName,
+              slug: b.slug || b.companyName?.toLowerCase()?.replace(/[^a-z0-9]/g, "-") || "",
               rating: b.rating || 0,
-              reviewCount: b.review_count || 0,
+              reviewCount: b.reviewCount || 0,
               verified: !!b.verified,
               claimed: !!b.claimed,
-              premiumMember: !!b.premium_member,
-              projectsCompleted: b.projects_completed || 0,
-              responseTime: b.response_time || "Within 24 hours",
+              premiumMember: !!b.premiumMember,
+              projectsCompleted: b.projectsCompleted || 0,
+              responseTime: b.responseTime || "Within 24 hours",
               languages: b.languages || ["English"],
-              createdAt: b.created_at,
-              source: b.source || 'supabase',
-              gmbImported: false,
+              createdAt: b.createdAt,
+              source: b.source,
+              gmbImported: !!(b.gmbImported || b.importedFromGMB || b.source === "GMB_API"),
               headquarters: {
-                city: b.headquarters_city || "Unknown",
-                country: b.headquarters_country || "Unknown",
-                countryCode: b.headquarters_country_code || "XX",
-                address: b.headquarters_address || "",
+                city: b.headquartersCity || "Unknown",
+                country: b.headquartersCountry || "Unknown",
+                countryCode: b.headquartersCountryCode || "XX",
+                address: b.headquartersAddress || "",
               },
-              contactInfo: {
-                primaryEmail: b.primary_email || '',
-                phone: b.phone || '',
-                website: b.website || '',
-                contactPerson: b.contact_person || '',
-                position: b.position || '',
-              },
-              companyDescription: b.company_description || '',
-              logo: b.logo || '/images/builders/default-logo.png',
-              establishedYear: b.established_year || new Date().getFullYear(),
-              teamSize: b.team_size || 0,
             }));
-            
-            if (isVerbose) {
-              console.log(`📊 Retrieved ${buildersSource.length} builders from Supabase`);
-            }
           }
         }
-      } catch (supabaseErr) {
-        if (isVerbose) {
-          console.warn('⚠️ Supabase fetch failed, trying persistent storage:', supabaseErr);
-        }
+      } catch (e) {
+        if (isVerbose) console.warn("⚠️ Convex builders fetch failed, trying persistent storage", e);
       }
+    }
 
-      // If Supabase had no data, try persistent storage
-      if (buildersSource.length === 0) {
-        try {
-          const persistentBuilders = await builderAPI.getAllBuilders();
-          if (isVerbose) {
-            console.log(`📊 Retrieved ${persistentBuilders.length} builders from persistent storage`);
-          }
-          buildersSource = persistentBuilders;
-        } catch (err) {
-          if (isVerbose) {
-            console.error('⚠️ Failed to read persistent builders, falling back to static set:', err);
-          }
-          buildersSource = [];
-        }
-      }
-
-      // Only fallback to static if no real data exists
-      if (buildersSource.length === 0) {
-        buildersSource = getExhibitionBuilders();
+    // If both Supabase and Convex had no data, try persistent storage
+    if (buildersSource.length === 0) {
+      try {
+        const persistentBuilders = await builderAPI.getAllBuilders();
         if (isVerbose) {
-          console.log(`📂 Using ${buildersSource.length} static builders as fallback (no real data found)`);
+          console.log(`📊 Retrieved ${persistentBuilders.length} builders from persistent storage`);
         }
+        buildersSource = persistentBuilders;
+      } catch (err) {
+        if (isVerbose) {
+          console.error('⚠️ Failed to read persistent builders:', err);
+        }
+        buildersSource = [];
+      }
+    }
+
+    // NO FALLBACK TO STATIC DATA - Only return real builders from Supabase/Convex/persistence
+    if (buildersSource.length === 0) {
+      if (isVerbose) {
+        console.log(`📂 No real builders found - returning empty array (no static fallback)`);
       }
     }
 
