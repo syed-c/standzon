@@ -221,26 +221,85 @@ export async function GET(request: Request) {
       buildersSource = [];
     }
 
-    // If Convex had no data, load from persistent storage
+    // If Convex had no data, try Supabase first, then persistent storage
     if (buildersSource.length === 0) {
       try {
-        const persistentBuilders = await builderAPI.getAllBuilders();
-        if (isVerbose) {
-          console.log(`📊 Retrieved ${persistentBuilders.length} builders from persistent storage`);
+        // Try Supabase first for real builders
+        const { getServerSupabase } = await import('@/lib/supabase');
+        const sb = getServerSupabase();
+        if (sb) {
+          const { data: supabaseBuilders, error } = await sb
+            .from('builder_profiles')
+            .select('*')
+            .order('created_at', { ascending: false });
+          
+          if (!error && supabaseBuilders && supabaseBuilders.length > 0) {
+            buildersSource = supabaseBuilders.map((b: any) => ({
+              id: b.id,
+              companyName: b.company_name,
+              slug: b.slug,
+              rating: b.rating || 0,
+              reviewCount: b.review_count || 0,
+              verified: !!b.verified,
+              claimed: !!b.claimed,
+              premiumMember: !!b.premium_member,
+              projectsCompleted: b.projects_completed || 0,
+              responseTime: b.response_time || "Within 24 hours",
+              languages: b.languages || ["English"],
+              createdAt: b.created_at,
+              source: b.source || 'supabase',
+              gmbImported: false,
+              headquarters: {
+                city: b.headquarters_city || "Unknown",
+                country: b.headquarters_country || "Unknown",
+                countryCode: b.headquarters_country_code || "XX",
+                address: b.headquarters_address || "",
+              },
+              contactInfo: {
+                primaryEmail: b.primary_email || '',
+                phone: b.phone || '',
+                website: b.website || '',
+                contactPerson: b.contact_person || '',
+                position: b.position || '',
+              },
+              companyDescription: b.company_description || '',
+              logo: b.logo || '/images/builders/default-logo.png',
+              establishedYear: b.established_year || new Date().getFullYear(),
+              teamSize: b.team_size || 0,
+            }));
+            
+            if (isVerbose) {
+              console.log(`📊 Retrieved ${buildersSource.length} builders from Supabase`);
+            }
+          }
         }
-        buildersSource = persistentBuilders;
-      } catch (err) {
+      } catch (supabaseErr) {
         if (isVerbose) {
-          console.error('⚠️ Failed to read persistent builders, falling back to static set:', err);
+          console.warn('⚠️ Supabase fetch failed, trying persistent storage:', supabaseErr);
         }
-        buildersSource = [];
       }
 
-      // Fallback to static if still empty
+      // If Supabase had no data, try persistent storage
+      if (buildersSource.length === 0) {
+        try {
+          const persistentBuilders = await builderAPI.getAllBuilders();
+          if (isVerbose) {
+            console.log(`📊 Retrieved ${persistentBuilders.length} builders from persistent storage`);
+          }
+          buildersSource = persistentBuilders;
+        } catch (err) {
+          if (isVerbose) {
+            console.error('⚠️ Failed to read persistent builders, falling back to static set:', err);
+          }
+          buildersSource = [];
+        }
+      }
+
+      // Only fallback to static if no real data exists
       if (buildersSource.length === 0) {
         buildersSource = getExhibitionBuilders();
         if (isVerbose) {
-          console.log(`📂 Using ${buildersSource.length} static builders as fallback (auto)`);
+          console.log(`📂 Using ${buildersSource.length} static builders as fallback (no real data found)`);
         }
       }
     }

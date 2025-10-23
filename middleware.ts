@@ -15,6 +15,17 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Builder dashboard protection
+  if (pathname.startsWith('/builder/dashboard')) {
+    const cookie = request.cookies.get('builder_auth')?.value
+    const isApi = pathname.startsWith('/api')
+    if (!cookie) {
+      const loginUrl = new URL('/auth/login', request.url)
+      if (isApi) return NextResponse.json({ success:false, error:'Unauthorized' }, { status: 401 })
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+
   // Redirect UAE routes to United Arab Emirates
   if (pathname.startsWith('/exhibition-stands/uae')) {
     const newPathname = pathname.replace('/exhibition-stands/uae', '/exhibition-stands/united-arab-emirates')
@@ -38,6 +49,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/admin/:path*',
+    '/builder/dashboard/:path*',
     '/exhibition-stands/uae/:path*',
     '/uae/:path*',
     '/exhibition-stands/:country/abudhabi',

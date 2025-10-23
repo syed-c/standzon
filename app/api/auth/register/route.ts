@@ -12,7 +12,22 @@ export async function POST(request: NextRequest) {
       lastName, 
       phone, 
       userType,
-      companyName 
+      companyName,
+      // Additional builder data
+      country,
+      city,
+      address,
+      postalCode,
+      establishedYear,
+      teamSize,
+      yearsOfExperience,
+      projectsCompleted,
+      companyDescription,
+      website,
+      services,
+      serviceCountries,
+      serviceCities,
+      specializations
     } = await request.json();
 
     console.log('📝 Registration attempt:', { email, userType, firstName, lastName });
@@ -58,8 +73,9 @@ export async function POST(request: NextRequest) {
       }, { status: 409 });
     }
 
-    // For builders, also check if email exists in builder profiles
+    // For builders, also check if email exists in builder profiles (both in-memory and Supabase)
     if (userType === 'builder') {
+      // Check in-memory first
       const builders = unifiedPlatformAPI.getBuilders();
       const existingBuilder = builders.find(b => 
         b.contactInfo?.primaryEmail?.toLowerCase() === email.toLowerCase()
@@ -70,6 +86,29 @@ export async function POST(request: NextRequest) {
           success: false,
           error: 'A builder profile with this email already exists'
         }, { status: 409 });
+      }
+
+      // Also check Supabase
+      try {
+        const { getServerSupabase } = await import('@/lib/supabase');
+        const sb = getServerSupabase();
+        if (sb) {
+          const { data: supabaseBuilder } = await sb
+            .from('builder_profiles')
+            .select('id, primary_email')
+            .eq('primary_email', email)
+            .single();
+          
+          if (supabaseBuilder) {
+            return NextResponse.json({
+              success: false,
+              error: 'A builder profile with this email already exists'
+            }, { status: 409 });
+          }
+        }
+      } catch (supabaseError) {
+        console.log('⚠️ Supabase duplicate check failed (non-fatal):', supabaseError);
+        // Continue with registration if Supabase check fails
       }
     }
 
@@ -88,7 +127,8 @@ export async function POST(request: NextRequest) {
 
     // If user is a builder, create builder profile in unified platform
     if (userType === 'builder' && companyName) {
-      const builderId = `builder_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      // Generate a proper UUID for Supabase compatibility
+      const builderId = crypto.randomUUID();
       
       // sanitize slug: collapse non-alphanumerics to '-' and trim leading/trailing '-'
       const sanitizedSlug = companyName
@@ -104,26 +144,31 @@ export async function POST(request: NextRequest) {
           primaryEmail: email,
           contactPerson: `${firstName} ${lastName}`,
           phone,
-          website: null
+          website: website || null
         },
         headquarters: {
-          city: 'Unknown',
-          country: 'Unknown'
+          city: city || 'Unknown',
+          country: country || 'Unknown',
+          countryCode: country ? country.slice(0, 2).toUpperCase() : 'US',
+          address: address || '',
+          latitude: 0,
+          longitude: 0,
+          isHeadquarters: true
         },
         serviceLocations: [
           {
-            city: 'Unknown',
-            country: 'Unknown',
-            countryCode: 'US',
-            address: '',
+            city: city || 'Unknown',
+            country: country || 'Unknown',
+            countryCode: country ? country.slice(0, 2).toUpperCase() : 'US',
+            address: address || '',
             latitude: 0,
             longitude: 0,
-            isHeadquarters: false
+            isHeadquarters: true
           }
         ],
         rating: 0,
         reviewCount: 0,
-        projectsCompleted: 0,
+        projectsCompleted: projectsCompleted || 0,
         responseTime: 'New to platform',
         verified: false,
         claimed: true, // Auto-claimed since user registered
@@ -132,12 +177,14 @@ export async function POST(request: NextRequest) {
         claimedBy: email,
         planType: 'free',
         premiumMember: false,
-        specializations: [],
+        specializations: specializations || [],
         keyStrengths: [],
-        companyDescription: `${companyName} - Professional exhibition stand builder`,
-        services: [],
+        companyDescription: companyDescription || `${companyName} - Professional exhibition stand builder`,
+        services: services || [],
         portfolio: [],
         tradeshowExperience: [],
+        establishedYear: establishedYear || new Date().getFullYear(),
+        teamSize: teamSize || 0,
         hashedPassword: Buffer.from(password).toString('base64'), // Simple hashing for demo
         createdAt: new Date().toISOString(),
         registeredViaForm: true,
@@ -146,34 +193,10 @@ export async function POST(request: NextRequest) {
 
       console.log('🏗️ Creating builder profile:', { builderId, companyName });
       
-      // Add builder to unified platform (in-memory)
-      unifiedPlatformAPI.addBuilder(builderProfile);
-      
-      // Persist to Supabase if server creds are available
-      try {
-        const sb = (await import('@/lib/supabase')).getServerSupabase();
-        if (sb) {
-          await sb.from('builder_profiles').insert({
-            id: builderId,
-            company_name: companyName,
-            slug: sanitizedSlug,
-            primary_email: email,
-            phone,
-            contact_person: `${firstName} ${lastName}`,
-            company_description: `${companyName} - Professional exhibition stand builder`,
-            headquarters_city: 'Unknown',
-            headquarters_country: 'Unknown',
-            verified: false,
-            claimed: true,
-            claim_status: 'verified',
-            premium_member: false,
-            created_at: new Date().toISOString(),
-            source: 'registration_form'
-          });
-        }
-      } catch (persistErr) {
-        console.error('⚠️ Failed to persist builder to Supabase (non-fatal):', persistErr);
-      }
+      // Add builder to unified platform (in-memory) - will be normalized internally and persisted to Supabase
+      console.log('🔄 Calling unifiedPlatformAPI.addBuilder...');
+      const addResult = await unifiedPlatformAPI.addBuilder(builderProfile as any);
+      console.log('📊 addBuilder result:', addResult);
       
       console.log('✅ Builder profile created in unified platform');
     }

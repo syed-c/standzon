@@ -465,13 +465,37 @@ export default function EnhancedBuilderSignup() {
         unifiedBuilderData
       );
 
-      // Submit to unified builder API
-      const response = await fetch("/api/admin/builders", {
+      // Submit to auth registration API (which handles builder creation)
+      const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(unifiedBuilderData),
+        body: JSON.stringify({
+          email: formData.primaryEmail,
+          password: formData.password,
+          firstName: formData.contactName.split(' ')[0] || formData.contactName,
+          lastName: formData.contactName.split(' ').slice(1).join(' ') || '',
+          phone: formData.phoneNumber,
+          userType: 'builder',
+          companyName: formData.companyName,
+          // Pass location data
+          country: formData.country,
+          city: formData.city,
+          address: formData.address,
+          postalCode: formData.postalCode,
+          // Pass additional builder data
+          establishedYear: formData.establishedYear,
+          teamSize: formData.teamSize,
+          yearsOfExperience: formData.yearsOfExperience,
+          projectsCompleted: formData.projectsCompleted,
+          companyDescription: formData.companyDescription,
+          website: formData.website,
+          services: formData.services,
+          serviceCountries: formData.serviceCountries,
+          serviceCities: formData.serviceCities,
+          specializations: formData.specializations,
+        }),
       });
 
       const result = await response.json();

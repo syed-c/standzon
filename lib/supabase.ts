@@ -4,8 +4,12 @@ import { Database } from './supabase/database';
 // Server-side Supabase client using the service role for privileged writes from API routes
 export function getServerSupabase() {
   const url = process.env.SUPABASE_URL || '';
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-  if (!url || !serviceKey) return null;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE || '';
+  if (!url || !serviceKey) {
+    console.log('❌ Supabase server client not configured:', { url: !!url, serviceKey: !!serviceKey });
+    return null;
+  }
+  console.log('✅ Supabase server client configured');
   return createClient<Database>(url, serviceKey, { auth: { persistSession: false } });
 }
 

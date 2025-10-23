@@ -248,7 +248,7 @@ class UnifiedDataManager {
   }
 
   // Builders Management  
-  addBuilder(builder: any, source: 'admin' | 'website' = 'admin'): { success: boolean; data?: ExhibitionBuilder; error?: string } {
+  async addBuilder(builder: any, source: 'admin' | 'website' = 'admin'): Promise<{ success: boolean; data?: ExhibitionBuilder; error?: string }> {
     console.log('➕ Adding builder to unified system:', builder.companyName);
     
     try {
@@ -330,6 +330,46 @@ class UnifiedDataManager {
       // Update stats
       this.data.stats.totalBuilders = this.data.builders.length;
       this.data.stats.verifiedBuilders = this.data.builders.filter(b => b.verified).length;
+      
+      // Persist to Supabase if available
+      try {
+        console.log('🔄 Attempting to persist builder to Supabase...');
+        const { getServerSupabase } = await import('@/lib/supabase');
+        const sb = getServerSupabase();
+        console.log('🔍 Supabase client:', sb ? '✅ Available' : '❌ Not available');
+        
+        if (sb) {
+          console.log('📝 Inserting builder to Supabase:', {
+            id: normalized.id,
+            company_name: normalized.companyName,
+            primary_email: normalized.contactInfo.primaryEmail
+          });
+          
+          const result = await sb.from('builder_profiles').insert({
+            id: normalized.id,
+            company_name: normalized.companyName,
+            slug: normalized.slug,
+            primary_email: normalized.contactInfo.primaryEmail,
+            phone: normalized.contactInfo.phone,
+            contact_person: normalized.contactInfo.contactPerson,
+            company_description: normalized.companyDescription,
+            headquarters_city: normalized.headquarters.city,
+            headquarters_country: normalized.headquarters.country,
+            verified: normalized.verified,
+            claimed: normalized.claimed,
+            claim_status: normalized.claimStatus || 'unclaimed',
+            premium_member: normalized.premiumMember,
+            created_at: normalized.lastUpdated,
+            source: normalized.source || 'unified_platform'
+          });
+          
+          console.log('✅ Builder persisted to Supabase successfully:', result);
+        } else {
+          console.log('❌ Supabase client not available - builder not persisted to database');
+        }
+      } catch (persistErr) {
+        console.error('❌ Failed to persist builder to Supabase:', persistErr);
+      }
       
       // Notify all subscribers
       this.notifySubscribers({
@@ -421,6 +461,22 @@ class UnifiedDataManager {
 
     console.log('🧹 All platform data cleared from memory');
   }
+
+  // Clear only builders (for testing/reset)
+  clearBuilders(): void {
+    this.data.builders = [];
+    this.data.stats.totalBuilders = 0;
+    this.data.stats.verifiedBuilders = 0;
+    
+    this.notifySubscribers({
+      type: 'stats_updated',
+      data: { message: 'Builders cleared' },
+      timestamp: new Date().toISOString(),
+      source: 'admin'
+    });
+
+    console.log('🧹 All builders cleared from memory');
+  }
 }
 
 // Global instance
@@ -491,7 +547,8 @@ export const unifiedPlatformAPI = {
   updateLead: (id: string, updates: any) => getUnifiedDataManager().updateLead(id, updates),
   
   // Utility
-  clearAll: () => getUnifiedDataManager().clearAll()
+  clearAll: () => getUnifiedDataManager().clearAll(),
+  clearBuilders: () => getUnifiedDataManager().clearBuilders()
 };
 
 console.log('✅ Simplified Unified Platform Data System initialized')
