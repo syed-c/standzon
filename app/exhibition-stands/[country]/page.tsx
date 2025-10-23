@@ -1,176 +1,82 @@
-import { Metadata } from "next";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
-import { CountryCityPage } from "@/components/CountryCityPage";
-import {
-  ALL_COUNTRY_SLUGS,
-  getDisplayNameFromSlug,
-  isValidCountrySlug,
-  sanitizeCountrySlug,
-} from "@/lib/locations/countries";
-import { getServerSupabase } from "@/lib/supabase";
-import { notFound } from "next/navigation";
+import { Metadata } from 'next';
+import { preloadQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
+import WhatsAppFloat from '@/components/WhatsAppFloat';
+import { CountryCityPage } from '@/components/CountryCityPage';
+import { getServerSupabase } from '@/lib/supabase';
 
-interface PageProps {
-  params: {
-    country: string;
-  };
-}
-
-// Default fallback content for each country
-const getDefaultCountryContent = (countryName: string, countrySlug: string) => ({
-  whyChooseHeading: `Why Choose Local Builders in ${countryName}?`,
-  whyChooseParagraph: `Local builders offer unique advantages including market knowledge, logistical expertise, and established vendor relationships.`,
-  infoCards: [
-    {
-      title: "Local Market Knowledge",
-      text: `Understand local regulations, venue requirements, and cultural preferences specific to ${countryName}.`
-    },
-    {
-      title: "Faster Project Delivery",
-      text: "Reduced logistics time, easier coordination, and faster response times for urgent modifications or support."
-    },
-    {
-      title: "Cost-Effective Solutions",
-      text: "Lower transportation costs, established supplier networks, and competitive local pricing structures."
-    }
-  ],
-  quotesParagraph: `Connect with 3-5 verified local builders who understand your market. No registration required, quotes within 24 hours.`,
-  servicesHeading: `Exhibition Stand Builders in ${countryName}: Services, Costs, and Tips`,
-  servicesParagraph: `Finding the right exhibition stand partner in ${countryName} can dramatically improve your event ROI. Local builders offer end-to-end services including custom design, fabrication, graphics, logistics, and on-site installation—ensuring your brand presents a professional, high‑impact presence on the show floor.`
-});
-
-export async function generateMetadata({
-  params,
-}: {
-  params: { country: string };
-}): Promise<Metadata> {
-  const { country } = params;
-  const sanitized = sanitizeCountrySlug(country);
-  const isValid = isValidCountrySlug(sanitized);
-  
-  // Return 404 if country doesn't exist
-  if (!isValid) {
-    console.log('❌ Country not found in metadata:', sanitized);
-    notFound();
-  }
-  
-  const countryName = getDisplayNameFromSlug(sanitized);
-
-  return {
-    title: `Exhibition Stand Builders in ${countryName} | Professional Trade Show Displays`,
-    description: `Find professional exhibition stand builders across ${countryName}. Custom trade show displays, booth design, and comprehensive exhibition services. Connect with verified contractors in major cities.`,
-    keywords: [
-      `exhibition stands ${countryName}`,
-      `booth builders ${countryName}`,
-      `trade show displays ${countryName}`,
-    ],
-    openGraph: {
-      title: `Exhibition Stand Builders in ${countryName}`,
-      description: `Professional exhibition stand builders across ${countryName}. Custom trade show displays and booth design services.`,
-      type: "website",
-      locale: "en_US",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `Exhibition Stand Builders in ${countryName}`,
-      description: `Professional exhibition stand builders across ${countryName}. Custom trade show displays and booth design services.`,
-    },
-    alternates: {
-      canonical: `/exhibition-stands/${sanitized}`,
-    },
-  };
-}
+// Country data mapping
+const COUNTRY_DATA = {
+  'united-kingdom': { name: 'United Kingdom', flag: '🇬🇧', code: 'GB' },
+  'france': { name: 'France', flag: '🇫🇷', code: 'FR' },
+  'germany': { name: 'Germany', flag: '🇩🇪', code: 'DE' },
+  'italy': { name: 'Italy', flag: '🇮🇹', code: 'IT' },
+  'spain': { name: 'Spain', flag: '🇪🇸', code: 'ES' },
+  'belgium': { name: 'Belgium', flag: '🇧🇪', code: 'BE' },
+  'netherlands': { name: 'Netherlands', flag: '🇳🇱', code: 'NL' },
+  'greece': { name: 'Greece', flag: '🇬🇷', code: 'GR' },
+  'hungary': { name: 'Hungary', flag: '🇭🇺', code: 'HU' },
+  'poland': { name: 'Poland', flag: '🇵🇱', code: 'PL' },
+  'romania': { name: 'Romania', flag: '🇷🇴', code: 'RO' },
+  'united-states': { name: 'United States', flag: '🇺🇸', code: 'US' },
+  'canada': { name: 'Canada', flag: '🇨🇦', code: 'CA' },
+  'brazil': { name: 'Brazil', flag: '🇧🇷', code: 'BR' },
+  'argentina': { name: 'Argentina', flag: '🇦🇷', code: 'AR' },
+  'colombia': { name: 'Colombia', flag: '🇨🇴', code: 'CO' },
+  'chile': { name: 'Chile', flag: '🇨🇱', code: 'CL' },
+  'peru': { name: 'Peru', flag: '🇵🇪', code: 'PE' },
+  'united-arab-emirates': { name: 'United Arab Emirates', flag: '🇦🇪', code: 'AE' },
+  'saudi-arabia': { name: 'Saudi Arabia', flag: '🇸🇦', code: 'SA' },
+  'oman': { name: 'Oman', flag: '🇴🇲', code: 'OM' },
+  'egypt': { name: 'Egypt', flag: '🇪🇬', code: 'EG' },
+  'japan': { name: 'Japan', flag: '🇯🇵', code: 'JP' },
+  'south-korea': { name: 'South Korea', flag: '🇰🇷', code: 'KR' },
+  'turkey': { name: 'Turkey', flag: '🇹🇷', code: 'TR' },
+  'singapore': { name: 'Singapore', flag: '🇸🇬', code: 'SG' },
+  'china': { name: 'China', flag: '🇨🇳', code: 'CN' },
+  'pakistan': { name: 'Pakistan', flag: '🇵🇰', code: 'PK' },
+  'bangladesh': { name: 'Bangladesh', flag: '🇧🇩', code: 'BD' },
+  'indonesia': { name: 'Indonesia', flag: '🇮🇩', code: 'ID' },
+  'malaysia': { name: 'Malaysia', flag: '🇲🇾', code: 'MY' },
+  'south-africa': { name: 'South Africa', flag: '🇿🇦', code: 'ZA' },
+  'kenya': { name: 'Kenya', flag: '🇰🇪', code: 'KE' },
+  'nigeria': { name: 'Nigeria', flag: '🇳🇬', code: 'NG' },
+  'morocco': { name: 'Morocco', flag: '🇲🇦', code: 'MA' },
+  'vietnam': { name: 'Vietnam', flag: '🇻🇳', code: 'VN' },
+  'sweden': { name: 'Sweden', flag: '🇸🇪', code: 'SE' },
+  'norway': { name: 'Norway', flag: '🇳🇴', code: 'NO' },
+  'denmark': { name: 'Denmark', flag: '🇩🇰', code: 'DK' },
+  'finland': { name: 'Finland', flag: '🇫🇮', code: 'FI' },
+  'australia': { name: 'Australia', flag: '🇦🇺', code: 'AU' },
+  'switzerland': { name: 'Switzerland', flag: '🇨🇭', code: 'CH' },
+  'austria': { name: 'Austria', flag: '🇦🇹', code: 'AT' },
+  'czech-republic': { name: 'Czech Republic', flag: '🇨🇿', code: 'CZ' },
+  'mexico': { name: 'Mexico', flag: '🇲🇽', code: 'MX' }
+};
 
 // Fetch CMS content for the country page
 async function getCountryPageContent(countrySlug: string) {
   try {
     const sb = getServerSupabase();
     if (sb) {
-      console.log('🔍 Server-side: Fetching CMS data for country:', countrySlug);
+      console.log(`🔍 Server-side: Fetching CMS data for ${countrySlug}...`);
       
-      // Special handling for countries that need enhanced query strategies
-      const isSpecialCountry = ['jordan', 'lebanon', 'israel', 'de', 'gb', 'uae', 'united-arab-emirates', 'saudi-arabia', 'qatar', 'kuwait', 'bahrain', 'oman', 'egypt', 'morocco', 'iran', 'iraq', 'russia', 'indonesia', 'malaysia', 'china', 'japan', 'south-korea', 'brazil', 'mexico', 'canada', 'south-africa', 'singapore', 'thailand', 'philippines', 'turkey', 'czech-republic', 'hungary', 'nigeria', 'kenya'].includes(countrySlug);
-      
-      // For special countries, try both with and without the country prefix
-      let data, error;
-      
-      if (isSpecialCountry) {
-        console.log('🌍 Special handling for country:', countrySlug);
+      const result = await sb
+        .from('page_contents')
+        .select('content')
+        .eq('id', countrySlug)
+        .single();
         
-        // Force cache bypass with headers and timestamp
-        const timestamp = new Date().getTime();
-        const cacheHeaders = {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-          'X-Cache-Bust': `${timestamp}`
-        };
-        
-        // Try all possible ID formats with a single query
-        const possibleIds = [
-          countrySlug,
-          `country-${countrySlug}`,
-          `exhibition-stands-${countrySlug}`
-        ];
-        
-        // Direct query with IN operator for all possible IDs
-        const { data: directMatch, error: directError } = await sb
-          .from('page_contents')
-          .select('content, updated_at, id')
-          .in('id', possibleIds)
-          .order('updated_at', { ascending: false })
-          .limit(1);
-        
-        if (directMatch?.[0]?.content) {
-          data = directMatch[0];
-          error = null;
-          console.log(`✅ Found content with direct query for: ${countrySlug}, using ID: ${data.id}`);
-        } else {
-          console.log('⚠️ No content found with direct query, trying individual queries for:', countrySlug);
-          
-          // Try each ID format individually as fallback
-          for (const id of possibleIds) {
-            console.log(`🔍 Trying individual query with ID: ${id}`);
-            const individualResult = await sb
-              .from('page_contents')
-              .select('content, updated_at')
-              .eq('id', id)
-              .single();
-                
-            if (individualResult.data?.content) {
-              data = individualResult.data;
-              error = null;
-              console.log(`✅ Found content with individual query using ID: ${id}`);
-              break;
-            }
-          }
-          
-          if (!data?.content) {
-            console.log('⚠️ No content found with any query method for:', countrySlug);
-          }
-        }
-      } else {
-        // Standard query for other countries
-        const result = await sb
-          .from('page_contents')
-          .select('content')
-          .eq('id', countrySlug)
-          .single();
-          
-        data = result.data;
-        error = result.error;
-      }
-      
-      if (error) {
-        console.log('❌ Server-side: Supabase error:', error);
+      if (result.error) {
+        console.log('❌ Server-side: Supabase error:', result.error);
         return null;
       }
       
-      if (data?.content) {
-        console.log('✅ Server-side: Found CMS data for country:', countrySlug);
-        return data.content;
+      if (result.data?.content) {
+        console.log(`✅ Server-side: Found CMS data for ${countrySlug}`);
+        return result.data.content;
       }
     }
   } catch (error) {
@@ -180,198 +86,84 @@ async function getCountryPageContent(countrySlug: string) {
   return null;
 }
 
-export default async function CountryPage({ params }: PageProps) {
-  const { country } = params;
-  const sanitized = sanitizeCountrySlug(country);
+export async function generateMetadata({ params }: { params: { country: string } }): Promise<Metadata> {
+  const countrySlug = params.country;
+  const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
   
-  // Validate country slug immediately to prevent template flash
-  if (!isValidCountrySlug(sanitized)) {
-    return notFound();
+  if (!countryInfo) {
+    return {
+      title: 'Country Not Found',
+      description: 'The requested country page was not found.',
+    };
   }
-  
-  const countryName = getDisplayNameFromSlug(sanitized);
 
-  // Fetch CMS content server-side for better SEO and performance
-  const cmsContent = await getCountryPageContent(sanitized);
+  return {
+    title: `Exhibition Stand Builders in ${countryInfo.name} | Professional Trade Show Displays`,
+    description: `Find professional exhibition stand builders across ${countryInfo.name}. Custom trade show displays, booth design, and comprehensive exhibition services.`,
+    keywords: [`exhibition stands ${countryInfo.name}`, `booth builders ${countryInfo.name}`, `trade show displays ${countryInfo.name}`, `${countryInfo.name} exhibition builders`, `${countryInfo.name} booth design`, `${countryInfo.name} exhibition stands`],
+    openGraph: {
+      title: `Exhibition Stand Builders in ${countryInfo.name}`,
+      description: `Professional exhibition stand builders across ${countryInfo.name}. Custom trade show displays and booth design services.`,
+      type: 'website',
+      locale: 'en_US',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Exhibition Stand Builders in ${countryInfo.name}`,
+      description: `Professional exhibition stand builders across ${countryInfo.name}. Custom trade show displays and booth design services.`,
+    },
+    alternates: {
+      canonical: `/exhibition-stands/${countrySlug}`,
+    },
+  };
+}
+
+export default async function CountryPage({ params }: { params: { country: string } }) {
+  const countrySlug = params.country;
+  const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
   
-  // Generate default content as fallback
-  const defaultContent = getDefaultCountryContent(countryName, sanitized);
+  if (!countryInfo) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Country Not Found</h1>
+          <p>The requested country page was not found.</p>
+        </div>
+      </div>
+    );
+  }
+
+  console.log(`${countryInfo.flag} Loading ${countryInfo.name} page with modern UI...`);
   
-  // Merge CMS content with defaults (CMS content takes precedence)
-  // Be flexible with incoming shapes to avoid falling back to hardcoded defaults
-  const countryBlock =
-    (cmsContent as any)?.sections?.countryPages?.[sanitized] ||
-    (cmsContent as any)?.countryPages?.[sanitized] ||
-    cmsContent ||
-    null;
+  const cmsContent = await getCountryPageContent(countrySlug);
+  
+  const defaultContent = {
+    id: `${countrySlug}-main`,
+    title: `Exhibition Stand Builders in ${countryInfo.name}`,
+    metaTitle: `${countryInfo.name} Exhibition Stand Builders | Trade Show Booth Design`,
+    metaDescription: `Leading exhibition stand builders across ${countryInfo.name}. Custom trade show displays, booth design, and professional exhibition services.`,
+    description: `${countryInfo.name} is a significant market for international trade shows and exhibitions. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in ${countryInfo.name}'s dynamic exhibition landscape.`,
+    heroContent: `Partner with ${countryInfo.name}'s premier exhibition stand builders for trade show success across the country.`,
+    seoKeywords: [`${countryInfo.name} exhibition stands`, `${countryInfo.name} trade show builders`, `${countryInfo.name} exhibition builders`, `${countryInfo.name} booth design`, `${countryInfo.name} exhibition services`]
+  };
+  
+  const countryBlock = cmsContent?.sections?.countryPages?.[countrySlug] || cmsContent || null;
   const mergedContent = {
     ...defaultContent,
     ...(countryBlock || {})
   };
-
-  // Fetch builders from Supabase
-  let builders: any[] = [];
-  try {
-    const sb = getServerSupabase();
-    if (sb) {
-      console.log('🔍 Server-side: Fetching builders for country:', countryName);
-      
-      const { data, error } = await sb
-        .from('builder_profiles')
-        .select('*')
-        .eq('headquarters_country', countryName)
-        .eq('verified', true)
-        .order('rating', { ascending: false });
-      
-      if (error) {
-        console.log('❌ Server-side: Supabase error fetching builders:', error);
-      } else if (data) {
-        // Transform Supabase data to match expected structure
-        builders = data.map((builder: any) => ({
-          id: builder.id,
-          companyName: builder.company_name,
-          slug: builder.slug,
-          logo: builder.logo || "/images/builders/default-logo.png",
-          establishedYear: builder.established_year || 2020,
-          headquarters: {
-            city: builder.headquarters_city || "Unknown",
-            country: builder.headquarters_country || "Unknown",
-            countryCode: builder.headquarters_country_code || "XX",
-            address: builder.headquarters_address || "",
-            latitude: builder.headquarters_latitude || 0,
-            longitude: builder.headquarters_longitude || 0,
-            isHeadquarters: true,
-          },
-          serviceLocations: [
-            {
-              city: builder.headquarters_city || "Unknown",
-              country: builder.headquarters_country || "Unknown",
-              countryCode: builder.headquarters_country_code || "XX",
-              address: builder.headquarters_address || "",
-              latitude: builder.headquarters_latitude || 0,
-              longitude: builder.headquarters_longitude || 0,
-              isHeadquarters: false,
-            },
-          ],
-          contactInfo: {
-            primaryEmail: builder.primary_email || "",
-            phone: builder.phone || "",
-            website: builder.website || "",
-            contactPerson: builder.contact_person || "Contact Person",
-            position: builder.position || "Manager",
-          },
-          services: [],
-          specializations: [
-            { id: 'general', name: 'Exhibition Builder', icon: '🏗️', color: '#3B82F6' }
-          ],
-          companyDescription: builder.company_description || 'Professional exhibition services provider',
-          keyStrengths: ["Professional Service", "Quality Work", "Local Expertise"],
-          projectsCompleted: builder.projects_completed || 25,
-          rating: builder.rating || 4.0,
-          reviewCount: builder.review_count || 0,
-          responseTime: builder.response_time || 'Within 24 hours',
-          languages: builder.languages || ['English'],
-          verified: builder.verified || false,
-          premiumMember: builder.premium_member || false,
-          claimed: builder.claimed || false,
-          claimStatus: builder.claim_status || 'unclaimed',
-          teamSize: builder.team_size || 10,
-          averageProjectValue: builder.average_project || 15000,
-          currency: builder.currency || 'USD',
-          basicStandMin: builder.basic_stand_min || 5000,
-          basicStandMax: builder.basic_stand_max || 15000,
-          customStandMin: builder.custom_stand_min || 15000,
-          customStandMax: builder.custom_stand_max || 50000,
-          premiumStandMin: builder.premium_stand_min || 50000,
-          premiumStandMax: builder.premium_stand_max || 100000,
-          gmbImported: builder.gmb_imported || false,
-          importedFromGmb: builder.imported_from_gmb || false,
-          source: builder.source || 'manual',
-          createdAt: builder.created_at,
-          updatedAt: builder.updated_at,
-        }));
-        console.log(`✅ Server-side: Found ${builders.length} builders for ${countryName}`);
-        console.log('🔍 Server-side: Builder details:', builders.map(b => ({
-          companyName: b.companyName,
-          headquarters: b.headquarters,
-          verified: b.verified
-        })));
-      }
-    }
-  } catch (error) {
-    console.error('❌ Server-side: Error fetching builders:', error);
-  }
-
-  // Countries without city sections
-  const countriesWithoutCities = ['tw', 'hk', 'nz', 'vn', 'se', 'no', 'dk', 'fi', 'id', 'ph', 'in', 'au', 'es', 'ch', 'at'];
-  const hideCitiesSection = countriesWithoutCities.includes(sanitized);
   
-  try {
-    const displayName = countryName;
-
-    return (
-      <div className="font-inter">
-        <Navigation />
-        <CountryCityPage
-          country={displayName}
-          initialBuilders={builders}
-          hideCitiesSection={hideCitiesSection}
-          initialContent={{
-            id: `${sanitized}-main`,
-            title: `Exhibition Stand Builders in ${displayName}`,
-            metaTitle: `${displayName} Exhibition Stand Builders | Trade Show Booth Design`,
-            metaDescription: `Leading exhibition stand builders across ${displayName}. Custom trade show displays, booth design, and professional exhibition services in major cities.`,
-            description: `Find the best exhibition stand builders across ${displayName}. Connect with experienced professionals who create stunning custom displays for trade shows and exhibitions across all major cities.`,
-            heroContent: `Discover ${displayName}'s premier exhibition stand builders and booth designers.`,
-            seoKeywords: [
-              `${displayName} exhibition stands`,
-              `${displayName} trade show builders`,
-              `${displayName} booth design`,
-            ],
-          }}
-          // Pass CMS content for dynamic rendering
-          cmsContent={mergedContent}
-        />
-        <Footer />
-        <WhatsAppFloat />
-      </div>
-    );
-  } catch (error) {
-    console.error('❌ Error rendering country page:', error);
-    return (
-      <div className="font-inter">
-        <Navigation />
-        <CountryCityPage
-          country={countryName}
-          initialBuilders={builders}
-          hideCitiesSection={hideCitiesSection}
-          initialContent={{
-            id: `${sanitized}-main`,
-            title: `Exhibition Stand Builders in ${countryName}`,
-            metaTitle: `${countryName} Exhibition Stand Builders | Trade Show Booth Design`,
-            metaDescription: `Leading exhibition stand builders across ${countryName}. Custom trade show displays, booth design, and professional exhibition services in major cities.`,
-            description: `Find the best exhibition stand builders across ${countryName}. Connect with experienced professionals who create stunning custom displays for trade shows and exhibitions across all major cities.`,
-            heroContent: `Discover ${countryName}'s premier exhibition stand builders and booth designers.`,
-            seoKeywords: [
-              `${countryName} exhibition stands`,
-              `${countryName} trade show builders`,
-              `${countryName} booth design`,
-            ],
-          }}
-          // Pass CMS content for dynamic rendering
-          cmsContent={mergedContent}
-        />
-        <Footer />
-        <WhatsAppFloat />
-      </div>
-    );
-  }
+  return (
+    <div className="font-inter">
+      <Navigation />
+      <CountryCityPage
+        country={countryInfo.name}
+        initialBuilders={[]}
+        initialContent={mergedContent}
+        cmsContent={cmsContent}
+      />
+      <Footer />
+      <WhatsAppFloat />
+    </div>
+  );
 }
-
-export async function generateStaticParams() {
-  // Generate static params for the full list provided
-  return ALL_COUNTRY_SLUGS.map((slug) => ({ country: slug }));
-}
-
-// Enable ISR with revalidation for dynamic content updates
-export const revalidate = 0; // Disable ISR for now to ensure real-time updates
