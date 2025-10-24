@@ -35,7 +35,7 @@ import {
   MapPin as Location,
   Settings
 } from 'lucide-react';
-import { getAllCountries, getCitiesForCountry } from '@/lib/data/countriesWithCities';
+import { GLOBAL_EXHIBITION_DATA } from '@/lib/data/globalCities';
 
 interface BuilderProfile {
   id: string;
@@ -403,7 +403,12 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
 
   const handleCountryChange = (country: string) => {
     setNewLocation({ country, cities: [] });
-    setAvailableCities(getCitiesForCountry(country));
+    // Get cities from the website's available data
+    const cities = GLOBAL_EXHIBITION_DATA.cities
+      .filter(city => city.country === country)
+      .map(city => city.name)
+      .sort();
+    setAvailableCities(cities);
   };
 
   const handleCityToggle = (city: string) => {
@@ -1183,9 +1188,9 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                               <SelectValue placeholder="Select a country" />
                             </SelectTrigger>
                             <SelectContent>
-                              {getAllCountries().map(country => (
-                                <SelectItem key={country} value={country}>
-                                  {country}
+                              {GLOBAL_EXHIBITION_DATA.countries.map(country => (
+                                <SelectItem key={country.name} value={country.name}>
+                                  {country.name}
                                 </SelectItem>
                               ))}
                             </SelectContent>

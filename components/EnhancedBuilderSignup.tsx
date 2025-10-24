@@ -568,11 +568,9 @@ export default function EnhancedBuilderSignup() {
 
         setShowSuccess(true);
 
-        // Redirect to unified dashboard and enable public profile link
+        // Redirect to login page for proper authentication
         setTimeout(() => {
-          router.push(
-            "/builder/dashboard?signup=success&enhanced=true&id=" + createdId
-          );
+          router.push("/auth/login?type=builder&signup=success");
           // Also open public profile in a new tab for confirmation
           window.open(`/builders/${createdSlug}`, "_blank");
         }, 1500);
@@ -605,7 +603,7 @@ export default function EnhancedBuilderSignup() {
             </h2>
             <p className="text-gray-600 mb-6">
               Your builder profile has been created and is now live on our
-              platform. You'll be redirected to your dashboard in a few seconds.
+              platform. You'll be redirected to the login page where you can sign in with your credentials.
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <h3 className="font-semibold text-blue-900 mb-2">What's Next?</h3>

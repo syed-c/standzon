@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -66,8 +66,19 @@ interface OTPForm {
 
 export default function AuthPage({ mode, userType }: AuthPageProps) {
   console.log("AuthPage: Component loaded for", mode, userType);
+  const searchParams = useSearchParams();
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const router = useRouter();
+
+  // Check for signup success parameter
+  useEffect(() => {
+    if (searchParams.get('signup') === 'success') {
+      setShowSuccessMessage(true);
+      // Hide success message after 5 seconds
+      setTimeout(() => setShowSuccessMessage(false), 5000);
+    }
+  }, [searchParams]);
   const [currentMode, setCurrentMode] = useState<"login" | "register" | "otp">(
     mode
   );
@@ -523,6 +534,14 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
 
               {/* Login Tab */}
               <TabsContent value="login" className="space-y-6 mt-6">
+                {showSuccessMessage && (
+                  <Alert className="border-green-200 bg-green-50">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertDescription className="text-green-800">
+                      Registration successful! Please log in with your credentials to access your dashboard.
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="login-email">Email Address</Label>

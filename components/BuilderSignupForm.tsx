@@ -451,9 +451,9 @@ export default function BuilderSignupForm() {
         
         setShowSuccess(true);
         
-        // Redirect to dashboard after 3 seconds
+        // Redirect to login page for proper authentication
         setTimeout(() => {
-          router.push('/builder/dashboard?signup=success&id=' + (result.data?.id || 'new'));
+          router.push('/auth/login?type=builder&signup=success');
         }, 3000);
       } else {
         console.error('❌ API Error:', result.error);
@@ -480,8 +480,8 @@ export default function BuilderSignupForm() {
               Registration Submitted Successfully!
             </h2>
             <p className="text-gray-600 mb-6">
-              Thank you for joining our platform. Your application has been submitted for review.
-              You'll receive an email confirmation within 24-48 hours.
+              Thank you for joining our platform. Your builder profile has been created successfully.
+              You'll be redirected to the login page where you can sign in with your credentials.
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <h3 className="font-semibold text-blue-900 mb-2">What happens next?</h3>
