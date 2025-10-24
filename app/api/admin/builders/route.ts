@@ -555,7 +555,12 @@ export async function PUT(request: NextRequest) {
         if (updates.serviceLocations) {
           // Clean existing service locations from description and add new ones
           const existingDescription = currentBuilder.company_description || '';
-          const cleanedDescription = existingDescription.replace(/\n\nSERVICE_LOCATIONS:\[.*?\]/g, '');
+          let cleanedDescription = existingDescription
+            .replace(/\n\nSERVICE_LOCATIONS:\[.*?\]/g, '')
+            .replace(/SERVICE_LOCATIONS:\[.*?\]/g, '')
+            .replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '')
+            .replace(/.*SERVICE_LOCATIONS.*$/g, '')
+            .trim();
           const serviceLocationsJson = JSON.stringify(updates.serviceLocations);
           supabaseUpdates.company_description = `${cleanedDescription}\n\nSERVICE_LOCATIONS:${serviceLocationsJson}`;
           

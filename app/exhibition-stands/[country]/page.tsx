@@ -53,7 +53,9 @@ const COUNTRY_DATA = {
   'switzerland': { name: 'Switzerland', flag: '🇨🇭', code: 'CH' },
   'austria': { name: 'Austria', flag: '🇦🇹', code: 'AT' },
   'czech-republic': { name: 'Czech Republic', flag: '🇨🇿', code: 'CZ' },
-  'mexico': { name: 'Mexico', flag: '🇲🇽', code: 'MX' }
+  'mexico': { name: 'Mexico', flag: '🇲🇽', code: 'MX' },
+  'hong-kong': { name: 'Hong Kong', flag: '🇭🇰', code: 'HK' },
+  'portugal': { name: 'Portugal', flag: '🇵🇹', code: 'PT' }
 };
 
 // Fetch CMS content for the country page

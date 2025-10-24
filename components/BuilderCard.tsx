@@ -96,10 +96,16 @@ function getClaimStatusBadge(builder: any) {
   
   if (claimed && claimStatus === 'verified') {
     return (
-      <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
-        <CheckCircle2 className="w-3 h-3 mr-1" />
-        Claimed & Verified
-      </Badge>
+      <>
+        <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
+          <CheckCircle2 className="w-3 h-3 mr-1" />
+          Claimed & Verified
+        </Badge>
+        <Badge className="bg-orange-100 text-orange-800 border-orange-200 text-xs">
+          <AlertCircle className="w-3 h-3 mr-1" />
+          Unclaimed
+        </Badge>
+      </>
     );
   }
   

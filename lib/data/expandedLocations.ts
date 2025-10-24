@@ -251,20 +251,7 @@ function getExhibitionRanking(marketSize: number): number {
 function getAdditionalMajorCities(): ExpandedCity[] {
   return [
     // Additional European cities
-    {
-      id: 'vienna-at',
-      name: 'Vienna',
-      country: 'Austria',
-      countryCode: 'AT',
-      continent: 'Europe',
-      region: 'Central Europe',
-      population: '1.9M',
-      annualEvents: 200,
-      keyIndustries: ['Tourism', 'Technology', 'International Organizations'],
-      isCapital: true,
-      builderCount: 45,
-      averageStandCost: 420
-    },
+    // Austria cities removed as requested
     {
       id: 'zurich-ch',
       name: 'Zurich',
@@ -305,20 +292,7 @@ function getAdditionalMajorCities(): ExpandedCity[] {
       builderCount: 42,
       averageStandCost: 450
     },
-    {
-      id: 'stockholm-se',
-      name: 'Stockholm',
-      country: 'Sweden',
-      countryCode: 'SE',
-      continent: 'Europe',
-      region: 'Northern Europe',
-      population: '1.7M',
-      annualEvents: 220,
-      keyIndustries: ['Technology', 'Design', 'Green Energy'],
-      isCapital: true,
-      builderCount: 38,
-      averageStandCost: 480
-    },
+    // Sweden cities removed as requested
     {
       id: 'copenhagen-dk',
       name: 'Copenhagen',

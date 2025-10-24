@@ -176,9 +176,12 @@ export async function GET(request: NextRequest) {
       logo: builder.logo || '/images/builders/default-logo.png',
       description: (() => {
         let desc = builder.company_description || '';
-        // Remove SERVICE_LOCATIONS JSON from description
+        // Remove SERVICE_LOCATIONS JSON from description more aggressively
         desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
         desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
+        desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
+        desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
+        desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
         desc = desc.trim();
         return desc || 'No description available';
       })(),

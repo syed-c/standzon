@@ -338,6 +338,17 @@ export function ProfileClaimSystem({ builder }: ClaimSystemProps) {
   const [showOTP, setShowOTP] = useState(false);
   const [verified, setVerified] = useState(false);
 
+  // Don't show claim button if builder is already verified or claimed
+  if (builder.verified || builder.claimed || builder.claimStatus === 'verified') {
+    return (
+      <div className="p-4 bg-green-50 rounded border border-green-200">
+        <p className="text-green-700 flex items-center gap-2">
+          <Verified size={18} /> Business Verified
+        </p>
+      </div>
+    );
+  }
+
   if (verified)
     return (
       <div className="p-4 bg-green-50 rounded border border-green-200">

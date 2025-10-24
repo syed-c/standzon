@@ -450,9 +450,7 @@ export const comprehensiveLocationData: CountryData[] = [
     currency: "EUR",
     timezone: "Europe/Vienna",
     language: "German",
-    cities: [
-      { cityName: "Vienna", citySlug: "vienna", latitude: 48.2082, longitude: 16.3738, population: 1911191 }
-    ]
+    cities: []
   },
   {
     countryName: "Czech Republic",
@@ -462,9 +460,7 @@ export const comprehensiveLocationData: CountryData[] = [
     currency: "CZK",
     timezone: "Europe/Prague",
     language: "Czech",
-    cities: [
-      { cityName: "Prague", citySlug: "prague", latitude: 50.0755, longitude: 14.4378, population: 1335084 }
-    ]
+    cities: []
   },
   {
     countryName: "Poland",
@@ -474,11 +470,7 @@ export const comprehensiveLocationData: CountryData[] = [
     currency: "PLN",
     timezone: "Europe/Warsaw",
     language: "Polish",
-    cities: [
-      { cityName: "Warsaw", citySlug: "warsaw", latitude: 52.2297, longitude: 21.0122, population: 1790658 },
-      { cityName: "Kielce", citySlug: "kielce", latitude: 50.8661, longitude: 20.6286, population: 195774 },
-      { cityName: "Poznan", citySlug: "poznan", latitude: 52.4064, longitude: 16.9252, population: 534813 }
-    ]
+    cities: []
   },
   {
     countryName: "Hungary",

@@ -115,6 +115,8 @@ const STATIC_PAGES: PageItem[] = [
   { title: 'Canada Exhibition Stands', path: '/exhibition-stands/canada', type: 'country' },
   { title: 'South Africa Exhibition Stands', path: '/exhibition-stands/south-africa', type: 'country' },
   { title: 'Singapore Exhibition Stands', path: '/exhibition-stands/singapore', type: 'country' },
+  { title: 'Hong Kong Exhibition Stands', path: '/exhibition-stands/hong-kong', type: 'country' },
+  { title: 'Portugal Exhibition Stands', path: '/exhibition-stands/portugal', type: 'country' },
   { title: 'Thailand Exhibition Stands', path: '/exhibition-stands/thailand', type: 'country' },
   { title: 'Philippines Exhibition Stands', path: '/exhibition-stands/philippines', type: 'country' },
   { title: 'Turkey Exhibition Stands', path: '/exhibition-stands/turkey', type: 'country' },
