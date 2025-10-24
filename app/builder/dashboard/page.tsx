@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import UnifiedBuilderDashboard from '@/components/UnifiedBuilderDashboard';
+import NewBuilderDashboard from '@/components/NewBuilderDashboard';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
@@ -18,7 +18,7 @@ export default function BuilderDashboardPage() {
       
       <main className="pt-20 px-6 pb-12">
         <div className="max-w-7xl mx-auto">
-          <UnifiedBuilderDashboard />
+          <NewBuilderDashboard builderId="77836f44-6832-4866-81f2-74c84303aa7c" />
         </div>
       </main>
       

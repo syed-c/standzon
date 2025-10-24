@@ -145,6 +145,8 @@ const TEAM_SIZES = [
 ];
 
 export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDashboardProps) {
+  console.log('🚀 UnifiedBuilderDashboard component rendered! builderId:', builderId);
+  
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -156,7 +158,58 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
 
   // Load unified profile data
   useEffect(() => {
-    loadUnifiedProfile();
+    console.log('🔍 UnifiedBuilderDashboard: Component mounted');
+    console.log('🔍 builderId in useEffect:', builderId);
+    
+    // Check authentication with multiple attempts
+    const checkAuth = (attempt = 1) => {
+      console.log(`🔍 Auth check attempt ${attempt}`);
+      
+      // Check if user is authenticated
+      const currentUser = localStorage.getItem('currentUser');
+      console.log('🔍 Debug - currentUser in localStorage:', currentUser);
+      
+      if (!currentUser) {
+        if (attempt < 3) {
+          console.log(`⏳ No user data found, retrying in 200ms (attempt ${attempt}/3)`);
+          setTimeout(() => checkAuth(attempt + 1), 200);
+          return;
+        }
+        console.log('❌ No authenticated user found after 3 attempts, redirecting to login');
+        window.location.href = '/auth/login';
+        return;
+      }
+      
+      try {
+        const userData = JSON.parse(currentUser);
+        console.log('✅ Authenticated user found:', userData);
+        console.log('👤 User role:', userData.role);
+        console.log('🏢 Company:', userData.companyName);
+        console.log('🔐 Is logged in:', userData.isLoggedIn);
+        
+        // More lenient authentication check
+        if (userData.role === 'builder') {
+          console.log('✅ Builder user authenticated, loading profile');
+          console.log('🚀 About to call loadUnifiedProfile...');
+          loadUnifiedProfile();
+        } else {
+          console.log('❌ Invalid user role, redirecting to login');
+          window.location.href = '/auth/login';
+        }
+      } catch (error) {
+        console.error('❌ Error parsing user data:', error);
+        if (attempt < 3) {
+          console.log(`⏳ Error parsing user data, retrying in 200ms (attempt ${attempt}/3)`);
+          setTimeout(() => checkAuth(attempt + 1), 200);
+          return;
+        }
+        window.location.href = '/auth/login';
+        return;
+      }
+    };
+    
+    // Start authentication check
+    checkAuth();
   }, [builderId]);
 
   // Load country->cities map for selector
@@ -182,6 +235,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
   }, []);
 
   const loadUnifiedProfile = async () => {
+    console.log('🚀 loadUnifiedProfile function called!');
     setLoading(true);
     console.log('🔄 Loading unified builder profile...');
     
@@ -194,10 +248,14 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
       const storedUserData = localStorage.getItem('builderUserData');
       const storedCurrentUser = localStorage.getItem('currentUser');
       
-      if (storedUserData && storedCurrentUser) {
-        userData = JSON.parse(storedUserData);
+      if (storedCurrentUser) {
         currentUser = JSON.parse(storedCurrentUser);
-        console.log('✅ Found user data in localStorage');
+        // Use currentUser data as the primary source
+        userData = currentUser;
+        console.log('✅ Found user data in localStorage (currentUser)');
+      } else if (storedUserData) {
+        userData = JSON.parse(storedUserData);
+        console.log('✅ Found user data in localStorage (builderUserData)');
       }
       
       // If no stored data, check URL parameters for new signups
@@ -214,42 +272,78 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
       // Load real profile data from API if available
       if (builderId || newUserId) {
         try {
-          const response = await fetch(`/api/builders/${builderId || newUserId}`);
+          // Use the admin builders API instead of the individual builder API
+          const response = await fetch(`/api/admin/builders?limit=100&prioritize_real=true`);
           const result = await response.json();
           
-          if (result.success) {
-            userData = result.data;
-            console.log('✅ Loaded profile from API');
+          if (result.success && result.data?.builders) {
+            // Find the builder with matching ID
+            const builder = result.data.builders.find((b: any) => b.id === (builderId || newUserId));
+            if (builder) {
+              userData = builder;
+              console.log('✅ Loaded profile from API');
+            }
           }
         } catch (apiError) {
           console.log('⚠️ Could not load from API, using stored data');
         }
       }
       
-      // Create unified profile structure (prefer real values, avoid demo defaults)
+      // Create unified profile structure using real Supabase data
+      console.log('🔍 Debug - userData:', userData);
+      console.log('🔍 Debug - currentUser:', currentUser);
+      
+      // Load real data from Supabase
+      let supabaseData = null;
+      if (userData?.id) {
+        try {
+          // Use the admin builders API to get real data
+          const response = await fetch(`/api/admin/builders?limit=100&prioritize_real=true`);
+          const result = await response.json();
+          if (result.success && result.data?.builders) {
+            // Find the builder with matching ID
+            const builder = result.data.builders.find((b: any) => b.id === userData.id);
+            if (builder) {
+              supabaseData = builder;
+              console.log('✅ Loaded real data from Supabase:', supabaseData);
+              console.log('🔍 Debug - supabaseData.companyDescription:', supabaseData.companyDescription);
+              console.log('🔍 Debug - supabaseData.id:', supabaseData.id);
+            } else {
+              console.log('❌ Builder not found in Supabase data');
+            }
+          } else {
+            console.log('❌ Failed to load builders from API');
+          }
+        } catch (error) {
+          console.log('⚠️ Could not load from Supabase API:', error);
+        }
+      } else {
+        console.log('❌ No userData.id found:', userData);
+      }
+      
       if (userData) {
         const unifiedProfile: UnifiedBuilderProfile = {
           id: userData.id || newUserId || 'unified-builder-001',
-          companyName: userData.profile?.businessName || userData.companyName || 'My Exhibition Company',
-          slug: (userData.profile?.businessName || userData.companyName || 'my-exhibition-company').toLowerCase().replace(/[^a-z0-9]/g, '-'),
-          contactName: userData.profile?.contactName || userData.contactPersonName || 'Business Owner',
-          email: userData.profile?.email || userData.primaryEmail || 'contact@example.com',
-          phone: userData.profile?.phone || userData.phoneNumber || '+1-555-0123',
-          website: userData.profile?.website || userData.website || '',
-          description: userData.profile?.description || userData.companyDescription || 'Professional exhibition stand builder',
+          companyName: userData.companyName || supabaseData?.company_name || 'My Exhibition Company',
+          slug: (userData.companyName || supabaseData?.slug || 'my-exhibition-company').toLowerCase().replace(/[^a-z0-9]/g, '-'),
+          contactName: userData.name || supabaseData?.contact_person || 'Business Owner',
+          email: userData.email || supabaseData?.primary_email || 'contact@example.com',
+          phone: supabaseData?.phone || '+1-555-0123',
+          website: supabaseData?.website || '',
+          description: supabaseData?.company_description || 'Professional exhibition stand builder',
           logo: userData.profile?.logo || '/images/builders/default-logo.png',
           
-          establishedYear: userData.establishedYear || new Date().getFullYear() - 5,
-          businessType: userData.businessType || 'company',
-          teamSize: userData.profile?.teamSize || userData.teamSize || '1-5 employees',
-          yearsOfExperience: userData.profile?.yearsOfExperience || userData.yearsOfExperience || 5,
-          projectsCompleted: userData.profile?.projectsCompleted || userData.projectsCompleted || 25,
+          establishedYear: supabaseData?.established_year || new Date().getFullYear() - 5,
+          businessType: 'company',
+          teamSize: supabaseData?.team_size || '1-5 employees',
+          yearsOfExperience: 5,
+          projectsCompleted: supabaseData?.projects_completed || 0,
           
           headquarters: {
-            country: userData.profile?.country || userData.country || 'Unknown',
-            city: userData.profile?.city || userData.city || 'Unknown',
-            address: userData.profile?.address || userData.address || '',
-            postalCode: userData.profile?.postalCode || userData.postalCode || ''
+            country: supabaseData?.headquarters_country || 'Unknown',
+            city: supabaseData?.headquarters_city || 'Unknown',
+            address: supabaseData?.headquarters_address || '',
+            postalCode: ''
           },
           
           services: userData.services || userData.profile?.services || [
@@ -261,10 +355,40 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             }
           ],
           
-          serviceLocations: userData.profile?.serviceLocations || (userData.serviceCountries?.map((country: string) => ({
+          serviceLocations: userData.profile?.serviceLocations || supabaseData?.serviceLocations || (userData.serviceCountries?.map((country: string) => ({
             country,
             cities: userData.serviceCities && userData.serviceCities.length ? userData.serviceCities : (userData.city ? [userData.city] : [])
-          })) || []),
+          })) || []).length > 0 ? (userData.serviceCountries?.map((country: string) => ({
+            country,
+            cities: userData.serviceCities && userData.serviceCities.length ? userData.serviceCities : (userData.city ? [userData.city] : [])
+          })) || []) : (() => {
+            // Try to parse from companyDescription field - get the latest entry (fallback)
+            if (supabaseData?.companyDescription) {
+              console.log('🔍 Debug - companyDescription:', supabaseData.companyDescription);
+              const serviceLocationsMatches = supabaseData.companyDescription.match(/SERVICE_LOCATIONS:(\[.*?\])/g);
+              console.log('🔍 Debug - serviceLocationsMatches:', serviceLocationsMatches);
+              if (serviceLocationsMatches && serviceLocationsMatches.length > 0) {
+                // Get the last (most recent) service locations entry
+                const lastMatch = serviceLocationsMatches[serviceLocationsMatches.length - 1];
+                console.log('🔍 Debug - lastMatch:', lastMatch);
+                const jsonMatch = lastMatch.match(/SERVICE_LOCATIONS:(\[.*?\])/);
+                if (jsonMatch) {
+                  try {
+                    const parsed = JSON.parse(jsonMatch[1]);
+                    console.log('📍 Loaded service locations from Supabase description:', parsed);
+                    return parsed;
+                  } catch (e) {
+                    console.warn('Failed to parse service locations from description:', e);
+                  }
+                }
+              }
+            }
+            // Fallback to headquarters
+            return [{
+              country: supabaseData?.headquarters?.country || 'Unknown',
+              cities: supabaseData?.headquarters?.city ? [supabaseData.headquarters.city] : []
+            }];
+          })(),
           
           specializations: userData.profile?.specializations || userData.specializations || ['Custom Stand Design'],
           
@@ -273,16 +397,19 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
           subscriptionPlan: userData.profile?.subscriptionPlan || 'free',
           subscriptionExpiry: userData.profile?.subscriptionExpiry || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           
-          profileViews: Math.floor(Math.random() * 500) + 100,
-          leadCount: Math.floor(Math.random() * 10) + 2,
-          responseRate: Math.floor(Math.random() * 30) + 70,
-          rating: 4.0 + Math.random() * 1,
-          reviewCount: Math.floor(Math.random() * 50) + 10,
+          profileViews: supabaseData?.profile_views || 0,
+          leadCount: supabaseData?.active_leads || 0,
+          responseRate: supabaseData?.response_rate || 0,
+          rating: supabaseData?.rating || 0,
+          reviewCount: supabaseData?.review_count || 0,
           
           createdAt: userData.registeredAt || new Date().toISOString(),
           lastUpdated: new Date().toISOString(),
           source: userData.source || 'registration'
         };
+        
+        console.log('🔍 Debug - Final unifiedProfile.serviceLocations:', unifiedProfile.serviceLocations);
+        console.log('🔍 Debug - Final unifiedProfile:', unifiedProfile);
         
         setProfile(unifiedProfile);
         console.log('✅ Unified profile loaded:', unifiedProfile.companyName);
@@ -560,7 +687,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
         <AlertCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
         <h2 className="text-xl font-semibold text-gray-900 mb-2">Profile Not Found</h2>
         <p className="text-gray-600 mb-4">Could not load your builder profile.</p>
-        <Button onClick={() => window.location.href = '/builder/register'}>
+        <Button onClick={() => window.location.href = '/builder/register'} className="bg-red-600 text-white hover:bg-red-700 font-medium">
           Create New Profile
         </Button>
       </div>
@@ -570,51 +697,55 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
   const completeness = getProfileCompleteness();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="relative">
         {/* Cover Section */}
-        <div className="h-48 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl relative overflow-hidden">
+        <div className="h-64 bg-gradient-to-r from-red-600 to-red-800 rounded-xl relative overflow-hidden shadow-lg mb-8">
           <div className="absolute inset-0 bg-black bg-opacity-20"></div>
           
           {/* Sync Status Indicator */}
-          <div className="absolute top-4 left-4">
-            <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm ${
-              syncStatus === 'synced' ? 'bg-green-100 text-green-800' :
-              syncStatus === 'syncing' ? 'bg-yellow-100 text-yellow-800' :
-              'bg-red-100 text-red-800'
+          <div className="absolute top-6 left-6">
+            <div className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium ${
+              syncStatus === 'synced' ? 'bg-green-500 text-white' :
+              syncStatus === 'syncing' ? 'bg-yellow-500 text-white' :
+              'bg-red-500 text-white'
             }`}>
-              {syncStatus === 'synced' && <CheckCircle className="h-3 w-3" />}
-              {syncStatus === 'syncing' && <RefreshCw className="h-3 w-3 animate-spin" />}
-              {syncStatus === 'error' && <AlertCircle className="h-3 w-3" />}
+              {syncStatus === 'synced' && <CheckCircle className="h-4 w-4" />}
+              {syncStatus === 'syncing' && <RefreshCw className="h-4 w-4 animate-spin" />}
+              {syncStatus === 'error' && <AlertCircle className="h-4 w-4" />}
               <span className="capitalize">{syncStatus}</span>
             </div>
           </div>
           
           {/* Profile Info */}
-          <div className="absolute bottom-4 left-6 text-white">
-            <h1 className="text-3xl font-bold">{profile.companyName}</h1>
-            <p className="opacity-90">{profile.contactName} • {profile.headquarters.city}, {profile.headquarters.country}</p>
+          <div className="absolute bottom-6 left-8 text-white">
+            <h1 className="text-4xl font-bold mb-2">{profile.companyName}</h1>
+            <p className="text-lg opacity-90">{profile.contactName} • {profile.headquarters.city}, {profile.headquarters.country}</p>
           </div>
           
           {/* Plan Badge */}
-          <div className="absolute top-4 right-4">
-            <Badge className={`text-lg px-3 py-1 ${
-              profile.subscriptionPlan === 'enterprise' ? 'bg-purple-100 text-purple-800' :
-              profile.subscriptionPlan === 'professional' ? 'bg-blue-100 text-blue-800' :
-              'bg-gray-100 text-gray-800'
+          <div className="absolute top-6 right-6">
+            <Badge className={`text-lg px-4 py-2 font-medium ${
+              profile.subscriptionPlan === 'enterprise' ? 'bg-purple-500 text-white' :
+              profile.subscriptionPlan === 'professional' ? 'bg-blue-500 text-white' :
+              'bg-gray-500 text-white'
             }`}>
               {profile.subscriptionPlan.charAt(0).toUpperCase() + profile.subscriptionPlan.slice(1)} Plan
             </Badge>
           </div>
           
           {/* Quick Actions */}
-          <div className="absolute bottom-4 right-4 flex space-x-2">
+          <div className="absolute bottom-6 right-6 flex space-x-3">
             <Button 
               variant="outline" 
               size="sm" 
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-              onClick={() => window.open(`/builders/${profile.slug}`, '_blank')}
+              className="bg-white text-red-600 border-white hover:bg-gray-100 font-medium px-4 py-2"
+              onClick={() => {
+                const publicUrl = `/builders/${profile.slug}`;
+                console.log('🔗 Opening public profile:', publicUrl);
+                window.open(publicUrl, '_blank');
+              }}
             >
               <Eye className="h-4 w-4 mr-2" />
               View Public Profile
@@ -622,7 +753,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             <Button 
               variant="outline" 
               size="sm" 
-              className="bg-red-500/20 border-red-300/20 text-white hover:bg-red-500/30"
+              className="bg-red-500 text-white border-red-500 hover:bg-red-600 font-medium px-4 py-2"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-2" />
@@ -632,41 +763,41 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
         </div>
 
         {/* Profile Avatar & Status */}
-        <div className="flex items-end space-x-6 -mt-16 ml-6 relative z-10">
-          <Avatar className="h-24 w-24 border-4 border-white">
+        <div className="flex items-end space-x-6 -mt-20 ml-8 relative z-10 mb-8">
+          <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
             <AvatarImage src={profile.logo} />
-            <AvatarFallback className="text-xl bg-blue-100 text-blue-600">
+            <AvatarFallback className="text-4xl bg-red-100 text-red-600 font-bold">
               {profile.companyName.split(' ').map(n => n[0]).join('')}
             </AvatarFallback>
           </Avatar>
           
-          <div className="pb-4">
-            <div className="flex items-center space-x-3 mb-2">
+          <div className="pb-6">
+            <div className="flex items-center space-x-4 mb-4">
               {profile.verified && (
-                <Badge className="bg-green-100 text-green-800">
-                  <CheckCircle className="h-3 w-3 mr-1" />
+                <Badge className="bg-green-500 text-white px-4 py-2 font-medium text-sm">
+                  <CheckCircle className="h-4 w-4 mr-2" />
                   Verified
                 </Badge>
               )}
               {profile.claimed && (
-                <Badge className="bg-blue-100 text-blue-800">
-                  <Shield className="h-3 w-3 mr-1" />
+                <Badge className="bg-blue-500 text-white px-4 py-2 font-medium text-sm">
+                  <Shield className="h-4 w-4 mr-2" />
                   Claimed
                 </Badge>
               )}
             </div>
             
-            <div className="flex items-center space-x-4 text-sm text-gray-600">
+            <div className="flex items-center space-x-6 text-sm text-gray-700 font-medium">
               <span className="flex items-center">
-                <Star className="h-4 w-4 text-yellow-400 mr-1" />
+                <Star className="h-5 w-5 text-yellow-500 mr-2" />
                 {profile.rating.toFixed(1)} ({profile.reviewCount} reviews)
               </span>
               <span className="flex items-center">
-                <Clock className="h-4 w-4 mr-1" />
+                <Clock className="h-5 w-5 mr-2" />
                 {profile.responseRate}% response rate
               </span>
               <span className="flex items-center">
-                <Award className="h-4 w-4 mr-1" />
+                <Award className="h-5 w-5 mr-2" />
                 {profile.yearsOfExperience} years experience
               </span>
             </div>
@@ -676,17 +807,17 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
 
       {/* Profile Completeness Alert */}
       {completeness < 80 && (
-        <Alert className="border-orange-200 bg-orange-50">
-          <AlertCircle className="h-4 w-4 text-orange-600" />
+        <Alert className="border-orange-300 bg-orange-100 mb-8">
+          <AlertCircle className="h-5 w-5 text-orange-600" />
           <AlertDescription className="text-orange-800">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="font-medium">
                 <strong>Complete your profile ({completeness}%)</strong> - Add missing information to attract more clients and improve your search ranking.
               </div>
               <Button 
                 size="sm" 
                 onClick={() => setActiveTab('profile')}
-                className="ml-4"
+                className="ml-4 bg-orange-500 text-white hover:bg-orange-600 font-medium"
               >
                 Complete Profile
               </Button>
@@ -696,8 +827,8 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
       )}
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <Card className="bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium opacity-90">Profile Views</CardTitle>
             <Eye className="h-4 w-4 opacity-90" />
@@ -708,7 +839,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+        <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium opacity-90">Active Leads</CardTitle>
             <Target className="h-4 w-4 opacity-90" />
@@ -719,7 +850,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+        <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium opacity-90">Projects Completed</CardTitle>
             <Award className="h-4 w-4 opacity-90" />
@@ -730,7 +861,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+        <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium opacity-90">Response Rate</CardTitle>
             <TrendingUp className="h-4 w-4 opacity-90" />
@@ -744,13 +875,13 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
 
       {/* Main Dashboard Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="services">Services</TabsTrigger>
-          <TabsTrigger value="locations">Locations</TabsTrigger>
-          <TabsTrigger value="leads">Leads</TabsTrigger>
-          <TabsTrigger value="subscription">Subscription</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-6 bg-gray-100 p-1 rounded-lg">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Overview</TabsTrigger>
+          <TabsTrigger value="profile" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Profile</TabsTrigger>
+          <TabsTrigger value="services" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Services</TabsTrigger>
+          <TabsTrigger value="locations" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Locations</TabsTrigger>
+          <TabsTrigger value="leads" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Leads</TabsTrigger>
+          <TabsTrigger value="subscription" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Subscription</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -839,6 +970,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
                   variant="outline"
                   onClick={() => setEditMode(editMode === 'basic' ? null : 'basic')}
                   disabled={saving}
+                  className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
                 >
                   {editMode === 'basic' ? (
                     <>
@@ -978,7 +1110,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Services Offered</span>
-                <Button onClick={addService} disabled={saving}>
+                <Button onClick={addService} disabled={saving} className="bg-red-600 text-white hover:bg-red-700 font-medium">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Service
                 </Button>
@@ -1006,6 +1138,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
                       size="sm"
                       onClick={() => removeService(index)}
                       disabled={profile.services.length === 1}
+                      className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Remove
@@ -1036,7 +1169,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Service Locations</span>
-                <Button onClick={addServiceLocation} disabled={saving}>
+                <Button onClick={addServiceLocation} disabled={saving} className="bg-red-600 text-white hover:bg-red-700 font-medium">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Location
                 </Button>
@@ -1046,6 +1179,26 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Show headquarters location from registration */}
+              {profile.headquarters.country !== 'Unknown' && (
+                <div className="border rounded-lg p-4 bg-blue-50 border-blue-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium text-blue-800">Headquarters Location</h4>
+                    <Badge className="bg-blue-500 text-white">From Registration</Badge>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-sm font-medium">Country</Label>
+                      <p className="text-gray-700">{profile.headquarters.country}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">City</Label>
+                      <p className="text-gray-700">{profile.headquarters.city}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               {profile.serviceLocations.map((location, index) => (
                 <div key={index} className="border rounded-lg p-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
@@ -1102,6 +1255,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
                       size="sm"
                       onClick={() => removeServiceLocation(index)}
                       disabled={profile.serviceLocations.length === 1}
+                      className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Remove
@@ -1139,7 +1293,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
                 <p className="text-sm text-gray-400 mb-4">
                   Leads will appear here when clients request quotes from your service areas
                 </p>
-                <Button variant="outline">Learn More About Leads</Button>
+                <Button variant="outline" className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300">Learn More About Leads</Button>
               </div>
             </CardContent>
           </Card>
@@ -1155,39 +1309,66 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                {/* Current Plan */}
+                <div className="flex items-center justify-between p-6 border-2 border-gray-200 rounded-lg bg-gray-50">
                   <div>
-                    <h3 className="font-semibold">{profile.subscriptionPlan.charAt(0).toUpperCase() + profile.subscriptionPlan.slice(1)} Plan</h3>
-                    <p className="text-sm text-gray-600">
+                    <h3 className="text-xl font-semibold text-gray-800">
+                      {profile.subscriptionPlan.charAt(0).toUpperCase() + profile.subscriptionPlan.slice(1)} Plan
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
                       Expires: {new Date(profile.subscriptionExpiry).toLocaleDateString()}
                     </p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      {profile.subscriptionPlan === 'free' ? 'Limited access to leads' : 'Full access to all features'}
+                    </p>
                   </div>
-                    <Button onClick={async () => {
+                  <Button 
+                    onClick={async () => {
                       try {
+                        setSaving(true);
                         const res = await fetch('/api/subscription/upgrade', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ builderId: profile.id, builderEmail: profile.email, planId: 'professional' })
+                          body: JSON.stringify({ 
+                            builderId: profile.id, 
+                            builderEmail: profile.email, 
+                            planId: 'professional' 
+                          })
                         });
                         const data = await res.json();
                         if (data?.success) {
                           setProfile({ ...profile, subscriptionPlan: 'professional' });
+                          toast.success('Subscription upgraded successfully!');
                         } else {
                           console.error('Upgrade failed', data);
+                          toast.error('Failed to upgrade subscription');
                         }
                       } catch (e) {
                         console.error('Upgrade error', e);
+                        toast.error('Error upgrading subscription');
+                      } finally {
+                        setSaving(false);
                       }
-                    }}>
+                    }}
+                    disabled={saving || profile.subscriptionPlan === 'professional'}
+                    className="bg-red-600 text-white hover:bg-red-700 font-medium px-6 py-2"
+                  >
                     <CreditCard className="h-4 w-4 mr-2" />
-                    Upgrade Plan
+                    {saving ? 'Upgrading...' : 'Upgrade Plan'}
                   </Button>
                 </div>
                  
+                {/* Upgrade Benefits */}
                 <Alert className="border-blue-200 bg-blue-50">
-                  <Shield className="h-4 w-4 text-blue-600" />
+                  <Shield className="h-5 w-5 text-blue-600" />
                   <AlertDescription className="text-blue-800">
-                    <strong>Upgrade to unlock more leads!</strong> Professional plans get 25 lead unlocks per month and priority listing placement.
+                    <div className="font-medium mb-2">Upgrade to unlock more leads!</div>
+                    <ul className="text-sm space-y-1">
+                      <li>• Professional plans get 25 lead unlocks per month</li>
+                      <li>• Priority listing placement in search results</li>
+                      <li>• Advanced analytics and reporting</li>
+                      <li>• Direct client communication tools</li>
+                    </ul>
                   </AlertDescription>
                 </Alert>
               </div>

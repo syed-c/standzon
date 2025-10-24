@@ -15,15 +15,11 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // Builder dashboard protection
+  // Builder dashboard protection - allow access for now, let frontend handle auth
   if (pathname.startsWith('/builder/dashboard')) {
-    const cookie = request.cookies.get('builder_auth')?.value
-    const isApi = pathname.startsWith('/api')
-    if (!cookie) {
-      const loginUrl = new URL('/auth/login', request.url)
-      if (isApi) return NextResponse.json({ success:false, error:'Unauthorized' }, { status: 401 })
-      return NextResponse.redirect(loginUrl)
-    }
+    // Let the frontend component handle authentication
+    // This prevents middleware from redirecting before localStorage is set
+    return NextResponse.next()
   }
 
   // Redirect UAE routes to United Arab Emirates

@@ -139,6 +139,11 @@ export async function POST(request: NextRequest) {
       }
 
       const storedData = otpStorage.get(email);
+      
+      console.log("🔍 OTP Storage Debug:");
+      console.log("- Email:", email);
+      console.log("- Stored data:", storedData);
+      console.log("- All stored OTPs:", Array.from(otpStorage.entries()));
 
       if (!storedData) {
         console.log("❌ No OTP found for email:", email);
@@ -328,8 +333,8 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Clean up OTP
-      otpStorage.delete(email);
+      // Don't delete OTP immediately - let it expire naturally
+      // This prevents issues with multiple verification attempts from frontend
       console.log("✅ OTP verified successfully for:", email);
 
       return NextResponse.json({

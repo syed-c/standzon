@@ -7,9 +7,9 @@ import { getServerSupabase } from "@/lib/supabase";
 export default async function BuilderProfilePage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const { slug } = await params;
 
   console.log("🔍 Server: Looking for builder with slug:", slug);
 
@@ -26,7 +26,16 @@ export default async function BuilderProfilePage({
         
         const { data: supabaseBuilder, error } = await sb
           .from('builder_profiles')
-          .select('*')
+          .select(`
+            *,
+            builder_service_locations!left(
+              id,
+              city,
+              country,
+              country_code,
+              is_headquarters
+            )
+          `)
           .eq('slug', slug)
           .single();
         
@@ -43,12 +52,40 @@ export default async function BuilderProfilePage({
               city: supabaseBuilder.headquarters_city || (supabaseBuilder as any).city || "Unknown",
               country: supabaseBuilder.headquarters_country || (supabaseBuilder as any).country || "Unknown",
             },
-            serviceLocations: [
-              {
-                city: supabaseBuilder.headquarters_city || (supabaseBuilder as any).city || "Unknown",
-                country: supabaseBuilder.headquarters_country || (supabaseBuilder as any).country || "Unknown",
+            serviceLocations: (() => {
+              // Process service locations from the joined table
+              const serviceLocations: Array<{country: string, cities: string[]}> = [];
+              if (supabaseBuilder.builder_service_locations && supabaseBuilder.builder_service_locations.length > 0) {
+                // Group by country
+                const countryMap = new Map();
+                supabaseBuilder.builder_service_locations.forEach((loc: any) => {
+                  if (loc.country && loc.city) {
+                    if (!countryMap.has(loc.country)) {
+                      countryMap.set(loc.country, []);
+                    }
+                    countryMap.get(loc.country).push(loc.city);
+                  }
+                });
+                
+                // Convert to the expected format
+                countryMap.forEach((cities: string[], country: string) => {
+                  serviceLocations.push({
+                    country,
+                    cities: [...new Set(cities)] // Remove duplicates
+                  });
+                });
               }
-            ],
+              
+              // If no service locations, use headquarters
+              if (serviceLocations.length === 0) {
+                serviceLocations.push({
+                  country: supabaseBuilder.headquarters_country || "Unknown",
+                  cities: [supabaseBuilder.headquarters_city || "Unknown"]
+                });
+              }
+              
+              return serviceLocations;
+            })(),
             contactInfo: {
               primaryEmail: supabaseBuilder.primary_email || "",
               phone: supabaseBuilder.phone || "",

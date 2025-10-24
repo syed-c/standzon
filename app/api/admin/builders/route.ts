@@ -51,6 +51,22 @@ function getContinent(country: string): string {
   return continentMap[country] || "Other";
 }
 
+// Helper function to get country code from country name
+function getCountryCode(country: string): string {
+  const countryCodeMap: Record<string, string> = {
+    "United States": "US",
+    "United Kingdom": "GB",
+    "United Arab Emirates": "AE",
+    "New Zealand": "NZ",
+    "South Africa": "ZA",
+    "South Korea": "KR",
+    "Saudi Arabia": "SA",
+    // Add more mappings as needed
+  };
+
+  return countryCodeMap[country] || country.substring(0, 2).toUpperCase();
+}
+
 export async function GET(request: Request) {
   try {
     // Only run emergency backup when explicitly enabled
@@ -187,43 +203,78 @@ export async function GET(request: Request) {
       if (sb) {
         const { data: supabaseBuilders, error } = await sb
           .from('builder_profiles')
-          .select('*')
+          .select(`
+            *,
+            builder_service_locations!left(
+              id,
+              city,
+              country,
+              country_code,
+              is_headquarters
+            )
+          `)
           .order('created_at', { ascending: false });
         
         if (!error && supabaseBuilders && supabaseBuilders.length > 0) {
-          buildersSource = supabaseBuilders.map((b: any) => ({
-            id: b.id,
-            companyName: b.company_name,
-            slug: b.slug,
-            rating: b.rating || 0,
-            reviewCount: b.review_count || 0,
-            verified: !!b.verified,
-            claimed: !!b.claimed,
-            premiumMember: !!b.premium_member,
-            projectsCompleted: b.projects_completed || 0,
-            responseTime: b.response_time || "Within 24 hours",
-            languages: b.languages || ["English"],
-            createdAt: b.created_at,
-            source: b.source || 'supabase',
-            gmbImported: false,
-            headquarters: {
-              city: b.headquarters_city || "Unknown",
-              country: b.headquarters_country || "Unknown",
-              countryCode: b.headquarters_country_code || "XX",
-              address: b.headquarters_address || "",
-            },
-            contactInfo: {
-              primaryEmail: b.primary_email || '',
-              phone: b.phone || '',
-              website: b.website || '',
-              contactPerson: b.contact_person || '',
-              position: b.position || '',
-            },
-            companyDescription: b.company_description || '',
-            logo: b.logo || '/images/builders/default-logo.png',
-            establishedYear: b.established_year || new Date().getFullYear(),
-            teamSize: b.team_size || 0,
-          }));
+          buildersSource = supabaseBuilders.map((b: any) => {
+            // Process service locations from the joined table
+            const serviceLocations: Array<{country: string, cities: string[]}> = [];
+            if (b.builder_service_locations && b.builder_service_locations.length > 0) {
+              // Group by country
+              const countryMap = new Map();
+              b.builder_service_locations.forEach((loc: any) => {
+                if (loc.country && loc.city) {
+                  if (!countryMap.has(loc.country)) {
+                    countryMap.set(loc.country, []);
+                  }
+                  countryMap.get(loc.country).push(loc.city);
+                }
+              });
+              
+              // Convert to the expected format
+              countryMap.forEach((cities: string[], country: string) => {
+                serviceLocations.push({
+                  country,
+                  cities: [...new Set(cities)] // Remove duplicates
+                });
+              });
+            }
+            
+            return {
+              id: b.id,
+              companyName: b.company_name,
+              slug: b.slug,
+              rating: b.rating || 0,
+              reviewCount: b.review_count || 0,
+              verified: !!b.verified,
+              claimed: !!b.claimed,
+              premiumMember: !!b.premium_member,
+              projectsCompleted: b.projects_completed || 0,
+              responseTime: b.response_time || "Within 24 hours",
+              languages: b.languages || ["English"],
+              createdAt: b.created_at,
+              source: b.source || 'supabase',
+              gmbImported: false,
+              headquarters: {
+                city: b.headquarters_city || "Unknown",
+                country: b.headquarters_country || "Unknown",
+                countryCode: b.headquarters_country_code || "XX",
+                address: b.headquarters_address || "",
+              },
+              contactInfo: {
+                primaryEmail: b.primary_email || '',
+                phone: b.phone || '',
+                website: b.website || '',
+                contactPerson: b.contact_person || '',
+                position: b.position || '',
+              },
+              companyDescription: b.company_description || '',
+              logo: b.logo || '/images/builders/default-logo.png',
+              establishedYear: b.established_year || new Date().getFullYear(),
+              teamSize: b.team_size || 0,
+              serviceLocations: serviceLocations as Array<{country: string, cities: string[]}>,
+            };
+          });
           
           if (isVerbose) {
             console.log(`📊 Retrieved ${buildersSource.length} builders from Supabase`);
@@ -406,7 +457,7 @@ export async function POST(request: NextRequest) {
     if (isVerbose) console.log("📊 Adding builder:", builderData);
 
     // Add builder using unified platform API
-    const result = unifiedPlatformAPI.addBuilder(builderData, "admin");
+    const result = await unifiedPlatformAPI.addBuilder(builderData, "admin");
 
     if (result.success) {
       if (isVerbose) console.log("✅ Builder added successfully");
@@ -449,8 +500,34 @@ export async function PUT(request: NextRequest) {
 
     console.log("🔄 Updating builder:", builderId, updates);
 
-    // Get the current builder
-    const currentBuilder = unifiedPlatformAPI.getBuilderById(builderId);
+    // Get the current builder - check Supabase first, then in-memory
+    let currentBuilder = null;
+    
+    try {
+      // Try Supabase first
+      const { getServerSupabase } = await import('@/lib/supabase');
+      const sb = getServerSupabase();
+      if (sb) {
+        const { data: supabaseBuilder, error } = await sb
+          .from('builder_profiles')
+          .select('*')
+          .eq('id', builderId)
+          .single();
+        
+        if (!error && supabaseBuilder) {
+          currentBuilder = supabaseBuilder;
+          console.log("✅ Found builder in Supabase for update");
+        }
+      }
+    } catch (supabaseErr) {
+      console.warn('⚠️ Supabase lookup failed, trying in-memory:', supabaseErr);
+    }
+    
+    // If not found in Supabase, try in-memory
+    if (!currentBuilder) {
+      currentBuilder = unifiedPlatformAPI.getBuilderById(builderId);
+    }
+    
     if (!currentBuilder) {
       return NextResponse.json(
         {
@@ -461,12 +538,101 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Update the builder
-    const result = unifiedPlatformAPI.updateBuilder(
-      builderId,
-      updates,
-      "admin"
-    );
+    // Update the builder - try Supabase first, then in-memory
+    let result = null;
+    
+    try {
+      // Try updating in Supabase first
+      const { getServerSupabase } = await import('@/lib/supabase');
+      const sb = getServerSupabase();
+      if (sb) {
+        // Map the updates to Supabase column names
+        const supabaseUpdates: any = {
+          updated_at: new Date().toISOString()
+        };
+        
+        // Handle service locations specifically
+        if (updates.serviceLocations) {
+          // Clean existing service locations from description and add new ones
+          const existingDescription = currentBuilder.company_description || '';
+          const cleanedDescription = existingDescription.replace(/\n\nSERVICE_LOCATIONS:\[.*?\]/g, '');
+          const serviceLocationsJson = JSON.stringify(updates.serviceLocations);
+          supabaseUpdates.company_description = `${cleanedDescription}\n\nSERVICE_LOCATIONS:${serviceLocationsJson}`;
+          
+          // Also sync to builder_service_locations table
+          try {
+            // First, delete existing service locations for this builder
+            await sb
+              .from('builder_service_locations')
+              .delete()
+              .eq('builder_id', builderId);
+            
+            // Then insert new service locations
+            const serviceLocationRecords = [];
+            for (const location of updates.serviceLocations) {
+              if (location.country && location.cities && location.cities.length > 0) {
+                for (const city of location.cities) {
+                  serviceLocationRecords.push({
+                    builder_id: builderId,
+                    city: city,
+                    country: location.country,
+                    country_code: getCountryCode(location.country),
+                    is_headquarters: false // You can set this based on your logic
+                  });
+                }
+              }
+            }
+            
+            if (serviceLocationRecords.length > 0) {
+              const { error: serviceLocationError } = await sb
+                .from('builder_service_locations')
+                .insert(serviceLocationRecords);
+              
+              if (serviceLocationError) {
+                console.error("❌ Error inserting service locations:", serviceLocationError);
+              } else {
+                console.log(`✅ Inserted ${serviceLocationRecords.length} service locations`);
+              }
+            }
+          } catch (serviceLocationErr) {
+            console.error("❌ Error syncing service locations:", serviceLocationErr);
+          }
+        }
+        
+        // Handle other common field mappings
+        if (updates.companyName) supabaseUpdates.company_name = updates.companyName;
+        if (updates.description) supabaseUpdates.company_description = updates.description;
+        if (updates.phone) supabaseUpdates.phone = updates.phone;
+        if (updates.email) supabaseUpdates.primary_email = updates.email;
+        if (updates.website) supabaseUpdates.website = updates.website;
+        if (updates.contactName) supabaseUpdates.contact_person = updates.contactName;
+        
+        const { data, error } = await sb
+          .from('builder_profiles')
+          .update(supabaseUpdates)
+          .eq('id', builderId)
+          .select()
+          .single();
+        
+        if (!error && data) {
+          result = { success: true, data };
+          console.log("✅ Builder updated successfully in Supabase");
+        } else {
+          console.error("❌ Supabase update error:", error);
+        }
+      }
+    } catch (supabaseErr) {
+      console.warn('⚠️ Supabase update failed, trying in-memory:', supabaseErr);
+    }
+    
+    // If Supabase update failed, try in-memory
+    if (!result) {
+      result = unifiedPlatformAPI.updateBuilder(
+        builderId,
+        updates,
+        "admin"
+      );
+    }
 
     if (result.success) {
       console.log("✅ Builder updated successfully");

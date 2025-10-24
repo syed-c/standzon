@@ -160,7 +160,7 @@ class EnhancedFileBasedStorage {
       }
       
       // Get all data files
-      const dataFiles = fs.readdirSync(this.dataDir).filter(file => 
+      const dataFiles = fs.readdirSync(this.dataDir).filter((file: string) => 
         file.endsWith('.json') && !file.includes('.backup') && !file.includes('.tmp')
       );
 
@@ -211,14 +211,14 @@ class EnhancedFileBasedStorage {
   private cleanupOldBackups() {
     try {
       const backups = fs.readdirSync(this.backupDir)
-        .filter(dir => dir.startsWith('backup_'))
+        .filter((dir: string) => dir.startsWith('backup_'))
         .sort()
         .reverse(); // Most recent first
 
       // Keep last 24 backups (24 hours)
       if (backups.length > 24) {
         const toDelete = backups.slice(24);
-        toDelete.forEach(backup => {
+        toDelete.forEach((backup: string) => {
           const backupPath = path.join(this.backupDir, backup);
           fs.rmSync(backupPath, { recursive: true, force: true });
           console.log(`🗑️ Cleaned up old backup: ${backup}`);
@@ -282,7 +282,7 @@ class EnhancedFileBasedStorage {
   private async recoverFromLatestBackup(filesToRecover: string[]) {
     try {
       const backups = fs.readdirSync(this.backupDir)
-        .filter(dir => dir.startsWith('backup_'))
+        .filter((dir: string) => dir.startsWith('backup_'))
         .sort()
         .reverse(); // Most recent first
 
@@ -484,17 +484,17 @@ class EnhancedFileBasedStorage {
       // Check backup recency (only if backup directory exists)
       if (fs.existsSync(this.backupDir)) {
         try {
-          const backups = fs.readdirSync(this.backupDir)
-            .filter(dir => {
-              try {
-                const backupPath = path.join(this.backupDir, dir);
-                return dir.startsWith('backup_') && fs.existsSync(backupPath);
-              } catch {
-                return false;
-              }
-            })
-            .sort()
-            .reverse();
+      const backups = fs.readdirSync(this.backupDir)
+        .filter((dir: string) => {
+          try {
+            const backupPath = path.join(this.backupDir, dir);
+            return dir.startsWith('backup_') && fs.existsSync(backupPath);
+          } catch {
+            return false;
+          }
+        })
+        .sort()
+        .reverse();
           
           if (backups.length === 0) {
             // Don't treat missing backups as critical for fresh deployment
@@ -565,12 +565,12 @@ class EnhancedFileBasedStorage {
 
     try {
       const backups = fs.readdirSync(this.backupDir)
-        .filter(dir => dir.startsWith('backup_'))
+        .filter((dir: string) => dir.startsWith('backup_'))
         .sort()
         .reverse();
 
       let totalSize = 0;
-      backups.forEach(backup => {
+      backups.forEach((backup: string) => {
         const backupPath = path.join(this.backupDir, backup);
         try {
           totalSize += this.getFolderSize(backupPath);
@@ -601,7 +601,7 @@ class EnhancedFileBasedStorage {
     let totalSize = 0;
     const files = fs.readdirSync(folderPath);
     
-    files.forEach(file => {
+    files.forEach((file: string) => {
       const filePath = path.join(folderPath, file);
       const stats = fs.statSync(filePath);
       if (stats.isFile()) {
@@ -636,14 +636,16 @@ class EnhancedFileBasedStorage {
 // ✅ FIXED: Use singleton pattern to prevent multiple instances
 let storageInstance: EnhancedFileBasedStorage | null = null;
 
-function getStorageInstance(): EnhancedFileBasedStorage {
-  if (!storageInstance) {
+function getStorageInstance(): EnhancedFileBasedStorage | null {
+  // Only create instance if persistence is enabled
+  if (!storageInstance && process.env.ENABLE_PERSISTENCE === 'true') {
     storageInstance = new EnhancedFileBasedStorage();
   }
   return storageInstance;
 }
 
-const storage = getStorageInstance();
+// Only initialize storage if persistence is enabled
+const storage = process.env.ENABLE_PERSISTENCE === 'true' ? getStorageInstance() : null;
 
 // ✅ ENHANCED: Builder Persistence API with auto-recovery and real-time sync
 class BuilderPersistenceAPI {
@@ -653,16 +655,25 @@ class BuilderPersistenceAPI {
 
   async ensureLoaded() {
     if (!this.isLoaded) {
-      this.builders = await storage.readData('builders', []);
+      if (storage) {
+        this.builders = await storage.readData('builders', []);
+        console.log(`✅ Loaded ${this.builders.length} builders from persistent storage`);
+      } else {
+        this.builders = [];
+        console.log('🔒 Persistence disabled - using empty builders array');
+      }
       this.isLoaded = true;
       this.lastSyncTime = new Date();
-      console.log(`✅ Loaded ${this.builders.length} builders from persistent storage`);
     }
   }
 
   async saveBuilders() {
-    await storage.writeData('builders', this.builders);
-    this.lastSyncTime = new Date();
+    if (storage) {
+      await storage.writeData('builders', this.builders);
+      this.lastSyncTime = new Date();
+    } else {
+      console.log('🔒 Persistence disabled - skipping save');
+    }
   }
 
   // ✅ NEW: Force reload from disk (useful for recovery)
@@ -882,16 +893,25 @@ class LeadPersistenceAPI {
 
   async ensureLoaded() {
     if (!this.isLoaded) {
-      this.leads = await storage.readData('leads', []);
+      if (storage) {
+        this.leads = await storage.readData('leads', []);
+        console.log(`✅ Loaded ${this.leads.length} leads from persistent storage`);
+      } else {
+        this.leads = [];
+        console.log('🔒 Persistence disabled - using empty leads array');
+      }
       this.isLoaded = true;
       this.lastSyncTime = new Date();
-      console.log(`✅ Loaded ${this.leads.length} leads from persistent storage`);
     }
   }
 
   async saveLeads() {
-    await storage.writeData('leads', this.leads);
-    this.lastSyncTime = new Date();
+    if (storage) {
+      await storage.writeData('leads', this.leads);
+      this.lastSyncTime = new Date();
+    } else {
+      console.log('🔒 Persistence disabled - skipping save');
+    }
   }
 
   async forceReload() {
@@ -1015,7 +1035,7 @@ class DataHealthMonitor {
     try {
       console.log('🔍 Performing system health check...');
       
-      const storageHealth = await storage.performHealthCheck();
+      const storageHealth = storage ? await storage.performHealthCheck() : { healthy: true, message: 'Persistence disabled' };
       const builderStats = await builderAPI.getStats();
       const leadCount = (await leadAPI.getAllLeads()).length;
       
@@ -1033,7 +1053,7 @@ class DataHealthMonitor {
           total: leadCount
         },
         // ✅ FIXED: Add client-side check for Node.js APIs
-        ...(typeof process !== 'undefined' && process.uptime && process.memoryUsage ? {
+        ...(typeof process !== 'undefined' && process.uptime ? {
           uptime: process.uptime(),
           memory: process.memoryUsage(),
           nodeVersion: process.version,
@@ -1047,12 +1067,14 @@ class DataHealthMonitor {
       };
 
       if (!storageHealth.healthy) {
-        console.warn('⚠️ Health check detected issues:', storageHealth.issues);
-        
-        // Attempt auto-recovery for critical issues
-        if (storageHealth.issues.some(issue => issue.includes('Missing critical file'))) {
-          console.log('🔄 Attempting auto-recovery...');
-          await this.attemptAutoRecovery();
+        if ('issues' in storageHealth) {
+          console.warn('⚠️ Health check detected issues:', storageHealth.issues);
+          
+          // Attempt auto-recovery for critical issues
+          if (storageHealth.issues.some((issue: string) => issue.includes('Missing critical file'))) {
+            console.log('🔄 Attempting auto-recovery...');
+            await this.attemptAutoRecovery();
+          }
         }
       } else {
         console.log('✅ System health check passed');
@@ -1077,7 +1099,9 @@ class DataHealthMonitor {
       await leadAPI.forceReload();
       
       // Force a backup
-      await storage.forceBackupNow();
+      if (storage) {
+        await storage.forceBackupNow();
+      }
       
       console.log('✅ Auto-recovery completed');
     } catch (error) {
@@ -1113,28 +1137,35 @@ export const enhancedStorage = storage;
 // ✅ FIXED: Use singleton pattern for data health monitor
 let dataHealthMonitorInstance: DataHealthMonitor | null = null;
 
-function getDataHealthMonitor(): DataHealthMonitor {
-  if (!dataHealthMonitorInstance) {
+function getDataHealthMonitor(): DataHealthMonitor | null {
+  // Only create instance if persistence is enabled
+  if (!dataHealthMonitorInstance && process.env.ENABLE_PERSISTENCE === 'true') {
     dataHealthMonitorInstance = new DataHealthMonitor();
   }
   return dataHealthMonitorInstance;
 }
 
-export const dataHealthMonitor = getDataHealthMonitor();
+// Only initialize if persistence is enabled
+export const dataHealthMonitor = process.env.ENABLE_PERSISTENCE === 'true' ? getDataHealthMonitor() : null;
 
 // User data persistence
 class UserPersistenceAPI {
   async saveUserData(userId: string, userData: any) {
-    const dataWithMeta = {
-      ...userData,
-      updatedAt: new Date().toISOString(),
-      _persistenceVersion: '1.0'
-    };
-    await storage.writeData(`user_${userId}`, dataWithMeta);
+    if (storage) {
+      const dataWithMeta = {
+        ...userData,
+        updatedAt: new Date().toISOString(),
+        _persistenceVersion: '1.0'
+      };
+      await storage.writeData(`user_${userId}`, dataWithMeta);
+    }
   }
 
   async getUserData(userId: string) {
-    return await storage.readData(`user_${userId}`, null);
+    if (storage) {
+      return await storage.readData(`user_${userId}`, null);
+    }
+    return null;
   }
 
   async deleteUserData(userId: string) {
@@ -1154,22 +1185,33 @@ export const userAPI = new UserPersistenceAPI();
 // System settings persistence
 class SettingsPersistenceAPI {
   async saveSettings(settings: any) {
-    const settingsWithMeta = {
-      ...settings,
-      updatedAt: new Date().toISOString(),
-      _persistenceVersion: '1.0'
-    };
-    await storage.writeData('system_settings', settingsWithMeta);
+    if (storage) {
+      const settingsWithMeta = {
+        ...settings,
+        updatedAt: new Date().toISOString(),
+        _persistenceVersion: '1.0'
+      };
+      await storage.writeData('system_settings', settingsWithMeta);
+    }
   }
 
   async getSettings() {
-    return await storage.readData('system_settings', {
+    if (storage) {
+      return await storage.readData('system_settings', {
+        smtp: { enabled: false },
+        sms: { enabled: false },
+        payments: { stripe: { enabled: false }, razorpay: { enabled: false } },
+        backup: { enabled: true, interval: 3600000 }, // 1 hour
+        recovery: { enabled: true, autoRecover: true }
+      });
+    }
+    return {
       smtp: { enabled: false },
       sms: { enabled: false },
       payments: { stripe: { enabled: false }, razorpay: { enabled: false } },
       backup: { enabled: true, interval: 3600000 }, // 1 hour
       recovery: { enabled: true, autoRecover: true }
-    });
+    };
   }
 }
 
@@ -1188,8 +1230,8 @@ export class UnifiedPersistenceManager {
 
   // Get comprehensive system status
   async getSystemStatus() {
-    const healthStatus = dataHealthMonitor.getHealthStatus();
-    const backupStatus = storage.getBackupStatus();
+    const healthStatus = dataHealthMonitor ? dataHealthMonitor.getHealthStatus() : { healthy: true, message: 'Persistence disabled' };
+    const backupStatus = storage ? storage.getBackupStatus() : { enabled: false, message: 'Persistence disabled' };
     const builderStats = await builderAPI.getStats();
     
     return {
@@ -1202,7 +1244,7 @@ export class UnifiedPersistenceManager {
       },
       system: {
         // ✅ FIXED: Add client-side check for Node.js APIs
-        ...(typeof process !== 'undefined' && process.uptime && process.memoryUsage ? {
+        ...(typeof process !== 'undefined' && process.uptime ? {
           uptime: process.uptime(),
           memory: process.memoryUsage(),
           nodeVersion: process.version,
@@ -1219,7 +1261,11 @@ export class UnifiedPersistenceManager {
 
   // Force full system backup
   async forceFullBackup() {
-    return await storage.forceBackupNow();
+    if (storage) {
+      return await storage.forceBackupNow();
+    } else {
+      return { success: false, message: 'Persistence disabled' };
+    }
   }
 
   // Perform system recovery
@@ -1232,7 +1278,7 @@ export class UnifiedPersistenceManager {
       const leadsLoaded = await leadAPI.forceReload();
       
       // Perform health check
-      const healthStatus = await dataHealthMonitor.forceHealthCheck();
+      const healthStatus = dataHealthMonitor ? await dataHealthMonitor.forceHealthCheck() : { healthy: true };
       
       // Force backup
       await this.forceFullBackup();
@@ -1263,11 +1309,17 @@ export class UnifiedPersistenceManager {
     
     try {
       // Perform final backup
-      await storage.forceBackupNow();
+      if (storage) {
+        await storage.forceBackupNow();
+      }
       
       // Cleanup monitoring
-      dataHealthMonitor.cleanup();
-      storage.cleanup();
+      if (dataHealthMonitor) {
+        dataHealthMonitor.cleanup();
+      }
+      if (storage) {
+        storage.cleanup();
+      }
       
       console.log('✅ Persistence systems shut down gracefully');
     } catch (error) {
@@ -1306,6 +1358,11 @@ if (typeof process !== 'undefined' && !shutdownListenersAttached) {
   console.log('✅ Graceful shutdown handlers registered once for persistence');
 }
 
-console.log('✅ Enhanced File-Based Persistence API initialized with auto-recovery, hourly backups, and health monitoring');
+// Only log if persistence is enabled
+if (process.env.ENABLE_PERSISTENCE === 'true') {
+  console.log('✅ Enhanced File-Based Persistence API initialized with auto-recovery, hourly backups, and health monitoring');
+} else {
+  console.log('🔒 File-Based Persistence API disabled (ENABLE_PERSISTENCE=false)');
+}
 
 

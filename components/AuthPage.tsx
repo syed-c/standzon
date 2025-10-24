@@ -408,25 +408,37 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
         console.log("✅ OTP verification successful:", data.data.user);
 
         // Store user session
-        localStorage.setItem(
-          "currentUser",
-          JSON.stringify({
-            ...data.data.user,
-            isLoggedIn: true,
-            loginMethod: "otp",
-          })
-        );
+        const userSessionData = {
+          ...data.data.user,
+          isLoggedIn: true,
+          loginMethod: "otp",
+        };
+        
+        console.log("💾 Storing user session data:", userSessionData);
+        localStorage.setItem("currentUser", JSON.stringify(userSessionData));
+        
+        // Also set a cookie for middleware compatibility
+        document.cookie = `builder_auth=${userSessionData.id}; path=/; max-age=86400; SameSite=Lax`;
+        
+        // Verify the data was stored
+        const storedData = localStorage.getItem("currentUser");
+        console.log("✅ Verified stored data:", storedData);
 
         // Redirect based on user type
-        switch (userType) {
-          case "admin":
-            router.push("/admin/dashboard");
-            break;
-          case "builder":
-            router.push("/builder/dashboard");
-            break;
-          default:
-            router.push("/quote");
+        console.log("🔄 Redirecting user to dashboard...");
+        console.log("👤 User data:", data.data.user);
+        console.log("🏢 User type:", userType);
+        
+        // Force redirect immediately without delay
+        if (userType === "builder") {
+          console.log("🔗 Redirecting to builder dashboard immediately");
+          window.location.href = "/builder/dashboard";
+        } else if (userType === "admin") {
+          console.log("🔗 Redirecting to admin dashboard");
+          window.location.href = "/admin/dashboard";
+        } else {
+          console.log("🔗 Redirecting to quote page");
+          window.location.href = "/quote";
         }
       } else {
         setErrors({ submit: data.error || "Invalid OTP. Please try again." });

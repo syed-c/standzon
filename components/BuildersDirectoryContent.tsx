@@ -314,9 +314,12 @@ export default function BuildersDirectoryContent() {
           .includes(searchTerm.toLowerCase());
       const matchesCountry =
         selectedCountry === "all" ||
-        builder.headquarters.country === selectedCountry;
+        builder.headquarters.country === selectedCountry ||
+        (builder.serviceLocations && builder.serviceLocations.some(loc => loc.country === selectedCountry));
       const matchesCity =
-        selectedCity === "all" || builder.headquarters.city === selectedCity;
+        selectedCity === "all" || 
+        builder.headquarters.city === selectedCity ||
+        (builder.serviceLocations && builder.serviceLocations.some(loc => loc.cities.includes(selectedCity)));
       const matchesRating = builder.rating >= minRating[0];
       return matchesSearch && matchesCountry && matchesCity && matchesRating;
     });
@@ -584,7 +587,18 @@ export default function BuildersDirectoryContent() {
                         <div className="space-y-4">
                           <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
                             <FiMapPin className="w-4 h-4 mr-2 text-blue-500" />
-                            <span className="font-medium">{builder.headquarters.city}, {builder.headquarters.country}</span>
+                            <div className="flex flex-wrap gap-1">
+                              {builder.serviceLocations && builder.serviceLocations.length > 0 ? (
+                                builder.serviceLocations.map((location, index) => (
+                                  <span key={index} className="font-medium">
+                                    {location.country} ({location.cities.join(', ')})
+                                    {index < builder.serviceLocations.length - 1 && <span>, </span>}
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="font-medium">{builder.headquarters.city}, {builder.headquarters.country}</span>
+                              )}
+                            </div>
                           </div>
                           
                           {builder.companyDescription && (
