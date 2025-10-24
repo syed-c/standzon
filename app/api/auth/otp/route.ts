@@ -288,18 +288,53 @@ export async function POST(request: NextRequest) {
             };
           } else {
             // Provisional user for newly registering builders
+            // Try to find the builder by email to get the correct ID
             try {
               const safeEmail = email || '';
               const username = safeEmail.includes("@") ? safeEmail.split("@")[0] : safeEmail;
-              const encodedId = Buffer.from(safeEmail).toString("base64").replace(/=/g, "");
               
-              user = {
-                id: `builder_${encodedId}`,
-                email: safeEmail,
-                name: username,
-                role: "builder",
-                verified: true,
-              };
+              // Look for the builder in the database by email
+              const { getServerSupabase } = await import('@/lib/supabase');
+              const sb = getServerSupabase();
+              
+              if (sb) {
+                const { data: builderProfile } = await sb
+                  .from('builder_profiles')
+                  .select('id, company_name')
+                  .eq('primary_email', safeEmail)
+                  .single();
+                
+                if (builderProfile) {
+                  console.log('✅ Found builder profile for OTP verification:', builderProfile);
+                  user = {
+                    id: builderProfile.id, // Use the actual builder ID from database
+                    email: safeEmail,
+                    name: builderProfile.company_name || username,
+                    role: "builder",
+                    verified: true,
+                  };
+                } else {
+                  console.log('⚠️ No builder profile found, using fallback ID');
+                  const encodedId = Buffer.from(safeEmail).toString("base64").replace(/=/g, "");
+                  user = {
+                    id: `builder_${encodedId}`,
+                    email: safeEmail,
+                    name: username,
+                    role: "builder",
+                    verified: true,
+                  };
+                }
+              } else {
+                console.log('⚠️ Supabase not available, using fallback ID');
+                const encodedId = Buffer.from(safeEmail).toString("base64").replace(/=/g, "");
+                user = {
+                  id: `builder_${encodedId}`,
+                  email: safeEmail,
+                  name: username,
+                  role: "builder",
+                  verified: true,
+                };
+              }
             } catch (encodeError) {
               console.error("❌ Error creating provisional user ID:", encodeError);
               user = {

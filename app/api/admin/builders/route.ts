@@ -606,6 +606,11 @@ export async function PUT(request: NextRequest) {
         if (updates.email) supabaseUpdates.primary_email = updates.email;
         if (updates.website) supabaseUpdates.website = updates.website;
         if (updates.contactName) supabaseUpdates.contact_person = updates.contactName;
+        if (updates.teamSize !== undefined) supabaseUpdates.team_size = updates.teamSize;
+        if (updates.establishedYear) supabaseUpdates.established_year = updates.establishedYear;
+        if (updates.logo) supabaseUpdates.logo = updates.logo;
+        
+        console.log('🔄 Supabase update data:', supabaseUpdates);
         
         const { data, error } = await sb
           .from('builder_profiles')

@@ -56,8 +56,16 @@ export default function BuilderProfileTemplate({ builder, isGmbImported, display
           <div className="grid lg:grid-cols-3 gap-8 items-center">
             <div className="lg:col-span-2">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
-                  <BuildingIcon className="w-10 h-10 text-white" />
+                <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center overflow-hidden">
+                  {builder.logo && builder.logo !== '/images/builders/default-logo.png' ? (
+                    <img 
+                      src={builder.logo} 
+                      alt={builder.companyName}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <BuildingIcon className="w-10 h-10 text-white" />
+                  )}
                 </div>
                 <div>
                   <h1 className="text-4xl md:text-5xl font-bold mb-2">{builder.companyName}</h1>

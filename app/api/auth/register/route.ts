@@ -155,8 +155,11 @@ export async function POST(request: NextRequest) {
           longitude: 0,
           isHeadquarters: true
         },
-        serviceLocations: [
-          {
+        serviceLocations: (() => {
+          const locations = [];
+          
+          // Add headquarters location
+          locations.push({
             city: city || 'Unknown',
             country: country || 'Unknown',
             countryCode: country ? country.slice(0, 2).toUpperCase() : 'US',
@@ -164,13 +167,32 @@ export async function POST(request: NextRequest) {
             latitude: 0,
             longitude: 0,
             isHeadquarters: true
+          });
+          
+          // Add additional service locations if provided
+          if (serviceCountries && Array.isArray(serviceCountries)) {
+            serviceCountries.forEach((serviceCountry: string) => {
+              if (serviceCountry && serviceCountry !== country) {
+                locations.push({
+                  city: serviceCities && serviceCities.length > 0 ? serviceCities[0] : 'Unknown',
+                  country: serviceCountry,
+                  countryCode: serviceCountry.slice(0, 2).toUpperCase(),
+                  address: '',
+                  latitude: 0,
+                  longitude: 0,
+                  isHeadquarters: false
+                });
+              }
+            });
           }
-        ],
+          
+          return locations;
+        })(),
         rating: 0,
         reviewCount: 0,
         projectsCompleted: projectsCompleted || 0,
         responseTime: 'New to platform',
-        verified: false,
+        verified: true, // Auto-verified since user completed registration
         claimed: true, // Auto-claimed since user registered
         claimStatus: 'verified',
         claimedAt: new Date().toISOString(),
@@ -197,6 +219,83 @@ export async function POST(request: NextRequest) {
       console.log('🔄 Calling unifiedPlatformAPI.addBuilder...');
       const addResult = await unifiedPlatformAPI.addBuilder(builderProfile as any);
       console.log('📊 addBuilder result:', addResult);
+      
+      // Also store service locations and services in Supabase
+      try {
+        const { getServerSupabase } = await import('@/lib/supabase');
+        const sb = getServerSupabase();
+        
+        if (sb) {
+          // Store service locations
+          if (builderProfile.serviceLocations && builderProfile.serviceLocations.length > 0) {
+            console.log('📍 Storing service locations in database:', builderProfile.serviceLocations);
+            
+            const serviceLocationRecords = [];
+            for (const location of builderProfile.serviceLocations) {
+              if (location.country && location.city) {
+                serviceLocationRecords.push({
+                  builder_id: builderId,
+                  city: location.city,
+                  country: location.country,
+                  country_code: location.countryCode || location.country.slice(0, 2).toUpperCase(),
+                  is_headquarters: location.isHeadquarters || false
+                });
+              }
+            }
+            
+            if (serviceLocationRecords.length > 0) {
+              const { error: serviceLocationError } = await sb
+                .from('builder_service_locations')
+                .insert(serviceLocationRecords);
+              
+              if (serviceLocationError) {
+                console.error("❌ Error inserting service locations:", serviceLocationError);
+              } else {
+                console.log(`✅ Inserted ${serviceLocationRecords.length} service locations`);
+              }
+            }
+          }
+          
+          // Store services
+          if (services && Array.isArray(services) && services.length > 0) {
+            console.log('🛠️ Storing services in database:', services);
+            
+            const serviceRecords = [];
+            for (const service of services) {
+              if (service.name && service.name.trim()) {
+                serviceRecords.push({
+                  builder_id: builderId,
+                  name: service.name,
+                  description: service.description || '',
+                  category: service.category || 'CUSTOM_DESIGN',
+                  price_from: service.priceFrom ? parseFloat(service.priceFrom) : null,
+                  currency: service.currency || 'USD',
+                  unit: service.unit || 'per project',
+                  locations: service.locations || [],
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
+                });
+              }
+            }
+            
+            if (serviceRecords.length > 0) {
+              const { error: serviceError } = await sb
+                .from('builder_services')
+                .insert(serviceRecords);
+              
+              if (serviceError) {
+                console.error("❌ Error inserting services:", serviceError);
+              } else {
+                console.log(`✅ Inserted ${serviceRecords.length} services`);
+              }
+            }
+          } else {
+            console.log('⚠️ No services to store in database');
+          }
+        }
+      } catch (supabaseError) {
+        console.error("❌ Error storing data in Supabase:", supabaseError);
+      }
       
       console.log('✅ Builder profile created in unified platform');
     }

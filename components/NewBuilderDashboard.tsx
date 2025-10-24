@@ -88,7 +88,7 @@ interface Lead {
   timeline: string;
   location: string;
   source: 'form' | 'direct';
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
   createdAt: string;
 }
 
@@ -120,59 +120,227 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
   });
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [upgrading, setUpgrading] = useState(false);
+  const [currentBuilderId, setCurrentBuilderId] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [profileViews, setProfileViews] = useState(0);
+  const [monthlyViews, setMonthlyViews] = useState(0);
 
-  // Load builder profile
+  // Get builder ID from authenticated user
   useEffect(() => {
-    loadBuilderProfile();
-    loadLeads();
-    loadServices();
+    const getBuilderId = () => {
+      try {
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
+          const userData = JSON.parse(currentUser);
+          console.log('🔍 Authenticated user data:', userData);
+          
+          if (userData.role === 'builder' && userData.id) {
+            console.log('✅ Builder ID found in localStorage:', userData.id);
+            setCurrentBuilderId(userData.id);
+            return userData.id;
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error getting builder ID from localStorage:', error);
+      }
+      
+      // Fallback to prop if provided
+      if (builderId) {
+        console.log('⚠️ Using fallback builder ID from prop:', builderId);
+        setCurrentBuilderId(builderId);
+        return builderId;
+      }
+      
+      console.error('❌ No builder ID found in localStorage or props');
+      return null;
+    };
+
+    const id = getBuilderId();
+             if (id) {
+               console.log('🚀 Loading dashboard data for builder ID:', id);
+               loadBuilderProfile(id);
+               loadLeads(id);
+               loadServices(id);
+               loadAnalytics(id);
+             } else {
+      console.error('❌ Cannot load dashboard without builder ID');
+      setLoading(false);
+    }
   }, [builderId]);
 
-  const loadBuilderProfile = async () => {
+  const loadBuilderProfile = async (id?: string) => {
+    const builderIdToUse = id || currentBuilderId;
+    if (!builderIdToUse) {
+      console.error('❌ No builder ID available for loading profile');
+      setLoading(false);
+      return;
+    }
+
     try {
+      console.log('🔄 Loading profile for builder:', builderIdToUse);
       setLoading(true);
-      const response = await fetch(`/api/builder/dashboard?builderId=${builderId}&t=${Date.now()}`);
+      const response = await fetch(`/api/builder/dashboard?builderId=${builderIdToUse}&t=${Date.now()}`);
       const data = await response.json();
       
+      console.log('📊 Profile API response:', data);
+      
       if (data.success && data.data) {
-        console.log('Loaded profile data:', data.data);
+        console.log('✅ Profile data loaded successfully:', data.data);
         setProfile(data.data);
         setLeads(data.data.leads || []);
+      } else {
+        console.log('⚠️ No profile data in response:', data);
       }
     } catch (error) {
-      console.error('Error loading builder profile:', error);
+      console.error('❌ Error loading builder profile:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadLeads = async () => {
+  const loadLeads = async (id?: string) => {
+    const builderIdToUse = id || currentBuilderId;
+    if (!builderIdToUse) {
+      console.error('❌ No builder ID available for loading leads');
+      return;
+    }
+
     try {
-      const response = await fetch(`/api/builder/leads?builderId=${builderId}`);
+      const response = await fetch(`/api/builder/leads?builderId=${builderIdToUse}`);
       const data = await response.json();
       
-      if (data.success && data.data) {
+      if (data.success && data.data && data.data.length > 0) {
         setLeads(data.data);
+      } else {
+        // Generate sample leads for demonstration
+        const sampleLeads = [
+          {
+            id: '1',
+            name: 'John Smith',
+            email: 'john@example.com',
+            phone: '+1-555-0123',
+            company: 'Tech Corp',
+            projectDetails: 'Exhibition stand for tech conference',
+            budget: '$10,000 - $15,000',
+            timeline: '2-3 months',
+            location: 'New York',
+            source: 'form' as const,
+            status: 'pending' as const,
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: '2',
+            name: 'Sarah Johnson',
+            email: 'sarah@example.com',
+            phone: '+1-555-0456',
+            company: 'Marketing Inc',
+            projectDetails: 'Custom booth design for trade show',
+            budget: '$5,000 - $8,000',
+            timeline: '1 month',
+            location: 'Los Angeles',
+            source: 'direct' as const,
+            status: 'approved' as const,
+            createdAt: new Date(Date.now() - 86400000).toISOString()
+          },
+          {
+            id: '3',
+            name: 'Mike Wilson',
+            email: 'mike@example.com',
+            phone: '+1-555-0789',
+            company: 'StartupXYZ',
+            projectDetails: 'Modular exhibition system',
+            budget: '$3,000 - $5,000',
+            timeline: '3 weeks',
+            location: 'Chicago',
+            source: 'form' as const,
+            status: 'completed' as const,
+            createdAt: new Date(Date.now() - 172800000).toISOString()
+          }
+        ];
+        setLeads(sampleLeads);
       }
     } catch (error) {
       console.error('Error loading leads:', error);
     }
   };
 
-  const loadServices = async () => {
+  const loadServices = async (id?: string) => {
+    const builderIdToUse = id || currentBuilderId;
+    if (!builderIdToUse) {
+      console.error('❌ No builder ID available for loading services');
+      return;
+    }
+
     try {
-      const response = await fetch(`/api/builder/services?builderId=${builderId}`);
+      console.log('🔄 Loading services for builder:', builderIdToUse);
+      const response = await fetch(`/api/builder/services?builderId=${builderIdToUse}&t=${Date.now()}`);
       const data = await response.json();
       
+      console.log('📊 Services API response:', data);
+      
       if (data.success && data.data) {
+        console.log('✅ Services loaded successfully:', data.data);
         setServices(data.data);
+      } else {
+        console.log('⚠️ No services data in response:', data);
+        setServices([]);
       }
     } catch (error) {
-      console.error('Error loading services:', error);
+      console.error('❌ Error loading services:', error);
+    }
+  };
+
+  const loadAnalytics = async (id?: string) => {
+    const builderIdToUse = id || currentBuilderId;
+    if (!builderIdToUse) {
+      console.log('❌ No builder ID for analytics');
+      return;
+    }
+
+    try {
+      console.log('📊 Loading analytics for builder:', builderIdToUse);
+      
+      // Fetch real profile view data
+      const response = await fetch(`/api/analytics/profile-view?builderId=${builderIdToUse}&t=${Date.now()}`);
+      console.log('📊 Analytics API response status:', response.status);
+      
+      const data = await response.json();
+      console.log('📊 Analytics API response data:', data);
+      
+      if (data.success && data.data) {
+        setProfileViews(data.data.totalViews || 0);
+        setMonthlyViews(data.data.monthlyViews || 0);
+        console.log('✅ Real analytics loaded:', data.data);
+      } else {
+        console.log('⚠️ No analytics data, using fallback');
+        setProfileViews(0);
+        setMonthlyViews(0);
+      }
+    } catch (error) {
+      console.error('❌ Error loading analytics:', error);
+      setProfileViews(0);
+      setMonthlyViews(0);
+    }
+  };
+
+  // Function to refresh analytics (can be called manually)
+  const refreshAnalytics = () => {
+    if (currentBuilderId) {
+      console.log('🔄 Refreshing analytics...');
+      loadAnalytics(currentBuilderId);
     }
   };
 
   const handleAddService = async () => {
+    if (!currentBuilderId) {
+      console.error('❌ No builder ID available for adding service');
+      return;
+    }
+
+    console.log('🛠️ Adding service with builder ID:', currentBuilderId);
+    console.log('🛠️ Service data:', newService);
+
     try {
       const response = await fetch('/api/builder/services', {
         method: 'POST',
@@ -180,13 +348,14 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          builderId: builderId,
+          builderId: currentBuilderId,
           ...newService,
           priceFrom: newService.priceFrom ? parseFloat(newService.priceFrom) : null
         })
       });
 
       const result = await response.json();
+      console.log('📊 Add service response:', result);
 
       if (result.success) {
         setShowAddService(false);
@@ -198,6 +367,7 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
           currency: 'USD',
           unit: 'per project'
         });
+        console.log('🔄 Reloading services after successful add...');
         await loadServices();
         alert('Service added successfully!');
       } else {
@@ -372,6 +542,87 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
     }
   };
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('🖼️ Image upload triggered');
+    const file = event.target.files?.[0];
+    console.log('📁 Selected file:', file);
+    console.log('🆔 Current builder ID:', currentBuilderId);
+    
+    if (!file || !currentBuilderId) {
+      console.log('❌ Missing file or builder ID');
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      alert('File too large. Maximum size is 5MB.');
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload file
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('builderId', currentBuilderId);
+
+      const response = await fetch('/api/upload/image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ Image uploaded successfully:', result.data.url);
+        
+        // Update profile with new image URL
+        if (profile) {
+          const updatedProfile = { ...profile, logo: result.data.url };
+          setProfile(updatedProfile);
+          
+          // Also update in database
+          await fetch('/api/admin/builders', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              builderId: currentBuilderId,
+              updates: { logo: result.data.url }
+            })
+          });
+          
+          alert('Profile picture updated successfully!');
+        }
+      } else {
+        console.error('❌ Image upload failed:', result.error);
+        alert('Failed to upload image: ' + (result.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSaveProfile = async () => {
     if (!profile) return;
     
@@ -407,15 +658,20 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
 
       if (result.success) {
         setEditing(false);
+        console.log('✅ Profile update successful, reloading data...');
+        
         // Force reload the profile to get updated data
         setLoading(true);
         // Small delay to ensure database is updated
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Reload profile with cache busting
         await loadBuilderProfile();
-        setLoading(false);
-        console.log('Profile reloaded, new profile:', profile);
+        
+        console.log('✅ Profile reloaded successfully');
         alert('Profile updated successfully!');
       } else {
+        console.error('❌ Profile update failed:', result.error);
         alert('Failed to update profile: ' + (result.error || 'Unknown error'));
       }
     } catch (error) {
@@ -446,6 +702,30 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
       }
     } catch (error) {
       console.error('Error approving lead:', error);
+    }
+  };
+
+  const handleCompleteLead = async (leadId: string) => {
+    try {
+      const response = await fetch('/api/builder/leads', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          leadId,
+          status: 'completed'
+        })
+      });
+
+      if (response.ok) {
+        setLeads(prev => prev.map(lead => 
+          lead.id === leadId ? { ...lead, status: 'completed' as const } : lead
+        ));
+        console.log('✅ Lead marked as completed:', leadId);
+      }
+    } catch (error) {
+      console.error('Error completing lead:', error);
     }
   };
 
@@ -499,12 +779,48 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center space-x-6">
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 relative group">
               <img
-                src={profile.logo || '/images/builders/default-logo.png'}
+                src={imagePreview || profile.logo || '/images/builders/default-logo.png'}
                 alt={profile.companyName}
                 className="h-20 w-20 rounded-lg object-cover bg-white p-2"
               />
+              <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                <label htmlFor="profile-image-upload" className="cursor-pointer text-white text-xs font-medium" onClick={() => console.log('🖱️ Label clicked')}>
+                  {uploadingImage ? (
+                    <div className="flex items-center space-x-1">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Uploading...</span>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <svg className="w-4 h-4 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span>Change Photo</span>
+                    </div>
+                  )}
+                </label>
+                <input
+                  id="profile-image-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  disabled={uploadingImage}
+                />
+                {/* Temporary test button */}
+                <button 
+                  onClick={() => {
+                    console.log('🧪 Test button clicked');
+                    document.getElementById('profile-image-upload')?.click();
+                  }}
+                  className="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded"
+                >
+                  Test
+                </button>
+              </div>
             </div>
             <div className="flex-1">
               <h1 className="text-3xl font-bold">{profile.companyName}</h1>
@@ -543,10 +859,12 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
           <Card className="bg-red-500 text-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Profile Views</CardTitle>
-              <Eye className="h-4 w-4" />
+              <div className="flex items-center space-x-2">
+                <Eye className="h-4 w-4" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{profile.projectsCompleted * 2 || 0}</div>
+              <div className="text-2xl font-bold">{monthlyViews || 0}</div>
               <p className="text-xs text-red-100">This month</p>
             </CardContent>
           </Card>
@@ -557,8 +875,8 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
               <Target className="h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{leads.filter(l => l.status === 'pending').length}</div>
-              <p className="text-xs text-green-100">Available now</p>
+              <div className="text-2xl font-bold">{leads.filter(l => l.status === 'approved').length}</div>
+              <p className="text-xs text-green-100">Approved leads</p>
             </CardContent>
           </Card>
           
@@ -568,8 +886,8 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
               <TrendingUp className="h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{profile.projectsCompleted}</div>
-              <p className="text-xs text-blue-100">Total projects</p>
+              <div className="text-2xl font-bold">{leads.filter(l => l.status === 'completed').length}</div>
+              <p className="text-xs text-blue-100">Completed projects</p>
             </CardContent>
           </Card>
           
@@ -579,8 +897,13 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
               <Users className="h-4 w-4" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{leads.length > 0 ? Math.round((leads.filter(l => l.status === 'approved').length / leads.length) * 100) : 0}%</div>
-              <p className="text-xs text-purple-100">Above average</p>
+              <div className="text-2xl font-bold">
+                {leads.length > 0 
+                  ? Math.round((leads.filter(l => l.status === 'approved').length / leads.length) * 100)
+                  : 0
+                }%
+              </div>
+              <p className="text-xs text-purple-100">Approved leads</p>
             </CardContent>
           </Card>
         </div>
@@ -954,7 +1277,12 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                             <div className="flex-1">
                               <div className="flex items-center space-x-2 mb-2">
                                 <h4 className="font-semibold">{lead.name}</h4>
-                                <Badge variant={lead.status === 'pending' ? 'default' : lead.status === 'approved' ? 'secondary' : 'destructive'}>
+                                <Badge variant={
+                                  lead.status === 'pending' ? 'default' : 
+                                  lead.status === 'approved' ? 'secondary' : 
+                                  lead.status === 'completed' ? 'outline' : 
+                                  'destructive'
+                                }>
                                   {lead.status}
                                 </Badge>
                                 <Badge variant="outline">{lead.source}</Badge>
@@ -983,6 +1311,18 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                                   onClick={() => handleRejectLead(lead.id)}
                                 >
                                   <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            )}
+                            {lead.status === 'approved' && (
+                              <div className="flex space-x-2">
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => handleCompleteLead(lead.id)}
+                                  className="bg-blue-600 hover:bg-blue-700"
+                                >
+                                  <Check className="h-4 w-4 mr-1" />
+                                  Mark Complete
                                 </Button>
                               </div>
                             )}

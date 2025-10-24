@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
     let builderError = null;
 
     try {
+      console.log('🔍 Fetching builder profile from Supabase for ID:', builderId);
       const { data: builderData, error: error } = await supabase
         .from('builder_profiles')
         .select('*')
@@ -30,13 +31,20 @@ export async function GET(request: NextRequest) {
         .single();
 
       if (error) {
-        console.log('Supabase builder fetch failed, trying admin API:', error);
+        console.log('❌ Supabase builder fetch failed, trying admin API:', error);
         builderError = error;
       } else {
+        console.log('✅ Builder profile found in Supabase:', {
+          id: builderData.id,
+          company_name: builderData.company_name,
+          description: builderData.company_description,
+          phone: builderData.phone,
+          team_size: builderData.team_size
+        });
         builder = builderData;
       }
     } catch (error) {
-      console.log('Supabase connection failed, trying admin API:', error);
+      console.log('❌ Supabase connection failed, trying admin API:', error);
       builderError = error;
     }
 
@@ -87,6 +95,8 @@ export async function GET(request: NextRequest) {
         .select('*')
         .eq('builder_id', builderId);
 
+      console.log(`🔍 Service locations from database for builder ${builderId}:`, serviceLocationsData);
+
       if (serviceLocationsData && serviceLocationsData.length > 0) {
         const countryMap = new Map<string, string[]>();
         serviceLocationsData.forEach((loc: any) => {
@@ -104,13 +114,19 @@ export async function GET(request: NextRequest) {
             cities: [...new Set(cities)] // Remove duplicates
           });
         });
+        console.log(`✅ Processed service locations:`, serviceLocations);
+      } else {
+        console.log(`⚠️ No service locations found in database for builder ${builderId}`);
       }
     } catch (error) {
-      console.log('Service locations table not found, trying builder data');
+      console.log('Service locations table not found, trying builder data:', error);
       
       // Fallback to service locations from builder data
       if (builder.serviceLocations && Array.isArray(builder.serviceLocations)) {
+        console.log(`📋 Using service locations from builder data:`, builder.serviceLocations);
         serviceLocations.push(...builder.serviceLocations);
+      } else {
+        console.log(`⚠️ No service locations in builder data either`);
       }
     }
 
@@ -187,8 +203,8 @@ export async function GET(request: NextRequest) {
       },
       serviceLocations: serviceLocations.length > 0 ? serviceLocations : [
         {
-          country: 'Australia',
-          cities: ['Melbourne', 'Sydney']
+          country: builder.headquarters_country || 'Unknown',
+          cities: [builder.headquarters_city || 'Unknown']
         }
       ],
       services,
@@ -201,6 +217,14 @@ export async function GET(request: NextRequest) {
       subscriptionExpiry: subscription.end_date || null,
       leads: leads || []
     };
+
+    console.log('📊 Dashboard data being returned:', {
+      id: dashboardData.id,
+      companyName: dashboardData.companyName,
+      description: dashboardData.description,
+      teamSize: dashboardData.teamSize,
+      phone: dashboardData.contactInfo.phone
+    });
 
     return NextResponse.json({
       success: true,

@@ -82,6 +82,26 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
   }, [builder?.services, isUnclaimed, isGmbImported, allAvailableServices]);
 
   useEffect(() => {
+    // Track profile view
+    const trackProfileView = async () => {
+      try {
+        await fetch('/api/analytics/profile-view', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            builderSlug: slug
+          })
+        });
+        console.log('✅ Profile view tracked for:', slug);
+      } catch (error) {
+        console.error('❌ Error tracking profile view:', error);
+      }
+    };
+
+    trackProfileView();
+
     const loadBuilderData = async () => {
       // Try to find builder from unified platform first
       const unifiedBuilders = unifiedPlatformAPI.getBuilders();

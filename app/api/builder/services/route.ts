@@ -11,6 +11,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const builderId = searchParams.get('builderId');
 
+    console.log('🔍 GET services request for builder:', builderId);
+
     if (!builderId) {
       return NextResponse.json(
         { success: false, error: 'Builder ID is required' },
@@ -25,8 +27,11 @@ export async function GET(request: NextRequest) {
       .eq('builder_id', builderId)
       .order('created_at', { ascending: false });
 
+    console.log('📊 Raw services from database:', services);
+    console.log('📊 Database error:', error);
+
     if (error) {
-      console.error('Error fetching services:', error);
+      console.error('❌ Error fetching services:', error);
       return NextResponse.json(
         { success: false, error: 'Failed to fetch services' },
         { status: 500 }
@@ -38,12 +43,14 @@ export async function GET(request: NextRequest) {
       id: service.id,
       name: service.name,
       description: service.description,
-      category: 'CUSTOM_DESIGN', // Default category since it's not in the schema
-      priceFrom: service.price_range ? service.price_range.split(' ')[0] : null,
-      currency: service.price_range ? service.price_range.split(' ')[1] : 'USD',
-      unit: service.price_range ? service.price_range.split(' ').slice(2).join(' ') : 'per project',
-      locations: service.locations || []
+      category: service.category || 'CUSTOM_DESIGN',
+      priceFrom: service.price_from ? service.price_from.toString() : null,
+      currency: service.currency || 'USD',
+      unit: service.unit || 'per project',
+      locations: [] // Not stored in this schema
     }));
+
+    console.log('✅ Mapped services for frontend:', mappedServices);
 
     return NextResponse.json({
       success: true,
@@ -71,16 +78,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Map category to enum value
+    const categoryMap: Record<string, string> = {
+      'Storage': 'STORAGE',
+      'Custom Design': 'CUSTOM_DESIGN',
+      'Modular Systems': 'MODULAR_SYSTEMS',
+      'Portable Displays': 'PORTABLE_DISPLAYS',
+      'Installation': 'INSTALLATION',
+      'Transportation': 'TRANSPORTATION',
+      'Graphics': 'GRAPHICS',
+      'Lighting': 'LIGHTING',
+      'Furniture': 'FURNITURE',
+      'AV Equipment': 'AV_EQUIPMENT'
+    };
+
     // Create new service - map fields to match database schema
     const serviceInsertData = {
       builder_id: builderId,
       name: service.name,
       description: service.description,
-      price_range: service.priceFrom ? `${service.priceFrom} ${service.currency} ${service.unit}` : null,
-      locations: [], // Will be populated separately if needed
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      category: categoryMap[service.category] || 'CUSTOM_DESIGN', // Required field
+      price_from: service.priceFrom ? parseFloat(service.priceFrom) : null,
+      currency: service.currency || 'USD',
+      unit: service.unit || 'per project',
+      popular: false,
+      turnover_time: '4-6 weeks'
     };
+
+    console.log('🛠️ Creating service with data:', serviceInsertData);
 
     const { data, error } = await supabase
       .from('builder_services')
@@ -89,12 +114,14 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('Error creating service:', error);
+      console.error('❌ Error creating service:', error);
       return NextResponse.json(
-        { success: false, error: 'Failed to create service' },
+        { success: false, error: `Failed to create service: ${error.message}` },
         { status: 500 }
       );
     }
+
+    console.log('✅ Service created successfully:', data);
 
     return NextResponse.json({
       success: true,

@@ -18,7 +18,7 @@ export default function BuilderDashboardPage() {
       
       <main className="pt-20 px-6 pb-12">
         <div className="max-w-7xl mx-auto">
-          <NewBuilderDashboard builderId="77836f44-6832-4866-81f2-74c84303aa7c" />
+          <NewBuilderDashboard />
         </div>
       </main>
       
