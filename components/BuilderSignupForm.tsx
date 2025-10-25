@@ -875,6 +875,7 @@ export default function BuilderSignupForm() {
                   placeholder="Describe your company, experience, and what makes you unique..."
                   rows={5}
                   className={errors.companyDescription ? 'border-red-500' : ''}
+                  disableRichTools={true}
                 />
                 {errors.companyDescription && (
                   <p className="text-red-500 text-sm mt-1">{errors.companyDescription}</p>
@@ -950,6 +951,7 @@ export default function BuilderSignupForm() {
                           value={service.description}
                           onChange={(e) => updateService(index, 'description', e.target.value)}
                           rows={2}
+                          disableRichTools={true}
                         />
                       </div>
                     ))}

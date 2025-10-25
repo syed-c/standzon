@@ -100,8 +100,13 @@ export default function ExhibitionStandsContent() {
         };
       });
 
+      // Remove duplicates based on country code
+      const uniqueCountries = processedCountries.filter((country, index, self) => 
+        index === self.findIndex(c => c.code === country.code)
+      );
+
       // Sort countries: active (with builders) first, then by market size, then alphabetically
-      const sortedCountries = processedCountries.sort((a, b) => {
+      const sortedCountries = uniqueCountries.sort((a, b) => {
         // Active countries (with builders) first
         if (a.builderCount > 0 && b.builderCount === 0) return -1;
         if (a.builderCount === 0 && b.builderCount > 0) return 1;
@@ -141,6 +146,14 @@ export default function ExhibitionStandsContent() {
       (country.cities && country.cities.some(city => city.toLowerCase().includes(searchQuery.toLowerCase())));
     
     const matchesContinent = selectedContinent === 'all' || country.continent === selectedContinent;
+    
+    console.log(`🔍 Filtering ${country.name}:`, {
+      searchQuery,
+      selectedContinent,
+      matchesSearch,
+      matchesContinent,
+      countryContinent: country.continent
+    });
     
     return matchesSearch && matchesContinent;
   });
@@ -244,12 +257,12 @@ export default function ExhibitionStandsContent() {
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCountries.map((country) => {
+            {filteredCountries.map((country, index) => {
               const isExpanded = expandedCountries.has(country.code);
               const isActive = country.builderCount > 0;
               
               return (
-                <Card key={country.code} className={`overflow-hidden transition-all duration-300 hover:shadow-xl ${
+                <Card key={`${country.code}-${index}`} className={`overflow-hidden transition-all duration-300 hover:shadow-xl ${
                   isActive ? 'ring-2 ring-blue-200 bg-white' : 'bg-gray-50 border-dashed'
                 }`}>
                   <CardHeader className="pb-4">

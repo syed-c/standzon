@@ -987,6 +987,7 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                           value={profile.description}
                           onChange={(e) => setProfile({...profile, description: e.target.value})}
                           rows={4}
+                          disableRichTools={true}
                         />
                       </div>
                       <div className="flex space-x-2">
@@ -1073,6 +1074,7 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                             onChange={(e) => setNewService({...newService, description: e.target.value})}
                             placeholder="Describe your service..."
                             rows={3}
+                            disableRichTools={true}
                           />
                         </div>
                         <div className="grid grid-cols-2 gap-4">

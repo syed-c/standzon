@@ -1257,6 +1257,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
                   onChange={(e) => updateProfile('description', e.target.value)}
                   disabled={editMode !== 'basic'}
                   rows={4}
+                  disableRichTools={true}
                   className="mt-1"
                   placeholder="Describe your company, experience, and what makes you unique..."
                 />
@@ -1333,6 +1334,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
                     value={service.description}
                     onChange={(e) => updateService(index, 'description', e.target.value)}
                     rows={2}
+                    disableRichTools={true}
                   />
                 </div>
               ))}
@@ -1664,6 +1666,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
                   onChange={(e) => setNewPortfolioItem({...newPortfolioItem, description: e.target.value})}
                   placeholder="Describe the project, challenges, and results..."
                   rows={3}
+                  disableRichTools={true}
                 />
               </div>
               
