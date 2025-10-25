@@ -97,6 +97,16 @@ function getBuilderPlanBadge(planType: string, premiumMember: boolean) {
 function getClaimStatusBadge(builder: any) {
   const claimed = (builder as any).claimed;
   const claimStatus = (builder as any).claimStatus || 'unclaimed';
+  const verified = builder.verified;
+  
+  if (verified) {
+    return (
+      <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
+        <CheckCircle2 className="w-3 h-3 mr-1" />
+        Verified
+      </Badge>
+    );
+  }
   
   if (claimed && claimStatus === 'verified') {
     return (

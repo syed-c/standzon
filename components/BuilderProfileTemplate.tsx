@@ -278,15 +278,57 @@ export default function BuilderProfileTemplate({ builder, isGmbImported, display
             </TabsContent>
 
             <TabsContent value="portfolio" className="space-y-6">
-              <div className="text-center py-12">
-                <Camera className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-gray-600 mb-2">{c.portfolioTitle}</h3>
-                <p className="text-gray-500 mb-4">{c.portfolioSubtitle}</p>
-                <Button onClick={onOpenQuote}>
-                  <Quote className="w-4 h-4 mr-2" />
-                  {c.ctaRequestPortfolio}
-                </Button>
-              </div>
+              {builder.portfolio && builder.portfolio.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {builder.portfolio.map((project: any, index: number) => (
+                    <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <div className="aspect-video bg-gray-100">
+                        {project.imageUrl ? (
+                          <img 
+                            src={project.imageUrl} 
+                            alt={project.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400">
+                            <Camera className="w-12 h-12" />
+                          </div>
+                        )}
+                      </div>
+                      <CardContent className="p-4">
+                        <h4 className="font-semibold text-lg mb-2">{project.title}</h4>
+                        {project.description && (
+                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{project.description}</p>
+                        )}
+                        <div className="flex justify-between items-center text-xs text-gray-500">
+                          <div>
+                            {project.projectYear && <span>{project.projectYear}</span>}
+                            {project.tradeShow && <span> • {project.tradeShow}</span>}
+                          </div>
+                          {project.standSize && project.standSize > 0 && (
+                            <span>{project.standSize} sqm</span>
+                          )}
+                        </div>
+                        {project.client && (
+                          <div className="mt-2 text-xs text-gray-500">
+                            Client: {project.client}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Camera className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-medium text-gray-600 mb-2">{c.portfolioTitle}</h3>
+                  <p className="text-gray-500 mb-4">{c.portfolioSubtitle}</p>
+                  <Button onClick={onOpenQuote}>
+                    <Quote className="w-4 h-4 mr-2" />
+                    {c.ctaRequestPortfolio}
+                  </Button>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="locations" className="space-y-6">

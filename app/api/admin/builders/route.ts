@@ -576,7 +576,7 @@ export async function PUT(request: NextRequest) {
             .replace(/.*SERVICE_LOCATIONS.*$/g, '')
             .trim();
           const serviceLocationsJson = JSON.stringify(updates.serviceLocations);
-          supabaseUpdates.company_description = `${cleanedDescription}\n\nSERVICE_LOCATIONS:${serviceLocationsJson}`;
+          supabaseUpdates.company_description = cleanedDescription;
           
           // Also sync to builder_service_locations table
           try {

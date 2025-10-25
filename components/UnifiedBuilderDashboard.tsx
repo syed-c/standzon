@@ -43,10 +43,10 @@ import {
   MessageCircle,
   Target,
   UserCheck,
-  ExternalLink,
-  LogOut,
   Plus,
   Trash2,
+  ExternalLink,
+  LogOut,
   RefreshCw,
   Shield,
   X
@@ -110,6 +110,19 @@ interface UnifiedBuilderProfile {
   rating: number;
   reviewCount: number;
   
+  // Portfolio
+  portfolio: Array<{
+    id: string;
+    title: string;
+    description?: string;
+    imageUrl: string;
+    projectYear?: number;
+    tradeShow?: string;
+    client?: string;
+    standSize?: number;
+    createdAt: string;
+  }>;
+  
   // Meta
   createdAt: string;
   lastUpdated: string;
@@ -155,6 +168,16 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
   const [leads, setLeads] = useState<any[]>([]);
   const [syncStatus, setSyncStatus] = useState<'synced' | 'syncing' | 'error'>('synced');
   const [availableCitiesByCountry, setAvailableCitiesByCountry] = useState<Record<string, string[]>>({});
+  const [showPortfolioUpload, setShowPortfolioUpload] = useState(false);
+  const [newPortfolioItem, setNewPortfolioItem] = useState({
+    title: '',
+    description: '',
+    imageUrl: '',
+    projectYear: new Date().getFullYear(),
+    tradeShow: '',
+    client: '',
+    standSize: 0
+  });
 
   // Load unified profile data
   useEffect(() => {
@@ -369,34 +392,23 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             }
           ],
           
-          serviceLocations: userData.profile?.serviceLocations || supabaseData?.serviceLocations || (userData.serviceCountries?.map((country: string) => ({
-            country,
-            cities: userData.serviceCities && userData.serviceCities.length ? userData.serviceCities : (userData.city ? [userData.city] : [])
-          })) || []).length > 0 ? (userData.serviceCountries?.map((country: string) => ({
-            country,
-            cities: userData.serviceCities && userData.serviceCities.length ? userData.serviceCities : (userData.city ? [userData.city] : [])
-          })) || []) : (() => {
-            // Try to parse from companyDescription field - get the latest entry (fallback)
-            if (supabaseData?.companyDescription) {
-              console.log('🔍 Debug - companyDescription:', supabaseData.companyDescription);
-              const serviceLocationsMatches = supabaseData.companyDescription.match(/SERVICE_LOCATIONS:(\[.*?\])/g);
-              console.log('🔍 Debug - serviceLocationsMatches:', serviceLocationsMatches);
-              if (serviceLocationsMatches && serviceLocationsMatches.length > 0) {
-                // Get the last (most recent) service locations entry
-                const lastMatch = serviceLocationsMatches[serviceLocationsMatches.length - 1];
-                console.log('🔍 Debug - lastMatch:', lastMatch);
-                const jsonMatch = lastMatch.match(/SERVICE_LOCATIONS:(\[.*?\])/);
-                if (jsonMatch) {
-                  try {
-                    const parsed = JSON.parse(jsonMatch[1]);
-                    console.log('📍 Loaded service locations from Supabase description:', parsed);
-                    return parsed;
-                  } catch (e) {
-                    console.warn('Failed to parse service locations from description:', e);
-                  }
-                }
-              }
+          serviceLocations: (() => {
+            // First try to get from service locations table
+            if (supabaseData?.serviceLocations && supabaseData.serviceLocations.length > 0) {
+              console.log('📍 Loaded service locations from service locations table:', supabaseData.serviceLocations);
+              return supabaseData.serviceLocations;
             }
+            
+            // Then try user data
+            if (userData.serviceCountries && userData.serviceCountries.length > 0) {
+              const locations = userData.serviceCountries?.map((country: string) => ({
+                country,
+                cities: userData.serviceCities && userData.serviceCities.length ? userData.serviceCities : (userData.city ? [userData.city] : [])
+              })) || [];
+              console.log('📍 Loaded service locations from user data:', locations);
+              return locations;
+            }
+            
             // Fallback to headquarters
             return [{
               country: supabaseData?.headquarters?.country || 'Unknown',
@@ -416,6 +428,8 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
           responseRate: supabaseData?.response_rate || 0,
           rating: supabaseData?.rating || 0,
           reviewCount: supabaseData?.review_count || 0,
+          
+          portfolio: [],
           
           createdAt: userData.registeredAt || new Date().toISOString(),
           lastUpdated: new Date().toISOString(),
@@ -458,6 +472,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
           responseRate: 0,
           rating: 0,
           reviewCount: 0,
+          portfolio: [],
           createdAt: new Date().toISOString(),
           lastUpdated: new Date().toISOString(),
           source: 'registration'
@@ -525,6 +540,8 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
       responseRate: 85,
       rating: 4.2,
       reviewCount: 18,
+      
+      portfolio: [],
       
       createdAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString(),
@@ -655,6 +672,59 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
     
     const updatedLocations = profile.serviceLocations.filter((_, i) => i !== index);
     updateProfile('serviceLocations', updatedLocations);
+  };
+
+  // Portfolio management functions
+  const addPortfolioItem = async () => {
+    if (!profile || !newPortfolioItem.title.trim()) {
+      toast.error('Please provide a project title');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const portfolioItem = {
+        id: `portfolio-${Date.now()}`,
+        title: newPortfolioItem.title,
+        description: newPortfolioItem.description,
+        imageUrl: newPortfolioItem.imageUrl || '/images/portfolio/placeholder.jpg',
+        projectYear: newPortfolioItem.projectYear,
+        tradeShow: newPortfolioItem.tradeShow,
+        client: newPortfolioItem.client,
+        standSize: newPortfolioItem.standSize,
+        createdAt: new Date().toISOString()
+      };
+
+      const updatedPortfolio = [...(profile.portfolio || []), portfolioItem];
+      updateProfile('portfolio', updatedPortfolio);
+      
+      // Reset form
+      setNewPortfolioItem({
+        title: '',
+        description: '',
+        imageUrl: '',
+        projectYear: new Date().getFullYear(),
+        tradeShow: '',
+        client: '',
+        standSize: 0
+      });
+      setShowPortfolioUpload(false);
+      
+      toast.success('Portfolio item added successfully');
+    } catch (error) {
+      console.error('Error adding portfolio item:', error);
+      toast.error('Failed to add portfolio item');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deletePortfolioItem = (index: number) => {
+    if (!profile) return;
+    
+    const updatedPortfolio = profile.portfolio.filter((_, i) => i !== index);
+    updateProfile('portfolio', updatedPortfolio);
+    toast.success('Portfolio item deleted');
   };
 
   const handleLogout = () => {
@@ -889,11 +959,12 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
 
       {/* Main Dashboard Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6 bg-gray-100 p-1 rounded-lg">
+        <TabsList className="grid w-full grid-cols-7 bg-gray-100 p-1 rounded-lg">
           <TabsTrigger value="overview" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Overview</TabsTrigger>
           <TabsTrigger value="profile" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Profile</TabsTrigger>
           <TabsTrigger value="services" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Services</TabsTrigger>
           <TabsTrigger value="locations" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Locations</TabsTrigger>
+          <TabsTrigger value="portfolio" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Portfolio</TabsTrigger>
           <TabsTrigger value="leads" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Leads</TabsTrigger>
           <TabsTrigger value="subscription" className="data-[state=active]:bg-red-600 data-[state=active]:text-white">Subscription</TabsTrigger>
         </TabsList>
@@ -1289,6 +1360,75 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
           </Card>
         </TabsContent>
 
+        <TabsContent value="portfolio" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Portfolio Gallery</span>
+                <Button onClick={() => setShowPortfolioUpload(true)} className="bg-red-600 text-white hover:bg-red-700 font-medium">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Project
+                </Button>
+              </CardTitle>
+              <CardDescription>
+                Showcase your completed projects to attract more clients
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {profile.portfolio && profile.portfolio.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {profile.portfolio.map((project, index) => (
+                    <div key={index} className="border rounded-lg p-4 hover:shadow-lg transition-shadow">
+                      <div className="aspect-video bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                        {project.imageUrl ? (
+                          <img 
+                            src={project.imageUrl} 
+                            alt={project.title}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        ) : (
+                          <div className="text-gray-400 text-center">
+                            <Camera className="h-8 w-8 mx-auto mb-2" />
+                            <p className="text-sm">No Image</p>
+                          </div>
+                        )}
+                      </div>
+                      <h4 className="font-medium text-lg mb-2">{project.title}</h4>
+                      {project.description && (
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{project.description}</p>
+                      )}
+                      <div className="flex justify-between items-center">
+                        <div className="text-xs text-gray-500">
+                          {project.projectYear && <span>{project.projectYear}</span>}
+                          {project.tradeShow && <span> • {project.tradeShow}</span>}
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => deletePortfolioItem(index)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Camera className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-medium text-gray-600 mb-2">No Portfolio Items</h3>
+                  <p className="text-gray-500 mb-4">Add your completed projects to showcase your work</p>
+                  <Button onClick={() => setShowPortfolioUpload(true)} className="bg-red-600 text-white hover:bg-red-700">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add First Project
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="leads" className="space-y-6">
           <Card>
             <CardHeader>
@@ -1390,6 +1530,124 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Portfolio Upload Dialog */}
+      {showPortfolioUpload && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Add Portfolio Project</h3>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowPortfolioUpload(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="title">Project Title *</Label>
+                <Input
+                  id="title"
+                  value={newPortfolioItem.title}
+                  onChange={(e) => setNewPortfolioItem({...newPortfolioItem, title: e.target.value})}
+                  placeholder="e.g., Custom Exhibition Stand for Tech Expo"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="description">Project Description</Label>
+                <Textarea
+                  id="description"
+                  value={newPortfolioItem.description}
+                  onChange={(e) => setNewPortfolioItem({...newPortfolioItem, description: e.target.value})}
+                  placeholder="Describe the project, challenges, and results..."
+                  rows={3}
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="year">Project Year</Label>
+                  <Input
+                    id="year"
+                    type="number"
+                    value={newPortfolioItem.projectYear}
+                    onChange={(e) => setNewPortfolioItem({...newPortfolioItem, projectYear: parseInt(e.target.value)})}
+                    min="2020"
+                    max={new Date().getFullYear()}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="standSize">Stand Size (sqm)</Label>
+                  <Input
+                    id="standSize"
+                    type="number"
+                    value={newPortfolioItem.standSize}
+                    onChange={(e) => setNewPortfolioItem({...newPortfolioItem, standSize: parseInt(e.target.value)})}
+                    min="0"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="tradeShow">Trade Show/Event</Label>
+                  <Input
+                    id="tradeShow"
+                    value={newPortfolioItem.tradeShow}
+                    onChange={(e) => setNewPortfolioItem({...newPortfolioItem, tradeShow: e.target.value})}
+                    placeholder="e.g., CES 2024"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="client">Client Name</Label>
+                  <Input
+                    id="client"
+                    value={newPortfolioItem.client}
+                    onChange={(e) => setNewPortfolioItem({...newPortfolioItem, client: e.target.value})}
+                    placeholder="Client company name"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="imageUrl">Image URL</Label>
+                <Input
+                  id="imageUrl"
+                  value={newPortfolioItem.imageUrl}
+                  onChange={(e) => setNewPortfolioItem({...newPortfolioItem, imageUrl: e.target.value})}
+                  placeholder="https://example.com/project-image.jpg"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Upload your image to a service like Imgur, then paste the URL here
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-2 mt-6">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowPortfolioUpload(false)}
+                disabled={saving}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={addPortfolioItem}
+                disabled={saving || !newPortfolioItem.title.trim()}
+                className="bg-red-600 text-white hover:bg-red-700"
+              >
+                {saving ? 'Adding...' : 'Add Project'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

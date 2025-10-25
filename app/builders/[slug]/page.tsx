@@ -34,6 +34,26 @@ export default async function BuilderProfilePage({
               country,
               country_code,
               is_headquarters
+            ),
+            builder_services!left(
+              id,
+              name,
+              description,
+              category,
+              price_from,
+              currency,
+              unit
+            ),
+            portfolio_items!left(
+              id,
+              title,
+              description,
+              image_url,
+              project_year,
+              client,
+              trade_show,
+              stand_size,
+              category
             )
           `)
           .eq('slug', slug)
@@ -93,7 +113,45 @@ export default async function BuilderProfilePage({
               contactPerson: supabaseBuilder.contact_person || "Contact Person",
               position: supabaseBuilder.position || "Manager",
             },
-            services: [],
+            services: (() => {
+              // Process services from the joined table
+              const services: Array<{name: string, description: string, category: string, priceFrom?: string, currency?: string, unit?: string}> = [];
+              if (supabaseBuilder.builder_services && supabaseBuilder.builder_services.length > 0) {
+                supabaseBuilder.builder_services.forEach((service: any) => {
+                  if (service.name) {
+                    services.push({
+                      name: service.name,
+                      description: service.description || '',
+                      category: service.category || 'CUSTOM_DESIGN',
+                      priceFrom: service.price_from ? service.price_from.toString() : undefined,
+                      currency: service.currency || 'USD',
+                      unit: service.unit || 'per project'
+                    });
+                  }
+                });
+              }
+              return services;
+            })(),
+            portfolio: (() => {
+              // Process portfolio items from the joined table
+              const portfolio: Array<{title: string, description?: string, imageUrl: string, projectYear?: number, client?: string, tradeShow?: string, standSize?: number}> = [];
+              if (supabaseBuilder.portfolio_items && supabaseBuilder.portfolio_items.length > 0) {
+                supabaseBuilder.portfolio_items.forEach((item: any) => {
+                  if (item.title) {
+                    portfolio.push({
+                      title: item.title,
+                      description: item.description || '',
+                      imageUrl: item.image_url || '/images/portfolio/placeholder.jpg',
+                      projectYear: item.project_year,
+                      client: item.client,
+                      tradeShow: item.trade_show,
+                      standSize: item.stand_size
+                    });
+                  }
+                });
+              }
+              return portfolio;
+            })(),
             specializations: [
               { id: 'general', name: 'Exhibition Builder', icon: '🏗️', color: '#3B82F6' }
             ],
