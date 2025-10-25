@@ -201,6 +201,7 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
         console.log('✅ Profile data loaded successfully:', data.data);
         setProfile(data.data);
         setLeads(data.data.leads || []);
+        setPortfolio(data.data.portfolio || []);
       } else {
         console.log('⚠️ No profile data in response:', data);
       }
@@ -605,6 +606,53 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
     } catch (error) {
       console.error('Error deleting portfolio item:', error);
       alert('Failed to delete portfolio item. Please try again.');
+    }
+  };
+
+  // Image upload handler for portfolio
+  const handlePortfolioImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('folder', 'portfolio');
+
+      const response = await fetch('/api/upload/image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ Portfolio image uploaded successfully:', result.data.url);
+        setNewPortfolioItem({...newPortfolioItem, imageUrl: result.data.url});
+        setImagePreview(result.data.url);
+        alert('Image uploaded successfully!');
+      } else {
+        console.error('❌ Portfolio image upload failed:', result.error);
+        alert('Failed to upload image: ' + (result.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error uploading portfolio image:', error);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -1697,13 +1745,61 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                 </div>
 
                 <div>
-                  <Label htmlFor="imageUrl">Image URL</Label>
-                  <Input
-                    id="imageUrl"
-                    value={newPortfolioItem.imageUrl}
-                    onChange={(e) => setNewPortfolioItem({...newPortfolioItem, imageUrl: e.target.value})}
-                    placeholder="https://example.com/image.jpg"
-                  />
+                  <Label htmlFor="imageUrl">Project Image</Label>
+                  <div className="space-y-3">
+                    {/* Image Upload */}
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePortfolioImageUpload}
+                        className="hidden"
+                        id="portfolio-image-upload"
+                        disabled={uploadingImage}
+                      />
+                      <label
+                        htmlFor="portfolio-image-upload"
+                        className={`inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer transition-colors ${
+                          uploadingImage ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        {uploadingImage ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 mr-2"></div>
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Camera className="w-4 h-4 mr-2" />
+                            Upload Image
+                          </>
+                        )}
+                      </label>
+                    </div>
+
+                    {/* Image Preview */}
+                    {imagePreview && (
+                      <div className="mt-2">
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="w-full h-32 object-cover rounded-md border"
+                        />
+                      </div>
+                    )}
+
+                    {/* Or URL Input */}
+                    <div className="text-sm text-gray-500 text-center">OR</div>
+                    <Input
+                      id="imageUrl"
+                      value={newPortfolioItem.imageUrl}
+                      onChange={(e) => {
+                        setNewPortfolioItem({...newPortfolioItem, imageUrl: e.target.value});
+                        setImagePreview(e.target.value);
+                      }}
+                      placeholder="https://example.com/image.jpg"
+                    />
+                  </div>
                 </div>
               </div>
 

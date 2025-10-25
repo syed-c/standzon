@@ -632,6 +632,55 @@ export async function PUT(request: NextRequest) {
           supabaseUpdates.logo = updates.logo;
         }
         
+        // Handle portfolio updates
+        if (updates.portfolio) {
+          console.log('🖼️ Updating portfolio:', updates.portfolio);
+          try {
+            // First, delete existing portfolio items for this builder
+            const { error: deleteError } = await sb
+              .from('portfolio_items')
+              .delete()
+              .eq('builder_id', builderId);
+            
+            if (deleteError) {
+              console.error("❌ Error deleting existing portfolio items:", deleteError);
+            } else {
+              console.log("✅ Deleted existing portfolio items");
+            }
+            
+            // Insert new portfolio items
+            if (updates.portfolio.length > 0) {
+              const portfolioRecords = updates.portfolio.map((item: any) => ({
+                builder_id: builderId,
+                project_name: item.title,
+                description: item.description || '',
+                images: item.imageUrl ? [item.imageUrl] : [],
+                year: item.projectYear || new Date().getFullYear(),
+                trade_show: item.tradeShow || '',
+                client_name: item.client || '',
+                stand_size: item.standSize || 0,
+                industry: 'Exhibition',
+                budget: '',
+                project_type: 'Exhibition Stand',
+                technologies: [],
+                featured: false
+              }));
+              
+              const { error: portfolioError } = await sb
+                .from('portfolio_items')
+                .insert(portfolioRecords);
+              
+              if (portfolioError) {
+                console.error("❌ Error inserting portfolio items:", portfolioError);
+              } else {
+                console.log(`✅ Inserted ${portfolioRecords.length} portfolio items`);
+              }
+            }
+          } catch (portfolioErr) {
+            console.error("❌ Error syncing portfolio:", portfolioErr);
+          }
+        }
+        
         console.log('🔄 Supabase update data:', supabaseUpdates);
         
         const { data, error } = await sb

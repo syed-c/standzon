@@ -148,6 +148,36 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Process portfolio - try from Supabase table first, then from builder data
+    let portfolio = [];
+    try {
+      const { data: portfolioData } = await supabase
+        .from('portfolio_items')
+        .select('*')
+        .eq('builder_id', builderId)
+        .order('year', { ascending: false });
+      
+      portfolio = (portfolioData || []).map((item: any) => ({
+        id: item.id,
+        title: item.project_name,
+        description: item.description || '',
+        imageUrl: item.images && item.images.length > 0 ? item.images[0] : '/images/portfolio/placeholder.jpg',
+        projectYear: item.year,
+        tradeShow: item.trade_show || '',
+        client: item.client_name || '',
+        standSize: item.stand_size || 0,
+        createdAt: item.created_at
+      }));
+      console.log('✅ Portfolio loaded:', portfolio.length);
+    } catch (error) {
+      console.log('Portfolio table not found, trying builder data');
+      
+      // Fallback to portfolio from builder data
+      if (builder.portfolio && Array.isArray(builder.portfolio)) {
+        portfolio = builder.portfolio;
+      }
+    }
+
     // Process subscription
     let subscription = {
       plan: 'free',
@@ -216,6 +246,7 @@ export async function GET(request: NextRequest) {
         }
       ],
       services,
+      portfolio,
       subscription: {
         plan: subscription.plan || 'free',
         status: subscription.status || 'active',
