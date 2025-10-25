@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Building, 
   MapPin, 
@@ -98,6 +99,7 @@ interface NewBuilderDashboardProps {
 }
 
 export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardProps) {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('profile');
   const [profile, setProfile] = useState<BuilderProfile | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -727,8 +729,8 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
 
       // Upload file
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('builderId', currentBuilderId);
+      formData.append('image', file);
+      formData.append('folder', 'logos');
 
       const response = await fetch('/api/upload/image', {
         method: 'POST',
@@ -757,15 +759,29 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
             })
           });
           
-          alert('Profile picture updated successfully!');
+          // Reload profile to ensure persistence
+          await loadBuilderProfile();
+          
+          toast({
+            title: "Profile picture updated successfully!",
+            variant: "default"
+          });
         }
       } else {
         console.error('❌ Image upload failed:', result.error);
-        alert('Failed to upload image: ' + (result.error || 'Unknown error'));
+        toast({
+          title: "Failed to upload image",
+          description: result.error || 'Unknown error',
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert('Failed to upload image. Please try again.');
+      toast({
+        title: "Failed to upload image",
+        description: "Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setUploadingImage(false);
     }
@@ -958,16 +974,6 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                   className="hidden"
                   disabled={uploadingImage}
                 />
-                {/* Temporary test button */}
-                <button 
-                  onClick={() => {
-                    console.log('🧪 Test button clicked');
-                    document.getElementById('profile-image-upload')?.click();
-                  }}
-                  className="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded"
-                >
-                  Test
-                </button>
               </div>
             </div>
             <div className="flex-1">

@@ -38,6 +38,7 @@ export default function BuildersManagementPage() {
     if (confirm(`Are you sure you want to delete ${name}?`)) {
       try {
         await deleteBuilder(id);
+        console.log(`Builder ${name} deleted successfully`);
       } catch (error) {
         console.error('Failed to delete builder:', error);
       }

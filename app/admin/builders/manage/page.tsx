@@ -111,13 +111,13 @@ export default function ManageBuildersPage() {
         setBuilders(prev => prev.map(b => b.id === editingBuilder.id ? editingBuilder : b));
         setIsEditing(false);
         setEditingBuilder(null);
-        alert('Builder updated successfully!');
+        console.log('Builder updated successfully!');
       } else {
-        alert('Failed to update builder: ' + (data.error || 'Unknown error'));
+        console.error('Failed to update builder: ' + (data.error || 'Unknown error'));
       }
     } catch (error) {
       console.error('Error saving builder:', error);
-      alert('Failed to update builder. Please try again.');
+      console.error('Failed to update builder. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -139,13 +139,13 @@ export default function ManageBuildersPage() {
       if (data.success) {
         // Remove from local state
         setBuilders(prev => prev.filter(b => b.id !== builderId));
-        alert('Builder deleted successfully!');
+        console.log('Builder deleted successfully!');
       } else {
-        alert('Failed to delete builder: ' + (data.error || 'Unknown error'));
+        console.error('Failed to delete builder: ' + (data.error || 'Unknown error'));
       }
     } catch (error) {
       console.error('Error deleting builder:', error);
-      alert('Failed to delete builder. Please try again.');
+      console.error('Failed to delete builder. Please try again.');
     } finally {
       setDeleting(null);
     }
