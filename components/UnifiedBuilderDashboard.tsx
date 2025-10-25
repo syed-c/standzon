@@ -763,8 +763,8 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
 
       // Upload file
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('builderId', profile?.id || 'unknown');
+      formData.append('image', file);
+      formData.append('folder', 'logos');
 
       const response = await fetch('/api/upload/image', {
         method: 'POST',
@@ -784,6 +784,10 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
           // Also update in database
           console.log('🔄 Updating logo in database:', result.data.url);
           await updateProfile('logo', result.data.url);
+          
+          // Reload profile from API to get the updated logo
+          console.log('🔄 Reloading profile from API...');
+          await loadUnifiedProfile();
           
           toast.success('Logo updated successfully!');
         }
@@ -903,7 +907,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
       {/* Header */}
       <div className="relative">
         {/* Cover Section */}
-        <div className="h-64 bg-gradient-to-r from-red-600 to-red-800 rounded-xl relative overflow-hidden shadow-lg mb-8">
+        <div className="h-64 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 rounded-xl relative overflow-hidden shadow-lg mb-8">
           <div className="absolute inset-0 bg-black bg-opacity-20"></div>
           
           {/* Sync Status Indicator */}
@@ -1058,47 +1062,47 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg hover:shadow-xl transition-shadow">
+        <Card className="bg-gray-50 text-gray-800 shadow-md hover:shadow-lg transition-shadow border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium opacity-90">Profile Views</CardTitle>
-            <Eye className="h-4 w-4 opacity-90" />
+            <CardTitle className="text-sm font-medium text-gray-600">Profile Views</CardTitle>
+            <Eye className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{profile.profileViews.toLocaleString()}</div>
-            <p className="text-xs opacity-90">This month</p>
+            <div className="text-2xl font-bold text-gray-900">{profile.profileViews.toLocaleString()}</div>
+            <p className="text-xs text-gray-500">This month</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl transition-shadow">
+        <Card className="bg-gray-50 text-gray-800 shadow-md hover:shadow-lg transition-shadow border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium opacity-90">Active Leads</CardTitle>
-            <Target className="h-4 w-4 opacity-90" />
+            <CardTitle className="text-sm font-medium text-gray-600">Active Leads</CardTitle>
+            <Target className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{profile.leadCount}</div>
-            <p className="text-xs opacity-90">Available now</p>
+            <div className="text-2xl font-bold text-gray-900">{profile.leadCount}</div>
+            <p className="text-xs text-gray-500">Available now</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-shadow">
+        <Card className="bg-gray-50 text-gray-800 shadow-md hover:shadow-lg transition-shadow border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium opacity-90">Projects Completed</CardTitle>
-            <Award className="h-4 w-4 opacity-90" />
+            <CardTitle className="text-sm font-medium text-gray-600">Projects Completed</CardTitle>
+            <Award className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{profile.projectsCompleted}</div>
-            <p className="text-xs opacity-90">Total projects</p>
+            <div className="text-2xl font-bold text-gray-900">{profile.projectsCompleted}</div>
+            <p className="text-xs text-gray-500">Total projects</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-shadow">
+        <Card className="bg-gray-50 text-gray-800 shadow-md hover:shadow-lg transition-shadow border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium opacity-90">Response Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 opacity-90" />
+            <CardTitle className="text-sm font-medium text-gray-600">Response Rate</CardTitle>
+            <TrendingUp className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{profile.responseRate}%</div>
-            <p className="text-xs opacity-90">Above average</p>
+            <div className="text-2xl font-bold text-gray-900">{profile.responseRate}%</div>
+            <p className="text-xs text-gray-500">Above average</p>
           </CardContent>
         </Card>
       </div>

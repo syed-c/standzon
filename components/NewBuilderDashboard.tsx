@@ -924,7 +924,7 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Banner Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <div className="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center space-x-6">
             <div className="flex-shrink-0 relative group">
@@ -1004,54 +1004,54 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
       {/* Overview Cards */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-red-500 text-white">
+          <Card className="bg-gray-50 text-gray-800 shadow-md hover:shadow-lg transition-shadow border border-gray-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Profile Views</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">Profile Views</CardTitle>
               <div className="flex items-center space-x-2">
-                <Eye className="h-4 w-4" />
+                <Eye className="h-4 w-4 text-gray-500" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{monthlyViews || 0}</div>
-              <p className="text-xs text-red-100">This month</p>
+              <div className="text-2xl font-bold text-gray-900">{monthlyViews || 0}</div>
+              <p className="text-xs text-gray-500">This month</p>
             </CardContent>
           </Card>
           
-          <Card className="bg-green-500 text-white">
+          <Card className="bg-gray-50 text-gray-800 shadow-md hover:shadow-lg transition-shadow border border-gray-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Leads</CardTitle>
-              <Target className="h-4 w-4" />
+              <CardTitle className="text-sm font-medium text-gray-600">Active Leads</CardTitle>
+              <Target className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{leads.filter(l => l.status === 'approved').length}</div>
-              <p className="text-xs text-green-100">Approved leads</p>
+              <div className="text-2xl font-bold text-gray-900">{leads.filter(l => l.status === 'approved').length}</div>
+              <p className="text-xs text-gray-500">Approved leads</p>
             </CardContent>
           </Card>
           
-          <Card className="bg-blue-500 text-white">
+          <Card className="bg-gray-50 text-gray-800 shadow-md hover:shadow-lg transition-shadow border border-gray-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Projects Completed</CardTitle>
-              <TrendingUp className="h-4 w-4" />
+              <CardTitle className="text-sm font-medium text-gray-600">Projects Completed</CardTitle>
+              <TrendingUp className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{leads.filter(l => l.status === 'completed').length}</div>
-              <p className="text-xs text-blue-100">Completed projects</p>
+              <div className="text-2xl font-bold text-gray-900">{leads.filter(l => l.status === 'completed').length}</div>
+              <p className="text-xs text-gray-500">Completed projects</p>
             </CardContent>
           </Card>
           
-          <Card className="bg-purple-500 text-white">
+          <Card className="bg-gray-50 text-gray-800 shadow-md hover:shadow-lg transition-shadow border border-gray-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Response Rate</CardTitle>
-              <Users className="h-4 w-4" />
+              <CardTitle className="text-sm font-medium text-gray-600">Response Rate</CardTitle>
+              <Users className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-gray-900">
                 {leads.length > 0 
                   ? Math.round((leads.filter(l => l.status === 'approved').length / leads.length) * 100)
                   : 0
                 }%
               </div>
-              <p className="text-xs text-purple-100">Approved leads</p>
+              <p className="text-xs text-gray-500">Approved leads</p>
             </CardContent>
           </Card>
         </div>
@@ -1060,13 +1060,139 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
         <Card>
           <CardContent className="p-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-6">
-                <TabsTrigger value="profile">Profile</TabsTrigger>
-                <TabsTrigger value="services">Services</TabsTrigger>
-                <TabsTrigger value="locations">Locations</TabsTrigger>
-                <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
-                <TabsTrigger value="leads">Leads</TabsTrigger>
-                <TabsTrigger value="subscription">Subscription</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-6 bg-[#0f152a]">
+                <TabsTrigger 
+                  value="profile" 
+                  className={`data-[state=active]:font-medium ${activeTab !== 'profile' ? 'text-white' : ''}`}
+                  style={{ 
+                    color: activeTab === 'profile' ? '#000000' : undefined,
+                    backgroundColor: activeTab === 'profile' ? '#f9fafb' : undefined
+                  }}
+                  onMouseEnter={(e) => {
+                    if (activeTab !== 'profile') {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.color = '#000000';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeTab !== 'profile') {
+                      e.currentTarget.style.backgroundColor = '#0f152a';
+                      e.currentTarget.style.color = '#ffffff';
+                    }
+                  }}
+                >
+                  Profile
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="services" 
+                  className={`data-[state=active]:font-medium ${activeTab !== 'services' ? 'text-white' : ''}`}
+                  style={{ 
+                    color: activeTab === 'services' ? '#000000' : undefined,
+                    backgroundColor: activeTab === 'services' ? '#f9fafb' : undefined
+                  }}
+                  onMouseEnter={(e) => {
+                    if (activeTab !== 'services') {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.color = '#000000';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeTab !== 'services') {
+                      e.currentTarget.style.backgroundColor = '#0f152a';
+                      e.currentTarget.style.color = '#ffffff';
+                    }
+                  }}
+                >
+                  Services
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="locations" 
+                  className={`data-[state=active]:font-medium ${activeTab !== 'locations' ? 'text-white' : ''}`}
+                  style={{ 
+                    color: activeTab === 'locations' ? '#000000' : undefined,
+                    backgroundColor: activeTab === 'locations' ? '#f9fafb' : undefined
+                  }}
+                  onMouseEnter={(e) => {
+                    if (activeTab !== 'locations') {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.color = '#000000';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeTab !== 'locations') {
+                      e.currentTarget.style.backgroundColor = '#0f152a';
+                      e.currentTarget.style.color = '#ffffff';
+                    }
+                  }}
+                >
+                  Locations
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="portfolio" 
+                  className={`data-[state=active]:font-medium ${activeTab !== 'portfolio' ? 'text-white' : ''}`}
+                  style={{ 
+                    color: activeTab === 'portfolio' ? '#000000' : undefined,
+                    backgroundColor: activeTab === 'portfolio' ? '#f9fafb' : undefined
+                  }}
+                  onMouseEnter={(e) => {
+                    if (activeTab !== 'portfolio') {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.color = '#000000';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeTab !== 'portfolio') {
+                      e.currentTarget.style.backgroundColor = '#0f152a';
+                      e.currentTarget.style.color = '#ffffff';
+                    }
+                  }}
+                >
+                  Portfolio
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="leads" 
+                  className={`data-[state=active]:font-medium ${activeTab !== 'leads' ? 'text-white' : ''}`}
+                  style={{ 
+                    color: activeTab === 'leads' ? '#000000' : undefined,
+                    backgroundColor: activeTab === 'leads' ? '#f9fafb' : undefined
+                  }}
+                  onMouseEnter={(e) => {
+                    if (activeTab !== 'leads') {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.color = '#000000';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeTab !== 'leads') {
+                      e.currentTarget.style.backgroundColor = '#0f152a';
+                      e.currentTarget.style.color = '#ffffff';
+                    }
+                  }}
+                >
+                  Leads
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="subscription" 
+                  className={`data-[state=active]:font-medium ${activeTab !== 'subscription' ? 'text-white' : ''}`}
+                  style={{ 
+                    color: activeTab === 'subscription' ? '#000000' : undefined,
+                    backgroundColor: activeTab === 'subscription' ? '#f9fafb' : undefined
+                  }}
+                  onMouseEnter={(e) => {
+                    if (activeTab !== 'subscription') {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.color = '#000000';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeTab !== 'subscription') {
+                      e.currentTarget.style.backgroundColor = '#0f152a';
+                      e.currentTarget.style.color = '#ffffff';
+                    }
+                  }}
+                >
+                  Subscription
+                </TabsTrigger>
               </TabsList>
 
 

@@ -343,9 +343,16 @@ export default function BuilderProfileTemplate({ builder, isGmbImported, display
                 <CardContent>
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {builder.serviceLocations.map((location: any, index: number) => (
-                      <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
-                        <MapPin className="w-4 h-4 text-blue-600" />
-                        <span>{location.city}, {location.country}</span>
+                      <div key={index} className="p-3 border rounded-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <MapPin className="w-4 h-4 text-blue-600" />
+                          <span className="font-semibold">{location.country}</span>
+                        </div>
+                        {location.cities && location.cities.length > 0 && (
+                          <div className="text-sm text-gray-600">
+                            {location.cities.join(', ')}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

@@ -51,7 +51,7 @@ export default async function BuilderProfilePage({
           console.log("❌ Server: Supabase error:", error);
         } else if (supabaseBuilder) {
           // Load portfolio data from portfolio_items table
-          let portfolio = [];
+          let portfolio: any[] = [];
           try {
             const { data: portfolioData } = await sb
               .from('portfolio_items')
@@ -74,6 +74,29 @@ export default async function BuilderProfilePage({
           } catch (error) {
             console.log("❌ Error loading portfolio:", error);
             portfolio = [];
+          }
+
+          // Load services from builder_services table
+          let services: any[] = [];
+          try {
+            const { data: servicesData } = await sb
+              .from('builder_services')
+              .select('*')
+              .eq('builder_id', supabaseBuilder.id);
+            
+            services = (servicesData || []).map((item: any) => ({
+              id: item.id,
+              name: item.name,
+              description: item.description || '',
+              category: item.category,
+              priceFrom: item.price_from || 0,
+              currency: item.currency || 'USD',
+              unit: item.unit || 'per project'
+            }));
+            console.log("✅ Services loaded for public page:", services.length);
+          } catch (error) {
+            console.log("❌ Error loading services:", error);
+            services = [];
           }
 
           // Load service locations from builder_service_locations table
@@ -138,12 +161,25 @@ export default async function BuilderProfilePage({
               contactPerson: supabaseBuilder.contact_person || "Contact Person",
               position: supabaseBuilder.position || "Manager",
             },
-            services: [],
+            services: services,
             portfolio: portfolio,
             specializations: [
               { id: 'general', name: 'Exhibition Builder', icon: '🏗️', color: '#3B82F6' }
             ],
-            companyDescription: supabaseBuilder.company_description || 'Professional exhibition services provider',
+            companyDescription: (() => {
+              let desc = supabaseBuilder.company_description || '';
+              // Remove SERVICE_LOCATIONS JSON from description
+              desc = desc.replace(/\n\nSERVICE_LOCATIONS:\[.*?\]/g, '');
+              desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
+              desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
+              desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
+              // Remove any remaining raw data patterns
+              desc = desc.replace(/sdfghjl.*$/g, '');
+              desc = desc.replace(/testing.*$/g, '');
+              desc = desc.replace(/sdfghj.*$/g, '');
+              desc = desc.trim();
+              return desc || 'Professional exhibition services provider';
+            })(),
             keyStrengths: ["Professional Service", "Quality Work", "Local Expertise"],
             projectsCompleted: supabaseBuilder.projects_completed || 25,
             rating: supabaseBuilder.rating || 4.0,

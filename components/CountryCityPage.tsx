@@ -617,8 +617,8 @@ export function CountryCityPage({
               const servesCity = builder.serviceLocations?.some(
                 (loc: any) =>
                   countryVariations.includes(loc.country) &&
-                  loc.city &&
-                  loc.city.toLowerCase().trim() === cityLower
+                  ((loc.cities && Array.isArray(loc.cities) && loc.cities.some((c: string) => c.toLowerCase().trim() === cityLower)) ||
+                   (loc.city && loc.city.toLowerCase().trim() === cityLower))
               );
               const headquartersMatch =
                 countryVariations.includes(builder.headquarters?.country) &&
@@ -633,8 +633,8 @@ export function CountryCityPage({
               const flexibleServiceMatch = builder.serviceLocations?.some(
                 (loc: any) =>
                   countryVariations.includes(loc.country) &&
-                  loc.city &&
-                  loc.city.toLowerCase().includes(cityLower)
+                  ((loc.cities && Array.isArray(loc.cities) && loc.cities.some((c: string) => c.toLowerCase().includes(cityLower))) ||
+                   (loc.city && loc.city.toLowerCase().includes(cityLower)))
               );
 
               const matches =
