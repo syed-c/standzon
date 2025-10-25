@@ -97,12 +97,6 @@ export default function BuilderProfileTemplate({ builder, isGmbImported, display
                     GMB Imported
                   </Badge>
                 )}
-                {builder.premiumMember && (
-                  <Badge className="bg-yellow-500 text-yellow-900">
-                    <Award className="w-3 h-3 mr-1" />
-                    Premium Member
-                  </Badge>
-                )}
                 <Badge className="bg-blue-500 text-white">
                   <Users className="w-3 h-3 mr-1" />
                   {builder.projectsCompleted} Projects
@@ -150,12 +144,6 @@ export default function BuilderProfileTemplate({ builder, isGmbImported, display
                     {c.ctaRequestQuote}
                   </Button>
 
-                  <div className="grid grid-cols-2 gap-2 mt-4">
-                    <Button variant="outline" size="sm" className="w-full text-gray-900" onClick={onOpenQuote}>
-                      <Eye className="w-3 h-3 mr-2" />
-                      View Portfolio
-                    </Button>
-                  </div>
 
                   <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                     <div className="text-xs text-gray-600 mb-2 flex items-center gap-1">
@@ -189,63 +177,75 @@ export default function BuilderProfileTemplate({ builder, isGmbImported, display
             </TabsList>
 
             <TabsContent value="overview" className="space-y-8">
-              <div className="grid md:grid-cols-2 gap-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BuildingIcon className="w-5 h-5" />
-                      {c.aboutTitle}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BuildingIcon className="w-5 h-5" />
+                    Company Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-2">About Us</h4>
-                        <p className="text-gray-700">{builder.companyDescription}</p>
+                        <h4 className="font-medium text-gray-900 mb-2">Company Name</h4>
+                        <p className="text-gray-700">{builder.companyName}</p>
                       </div>
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-2">{c.strengthsTitle}</h4>
-                        <ul className="space-y-1">
-                          {builder.keyStrengths?.map((s: string, i: number) => (
-                            <li key={i} className="flex items-center gap-2 text-gray-700">
-                              <Shield className="w-4 h-4 text-green-500" />
-                              {s}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-2">{c.establishedTitle}</h4>
+                        <h4 className="font-medium text-gray-900 mb-2">Established</h4>
                         <p className="text-gray-700">{builder.establishedYear}</p>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Target className="w-5 h-5" />
-                      {c.specializationsTitle}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 gap-3">
-                      {(builder.specializations || []).map((spec: any, index: number) => (
-                        <div key={spec?.id || spec?.slug || spec?.name || index} className="flex items-center gap-3 p-3 rounded-lg border" style={{ backgroundColor: spec.color + '10', borderColor: spec.color + '30' }}>
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg" style={{ backgroundColor: spec.color + '20', color: spec.color }}>
-                            {spec.icon}
-                          </div>
-                          <div>
-                            <h5 className="font-medium text-gray-900">{spec.name}</h5>
-                            <p className="text-sm text-gray-600">{spec.description}</p>
-                          </div>
+                      {builder.teamSize && builder.teamSize > 0 && (
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-2">Team Size</h4>
+                          <p className="text-gray-700">{builder.teamSize} employees</p>
                         </div>
-                      ))}
+                      )}
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-2">Email</h4>
+                        <p className="text-gray-700">{builder.contactInfo?.primaryEmail || 'Not provided'}</p>
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-2">Phone</h4>
+                        <p className="text-gray-700">{builder.contactInfo?.phone || 'Not provided'}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-2">Website</h4>
+                        <p className="text-gray-700">{builder.contactInfo?.website || 'Not provided'}</p>
+                      </div>
+                      {builder.projectsCompleted && builder.projectsCompleted > 0 && (
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-2">Projects Completed</h4>
+                          <p className="text-gray-700">{builder.projectsCompleted} projects</p>
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-2">Response Time</h4>
+                        <p className="text-gray-700">{builder.responseTime}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-6">
+                    <h4 className="font-medium text-gray-900 mb-2">Description</h4>
+                    <p className="text-gray-700">{builder.companyDescription}</p>
+                  </div>
+                  {builder.keyStrengths && builder.keyStrengths.length > 0 && (
+                    <div className="mt-6">
+                      <h4 className="font-medium text-gray-900 mb-2">Key Strengths</h4>
+                      <ul className="space-y-1">
+                        {builder.keyStrengths.map((s: string, i: number) => (
+                          <li key={i} className="flex items-center gap-2 text-gray-700">
+                            <Shield className="w-4 h-4 text-green-500" />
+                            {s}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="services" className="space-y-6">

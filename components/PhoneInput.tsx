@@ -159,8 +159,8 @@ export function PhoneInput({ value, onChange, placeholder, required, label, clas
             </SelectValue>
           </SelectTrigger>
           <SelectContent position="popper" align="start" sideOffset={4} className="z-50">
-            {COUNTRY_CODES.map((country) => (
-              <SelectItem key={`${country.code}-${country.country}`} value={country.code}>
+            {COUNTRY_CODES.map((country, index) => (
+              <SelectItem key={`${country.code}-${country.country}-${index}`} value={country.code}>
                 <span className="flex items-center gap-2">
                   <span>{country.flag}</span>
                   <span>{country.code}</span>

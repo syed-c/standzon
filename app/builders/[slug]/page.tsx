@@ -148,7 +148,7 @@ export default async function BuilderProfilePage({
             companyName: supabaseBuilder.company_name,
             slug: supabaseBuilder.slug || slug,
             logo: supabaseBuilder.logo || "/images/builders/default-logo.png",
-            establishedYear: supabaseBuilder.established_year || 2020,
+            establishedYear: supabaseBuilder.established_year || new Date().getFullYear(),
             headquarters: {
               city: supabaseBuilder.headquarters_city || "Unknown",
               country: supabaseBuilder.headquarters_country || "Unknown",
@@ -161,6 +161,8 @@ export default async function BuilderProfilePage({
               contactPerson: supabaseBuilder.contact_person || "Contact Person",
               position: supabaseBuilder.position || "Manager",
             },
+            teamSize: supabaseBuilder.team_size || 0,
+            businessType: supabaseBuilder.business_type || 'company',
             services: services,
             portfolio: portfolio,
             specializations: [
@@ -180,11 +182,22 @@ export default async function BuilderProfilePage({
               desc = desc.trim();
               return desc || 'Professional exhibition services provider';
             })(),
-            keyStrengths: ["Professional Service", "Quality Work", "Local Expertise"],
-            projectsCompleted: supabaseBuilder.projects_completed || 25,
-            rating: supabaseBuilder.rating || 4.0,
+            keyStrengths: (() => {
+              // Try to get key strengths from database or use defaults
+              const strengths = [];
+              if (supabaseBuilder.verified) strengths.push("Verified Builder");
+              if (supabaseBuilder.projects_completed && supabaseBuilder.projects_completed > 0) {
+                strengths.push(`${supabaseBuilder.projects_completed} Projects Completed`);
+              }
+              if (supabaseBuilder.team_size && supabaseBuilder.team_size > 0) {
+                strengths.push(`${supabaseBuilder.team_size} Team Members`);
+              }
+              return strengths.length > 0 ? strengths : ["Professional Service", "Quality Work", "Local Expertise"];
+            })(),
+            projectsCompleted: supabaseBuilder.projects_completed || 0,
+            rating: supabaseBuilder.rating || 0,
             reviewCount: supabaseBuilder.review_count || 0,
-            responseTime: supabaseBuilder.response_time || 'Within 24 hours',
+            responseTime: supabaseBuilder.response_time || 'Contact for response time',
             languages: supabaseBuilder.languages || ['English'],
             verified: supabaseBuilder.verified || false,
             premiumMember: supabaseBuilder.premium_member || false,
