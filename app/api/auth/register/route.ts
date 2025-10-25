@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     console.log('📝 Registration attempt:', { email, userType, firstName, lastName });
 
     // Validation
-    if (!email || !password || !firstName || !lastName || !phone || !userType) {
+    if (!email || !password || !firstName || !phone || !userType) {
       return NextResponse.json({
         success: false,
         error: 'All fields are required'
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
     const newUser = await UserManager.createUser({
       email,
       password,
-      name: `${firstName} ${lastName}`,
+      name: lastName ? `${firstName} ${lastName}` : firstName,
       role: userType === 'builder' ? 'builder' : 'client',
       companyName: companyName || undefined,
       phone,
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
         slug: sanitizedSlug,
         contactInfo: {
           primaryEmail: email,
-          contactPerson: `${firstName} ${lastName}`,
+          contactPerson: lastName ? `${firstName} ${lastName}` : firstName,
           phone,
           website: website || null
         },
@@ -304,10 +304,10 @@ export async function POST(request: NextRequest) {
     try {
       await claimNotificationService.sendClaimNotification(
         'welcome_new_user',
-        { email, name: `${firstName} ${lastName}` },
+        { email, name: lastName ? `${firstName} ${lastName}` : firstName },
         { 
           companyName: companyName || 'ExhibitBay',
-          contactPerson: `${firstName} ${lastName}`,
+          contactPerson: lastName ? `${firstName} ${lastName}` : firstName,
           userType: userType === 'builder' ? 'Builder' : 'Client'
         },
         ['email']
