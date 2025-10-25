@@ -1066,7 +1066,7 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
         <Card>
           <CardContent className="p-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-6 bg-[#0f152a]">
+              <TabsList className="grid w-full grid-cols-6 bg-[#0f152a] rounded-lg gap-2">
                 <TabsTrigger 
                   value="profile" 
                   className={`data-[state=active]:font-medium ${activeTab !== 'profile' ? 'text-white' : ''}`}
