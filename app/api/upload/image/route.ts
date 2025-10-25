@@ -1,24 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request: NextRequest) {
   try {
     const data = await request.formData();
-    const file: File | null = data.get('file') as unknown as File;
-    const builderId: string | null = data.get('builderId') as string;
+    const file: File | null = data.get('image') as unknown as File;
+    const folder: string | null = data.get('folder') as string || 'portfolio';
 
     if (!file) {
       return NextResponse.json(
         { success: false, error: 'No file uploaded' },
-        { status: 400 }
-      );
-    }
-
-    if (!builderId) {
-      return NextResponse.json(
-        { success: false, error: 'Builder ID is required' },
         { status: 400 }
       );
     }
@@ -41,28 +32,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Initialize Supabase client
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      return NextResponse.json(
+        { success: false, error: 'Supabase configuration missing' },
+        { status: 500 }
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Create unique filename
     const timestamp = Date.now();
     const fileExtension = file.name.split('.').pop();
-    const filename = `builder_${builderId}_${timestamp}.${fileExtension}`;
+    const filename = `${folder}/${timestamp}-${Math.random().toString(36).substring(2, 15)}.${fileExtension}`;
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'builders');
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
+    // Upload to Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('portfolio-images')
+      .upload(filename, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error('❌ Supabase upload error:', uploadError);
+      return NextResponse.json(
+        { success: false, error: 'Failed to upload to Supabase: ' + uploadError.message },
+        { status: 500 }
+      );
     }
 
-    // Save file
-    const filepath = join(uploadsDir, filename);
-    await writeFile(filepath, buffer);
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from('portfolio-images')
+      .getPublicUrl(filename);
 
-    // Return the public URL
-    const publicUrl = `/uploads/builders/${filename}`;
+    const publicUrl = urlData.publicUrl;
 
-    console.log('✅ Image uploaded successfully:', publicUrl);
+    console.log('✅ Image uploaded to Supabase successfully:', publicUrl);
 
     return NextResponse.json({
       success: true,

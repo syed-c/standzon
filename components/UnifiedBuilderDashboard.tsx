@@ -179,6 +179,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
     standSize: 0
   });
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingPortfolioImage, setUploadingPortfolioImage] = useState(false);
 
   // Load unified profile data
   useEffect(() => {
@@ -795,6 +796,52 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
       toast.error('Failed to upload logo. Please try again.');
     } finally {
       setUploadingLogo(false);
+    }
+  };
+
+  // Portfolio image upload function
+  const handlePortfolioImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size should be less than 5MB');
+      return;
+    }
+
+    try {
+      setUploadingPortfolioImage(true);
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('folder', 'portfolio');
+
+      const response = await fetch('/api/upload/image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ Portfolio image uploaded successfully:', result.data.url);
+        setNewPortfolioItem({...newPortfolioItem, imageUrl: result.data.url});
+        toast.success('Image uploaded successfully!');
+      } else {
+        console.error('❌ Portfolio image upload failed:', result.error);
+        toast.error('Failed to upload image: ' + (result.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error uploading portfolio image:', error);
+      toast.error('Failed to upload image. Please try again.');
+    } finally {
+      setUploadingPortfolioImage(false);
     }
   };
 
@@ -1718,16 +1765,65 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
               </div>
               
               <div>
-                <Label htmlFor="imageUrl">Image URL</Label>
-                <Input
-                  id="imageUrl"
-                  value={newPortfolioItem.imageUrl}
-                  onChange={(e) => setNewPortfolioItem({...newPortfolioItem, imageUrl: e.target.value})}
-                  placeholder="https://example.com/project-image.jpg"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Upload your image to a service like Imgur, then paste the URL here
-                </p>
+                <Label htmlFor="imageUrl">Project Image</Label>
+                <div className="space-y-2">
+                  <Input
+                    id="imageUrl"
+                    value={newPortfolioItem.imageUrl}
+                    onChange={(e) => setNewPortfolioItem({...newPortfolioItem, imageUrl: e.target.value})}
+                    placeholder="Image URL will be filled automatically after upload"
+                    readOnly={!!newPortfolioItem.imageUrl}
+                  />
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePortfolioImageUpload}
+                      id="portfolio-image-upload"
+                      disabled={uploadingPortfolioImage}
+                      className="hidden"
+                    />
+                    <Label
+                      htmlFor="portfolio-image-upload"
+                      className={`cursor-pointer px-4 py-2 rounded-lg border-2 border-dashed transition-colors ${
+                        uploadingPortfolioImage 
+                          ? 'border-gray-300 bg-gray-50 cursor-not-allowed' 
+                          : 'border-blue-300 hover:border-blue-500 hover:bg-blue-50'
+                      }`}
+                    >
+                      {uploadingPortfolioImage ? (
+                        <div className="flex items-center space-x-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          <span>Uploading...</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-2">
+                          <Upload className="h-4 w-4" />
+                          <span>Upload Image</span>
+                        </div>
+                      )}
+                    </Label>
+                    {newPortfolioItem.imageUrl && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setNewPortfolioItem({...newPortfolioItem, imageUrl: ''})}
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
+                  {newPortfolioItem.imageUrl && (
+                    <div className="mt-2">
+                      <img 
+                        src={newPortfolioItem.imageUrl} 
+                        alt="Preview" 
+                        className="w-full h-32 object-cover rounded-lg border"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             

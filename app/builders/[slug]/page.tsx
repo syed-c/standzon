@@ -50,6 +50,75 @@ export default async function BuilderProfilePage({
         if (error) {
           console.log("❌ Server: Supabase error:", error);
         } else if (supabaseBuilder) {
+          // Load portfolio data from portfolio_items table
+          let portfolio = [];
+          try {
+            const { data: portfolioData } = await sb
+              .from('portfolio_items')
+              .select('*')
+              .eq('builder_id', supabaseBuilder.id)
+              .order('year', { ascending: false });
+            
+            portfolio = (portfolioData || []).map((item: any) => ({
+              id: item.id,
+              title: item.project_name,
+              description: item.description || '',
+              imageUrl: item.images && item.images.length > 0 ? item.images[0] : '/images/portfolio/placeholder.jpg',
+              projectYear: item.year,
+              tradeShow: item.trade_show || '',
+              client: item.client_name || '',
+              standSize: item.stand_size || 0,
+              createdAt: item.created_at
+            }));
+            console.log("✅ Portfolio loaded for public page:", portfolio.length);
+          } catch (error) {
+            console.log("❌ Error loading portfolio:", error);
+            portfolio = [];
+          }
+
+          // Load service locations from builder_service_locations table
+          let serviceLocations = [];
+          try {
+            const { data: locationsData } = await sb
+              .from('builder_service_locations')
+              .select('*')
+              .eq('builder_id', supabaseBuilder.id);
+            
+            // Group by country
+            const countryMap = new Map();
+            (locationsData || []).forEach((loc: any) => {
+              if (loc.country && loc.city) {
+                if (!countryMap.has(loc.country)) {
+                  countryMap.set(loc.country, []);
+                }
+                countryMap.get(loc.country).push(loc.city);
+              }
+            });
+            
+            // Convert to the expected format
+            countryMap.forEach((cities: string[], country: string) => {
+              serviceLocations.push({
+                country,
+                cities: [...new Set(cities)] // Remove duplicates
+              });
+            });
+            
+            // If no service locations, use headquarters
+            if (serviceLocations.length === 0) {
+              serviceLocations.push({
+                country: supabaseBuilder.headquarters_country || "Unknown",
+                cities: [supabaseBuilder.headquarters_city || "Unknown"]
+              });
+            }
+            console.log("✅ Service locations loaded:", serviceLocations.length);
+          } catch (error) {
+            console.log("❌ Error loading service locations:", error);
+            serviceLocations = [{
+              country: supabaseBuilder.headquarters_country || "Unknown",
+              cities: [supabaseBuilder.headquarters_city || "Unknown"]
+            }];
+          }
+
           // Convert Supabase data to the expected format
           builder = {
             id: supabaseBuilder.id,
@@ -61,10 +130,7 @@ export default async function BuilderProfilePage({
               city: supabaseBuilder.headquarters_city || "Unknown",
               country: supabaseBuilder.headquarters_country || "Unknown",
             },
-            serviceLocations: [{
-              country: supabaseBuilder.headquarters_country || "Unknown",
-              cities: [supabaseBuilder.headquarters_city || "Unknown"]
-            }],
+            serviceLocations: serviceLocations,
             contactInfo: {
               primaryEmail: supabaseBuilder.primary_email || "",
               phone: supabaseBuilder.phone || "",
@@ -73,7 +139,7 @@ export default async function BuilderProfilePage({
               position: supabaseBuilder.position || "Manager",
             },
             services: [],
-            portfolio: [],
+            portfolio: portfolio,
             specializations: [
               { id: 'general', name: 'Exhibition Builder', icon: '🏗️', color: '#3B82F6' }
             ],
