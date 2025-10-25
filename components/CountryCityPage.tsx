@@ -554,6 +554,14 @@ export function CountryCityPage({
               builder.headquarters?.country
             );
 
+            console.log(`🔍 Builder ${builder.companyName}:`, {
+              serviceLocations: builder.serviceLocations,
+              headquarters: builder.headquarters,
+              servesCountry,
+              headquartersMatch,
+              countryVariations
+            });
+
             return servesCountry || headquartersMatch;
           });
 
@@ -1151,11 +1159,11 @@ export function CountryCityPage({
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {cities.map((c) => {
+              {cities.map((c, index) => {
                 // Import and use the utility function for consistent slug generation
                 const cityUrl = `/exhibition-stands/${normalizeCountrySlug(country)}/${normalizeCitySlug(c.name)}`;
                 return (
-                  <a key={c.slug || c.name} href={cityUrl} className="group">
+                  <a key={`${c.slug || c.name}-${index}`} href={cityUrl} className="group">
                     <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-all">
                       <div className="flex items-center justify-between">
                         <div className="font-semibold text-gray-900 group-hover:text-blue-700">

@@ -208,7 +208,6 @@ export function BuilderCard({ builder, showLeadForm = true, location }: BuilderC
               </Badge>
             )}
             {getClaimStatusBadge(builder)}
-            {getBuilderPlanBadge(builder.planType, builder.premiumMember)}
           </div>
         </div>
 

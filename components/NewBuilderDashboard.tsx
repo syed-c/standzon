@@ -118,6 +118,17 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
     country: '',
     cities: [] as string[]
   });
+  const [portfolio, setPortfolio] = useState<any[]>([]);
+  const [showPortfolioUpload, setShowPortfolioUpload] = useState(false);
+  const [newPortfolioItem, setNewPortfolioItem] = useState({
+    title: '',
+    description: '',
+    imageUrl: '',
+    projectYear: new Date().getFullYear(),
+    tradeShow: '',
+    client: '',
+    standSize: 0
+  });
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [upgrading, setUpgrading] = useState(false);
   const [currentBuilderId, setCurrentBuilderId] = useState<string | null>(null);
@@ -510,6 +521,89 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
     } catch (error) {
       console.error('Error deleting location:', error);
       alert('Failed to delete location. Please try again.');
+    }
+  };
+
+  // Portfolio management functions
+  const addPortfolioItem = async () => {
+    if (!profile || !newPortfolioItem.title.trim()) {
+      alert('Please fill in the project title');
+      return;
+    }
+
+    try {
+      const portfolioItem = {
+        id: `portfolio-${Date.now()}`,
+        title: newPortfolioItem.title,
+        description: newPortfolioItem.description,
+        imageUrl: newPortfolioItem.imageUrl || '/images/portfolio/placeholder.jpg',
+        projectYear: newPortfolioItem.projectYear,
+        tradeShow: newPortfolioItem.tradeShow,
+        client: newPortfolioItem.client,
+        standSize: newPortfolioItem.standSize,
+        createdAt: new Date().toISOString()
+      };
+
+      const updatedPortfolio = [...portfolio, portfolioItem];
+      setPortfolio(updatedPortfolio);
+
+      // Save to database
+      const response = await fetch('/api/admin/builders', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          builderId: profile.id,
+          updates: { portfolio: updatedPortfolio }
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setNewPortfolioItem({
+          title: '',
+          description: '',
+          imageUrl: '',
+          projectYear: new Date().getFullYear(),
+          tradeShow: '',
+          client: '',
+          standSize: 0
+        });
+        setShowPortfolioUpload(false);
+        alert('Portfolio item added successfully!');
+      } else {
+        alert('Failed to save portfolio item: ' + (result.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error adding portfolio item:', error);
+      alert('Failed to add portfolio item. Please try again.');
+    }
+  };
+
+  const deletePortfolioItem = async (index: number) => {
+    if (!profile) return;
+
+    try {
+      const updatedPortfolio = portfolio.filter((_, i) => i !== index);
+      setPortfolio(updatedPortfolio);
+
+      const response = await fetch('/api/admin/builders', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          builderId: profile.id,
+          updates: { portfolio: updatedPortfolio }
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert('Portfolio item deleted successfully!');
+      } else {
+        alert('Failed to delete portfolio item: ' + (result.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error deleting portfolio item:', error);
+      alert('Failed to delete portfolio item. Please try again.');
     }
   };
 
@@ -917,10 +1011,11 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
         <Card>
           <CardContent className="p-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="profile">Profile</TabsTrigger>
                 <TabsTrigger value="services">Services</TabsTrigger>
                 <TabsTrigger value="locations">Locations</TabsTrigger>
+                <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
                 <TabsTrigger value="leads">Leads</TabsTrigger>
                 <TabsTrigger value="subscription">Subscription</TabsTrigger>
               </TabsList>
@@ -1190,8 +1285,8 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                               <SelectValue placeholder="Select a country" />
                             </SelectTrigger>
                             <SelectContent>
-                              {GLOBAL_EXHIBITION_DATA.countries.map(country => (
-                                <SelectItem key={country.name} value={country.name}>
+                              {GLOBAL_EXHIBITION_DATA.countries.map((country, index) => (
+                                <SelectItem key={`${country.name}-${index}`} value={country.name}>
                                   {country.name}
                                 </SelectItem>
                               ))}
@@ -1341,6 +1436,80 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                 </div>
               </TabsContent>
 
+              {/* Portfolio Tab */}
+              <TabsContent value="portfolio" className="p-6">
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold">Portfolio Gallery</h3>
+                    <Button onClick={() => setShowPortfolioUpload(true)} className="bg-red-600 text-white hover:bg-red-700">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Project
+                    </Button>
+                  </div>
+
+                  {portfolio.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {portfolio.map((item, index) => (
+                        <Card key={item.id} className="overflow-hidden">
+                          <div className="aspect-video bg-gray-100">
+                            {item.imageUrl ? (
+                              <img
+                                src={item.imageUrl}
+                                alt={item.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                <Camera className="w-12 h-12" />
+                              </div>
+                            )}
+                          </div>
+                          <CardContent className="p-4">
+                            <h4 className="font-semibold text-lg mb-2">{item.title}</h4>
+                            {item.description && (
+                              <p className="text-gray-600 text-sm mb-3 line-clamp-2">{item.description}</p>
+                            )}
+                            <div className="flex justify-between items-center text-xs text-gray-500 mb-2">
+                              <div>
+                                {item.projectYear && <span>{item.projectYear}</span>}
+                                {item.tradeShow && <span> • {item.tradeShow}</span>}
+                              </div>
+                              {item.standSize && item.standSize > 0 && (
+                                <span>{item.standSize} sqm</span>
+                              )}
+                            </div>
+                            {item.client && (
+                              <div className="text-xs text-gray-500 mb-2">
+                                Client: {item.client}
+                              </div>
+                            )}
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => deletePortfolioItem(index)}
+                              className="w-full"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Camera className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-xl font-medium text-gray-600 mb-2">No Portfolio Items</h3>
+                      <p className="text-gray-500 mb-4">Showcase your best work to attract more clients</p>
+                      <Button onClick={() => setShowPortfolioUpload(true)} className="bg-red-600 text-white hover:bg-red-700">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Your First Project
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
               {/* Subscription Tab */}
               <TabsContent value="subscription" className="p-6">
                 <div className="space-y-6">
@@ -1443,6 +1612,118 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
             </Tabs>
           </CardContent>
         </Card>
+
+        {/* Portfolio Upload Modal */}
+        {showPortfolioUpload && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Add Portfolio Project</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowPortfolioUpload(false)}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Project Title *</Label>
+                  <Input
+                    id="title"
+                    value={newPortfolioItem.title}
+                    onChange={(e) => setNewPortfolioItem({...newPortfolioItem, title: e.target.value})}
+                    placeholder="Enter project title"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="description">Project Description</Label>
+                  <Textarea
+                    id="description"
+                    value={newPortfolioItem.description}
+                    onChange={(e) => setNewPortfolioItem({...newPortfolioItem, description: e.target.value})}
+                    placeholder="Describe the project, challenges, and results..."
+                    rows={3}
+                    disableRichTools={true}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="year">Project Year</Label>
+                    <Input
+                      id="year"
+                      type="number"
+                      min="2000"
+                      max={new Date().getFullYear()}
+                      value={newPortfolioItem.projectYear}
+                      onChange={(e) => setNewPortfolioItem({...newPortfolioItem, projectYear: parseInt(e.target.value)})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="standSize">Stand Size (sqm)</Label>
+                    <Input
+                      id="standSize"
+                      type="number"
+                      min="0"
+                      value={newPortfolioItem.standSize}
+                      onChange={(e) => setNewPortfolioItem({...newPortfolioItem, standSize: parseInt(e.target.value)})}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="tradeShow">Trade Show</Label>
+                  <Input
+                    id="tradeShow"
+                    value={newPortfolioItem.tradeShow}
+                    onChange={(e) => setNewPortfolioItem({...newPortfolioItem, tradeShow: e.target.value})}
+                    placeholder="e.g., ISE Barcelona"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="client">Client</Label>
+                  <Input
+                    id="client"
+                    value={newPortfolioItem.client}
+                    onChange={(e) => setNewPortfolioItem({...newPortfolioItem, client: e.target.value})}
+                    placeholder="Client company name"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="imageUrl">Image URL</Label>
+                  <Input
+                    id="imageUrl"
+                    value={newPortfolioItem.imageUrl}
+                    onChange={(e) => setNewPortfolioItem({...newPortfolioItem, imageUrl: e.target.value})}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-2 mt-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPortfolioUpload(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={addPortfolioItem}
+                  disabled={saving || !newPortfolioItem.title.trim()}
+                  className="bg-red-600 text-white hover:bg-red-700"
+                >
+                  {saving ? 'Adding...' : 'Add Project'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
