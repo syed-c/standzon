@@ -33,7 +33,8 @@ import {
   Calendar,
   DollarSign,
   MapPin as Location,
-  Settings
+  Settings,
+  Camera
 } from 'lucide-react';
 import { GLOBAL_EXHIBITION_DATA } from '@/lib/data/globalCities';
 
