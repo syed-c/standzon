@@ -51,7 +51,7 @@ export default function BuilderProfileTemplate({ builder, isGmbImported, display
   return (
     <>
       {/* Hero Section – spacing tuned to match screenshots */}
-      <section className="pt-20 pb-16 bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 text-white">
+      <section className="pt-40 pb-16 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-3 gap-8 items-center">
             <div className="lg:col-span-2">
