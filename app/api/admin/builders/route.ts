@@ -268,7 +268,21 @@ export async function GET(request: Request) {
                 contactPerson: b.contact_person || '',
                 position: b.position || '',
               },
-              companyDescription: b.company_description || '',
+              companyDescription: (() => {
+                let desc = b.company_description || '';
+                // Remove SERVICE_LOCATIONS JSON from description more aggressively
+                desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
+                desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
+                desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
+                desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
+                desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
+                // Remove any remaining raw data patterns
+                desc = desc.replace(/sdfghjl.*$/g, '');
+                desc = desc.replace(/testing.*$/g, '');
+                desc = desc.replace(/sdfghj.*$/g, '');
+                desc = desc.trim();
+                return desc || '';
+              })(),
               logo: b.logo || '/images/builders/default-logo.png',
               establishedYear: b.established_year || new Date().getFullYear(),
               teamSize: b.team_size || 0,

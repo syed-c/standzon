@@ -182,6 +182,11 @@ export async function GET(request: NextRequest) {
         desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
         desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
         desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
+        // Remove any remaining raw data patterns
+        desc = desc.replace(/sdfghjl.*$/g, '');
+        desc = desc.replace(/testing.*$/g, '');
+        desc = desc.replace(/sdfghj.*$/g, '');
+        desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
         desc = desc.trim();
         return desc || 'No description available';
       })(),

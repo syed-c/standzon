@@ -41,6 +41,10 @@ interface Builder {
   }>;
   companyDescription: string;
   keyStrengths: string[];
+  serviceLocations?: Array<{
+    country: string;
+    cities: string[];
+  }>;
 }
 
 interface BuilderCardProps {
@@ -96,16 +100,10 @@ function getClaimStatusBadge(builder: any) {
   
   if (claimed && claimStatus === 'verified') {
     return (
-      <>
-        <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
-          <CheckCircle2 className="w-3 h-3 mr-1" />
-          Claimed & Verified
-        </Badge>
-        <Badge className="bg-orange-100 text-orange-800 border-orange-200 text-xs">
-          <AlertCircle className="w-3 h-3 mr-1" />
-          Unclaimed
-        </Badge>
-      </>
+      <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
+        <CheckCircle2 className="w-3 h-3 mr-1" />
+        Claimed & Verified
+      </Badge>
     );
   }
   
@@ -211,7 +209,18 @@ export function BuilderCard({ builder, showLeadForm = true, location }: BuilderC
         <div className="space-y-2 text-sm text-gray-600">
           <div className="flex items-center gap-2">
             <MapPin className="w-3 h-3" />
-            <span>{builder.headquarters.city}, {builder.headquarters.country}</span>
+            <div className="flex flex-wrap gap-1">
+              {builder.serviceLocations && builder.serviceLocations.length > 0 ? (
+                builder.serviceLocations.map((location, index) => (
+                  <span key={index} className="font-medium">
+                    {location.country} ({location.cities.join(', ')})
+                    {index < (builder.serviceLocations?.length || 0) - 1 && <span>, </span>}
+                  </span>
+                ))
+              ) : (
+                <span>{builder.headquarters.city}, {builder.headquarters.country}</span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <Users className="w-3 h-3" />

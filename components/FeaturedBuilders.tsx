@@ -111,7 +111,21 @@ export default function FeaturedBuilders() {
             rating: builder.rating || 4.5,
             reviews: builder.reviewCount || 0,
             specialties: builder.specializations?.slice(0, 3).map(s => s.name) || ['Exhibition Stands'],
-            description: builder.companyDescription || builder.description || 'Professional exhibition stand builder',
+            description: (() => {
+              let desc = builder.companyDescription || builder.description || 'Professional exhibition stand builder';
+              // Remove SERVICE_LOCATIONS JSON from description more aggressively
+              desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
+              desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
+              desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
+              desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
+              desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
+              // Remove any remaining raw data patterns
+              desc = desc.replace(/sdfghjl.*$/g, '');
+              desc = desc.replace(/testing.*$/g, '');
+              desc = desc.replace(/sdfghj.*$/g, '');
+              desc = desc.trim();
+              return desc || 'Professional exhibition stand builder';
+            })(),
             projects: builder.projectsCompleted || 0,
             countries: builder.serviceLocations?.length || 1,
             featured: (builder as any).adminFeatured || (builder as any).featured || false,
@@ -138,7 +152,21 @@ export default function FeaturedBuilders() {
             rating: builder.rating || 4.5,
             reviews: builder.reviewCount || 0,
             specialties: builder.specializations?.slice(0, 3).map(s => s.name) || ['Exhibition Stands'],
-            description: builder.companyDescription || builder.description || 'Professional exhibition stand builder',
+            description: (() => {
+              let desc = builder.companyDescription || builder.description || 'Professional exhibition stand builder';
+              // Remove SERVICE_LOCATIONS JSON from description more aggressively
+              desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
+              desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
+              desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
+              desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
+              desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
+              // Remove any remaining raw data patterns
+              desc = desc.replace(/sdfghjl.*$/g, '');
+              desc = desc.replace(/testing.*$/g, '');
+              desc = desc.replace(/sdfghj.*$/g, '');
+              desc = desc.trim();
+              return desc || 'Professional exhibition stand builder';
+            })(),
             projects: builder.projectsCompleted || 0,
             countries: builder.serviceLocations?.length || 1,
             featured: false,

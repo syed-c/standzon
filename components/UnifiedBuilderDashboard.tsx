@@ -330,7 +330,21 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
           email: userData.email || supabaseData?.primary_email || 'contact@example.com',
           phone: supabaseData?.phone || '+1-555-0123',
           website: supabaseData?.website || '',
-          description: supabaseData?.company_description || 'Professional exhibition stand builder',
+          description: (() => {
+            let desc = supabaseData?.company_description || 'Professional exhibition stand builder';
+            // Remove SERVICE_LOCATIONS JSON from description
+            desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
+            desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
+            desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
+            desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
+            desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
+            // Remove any remaining raw data patterns
+            desc = desc.replace(/sdfghjl.*$/g, '');
+            desc = desc.replace(/testing.*$/g, '');
+            desc = desc.replace(/sdfghj.*$/g, '');
+            desc = desc.trim();
+            return desc || 'Professional exhibition stand builder';
+          })(),
           logo: userData.profile?.logo || '/images/builders/default-logo.png',
           
           establishedYear: supabaseData?.established_year || new Date().getFullYear() - 5,

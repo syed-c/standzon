@@ -173,7 +173,21 @@ export default function BuildersDirectoryContent() {
             (b: BuilderRaw) => ({
               id: b.id,
               companyName: b.company_name || b.companyName || "",
-              companyDescription: b.description || b.companyDescription || "",
+              companyDescription: (() => {
+                let desc = b.description || b.companyDescription || "";
+                // Remove SERVICE_LOCATIONS JSON from description more aggressively
+                desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
+                desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
+                desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
+                desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
+                desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
+                // Remove any remaining raw data patterns
+                desc = desc.replace(/sdfghjl.*$/g, '');
+                desc = desc.replace(/testing.*$/g, '');
+                desc = desc.replace(/sdfghj.*$/g, '');
+                desc = desc.trim();
+                return desc || "";
+              })(),
               headquarters: {
                 city: b.headquarters_city || b.headquarters?.city || "Unknown",
                 country:
