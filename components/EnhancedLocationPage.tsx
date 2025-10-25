@@ -594,6 +594,10 @@ export function EnhancedLocationPage({
                     key={builder.id} 
                     builder={builder} 
                     location={displayLocation}
+                    currentPageLocation={{
+                      country: finalCountryName || '',
+                      city: isCity ? finalLocationName : undefined
+                    }}
                     showLeadForm={true}
                   />
                 ))}

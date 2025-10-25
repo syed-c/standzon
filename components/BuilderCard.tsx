@@ -51,6 +51,10 @@ interface BuilderCardProps {
   builder: Builder;
   showLeadForm?: boolean;
   location?: string;
+  currentPageLocation?: {
+    country: string;
+    city?: string;
+  };
 }
 
 function getBuilderPlanBadge(planType: string, premiumMember: boolean) {
@@ -187,7 +191,33 @@ function BuilderContactControls({ builder, location }: { builder: Builder; locat
   );
 }
 
-export function BuilderCard({ builder, showLeadForm = true, location }: BuilderCardProps) {
+// Function to get the relevant service location for the current page
+function getRelevantServiceLocation(builder: Builder, currentPageLocation?: { country: string; city?: string }) {
+  if (!currentPageLocation || !builder.serviceLocations) {
+    return null;
+  }
+
+  // Find the service location that matches the current page
+  const matchingLocation = builder.serviceLocations.find(loc => {
+    const countryMatch = loc.country.toLowerCase() === currentPageLocation.country.toLowerCase();
+    
+    if (currentPageLocation.city) {
+      // If we're on a city page, check if the city is in this location's cities
+      return countryMatch && loc.cities.some(city => 
+        city.toLowerCase() === currentPageLocation.city!.toLowerCase()
+      );
+    } else {
+      // If we're on a country page, just match the country
+      return countryMatch;
+    }
+  });
+
+  return matchingLocation || null;
+}
+
+export function BuilderCard({ builder, showLeadForm = true, location, currentPageLocation }: BuilderCardProps) {
+  const relevantLocation = getRelevantServiceLocation(builder, currentPageLocation);
+  
   return (
     <Card className="h-full hover:shadow-lg transition-all duration-300 border-0 shadow-md">
       <CardHeader className="pb-4">
@@ -219,7 +249,11 @@ export function BuilderCard({ builder, showLeadForm = true, location }: BuilderC
           <div className="flex items-center gap-2">
             <MapPin className="w-3 h-3" />
             <div className="flex flex-wrap gap-1">
-              {builder.serviceLocations && builder.serviceLocations.length > 0 ? (
+              {relevantLocation ? (
+                <span className="font-medium">
+                  {relevantLocation.country} ({relevantLocation.cities.join(', ')})
+                </span>
+              ) : builder.serviceLocations && builder.serviceLocations.length > 0 ? (
                 builder.serviceLocations.map((location, index) => (
                   <span key={index} className="font-medium">
                     {location.country} ({location.cities.join(', ')})
