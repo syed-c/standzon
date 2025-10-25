@@ -178,6 +178,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
     client: '',
     standSize: 0
   });
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   // Load unified profile data
   useEffect(() => {
@@ -368,7 +369,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             desc = desc.trim();
             return desc || 'Professional exhibition stand builder';
           })(),
-          logo: userData.profile?.logo || '/images/builders/default-logo.png',
+          logo: userData.profile?.logo || supabaseData?.logo || '/images/builders/default-logo.png',
           
           establishedYear: supabaseData?.established_year || new Date().getFullYear() - 5,
           businessType: 'company',
@@ -727,6 +728,65 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
     toast.success('Portfolio item deleted');
   };
 
+  // Logo upload function
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      toast.error('File too large. Maximum size is 5MB.');
+      return;
+    }
+
+    try {
+      setUploadingLogo(true);
+
+      // Upload file
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('builderId', profile?.id || 'unknown');
+
+      const response = await fetch('/api/upload/image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ Logo uploaded successfully:', result.data.url);
+        
+        // Update profile with new logo URL
+        if (profile) {
+          const updatedProfile = { ...profile, logo: result.data.url };
+          setProfile(updatedProfile);
+          
+          // Also update in database
+          await updateProfile('logo', result.data.url);
+          
+          toast.success('Logo updated successfully!');
+        }
+      } else {
+        console.error('❌ Logo upload failed:', result.error);
+        toast.error('Failed to upload logo: ' + (result.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      toast.error('Failed to upload logo. Please try again.');
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
   const handleLogout = () => {
     console.log('🚪 Logging out...');
     localStorage.removeItem('builderUserData');
@@ -848,12 +908,40 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
 
         {/* Profile Avatar & Status */}
         <div className="flex items-end space-x-6 -mt-20 ml-8 relative z-10 mb-8">
-          <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
-            <AvatarImage src={profile.logo} />
-            <AvatarFallback className="text-4xl bg-red-100 text-red-600 font-bold">
-              {profile.companyName.split(' ').map(n => n[0]).join('')}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
+              <AvatarImage src={profile.logo} />
+              <AvatarFallback className="text-4xl bg-red-100 text-red-600 font-bold">
+                {profile.companyName.split(' ').map(n => n[0]).join('')}
+              </AvatarFallback>
+            </Avatar>
+            
+            {/* Logo Upload Button */}
+            <div className="absolute -bottom-2 -right-2">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleLogoUpload}
+                className="hidden"
+                id="logo-upload"
+                disabled={uploadingLogo}
+              />
+              <label
+                htmlFor="logo-upload"
+                className={`inline-flex items-center justify-center w-10 h-10 rounded-full border-2 border-white shadow-lg cursor-pointer transition-colors ${
+                  uploadingLogo 
+                    ? 'bg-gray-400 cursor-not-allowed' 
+                    : 'bg-red-600 hover:bg-red-700'
+                }`}
+              >
+                {uploadingLogo ? (
+                  <RefreshCw className="h-4 w-4 text-white animate-spin" />
+                ) : (
+                  <Camera className="h-4 w-4 text-white" />
+                )}
+              </label>
+            </div>
+          </div>
           
           <div className="pb-6">
             <div className="flex items-center space-x-4 mb-4">
