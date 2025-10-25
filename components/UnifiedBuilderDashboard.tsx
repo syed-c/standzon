@@ -369,7 +369,15 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             desc = desc.trim();
             return desc || 'Professional exhibition stand builder';
           })(),
-          logo: userData.profile?.logo || supabaseData?.logo || '/images/builders/default-logo.png',
+          logo: (() => {
+            const finalLogo = userData.profile?.logo || supabaseData?.logo || '/images/builders/default-logo.png';
+            console.log('🔍 Debug - Logo sources:', {
+              userDataProfileLogo: userData.profile?.logo,
+              supabaseDataLogo: supabaseData?.logo,
+              finalLogo: finalLogo
+            });
+            return finalLogo;
+          })(),
           
           establishedYear: supabaseData?.established_year || new Date().getFullYear() - 5,
           businessType: 'company',
@@ -575,6 +583,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
       localStorage.setItem('builderUserData', JSON.stringify(builderData));
       
       // Sync to API
+      console.log('🔄 Syncing to API - field:', field, 'value:', value, 'builderId:', profile.id);
       const response = await fetch('/api/admin/builders', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -585,6 +594,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
       });
       
       const result = await response.json();
+      console.log('📊 API response:', result);
       
       if (result.success) {
         setSyncStatus('synced');
@@ -771,6 +781,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
           setProfile(updatedProfile);
           
           // Also update in database
+          console.log('🔄 Updating logo in database:', result.data.url);
           await updateProfile('logo', result.data.url);
           
           toast.success('Logo updated successfully!');

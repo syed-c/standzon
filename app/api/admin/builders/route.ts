@@ -627,7 +627,10 @@ export async function PUT(request: NextRequest) {
         if (updates.contactName) supabaseUpdates.contact_person = updates.contactName;
         if (updates.teamSize !== undefined) supabaseUpdates.team_size = updates.teamSize;
         if (updates.establishedYear) supabaseUpdates.established_year = updates.establishedYear;
-        if (updates.logo) supabaseUpdates.logo = updates.logo;
+        if (updates.logo) {
+          console.log('🖼️ Updating logo:', updates.logo);
+          supabaseUpdates.logo = updates.logo;
+        }
         
         console.log('🔄 Supabase update data:', supabaseUpdates);
         
