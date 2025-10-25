@@ -9,103 +9,62 @@ export default async function BuilderProfilePage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
+  console.log("🚀 BuilderProfilePage: Starting");
+  
+  let slug: string;
+  try {
+    const resolvedParams = await params;
+    slug = resolvedParams.slug;
+    console.log("✅ Params resolved, slug:", slug);
+  } catch (error) {
+    console.error("❌ Error resolving params:", error);
+    notFound();
+  }
 
   console.log("🔍 Server: Looking for builder with slug:", slug);
 
   // Try unified platform in-memory first
   const unifiedBuilders = unifiedPlatformAPI.getBuilders();
+  console.log("📊 Unified platform builders count:", unifiedBuilders.length);
   let builder = unifiedBuilders.find((b) => b.slug === slug);
+  console.log("🔍 Builder found in unified platform:", !!builder);
 
   // Fallback: query Supabase by slug
   if (!builder) {
     try {
       const sb = getServerSupabase();
+      console.log("🔍 Supabase client available:", !!sb);
+      
       if (sb) {
         console.log("🔍 Server: Querying Supabase for builder with slug:", slug);
         
+        // Use simple query first to avoid complex join issues
         const { data: supabaseBuilder, error } = await sb
           .from('builder_profiles')
-          .select(`
-            *,
-            builder_service_locations!left(
-              id,
-              city,
-              country,
-              country_code,
-              is_headquarters
-            ),
-            builder_services!left(
-              id,
-              name,
-              description,
-              category,
-              price_from,
-              currency,
-              unit
-            ),
-            portfolio_items!left(
-              id,
-              title,
-              description,
-              image_url,
-              project_year,
-              client,
-              trade_show,
-              stand_size,
-              category
-            )
-          `)
+          .select('*')
           .eq('slug', slug)
-          .single();
+          .maybeSingle();
+        
+        console.log("🔍 Supabase query result:", { data: supabaseBuilder, error });
         
         if (error) {
           console.log("❌ Server: Supabase error:", error);
         } else if (supabaseBuilder) {
+          // Convert Supabase data to the expected format
           builder = {
             id: supabaseBuilder.id,
             companyName: supabaseBuilder.company_name,
-            slug: (supabaseBuilder.slug || slug || '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''),
+            slug: supabaseBuilder.slug || slug,
             logo: supabaseBuilder.logo || "/images/builders/default-logo.png",
             establishedYear: supabaseBuilder.established_year || 2020,
             headquarters: {
-              city: supabaseBuilder.headquarters_city || (supabaseBuilder as any).city || "Unknown",
-              country: supabaseBuilder.headquarters_country || (supabaseBuilder as any).country || "Unknown",
+              city: supabaseBuilder.headquarters_city || "Unknown",
+              country: supabaseBuilder.headquarters_country || "Unknown",
             },
-            serviceLocations: (() => {
-              // Process service locations from the joined table
-              const serviceLocations: Array<{country: string, cities: string[]}> = [];
-              if (supabaseBuilder.builder_service_locations && supabaseBuilder.builder_service_locations.length > 0) {
-                // Group by country
-                const countryMap = new Map();
-                supabaseBuilder.builder_service_locations.forEach((loc: any) => {
-                  if (loc.country && loc.city) {
-                    if (!countryMap.has(loc.country)) {
-                      countryMap.set(loc.country, []);
-                    }
-                    countryMap.get(loc.country).push(loc.city);
-                  }
-                });
-                
-                // Convert to the expected format
-                countryMap.forEach((cities: string[], country: string) => {
-                  serviceLocations.push({
-                    country,
-                    cities: [...new Set(cities)] // Remove duplicates
-                  });
-                });
-              }
-              
-              // If no service locations, use headquarters
-              if (serviceLocations.length === 0) {
-                serviceLocations.push({
-                  country: supabaseBuilder.headquarters_country || "Unknown",
-                  cities: [supabaseBuilder.headquarters_city || "Unknown"]
-                });
-              }
-              
-              return serviceLocations;
-            })(),
+            serviceLocations: [{
+              country: supabaseBuilder.headquarters_country || "Unknown",
+              cities: [supabaseBuilder.headquarters_city || "Unknown"]
+            }],
             contactInfo: {
               primaryEmail: supabaseBuilder.primary_email || "",
               phone: supabaseBuilder.phone || "",
@@ -113,45 +72,8 @@ export default async function BuilderProfilePage({
               contactPerson: supabaseBuilder.contact_person || "Contact Person",
               position: supabaseBuilder.position || "Manager",
             },
-            services: (() => {
-              // Process services from the joined table
-              const services: Array<{name: string, description: string, category: string, priceFrom?: string, currency?: string, unit?: string}> = [];
-              if (supabaseBuilder.builder_services && supabaseBuilder.builder_services.length > 0) {
-                supabaseBuilder.builder_services.forEach((service: any) => {
-                  if (service.name) {
-                    services.push({
-                      name: service.name,
-                      description: service.description || '',
-                      category: service.category || 'CUSTOM_DESIGN',
-                      priceFrom: service.price_from ? service.price_from.toString() : undefined,
-                      currency: service.currency || 'USD',
-                      unit: service.unit || 'per project'
-                    });
-                  }
-                });
-              }
-              return services;
-            })(),
-            portfolio: (() => {
-              // Process portfolio items from the joined table
-              const portfolio: Array<{title: string, description?: string, imageUrl: string, projectYear?: number, client?: string, tradeShow?: string, standSize?: number}> = [];
-              if (supabaseBuilder.portfolio_items && supabaseBuilder.portfolio_items.length > 0) {
-                supabaseBuilder.portfolio_items.forEach((item: any) => {
-                  if (item.title) {
-                    portfolio.push({
-                      title: item.title,
-                      description: item.description || '',
-                      imageUrl: item.image_url || '/images/portfolio/placeholder.jpg',
-                      projectYear: item.project_year,
-                      client: item.client,
-                      tradeShow: item.trade_show,
-                      standSize: item.stand_size
-                    });
-                  }
-                });
-              }
-              return portfolio;
-            })(),
+            services: [],
+            portfolio: [],
             specializations: [
               { id: 'general', name: 'Exhibition Builder', icon: '🏗️', color: '#3B82F6' }
             ],
