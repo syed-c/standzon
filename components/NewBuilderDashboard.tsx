@@ -35,7 +35,8 @@ import {
   DollarSign,
   MapPin as Location,
   Settings,
-  Camera
+  Camera,
+  LogOut
 } from 'lucide-react';
 import { GLOBAL_EXHIBITION_DATA } from '@/lib/data/globalCities';
 
@@ -92,6 +93,9 @@ interface Lead {
   source: 'form' | 'direct';
   status: 'pending' | 'approved' | 'rejected' | 'completed';
   createdAt: string;
+  acceptedByBuilderId?: string | null;
+  acceptedByBuilderName?: string | null;
+  acceptedAt?: string | null;
 }
 
 interface NewBuilderDashboardProps {
@@ -183,6 +187,14 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
     }
   }, [builderId]);
 
+  // Reload leads when switching to Leads tab
+  useEffect(() => {
+    if (activeTab === 'leads' && currentBuilderId) {
+      console.log('🔄 Leads tab activated, reloading leads...');
+      loadLeads(currentBuilderId);
+    }
+  }, [activeTab, currentBuilderId]);
+
   const loadBuilderProfile = async (id?: string) => {
     const builderIdToUse = id || currentBuilderId;
     if (!builderIdToUse) {
@@ -222,61 +234,47 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
     }
 
     try {
-      const response = await fetch(`/api/builder/leads?builderId=${builderIdToUse}`);
+      console.log('🔍 Fetching leads for builder:', builderIdToUse);
+      const response = await fetch(`/api/builders/leads?builderId=${builderIdToUse}`);
       const data = await response.json();
       
-      if (data.success && data.data && data.data.length > 0) {
-        setLeads(data.data);
+      console.log('📊 Leads API response:', data);
+      
+      if (data.success && data.data && data.data.leads) {
+        console.log(`✅ Found ${data.data.leads.length} leads for builder`);
+        
+        // Transform Supabase lead data to match Lead interface
+        const transformedLeads = data.data.leads.map((lead: any) => ({
+          id: lead.id,
+          name: lead.company_name || lead.contact_name || 'Unknown',  // FIX: Show company name first
+          email: lead.contact_email || '',
+          phone: lead.contact_phone || '',
+          company: lead.company_name || 'Not specified',
+          projectDetails: lead.special_requests || `${lead.trade_show_name} at ${lead.city}, ${lead.country}`,
+          budget: lead.budget || 'Not specified',
+          timeline: lead.timeline || 'Not specified',
+          location: `${lead.city || 'Unknown'}, ${lead.country || 'Unknown'}`,
+          source: 'form' as const,
+          status: (lead.status?.toLowerCase() === 'new' ? 'pending' : 
+                   lead.status?.toLowerCase() === 'assigned' ? 'approved' :
+                   lead.status?.toLowerCase() === 'converted' ? 'completed' :  // Map CONVERTED to completed
+                   lead.status?.toLowerCase() === 'completed' ? 'completed' :  // Also handle COMPLETED if exists
+                   lead.status?.toLowerCase()) as any || 'pending',
+          createdAt: lead.created_at,
+          acceptedByBuilderId: lead.accepted_by_builder_id,
+          acceptedByBuilderName: lead.accepted_by_builder_name,
+          acceptedAt: lead.accepted_at
+        }));
+        
+        console.log('✅ Transformed leads:', transformedLeads);
+        setLeads(transformedLeads);
       } else {
-        // Generate sample leads for demonstration
-        const sampleLeads = [
-          {
-            id: '1',
-            name: 'John Smith',
-            email: 'john@example.com',
-            phone: '+1-555-0123',
-            company: 'Tech Corp',
-            projectDetails: 'Exhibition stand for tech conference',
-            budget: '$10,000 - $15,000',
-            timeline: '2-3 months',
-            location: 'New York',
-            source: 'form' as const,
-            status: 'pending' as const,
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: '2',
-            name: 'Sarah Johnson',
-            email: 'sarah@example.com',
-            phone: '+1-555-0456',
-            company: 'Marketing Inc',
-            projectDetails: 'Custom booth design for trade show',
-            budget: '$5,000 - $8,000',
-            timeline: '1 month',
-            location: 'Los Angeles',
-            source: 'direct' as const,
-            status: 'approved' as const,
-            createdAt: new Date(Date.now() - 86400000).toISOString()
-          },
-          {
-            id: '3',
-            name: 'Mike Wilson',
-            email: 'mike@example.com',
-            phone: '+1-555-0789',
-            company: 'StartupXYZ',
-            projectDetails: 'Modular exhibition system',
-            budget: '$3,000 - $5,000',
-            timeline: '3 weeks',
-            location: 'Chicago',
-            source: 'form' as const,
-            status: 'completed' as const,
-            createdAt: new Date(Date.now() - 172800000).toISOString()
-          }
-        ];
-        setLeads(sampleLeads);
+        console.log('⚠️ No leads found for this builder');
+        setLeads([]);
       }
     } catch (error) {
-      console.error('Error loading leads:', error);
+      console.error('❌ Error loading leads:', error);
+      setLeads([]);
     }
   };
 
@@ -848,72 +846,166 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
 
   const handleApproveLead = async (leadId: string) => {
     try {
-      const response = await fetch('/api/builder/leads', {
+      console.log('👍 Approving lead:', leadId);
+      const response = await fetch('/api/builders/leads/update', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           leadId,
-          status: 'approved'
+          status: 'approved',
+          builderId: currentBuilderId
         })
       });
 
-      if (response.ok) {
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('✅ Lead approved successfully');
+        // Update local state with accepted builder info
         setLeads(prev => prev.map(lead => 
-          lead.id === leadId ? { ...lead, status: 'approved' as const } : lead
+          lead.id === leadId ? { 
+            ...lead, 
+            status: 'approved' as const,
+            acceptedByBuilderId: currentBuilderId,
+            acceptedByBuilderName: profile?.companyName || 'Unknown',
+            acceptedAt: new Date().toISOString()
+          } : lead
         ));
+        
+        toast({
+          title: "Lead Approved",
+          description: "This lead is now in your active leads.",
+        });
+      } else {
+        console.error('❌ Failed to approve lead:', result.error);
+        toast({
+          title: "Error",
+          description: result.error || "Failed to approve lead",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Error approving lead:', error);
+      toast({
+        title: "Error",
+        description: "Failed to approve lead. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
   const handleCompleteLead = async (leadId: string) => {
     try {
-      const response = await fetch('/api/builder/leads', {
+      console.log('✅ Completing lead:', leadId);
+      const response = await fetch('/api/builders/leads/update', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           leadId,
-          status: 'completed'
+          status: 'completed',
+          builderId: currentBuilderId
         })
       });
 
-      if (response.ok) {
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('✅ Lead marked as completed:', leadId);
+        // Update local state
         setLeads(prev => prev.map(lead => 
           lead.id === leadId ? { ...lead, status: 'completed' as const } : lead
         ));
-        console.log('✅ Lead marked as completed:', leadId);
+        
+        toast({
+          title: "Lead Completed",
+          description: "This project has been marked as completed.",
+        });
+      } else {
+        console.error('❌ Failed to complete lead:', result.error);
+        toast({
+          title: "Error",
+          description: result.error || "Failed to complete lead",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Error completing lead:', error);
+      toast({
+        title: "Error",
+        description: "Failed to complete lead. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
   const handleRejectLead = async (leadId: string) => {
     try {
-      const response = await fetch('/api/builder/leads', {
+      console.log('❌ Rejecting lead:', leadId);
+      const response = await fetch('/api/builders/leads/update', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           leadId,
-          status: 'rejected'
+          status: 'rejected',
+          builderId: currentBuilderId
         })
       });
 
-      if (response.ok) {
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('✅ Lead rejected successfully');
+        // Remove from list or mark as rejected
         setLeads(prev => prev.map(lead => 
           lead.id === leadId ? { ...lead, status: 'rejected' as const } : lead
         ));
+        
+        toast({
+          title: "Lead Rejected",
+          description: "This lead has been rejected.",
+        });
+      } else {
+        console.error('❌ Failed to reject lead:', result.error);
+        toast({
+          title: "Error",
+          description: result.error || "Failed to reject lead",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Error rejecting lead:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reject lead. Please try again.",
+        variant: "destructive"
+      });
     }
+  };
+
+  const handleLogout = () => {
+    console.log('🚪 Builder logout initiated');
+    
+    // Clear all authentication data
+    localStorage.removeItem('builderUserData');
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('builderAuth');
+    
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
+    
+    // Redirect to builder login page
+    setTimeout(() => {
+      window.location.href = '/auth/login?type=builder&message=logged-out';
+    }, 500);
   };
 
   if (loading) {
@@ -977,8 +1069,20 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
               </div>
             </div>
             <div className="flex-1">
-              <h1 className="text-3xl font-bold">{profile.companyName}</h1>
-              <p className="text-blue-100 mt-2">{profile.description || 'No description available'}</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold">{profile.companyName}</h1>
+                  <p className="text-blue-100 mt-2">{profile.description || 'No description available'}</p>
+                </div>
+                <Button 
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="bg-white/10 hover:bg-white/20 text-white border-white/30 hover:border-white/50"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
               {profile.serviceLocations && profile.serviceLocations.length > 0 && (
                 <div className="mt-3">
                   <p className="text-blue-100 text-sm">
@@ -1029,7 +1133,9 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
               <Target className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{leads.filter(l => l.status === 'approved').length}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {leads.filter(l => l.status === 'approved' && l.acceptedByBuilderId === currentBuilderId).length}
+              </div>
               <p className="text-xs text-gray-500">Approved leads</p>
             </CardContent>
           </Card>
@@ -1040,7 +1146,9 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
               <TrendingUp className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{leads.filter(l => l.status === 'completed').length}</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {leads.filter(l => l.status === 'completed' && l.acceptedByBuilderId === currentBuilderId).length}
+              </div>
               <p className="text-xs text-gray-500">Completed projects</p>
             </CardContent>
           </Card>
@@ -1053,7 +1161,7 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
             <CardContent>
               <div className="text-2xl font-bold text-gray-900">
                 {leads.length > 0 
-                  ? Math.round((leads.filter(l => l.status === 'approved').length / leads.length) * 100)
+                  ? Math.round((leads.filter(l => l.status === 'approved' && l.acceptedByBuilderId === currentBuilderId).length / leads.length) * 100)
                   : 0
                 }%
               </div>
@@ -1553,7 +1661,12 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                   <h3 className="text-lg font-semibold">Incoming Leads</h3>
                   
                   <div className="space-y-4">
-                    {leads.map((lead) => (
+                    {leads.map((lead) => {
+                      // Check if this lead was accepted by another builder
+                      const isAcceptedByOther = lead.acceptedByBuilderId && lead.acceptedByBuilderId !== currentBuilderId;
+                      const isAcceptedByMe = lead.acceptedByBuilderId === currentBuilderId;
+                      
+                      return (
                       <Card key={lead.id}>
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start">
@@ -1569,6 +1682,17 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                                   {lead.status}
                                 </Badge>
                                 <Badge variant="outline">{lead.source}</Badge>
+                                {/* Show different badges based on who accepted */}
+                                {isAcceptedByMe && lead.status === 'approved' && (
+                                  <Badge className="bg-green-100 text-green-800 border-green-300">
+                                    ✓ You Accepted This Lead
+                                  </Badge>
+                                )}
+                                {isAcceptedByOther && (
+                                  <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-300">
+                                    Accepted by {lead.acceptedByBuilderName}
+                                  </Badge>
+                                )}
                               </div>
                               <p className="text-gray-600 text-sm mb-2">{lead.company}</p>
                               <p className="text-sm text-gray-500 mb-2">{lead.projectDetails}</p>
@@ -1579,7 +1703,8 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                                 <span><Calendar className="h-4 w-4 inline mr-1" />{lead.timeline}</span>
                               </div>
                             </div>
-                            {lead.status === 'pending' && (
+                            {/* Only show approve/reject buttons if NOT accepted by another builder */}
+                            {lead.status === 'pending' && !isAcceptedByOther && (
                               <div className="flex space-x-2">
                                 <Button 
                                   size="sm" 
@@ -1597,7 +1722,15 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                                 </Button>
                               </div>
                             )}
-                            {lead.status === 'approved' && (
+                            {/* Show "Already Accepted" message for other builders */}
+                            {lead.status === 'pending' && isAcceptedByOther && (
+                              <div className="text-sm text-yellow-700 bg-yellow-50 px-4 py-2 rounded-lg border border-yellow-200">
+                                <p className="font-medium">Already Accepted</p>
+                                <p className="text-xs">This lead is being handled by {lead.acceptedByBuilderName}</p>
+                              </div>
+                            )}
+                            {/* Show Complete button for approved leads by this builder */}
+                            {lead.status === 'approved' && isAcceptedByMe && (
                               <div className="flex space-x-2">
                                 <Button 
                                   size="sm" 
@@ -1612,7 +1745,8 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                           </div>
                         </CardContent>
                       </Card>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </TabsContent>

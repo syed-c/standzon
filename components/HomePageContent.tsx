@@ -242,17 +242,24 @@ export default function HomePageContent() {
           <ContactSection />
         </Suspense>
 
-        {/* Final CTA */}
-        <section className="py-12 md:py-16 bg-blue-primary text-white">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className={["text-3xl md:text-4xl font-bold mb-6", finalCtaFont ? `font-${finalCtaFont}` : ''].join(' ')}>
+        {/* Final CTA - Matching Location Pages Style */}
+        <section className="relative py-16 md:py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
+          {/* Decorative background overlay - subtle accent gradient */}
+          <div className="absolute inset-0">
+            <div className="w-full h-full bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-pink-500/10"></div>
+          </div>
+          
+          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className={["text-3xl md:text-4xl lg:text-5xl font-bold mb-6", finalCtaFont ? `font-${finalCtaFont}` : ''].join(' ')}>
               {finalCta.heading}
             </h2>
-            <p className="text-xl mb-8 text-blue-100" dangerouslySetInnerHTML={{ __html: finalCta.paragraph }} />
+            <p className="text-lg md:text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed" dangerouslySetInnerHTML={{ __html: finalCta.paragraph }} />
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {((finalButtonsFromTop.length>0 ? finalButtonsFromTop : finalCta.buttons) || []).map((b: any, i: number) => (
                 <a key={i} href={b.href || "#"}>
-                  <button className={i === 0 ? "bg-white text-blue-primary hover:bg-gray-100 hover:text-blue-primary px-8 py-4 text-lg rounded shadow-lg" : "border-white text-white hover:bg-white hover:text-blue-primary px-8 py-4 text-lg rounded border shadow-lg"}>
+                  <button className={i === 0 
+                    ? "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg transition-all duration-300" 
+                    : "bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white hover:bg-white/20 hover:border-white/50 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"}>
                     {b.text || (i === 0 ? "Get Free Quotes Now" : "Learn More")}
                   </button>
                 </a>

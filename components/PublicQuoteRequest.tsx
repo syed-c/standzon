@@ -20,6 +20,7 @@ interface PublicQuoteRequestProps {
   builderId?: string;
   className?: string;
   buttonText?: string;
+  size?: "default" | "sm" | "lg" | "icon" | null | undefined;
 }
 
 interface FormData {
@@ -49,7 +50,8 @@ export function PublicQuoteRequest({
   cityName,
   builderId,
   className = '',
-  buttonText = 'Get Free Quote'
+  buttonText = 'Get Free Quote',
+  size = 'lg'
 }: PublicQuoteRequestProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -73,6 +75,12 @@ export function PublicQuoteRequest({
     uploadedFiles: []
   });
   const { toast } = useToast();
+
+  // Determine if we should use default styling or custom className
+  const useCustomStyle = className && className.includes('bg-');
+  const buttonClassName = useCustomStyle 
+    ? className 
+    : `bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl ${className}`;
 
   // Get location-specific country code for exhibition filtering
   const getLocationCountryCode = (location?: string, countryCode?: string) => {
@@ -291,12 +299,14 @@ export function PublicQuoteRequest({
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
+      console.log('➡️ Moving to step', currentStep + 1);
       setCurrentStep(currentStep + 1);
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 1) {
+      console.log('⬅️ Moving back to step', currentStep - 1);
       setCurrentStep(currentStep - 1);
     }
   };
@@ -440,8 +450,8 @@ export function PublicQuoteRequest({
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogTrigger asChild>
           <Button 
-            className={`bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl ${className}`}
-            size="lg"
+            className={buttonClassName}
+            size={size}
           >
             <Quote className="w-4 h-4 mr-2" />
             {buttonText}
@@ -473,19 +483,59 @@ export function PublicQuoteRequest({
     );
   }
 
+  // Prevent dialog from closing unless explicitly closed after submission
+  const handleDialogOpenChange = (open: boolean) => {
+    // Only allow closing the dialog if:
+    // 1. User explicitly wants to open it (open === true)
+    // 2. Form was successfully submitted (isSuccess === true)
+    // 3. User is not currently submitting (isSubmitting === false)
+    if (open) {
+      console.log('🔓 Dialog opened');
+      setIsOpen(true);
+    } else if (isSuccess) {
+      // Allow closing after success
+      console.log('✅ Dialog closing after success');
+      setIsOpen(false);
+    } else if (!isSubmitting) {
+      // Prevent accidental closes - user must use Cancel button
+      console.log('⚠️ Dialog close prevented at step:', currentStep, '- Use Cancel button to close');
+      toast({
+        title: "Use Cancel Button",
+        description: "To close this form, please use the Cancel button at the bottom.",
+        duration: 2000,
+      });
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <DialogTrigger asChild>
         <Button 
-          className={`bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl ${className}`}
-          size="lg"
+          className={buttonClassName}
+          size={size}
         >
           <Quote className="w-4 h-4 mr-2" />
           {buttonText}
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent 
+        className="max-w-lg max-h-[90vh] overflow-y-auto"
+        onInteractOutside={(e) => {
+          // Prevent closing when clicking on Select dropdowns or other portaled elements
+          const target = e.target as HTMLElement;
+          const isSelectDropdown = target.closest('[role="listbox"]') || target.closest('[data-radix-select-viewport]');
+          if (isSelectDropdown) {
+            e.preventDefault();
+          }
+        }}
+        onEscapeKeyDown={(e) => {
+          // Prevent accidental Escape key closes
+          if (!isSuccess) {
+            e.preventDefault();
+          }
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Quote className="w-5 h-5 text-pink-600" />
@@ -792,7 +842,16 @@ export function PublicQuoteRequest({
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-4 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Cancel
+            </Button>
+            
             {currentStep > 1 && (
               <Button
                 type="button"

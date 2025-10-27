@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
+import { DatabaseService } from "@/lib/supabase/database";
 
 // Initialize Convex client for server-side operations (guarded)
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
 const convex = convexUrl ? new ConvexHttpClient(convexUrl) : null;
+
+// Initialize Supabase database service
+const dbService = new DatabaseService();
 
 export async function POST(request: NextRequest) {
   console.log("🎯 Lead submission API called");
@@ -114,14 +118,101 @@ export async function POST(request: NextRequest) {
 
     console.log("✅ Lead created successfully with ID:", leadId);
 
+    // Also save lead to Supabase for builder dashboard
+    try {
+      console.log("💾 Saving lead to Supabase for builder dashboard...");
+      
+      // Determine if this is a general inquiry or builder-specific
+      const isGeneralInquiry = !body.builderId || body.builderId === 'public_request' || body.builderId === 'general';
+      
+      const supabaseLead = {
+        // Basic lead info
+        company_name: leadData.companyName,
+        contact_name: leadData.contactPerson,
+        contact_email: leadData.contactEmail,
+        contact_phone: leadData.contactPhone || '',
+        
+        // Event details
+        trade_show_name: leadData.exhibitionName || 'Not specified',
+        city: leadData.cityName || 'Not specified',
+        country: leadData.countryName || 'Not specified',
+        venue: leadData.venue || null,
+        
+        // Stand requirements
+        stand_size: leadData.standSize || 0,
+        budget: leadData.budget || 'To be discussed',
+        timeline: leadData.timeline || 'To be discussed',
+        special_requests: leadData.specialRequirements || '',
+        
+        // Lead management
+        status: 'NEW',
+        priority: (leadData.priority || 'MEDIUM').toUpperCase(),
+        source: leadData.source || 'unified_quote_request',
+        lead_score: (body as any).leadScore || 50,
+        
+        // Builder targeting - NEW FIELDS
+        targeted_builder_id: isGeneralInquiry ? null : body.builderId,
+        targeted_builder_name: isGeneralInquiry ? null : (body.builderName || null),
+        is_general_inquiry: isGeneralInquiry,
+        
+        // Location context (where user is looking for builders) - NEW FIELDS
+        search_location_city: body.cityName || body.builderLocation?.split(',')[0]?.trim() || null,
+        search_location_country: body.location || body.builderLocation?.split(',').pop()?.trim() || null,
+        search_location_country_code: body.countryCode || null,
+        
+        // Form metadata - NEW FIELDS
+        has_design_files: (body as any).hasDesign || false,
+        uploaded_files_count: (body as any).uploadedFilesCount || 0,
+        
+        // Timestamps
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      console.log('📝 Lead details:', {
+        company: supabaseLead.company_name,
+        email: supabaseLead.contact_email,
+        eventCity: supabaseLead.city,
+        eventCountry: supabaseLead.country,
+        searchCity: supabaseLead.search_location_city,
+        searchCountry: supabaseLead.search_location_country,
+        isGeneral: supabaseLead.is_general_inquiry,
+        targetedBuilder: supabaseLead.targeted_builder_name
+      });
+
+      const supabaseResult = await dbService.createLead(supabaseLead);
+      console.log("✅ Lead saved to Supabase successfully:", supabaseResult?.id || 'saved');
+    } catch (supabaseError: any) {
+      console.error("❌ CRITICAL: Failed to save lead to Supabase:", supabaseError.message || supabaseError);
+      
+      // Log detailed error information
+      if (supabaseError.code) {
+        console.error("Supabase error code:", supabaseError.code);
+        console.error("Supabase error details:", supabaseError.details);
+        console.error("Supabase error hint:", supabaseError.hint);
+      }
+      
+      // Return error response since Supabase is critical for builder dashboards
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to save lead to database",
+          details: supabaseError.message || "Database connection error",
+          convexLeadId: leadId, // Include Convex ID for debugging
+        },
+        { status: 500 }
+      );
+    }
+
     // Get qualified builders from Convex
     console.log("🔍 Finding qualified builders...");
-    const buildersResult = await convex.query(api.builders.getAllBuilders);
+    const buildersResult = await convex.query(api.builders.getAllBuilders, { limit: 1000, offset: 0 });
 
-    let allBuilders = [];
+    let allBuilders: any[] = [];
     if (
       buildersResult &&
-      buildersResult.ok &&
+      typeof buildersResult === 'object' &&
+      'builders' in buildersResult &&
       Array.isArray(buildersResult.builders)
     ) {
       allBuilders = buildersResult.builders;
@@ -153,7 +244,7 @@ export async function POST(request: NextRequest) {
 
       // Check service locations if available
       const serviceLocationMatch = builder.serviceLocations?.some(
-        (loc) =>
+        (loc: any) =>
           loc.city?.toLowerCase() === leadCity ||
           loc.country?.toLowerCase() === leadCountry
       );

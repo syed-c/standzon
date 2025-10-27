@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import SimpleQuoteRequestForm from "@/components/SimpleQuoteRequestForm";
+import { PublicQuoteRequest } from "@/components/PublicQuoteRequest";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -1279,10 +1279,25 @@ export function CountryCityPage({
                 verified local builders
               </p>
             </div>
-            <div className="max-w-4xl mx-auto">
-              <SimpleQuoteRequestForm
-                defaultCountry={country}
-                defaultCity={city}
+            <div className="max-w-4xl mx-auto flex justify-center">
+              <PublicQuoteRequest
+                location={country}
+                countryCode={country === 'Germany' ? 'DE' : 
+                           country === 'United Arab Emirates' ? 'AE' :
+                           country === 'United Kingdom' ? 'GB' :
+                           country === 'France' ? 'FR' :
+                           country === 'Spain' ? 'ES' :
+                           country === 'Italy' ? 'IT' :
+                           country === 'Netherlands' ? 'NL' :
+                           country === 'Switzerland' ? 'CH' :
+                           country === 'Australia' ? 'AU' :
+                           country === 'India' ? 'IN' :
+                           country === 'Singapore' ? 'SG' :
+                           country === 'China' ? 'CN' : 'US'}
+                cityName={city}
+                buttonText="Get Free Quote"
+                size="lg"
+                className=""
               />
             </div>
           </div>

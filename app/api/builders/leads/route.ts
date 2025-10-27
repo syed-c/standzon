@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { leadAPI } from '@/lib/database/persistenceAPI';
-import { unifiedPlatformAPI } from '@/lib/data/unifiedPlatformData';
-import { IntelligentQuoteMatchingEngine } from '@/lib/services/intelligentQuoteMatching';
+import { NextRequest, NextResponse } from "next/server";
+import { DatabaseService } from "@/lib/supabase/database";
+
+const dbService = new DatabaseService();
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,280 +9,212 @@ export async function GET(request: NextRequest) {
     const builderId = searchParams.get('builderId');
     const builderEmail = searchParams.get('builderEmail');
     
+    if (!builderId && !builderEmail) {
+      return NextResponse.json(
+        { success: false, error: 'Builder ID or email is required' },
+        { status: 400 }
+      );
+    }
+    
     console.log('🔍 Fetching leads for builder:', { builderId, builderEmail });
     
-    if (!builderId || !builderEmail) {
-      return NextResponse.json({
-        success: false,
-        error: 'Builder ID and email are required'
-      }, { status: 400 });
+    // Get builder profile to find their service locations
+    let builderProfile: any = null;
+    
+    if (builderId) {
+      const { data, error } = await dbService['client']
+        .from('builder_profiles')
+        .select(`
+          *,
+          service_locations:builder_service_locations(
+            city,
+            country,
+            country_code,
+            is_headquarters
+          )
+        `)
+        .eq('id', builderId)
+        .single();
+        
+      if (!error && data) {
+        builderProfile = data;
+      }
     }
     
-    // Get builder profile to understand their service areas
-    const builders = unifiedPlatformAPI.getBuilders();
-    const builder = builders.find(b => 
-      b.id === builderId || b.contactEmail === builderEmail
-    );
-
-    if (!builder) {
-      return NextResponse.json({
-        success: false,
-        error: 'Builder not found'
-      }, { status: 404 });
+    if (!builderProfile && builderEmail) {
+      const { data, error } = await dbService['client']
+        .from('builder_profiles')
+        .select(`
+          *,
+          service_locations:builder_service_locations(
+            city,
+            country,
+            country_code,
+            is_headquarters
+          )
+        `)
+        .eq('primary_email', builderEmail)
+        .single();
+        
+      if (!error && data) {
+        builderProfile = data;
+      }
     }
-
-    // Get all leads from unified platform
-    const allLeads = unifiedPlatformAPI.getLeads();
     
-    // Enhanced lead matching based on builder's profile
-    const relevantLeads = allLeads.filter(lead => {
-      // Check if lead location matches builder's service areas
-      const locationMatch = builder.serviceLocations?.some(location => 
-        location.city.toLowerCase() === lead.city?.toLowerCase() ||
-        location.country.toLowerCase() === lead.country?.toLowerCase()
+    if (!builderProfile) {
+      return NextResponse.json(
+        { success: false, error: 'Builder profile not found' },
+        { status: 404 }
       );
-
-      // Check if lead has already been assigned to this builder
-      const alreadyAssigned = lead.assignedBuilders?.includes(builderId) || 
-                             lead.assignedBuilders?.includes(builderEmail);
-
-      return locationMatch && !alreadyAssigned;
+    }
+    
+    console.log('👤 Builder profile found:', {
+      id: builderProfile.id,
+      name: builderProfile.company_name,
+      hqCity: builderProfile.headquarters_city,
+      hqCountry: builderProfile.headquarters_country,
+      serviceLocations: builderProfile.service_locations
     });
-
-    // Transform leads to match expected format
-    const transformedLeads = relevantLeads.map(lead => ({
-      id: lead.id,
-      projectName: lead.tradeShowName || lead.exhibitionName || 'Exhibition Project',
-      clientName: lead.contactName || lead.fullName || 'Client',
-      clientEmail: lead.contactEmail || lead.email,
-      clientPhone: lead.contactPhone || lead.phone || 'Not provided',
-      eventName: lead.tradeShowName || lead.exhibitionName || 'Trade Show',
-      eventDate: lead.eventDate || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-      city: lead.city || 'Not specified',
-      country: lead.country || 'Not specified',
-      venueName: lead.venue || 'Exhibition Center',
-      standSize: lead.standSize || lead.boothSize || '6x6m',
-      budget: lead.budget || lead.projectBudget || '15000-25000',
-      budgetCurrency: 'USD',
-      description: lead.specialRequests || lead.message || 'Looking for professional exhibition stand',
-      requirements: ['Professional design', 'Quality construction', 'On-time delivery'],
-      urgency: lead.priority === 'HIGH' ? 'high' : lead.priority === 'LOW' ? 'low' : 'medium',
-      submittedAt: lead.createdAt || new Date().toISOString(),
-      status: lead.status || 'new',
-      isUnlocked: lead.accessGranted || false,
-      unlockedAt: lead.unlockedAt,
-      priority: lead.leadScore || 85,
-      matchScore: calculateMatchScore(builder, lead)
-    }));
-
-    console.log(`✅ Found ${transformedLeads.length} relevant leads for builder ${builderEmail}`);
+    
+    // Fetch all leads from Supabase
+    const { data: allLeads, error: leadsError } = await dbService['client']
+      .from('leads')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (leadsError) {
+      throw leadsError;
+    }
+    
+    console.log(`📊 Total leads in database: ${allLeads?.length || 0}`);
+    
+    if (!allLeads || allLeads.length === 0) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          leads: [],
+          total: 0,
+          targeted: 0,
+          locationMatched: 0
+        }
+      });
+    }
+    
+    // Filter leads relevant to this builder
+    const relevantLeads = allLeads.filter((lead: any) => {
+      // 1. Check if lead was targeted to this specific builder
+      if (lead.targeted_builder_id === builderProfile.id) {
+        console.log('✅ Found targeted lead:', lead.company_name);
+        return true;
+      }
+      
+      // 2. Check if it's a general inquiry matching builder's service locations
+      if (lead.is_general_inquiry) {
+        console.log('🔍 Checking general inquiry lead:', {
+          leadCompany: lead.company_name,
+          searchCity: lead.search_location_city,
+          searchCountry: lead.search_location_country,
+          builderHqCity: builderProfile.headquarters_city,
+          builderHqCountry: builderProfile.headquarters_country,
+          hasServiceLocations: !!builderProfile.service_locations
+        });
+        
+        // Check if this is a country-only search (city = country)
+        const isCountryOnlySearch = lead.search_location_city?.toLowerCase() === lead.search_location_country?.toLowerCase();
+        
+        // Check headquarters location match
+        const hqCityMatch = lead.search_location_city?.toLowerCase() === builderProfile.headquarters_city?.toLowerCase();
+        const hqCountryMatch = lead.search_location_country?.toLowerCase() === builderProfile.headquarters_country?.toLowerCase();
+        
+        console.log('🏢 HQ Match Check:', { hqCityMatch, hqCountryMatch, isCountryOnlySearch });
+        
+        if (hqCityMatch || hqCountryMatch) {
+          console.log('✅ Found location-matched lead (HQ):', lead.company_name);
+          return true;
+        }
+        
+        // Check service locations (if stored in builder profile)
+        if (builderProfile.service_locations && Array.isArray(builderProfile.service_locations)) {
+          console.log('📍 Checking service locations:', builderProfile.service_locations);
+          
+          const serviceLocationMatch = builderProfile.service_locations.some((loc: any) => {
+            const cityMatch = !isCountryOnlySearch && loc.city?.toLowerCase() === lead.search_location_city?.toLowerCase();
+            const countryMatch = loc.country?.toLowerCase() === lead.search_location_country?.toLowerCase();
+            
+            console.log('📦 Service location check:', { 
+              locCity: loc.city, 
+              locCountry: loc.country,
+              leadCity: lead.search_location_city,
+              leadCountry: lead.search_location_country,
+              isCountryOnlySearch,
+              cityMatch, 
+              countryMatch 
+            });
+            
+            // For country-only searches, match if country matches
+            if (isCountryOnlySearch) {
+              return countryMatch;
+            }
+            
+            // For city+country searches, match if city OR country matches
+            return cityMatch || countryMatch;
+          });
+          
+          if (serviceLocationMatch) {
+            console.log('✅ Found service location-matched lead:', lead.company_name);
+            return true;
+          }
+        }
+      }
+      
+      return false;
+    });
+    
+    console.log(`✅ Found ${relevantLeads.length} relevant leads for builder`);
+    
+    // Calculate statistics
+    const stats = {
+      total: relevantLeads.length,
+      targeted: relevantLeads.filter((l: any) => l.targeted_builder_id === builderProfile.id).length,
+      locationMatched: relevantLeads.filter((l: any) => l.is_general_inquiry).length,
+      byStatus: {
+        NEW: relevantLeads.filter((l: any) => l.status === 'NEW').length,
+        ASSIGNED: relevantLeads.filter((l: any) => l.status === 'ASSIGNED').length,
+        CONTACTED: relevantLeads.filter((l: any) => l.status === 'CONTACTED').length,
+        QUOTED: relevantLeads.filter((l: any) => l.status === 'QUOTED').length,
+      },
+      byPriority: {
+        HIGH: relevantLeads.filter((l: any) => l.priority === 'HIGH').length,
+        URGENT: relevantLeads.filter((l: any) => l.priority === 'URGENT').length,
+        MEDIUM: relevantLeads.filter((l: any) => l.priority === 'MEDIUM').length,
+        LOW: relevantLeads.filter((l: any) => l.priority === 'LOW').length,
+      }
+    };
     
     return NextResponse.json({
       success: true,
       data: {
-        leads: transformedLeads,
-        total: transformedLeads.length,
-        builder: {
-          id: builder.id,
-          companyName: builder.companyName,
-          leadCredits: builder.subscription?.leadCredits || 3,
-          plan: builder.plan || 'free'
+        leads: relevantLeads,
+        stats,
+        builderInfo: {
+          id: builderProfile.id,
+          name: builderProfile.company_name,
+          headquarters: {
+            city: builderProfile.headquarters_city,
+            country: builderProfile.headquarters_country
+          }
         }
-      },
-      message: `Retrieved ${transformedLeads.length} leads`
+      }
     });
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Error fetching builder leads:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to fetch leads'
-    }, { status: 500 });
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { leadId, action, builderId, builderEmail, quoteData } = body;
-    
-    console.log('📝 Processing lead action:', { leadId, action, builderId, builderEmail });
-    
-    if (!leadId || !action) {
-      return NextResponse.json({
+    return NextResponse.json(
+      {
         success: false,
-        error: 'Lead ID and action are required'
-      }, { status: 400 });
-    }
-
-    // Get builder profile
-    const builders = unifiedPlatformAPI.getBuilders();
-    const builder = builders.find(b => 
-      b.id === builderId || b.contactEmail === builderEmail
+        error: error.message || 'Failed to fetch leads'
+      },
+      { status: 500 }
     );
-
-    if (!builder) {
-      return NextResponse.json({
-        success: false,
-        error: 'Builder not found'
-      }, { status: 404 });
-    }
-    
-    // Get the lead
-    const leads = unifiedPlatformAPI.getLeads();
-    const lead = leads.find(l => l.id === leadId);
-    
-    if (!lead) {
-      return NextResponse.json({
-        success: false,
-        error: 'Lead not found'
-      }, { status: 404 });
-    }
-    
-    // Process different actions
-    let updates: any = {};
-    let responseMessage = '';
-    
-    switch (action) {
-      case 'unlock':
-        // Check if builder has credits
-        const leadCredits = builder.subscription?.leadCredits || 3;
-        if (leadCredits <= 0 && builder.plan === 'free') {
-          return NextResponse.json({
-            success: false,
-            error: 'Insufficient lead credits. Please upgrade your plan.'
-          }, { status: 403 });
-        }
-
-        updates = {
-          accessGranted: true,
-          unlockedAt: new Date().toISOString(),
-          unlockedBy: builderId || builderEmail,
-          status: 'viewed'
-        };
-
-        // Deduct credit (for non-enterprise plans)
-        if (builder.plan !== 'enterprise') {
-          const newCredits = Math.max(0, leadCredits - 1);
-          const builderUpdate = {
-            ...builder,
-            subscription: {
-              ...builder.subscription,
-              leadCredits: newCredits
-            }
-          };
-          unifiedPlatformAPI.updateBuilder(builder.id, builderUpdate);
-        }
-
-        responseMessage = 'Lead unlocked successfully';
-        break;
-
-      case 'quote':
-        if (!quoteData || !quoteData.amount || !quoteData.message) {
-          return NextResponse.json({
-            success: false,
-            error: 'Quote amount and message are required'
-          }, { status: 400 });
-        }
-
-        updates = {
-          status: 'quoted',
-          quotedAt: new Date().toISOString(),
-          quotedBy: builderId || builderEmail,
-          quote: {
-            builderId: builder.id,
-            builderName: builder.companyName,
-            builderEmail: builder.contactEmail,
-            amount: quoteData.amount,
-            message: quoteData.message,
-            submittedAt: quoteData.submittedAt || new Date().toISOString()
-          }
-        };
-
-        responseMessage = 'Quote submitted successfully';
-        
-        // TODO: Send notification to client about new quote
-        console.log(`📧 Should send quote notification to ${lead.contactEmail}`);
-        break;
-
-      case 'accept':
-        updates = {
-          status: 'accepted',
-          acceptedAt: new Date().toISOString(),
-          acceptedBy: builderId || builderEmail
-        };
-        responseMessage = 'Lead accepted successfully';
-        break;
-
-      case 'reject':
-        updates = {
-          status: 'rejected',
-          rejectedAt: new Date().toISOString(),
-          rejectedBy: builderId || builderEmail
-        };
-        responseMessage = 'Lead rejected';
-        break;
-
-      default:
-        return NextResponse.json({
-          success: false,
-          error: 'Invalid action'
-        }, { status: 400 });
-    }
-    
-    // Update lead in unified platform
-    const updatedLead = { ...lead, ...updates };
-    const result = unifiedPlatformAPI.updateLead(leadId, updatedLead);
-    
-    if (result.success) {
-      console.log(`✅ Lead ${leadId} updated with action ${action}`);
-      
-      return NextResponse.json({
-        success: true,
-        data: updatedLead,
-        message: responseMessage,
-        builder: {
-          leadCredits: builder.subscription?.leadCredits || 3
-        }
-      });
-    } else {
-      console.error('❌ Failed to update lead:', result.error);
-      return NextResponse.json({
-        success: false,
-        error: result.error
-      }, { status: 500 });
-    }
-    
-  } catch (error) {
-    console.error('❌ Error updating lead:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to update lead'
-    }, { status: 500 });
   }
-}
-
-// Helper function to calculate match score between builder and lead
-function calculateMatchScore(builder: any, lead: any): number {
-  let score = 60; // Base score
-
-  // Location match
-  const locationMatch = builder.serviceLocations?.some((location: any) => 
-    location.city.toLowerCase() === lead.city?.toLowerCase() ||
-    location.country.toLowerCase() === lead.country?.toLowerCase()
-  );
-  if (locationMatch) score += 20;
-
-  // Budget alignment (simplified)
-  if (lead.estimatedValue) {
-    const builderAverage = builder.priceRange?.averageProject || 50000;
-    const ratio = lead.estimatedValue / builderAverage;
-    if (ratio >= 0.8 && ratio <= 1.2) score += 15;
-    else if (ratio >= 0.6 && ratio <= 1.5) score += 10;
-  }
-
-  // Premium member bonus
-  if (builder.premiumMember) score += 5;
-
-  return Math.min(100, score);
 }

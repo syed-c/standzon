@@ -35,6 +35,7 @@ import {
 } from "react-icons/fi";
 import { builderStats } from "@/lib/data/exhibitionBuilders";
 import { GLOBAL_EXHIBITION_DATA } from "@/lib/data/globalCities";
+import PublicQuoteRequest from "@/components/PublicQuoteRequest";
 
 interface BuilderRaw {
   id: string;
@@ -152,6 +153,8 @@ export default function BuildersDirectoryContent() {
   >([]);
   const [realTimeStats, setRealTimeStats] = useState(builderStats);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   useEffect(() => {
     const loadRealTimeData = async () => {
@@ -280,13 +283,141 @@ export default function BuildersDirectoryContent() {
         setRealTimeBuilders([]);
       } finally {
         setLoading(false);
+        setLastUpdated(new Date());
       }
     };
 
+    // Load data once on mount only
     loadRealTimeData();
-    const interval = setInterval(loadRealTimeData, 30000);
-    return () => clearInterval(interval);
+    
+    // Removed auto-refresh to prevent unwanted page reloads
+    // Data will refresh when user navigates back to this page
   }, []);
+
+  // Manual refresh function
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      const response = await fetch(
+        "/api/admin/builders?limit=500&prioritize_real=true&include_all_countries=true"
+      );
+      const buildersData = await response.json();
+
+      if (
+        buildersData &&
+        buildersData.data &&
+        Array.isArray(buildersData.data.builders)
+      ) {
+        const allBuilders: BuilderRaw[] = buildersData.data.builders;
+        const transformedBuilders: BuilderTransformed[] = allBuilders.map(
+          (b: BuilderRaw) => ({
+            id: b.id,
+            companyName: b.company_name || b.companyName || "",
+            companyDescription: (() => {
+              let desc = b.description || b.companyDescription || "";
+              desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
+              desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
+              desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
+              desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
+              desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
+              desc = desc.replace(/sdfghjl.*$/g, '');
+              desc = desc.replace(/testing.*$/g, '');
+              desc = desc.replace(/sdfghj.*$/g, '');
+              desc = desc.trim();
+              return desc || "";
+            })(),
+            headquarters: {
+              city: b.headquarters_city || b.headquarters?.city || "Unknown",
+              country:
+                b.headquarters_country ||
+                b.headquartersCountry ||
+                b.headquarters?.country ||
+                "Unknown",
+              countryCode: b.headquarters?.countryCode || "XX",
+              address: b.headquarters?.address || "",
+              latitude: b.headquarters?.latitude || 0,
+              longitude: b.headquarters?.longitude || 0,
+              isHeadquarters: true,
+            },
+            serviceLocations: b.serviceLocations || b.service_locations || [],
+            keyStrengths: b.keyStrengths || [],
+            verified: b.verified || b.isVerified || false,
+            rating: b.rating || 0,
+            projectsCompleted:
+              b.projectsCompleted || b.projects_completed || 0,
+            importedFromGMB: b.importedFromGMB || b.gmbImported || false,
+            logo: b.logo || "/images/builders/default-logo.png",
+            establishedYear: b.establishedYear || b.established_year || 2020,
+            teamSize: b.teamSize || 10,
+            reviewCount: b.reviewCount || 0,
+            responseTime: b.responseTime || "Within 24 hours",
+            languages: b.languages || ["English"],
+            premiumMember: b.premiumMember || b.premium_member || false,
+            slug:
+              b.slug ||
+              (b.company_name || b.companyName || "")
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, "-"),
+            primary_email: b.primary_email || b.primaryEmail || "",
+            phone: b.phone || "",
+            website: b.website || "",
+            contact_person: b.contact_person || b.contactPerson || "",
+            position: b.position || "",
+            gmbImported:
+              b.gmbImported ||
+              b.importedFromGMB ||
+              b.source === "GMB_API" ||
+              false,
+          })
+        );
+
+        setRealTimeBuilders(transformedBuilders);
+
+        const calculatedStats = {
+          totalBuilders: allBuilders.length,
+          verifiedBuilders: allBuilders.filter((b) => b.verified).length,
+          totalCountries: Array.from(
+            new Set(
+              allBuilders.map((b) => b.headquartersCountry || "Unknown")
+            )
+          ).length,
+          totalCities: Array.from(
+            new Set(allBuilders.map((b) => b.headquarters_city || "Unknown"))
+          ).length,
+          averageRating:
+            allBuilders.length > 0
+              ? allBuilders.reduce(
+                  (sum, builder) => sum + (builder.rating || 0),
+                  0
+                ) / allBuilders.length
+              : 0,
+          totalProjectsCompleted: allBuilders.reduce(
+            (sum, builder) =>
+              sum +
+              (builder.projectsCompleted || builder.projects_completed || 0),
+            0
+          ),
+          importedFromGMB: allBuilders.filter(
+            (builder) =>
+              builder.importedFromGMB ||
+              builder.gmbImported ||
+              builder.source === "GMB_API"
+          ).length,
+          totalReviews: allBuilders.reduce(
+            (sum, builder) => sum + (builder.reviewCount || 0),
+            0
+          ),
+        };
+
+        setRealTimeStats(calculatedStats);
+      }
+    } catch (error) {
+      console.error("❌ Error refreshing builder data:", error);
+    } finally {
+      setIsRefreshing(false);
+      setLastUpdated(new Date());
+    }
+  };
 
   // Filters and sorting states
   const [searchTerm, setSearchTerm] = useState("");
@@ -449,6 +580,11 @@ export default function BuildersDirectoryContent() {
               <p className="text-gray-600">
                 Use filters to narrow down your search and find builders that match your needs
               </p>
+              {lastUpdated && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Last updated: {lastUpdated.toLocaleTimeString()}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-6">
@@ -467,6 +603,28 @@ export default function BuildersDirectoryContent() {
 
               {/* Filters */}
               <div className="flex flex-wrap gap-3 items-center">
+                {/* Refresh Button */}
+                <Button
+                  variant="outline"
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="flex items-center gap-2 border-blue-200 text-blue-600 hover:bg-blue-50"
+                >
+                  {isRefreshing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                      Refreshing...
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Refresh
+                    </>
+                  )}
+                </Button>
+                
                 <Select value={selectedCountry} onValueChange={setSelectedCountry}>
                   <SelectTrigger className="w-48 bg-gray-50 border-gray-200">
                     <SelectValue placeholder="Select Country" />
@@ -585,11 +743,6 @@ export default function BuildersDirectoryContent() {
                               >
                                 {builder.verified ? "Verified" : "Unverified"}
                               </Badge>
-                              {builder.premiumMember && (
-                                <Badge variant="outline" className="text-purple-600 border-purple-600 bg-purple-50">
-                                  Premium
-                                </Badge>
-                              )}
                             </div>
                           </div>
                           <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center">
@@ -648,9 +801,13 @@ export default function BuildersDirectoryContent() {
                                 View Profile
                               </Button>
                             </Link>
-                            <Button size="sm" className="flex-1 bg-blue-600 hover:bg-blue-700">
-                              Get Quote
-                            </Button>
+                            <PublicQuoteRequest 
+                              builderId={builder.id}
+                              location={`${builder.headquarters.city}, ${builder.headquarters.country}`}
+                              buttonText="Get Quote"
+                              size="sm"
+                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                            />
                           </div>
                         </div>
                       </CardContent>

@@ -259,14 +259,31 @@ export class DatabaseService {
   }
 
   async createLead(lead: any) {
-    if (!this.client) throw new Error('Supabase client not initialized');
+    if (!this.client) {
+      const errorMsg = 'Supabase client not initialized. Please check environment variables: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY';
+      console.error('❌', errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    console.log('💾 Inserting lead into Supabase:', {
+      company: lead.company_name,
+      email: lead.contact_email,
+      city: lead.city,
+      country: lead.country
+    });
+    
     const { data, error } = await this.client
       .from('leads')
       .insert(lead)
       .select()
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Supabase insert error:', error);
+      throw error;
+    }
+    
+    console.log('✅ Lead inserted successfully with ID:', data.id);
     return data;
   }
 

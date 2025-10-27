@@ -187,26 +187,30 @@ export default function Navigation() {
   };
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 overflow-visible ${ 
+    <nav className={`fixed top-0 left-0 right-0 w-full z-[100] transition-all duration-300 ${ 
       isScrolled 
-        ? 'bg-slate-900/95 backdrop-blur-xl shadow-lg border-b border-slate-800/50' 
-        : 'bg-slate-900/90 backdrop-blur-md shadow-md border-b border-slate-800/30'
-    }`}>
+        ? '!bg-slate-900/98 backdrop-blur-xl shadow-xl border-b border-slate-700/50' 
+        : '!bg-slate-900/95 backdrop-blur-lg shadow-md border-b border-slate-700/30'
+    }`} style={{ backgroundColor: isScrolled ? 'rgba(15, 23, 42, 0.98)' : 'rgba(15, 23, 42, 0.95)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20 lg:h-22">
-          {/* Logo - uses image from /public/logo.png if available */}
+        <div className="flex justify-between items-center h-16 lg:h-18">
+          {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="group">
-              <div className="flex items-center">
-                <Image src={logoImg} alt="StandsZone" width={500} height={500} priority className="w-44 md:w-48 lg:w-52 h-auto transition-transform duration-300 group-hover:scale-105" />
-                {/* Fallback text if image missing */}
-                <span className="sr-only">StandsZone</span>
-              </div>
+            <Link href="/" className="group flex items-center">
+              <Image 
+                src={logoImg} 
+                alt="StandsZone" 
+                width={160} 
+                height={40} 
+                priority 
+                className="h-8 w-auto md:h-10 transition-transform duration-300 group-hover:scale-105" 
+              />
+              <span className="sr-only">StandsZone</span>
             </Link>
           </div>
 
-          {/* Desktop Navigation - Updated for better contrast */}
-          <div className="hidden lg:flex items-center justify-center flex-1 mx-8">
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center justify-center flex-1 mx-6">
             <div className="flex items-center space-x-1">
               {mainNavItems.map((item) => (
                 <div key={item.label} className="relative group">
@@ -217,30 +221,29 @@ export default function Navigation() {
                       className="relative"
                     >
                       <button
-                        className="flex items-center space-x-1 px-3 py-2 rounded-lg font-medium text-sm transition-all duration-300 text-white hover:text-pink-400 hover:bg-gray-800/80 border border-transparent hover:border-pink-500/30 whitespace-nowrap"
+                        className="flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 !text-white hover:text-pink-400 hover:bg-slate-800/60 whitespace-nowrap"
                         onClick={() => handleDropdownClick(item.label)}
-                        style={{ color: 'white' }}
                       >
-                        <span style={{ color: 'white' }}>{item.label}</span>
-                        <FiChevronDown className={`w-3 h-3 transition-transform duration-300 text-white ${
+                        <span>{item.label}</span>
+                        <FiChevronDown className={`w-3 h-3 transition-transform duration-200 ${
                           activeDropdown === item.label ? 'rotate-180' : ''
                         }`} />
                       </button>
                       {activeDropdown === item.label && (
                         <div 
-                          className="absolute top-full left-0 mt-2 w-64 bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700 py-2 z-[9999] animate-in fade-in slide-in-from-top-3 duration-300 dropdown-menu pointer-events-auto"
+                          className="absolute top-full left-0 mt-1 w-56 !bg-slate-800 backdrop-blur-xl rounded-xl shadow-2xl border border-slate-700 py-1 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
+                          style={{ backgroundColor: 'rgb(30, 41, 59)' }}
                           onMouseEnter={handleDropdownMouseEnter}
                           onMouseLeave={handleDropdownMouseLeave}
                         >
-                          {item.submenu.map((subItem, index) => (
+                          {item.submenu.map((subItem) => (
                             <Link
                               key={subItem.label}
                               href={subItem.href}
-                              className="block px-6 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 hover:text-pink-400 transition-all duration-200 border-l-4 border-transparent hover:border-pink-500 first:rounded-t-2xl last:rounded-b-2xl"
+                              className="block px-4 py-2.5 text-sm !text-white hover:bg-slate-700/80 hover:text-pink-400 transition-all duration-150"
                               onClick={() => setActiveDropdown(null)}
-                              style={{ color: '#d1d5db' }}
                             >
-                              <span className="font-medium" style={{ color: 'inherit' }}>{subItem.label}</span>
+                              {subItem.label}
                             </Link>
                           ))}
                         </div>
@@ -249,10 +252,9 @@ export default function Navigation() {
                   ) : (
                     <Link
                       href={item.href}
-                      className="px-3 py-2 rounded-lg font-medium text-sm transition-all duration-300 text-white hover:text-pink-400 hover:bg-gray-800/80 border border-transparent hover:border-pink-500/30 whitespace-nowrap"
-                      style={{ color: 'white' }}
+                      className="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 !text-white hover:text-pink-400 hover:bg-slate-800/60 whitespace-nowrap"
                     >
-                      <span style={{ color: 'white' }}>{item.label}</span>
+                      {item.label}
                     </Link>
                   )}
                 </div>
@@ -266,15 +268,15 @@ export default function Navigation() {
             {!currentUser ? (
               <div className="flex items-center space-x-2">
                 <Link href="/auth/login?type=builder">
-                  <Button variant="ghost" size="sm" className="text-white hover:text-pink-400 hover:bg-gray-800/50 border-gray-700" style={{ color: 'white' }}>
-                    <FiUser className="w-4 h-4 mr-1 text-white" />
-                    <span style={{ color: 'white' }}>Builder Login</span>
+                  <Button variant="ghost" size="sm" className="text-white hover:text-pink-400 hover:bg-slate-800/60 text-sm">
+                    <FiUser className="w-4 h-4 mr-1.5" />
+                    Builder Login
                   </Button>
                 </Link>
-                <span className="text-gray-600">|</span>
+                <span className="text-slate-600">|</span>
                 <Link href="/builder/register">
-                  <Button variant="ghost" size="sm" className="text-white hover:text-pink-400 hover:bg-gray-800/50 border-gray-700" style={{ color: 'white' }}>
-                    <span style={{ color: 'white' }}>Join as Builder</span>
+                  <Button variant="ghost" size="sm" className="text-white hover:text-pink-400 hover:bg-slate-800/60 text-sm">
+                    Join as Builder
                   </Button>
                 </Link>
               </div>
@@ -285,31 +287,31 @@ export default function Navigation() {
                 onMouseLeave={handleMouseLeave}
               >
                 <button
-                  className="flex items-center space-x-1 px-3 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-all duration-300 text-white hover:text-pink-400 hover:bg-gray-800/80 border border-transparent hover:border-pink-500/30"
+                  className="flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 !text-white hover:text-pink-400 hover:bg-slate-800/60 whitespace-nowrap"
                   onClick={() => handleDropdownClick('Account')}
-                  style={{ color: 'white' }}
                 >
-                  <FiUser className="w-4 h-4 text-white" />
-                  <span className="hidden xl:inline" style={{ color: 'white' }}>Account</span>
-                  <FiChevronDown className={`w-3 h-3 transition-transform duration-300 text-white ${
+                  <FiUser className="w-4 h-4" />
+                  <span className="hidden xl:inline">Account</span>
+                  <FiChevronDown className={`w-3 h-3 transition-transform duration-200 ${
                     activeDropdown === 'Account' ? 'rotate-180' : ''
                   }`} />
                 </button>
                 {activeDropdown === 'Account' && (
                   <div 
-                    className="absolute top-full right-0 mt-2 w-64 bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700 py-2 z-[9999] animate-in fade-in slide-in-from-top-3 duration-300"
+                    className="absolute top-full right-0 mt-1 w-56 !bg-slate-800 backdrop-blur-xl rounded-xl shadow-2xl border border-slate-700 py-1 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
+                    style={{ backgroundColor: 'rgb(30, 41, 59)' }}
                     onMouseEnter={handleDropdownMouseEnter}
                     onMouseLeave={handleDropdownMouseLeave}
                   >
-                    {accountItems.map((accountItem, index) => (
+                    {accountItems.map((accountItem) => (
                       accountItem.isGreeting ? (
                         <div
                           key={accountItem.label}
-                          className="px-6 py-3 text-gray-400 border-b border-gray-700 bg-gray-800 first:rounded-t-2xl"
+                          className="px-4 py-2.5 text-slate-400 border-b border-slate-700/50 bg-slate-900/50"
                         >
-                          <span className="text-sm font-medium" style={{ color: '#9ca3af' }}>{accountItem.label}</span>
+                          <span className="text-sm font-medium">{accountItem.label}</span>
                           {currentUser && (
-                            <div className="text-xs text-gray-500 mt-1">
+                            <div className="text-xs text-slate-500 mt-0.5">
                               {currentUser.role === 'admin' && '🔧 Administrator'}
                               {currentUser.role === 'builder' && '🏗️ Builder Account'}
                               {currentUser.role === 'client' && '👤 Client Account'}
@@ -320,11 +322,10 @@ export default function Navigation() {
                         <Link
                           key={accountItem.label}
                           href={accountItem.href}
-                          className="block px-6 py-3 text-gray-300 hover:bg-gradient-to-r hover:from-gray-800 hover:to-gray-700 hover:text-pink-400 transition-all duration-200 border-l-4 border-transparent hover:border-pink-500"
+                          className="block px-4 py-2.5 text-sm !text-white hover:bg-slate-700/80 hover:text-pink-400 transition-all duration-150"
                           onClick={() => setActiveDropdown(null)}
-                          style={{ color: '#d1d5db' }}
                         >
-                          <span className="font-medium" style={{ color: 'inherit' }}>{accountItem.label}</span>
+                          {accountItem.label}
                         </Link>
                       )
                     ))}
@@ -333,27 +334,27 @@ export default function Navigation() {
               </div>
             )}
 
-            {/* Get Free Quote CTA Button - Updated with pink theme */}
+            {/* Get Free Quote CTA Button */}
             <Link href="/quote">
-              <Button className="bg-gradient-to-r from-pink-600 via-pink-700 to-pink-800 hover:from-pink-700 hover:via-pink-800 hover:to-pink-900 text-white px-6 py-2.5 font-semibold text-sm rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-pink-500/50 whitespace-nowrap" style={{ color: 'white' }}>
-                <FiZap className="w-4 h-4 mr-2 text-white" />
-                <span style={{ color: 'white' }}>Get Free Quote</span>
+              <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-5 py-2 font-semibold text-sm rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 whitespace-nowrap">
+                <FiZap className="w-4 h-4 mr-1.5" />
+                Get Free Quote
               </Button>
             </Link>
           </div>
 
-          {/* Mobile menu button - Updated colors */}
-          <div className="lg:hidden flex items-center space-x-3">
-            {/* Mobile Get Quote Button */}
+          {/* Mobile menu button */}
+          <div className="lg:hidden flex items-center space-x-2">
             <Link href="/quote">
-              <Button size="sm" className="bg-gradient-to-r from-pink-600 to-pink-800 text-white px-4 py-2 rounded-xl shadow-lg">
+              <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-3 py-2 rounded-lg shadow-lg text-xs font-semibold">
                 <FiZap className="w-3 h-3 mr-1" />
                 Quote
               </Button>
             </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-xl transition-all duration-300 text-white hover:bg-gray-800 hover:text-pink-400 border border-gray-700"
+              className="p-2 rounded-lg transition-all duration-200 text-white hover:text-pink-400 hover:bg-slate-800/60"
+              aria-label="Toggle menu"
             >
               {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </button>
@@ -361,41 +362,41 @@ export default function Navigation() {
         </div>
       </div>
 
-      {/* Mobile Navigation - Updated for better contrast */}
+      {/* Mobile Navigation */}
       {isOpen && (
-        <div className="lg:hidden fixed inset-0 w-screen max-w-screen h-screen bg-slate-950/98 backdrop-blur-sm shadow-2xl z-[9998] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden overscroll-contain">
-          {/* Header spacer with dark gradient */}
-          <div className="h-16 lg:h-18 flex-shrink-0 bg-slate-900 border-b border-slate-700"></div>
+        <div className="lg:hidden fixed inset-0 w-screen h-screen bg-slate-900/98 backdrop-blur-lg shadow-2xl z-[9998] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden">
+          {/* Header spacer */}
+          <div className="h-16 flex-shrink-0 bg-slate-900 border-b border-slate-700"></div>
           
           {/* Scrollable content area */}
-          <div className="flex-1 px-4 pt-4 pb-6 space-y-3 overflow-y-auto min-h-0">
+          <div className="flex-1 px-4 pt-6 pb-6 space-y-3 overflow-y-auto">
             {/* Mobile Get Quote at Top */}
-            <div className="mb-4">
+            <div className="mb-6">
               <Link href="/quote" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-pink-600 via-pink-700 to-pink-800 text-white py-3 rounded-xl shadow-lg font-semibold">
-                  <FiZap className="w-4 h-4 mr-2" />
-                  Get Free Quote - Instant Response
+                <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-3.5 rounded-lg shadow-lg font-semibold text-base">
+                  <FiZap className="w-5 h-5 mr-2" />
+                  Get Free Quote
                 </Button>
               </Link>
             </div>
 
-            {/* Main Navigation with white text */}
+            {/* Main Navigation */}
             {mainNavItems.map((item) => (
-              <div key={item.label} className="space-y-1">
+              <div key={item.label} className="space-y-2">
                 <Link
                   href={item.href}
-                  className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800 transition-all duration-200 rounded-xl font-medium border border-slate-800/60"
+                  className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium"
                   onClick={() => setIsOpen(false)}
                 >
                   {item.label}
                 </Link>
                 {item.submenu && (
-                  <div className="ml-4 space-y-1 bg-white rounded-xl p-2 shadow-lg border border-slate-200">
+                  <div className="ml-4 space-y-1 bg-slate-800/40 rounded-lg p-2">
                     {item.submenu.map((subItem) => (
                       <Link
                         key={subItem.label}
                         href={subItem.href}
-                        className="block px-3 py-2 text-sm text-gray-800 hover:text-pink-600 hover:bg-slate-100 transition-all duration-200 rounded-lg"
+                        className="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition-all duration-150 rounded-md"
                         onClick={() => setIsOpen(false)}
                       >
                         {subItem.label}
@@ -406,28 +407,28 @@ export default function Navigation() {
               </div>
             ))}
 
-            {/* Account section for mobile with dark theme */}
-            <div className="mt-6 pt-6 border-t border-slate-700">
-              <h3 className="px-4 text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Account</h3>
+            {/* Account section for mobile */}
+            <div className="mt-8 pt-6 border-t border-slate-700">
+              <h3 className="px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Account</h3>
               {!currentUser ? (
                 <div className="space-y-2">
                   <Link
                     href="/auth/login?type=builder"
-                    className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800 transition-all duration-200 rounded-xl font-medium border border-slate-800/60"
+                    className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium"
                     onClick={() => setIsOpen(false)}
                   >
                     🔐 Builder Login
                   </Link>
                   <Link
                     href="/builder/register"
-                    className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800 transition-all duration-200 rounded-xl font-medium border border-slate-800/60"
+                    className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium"
                     onClick={() => setIsOpen(false)}
                   >
                     🏢 Builder Registration
                   </Link>
                   <Link
                     href="/auth/login?type=admin"
-                    className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800 transition-all duration-200 rounded-xl font-medium border border-slate-800/60"
+                    className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium"
                     onClick={() => setIsOpen(false)}
                   >
                     ⚡ Admin Portal
@@ -439,7 +440,7 @@ export default function Navigation() {
                     <Link
                       key={accountItem.label}
                       href={accountItem.href}
-                      className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800 transition-all duration-200 rounded-xl font-medium border border-slate-800/60"
+                      className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium"
                       onClick={() => setIsOpen(false)}
                     >
                       {accountItem.label}
@@ -449,9 +450,6 @@ export default function Navigation() {
               )}
             </div>
           </div>
-          
-          {/* Bottom padding with dark gradient */}
-          <div className="flex-shrink-0 h-6 bg-gradient-to-r from-gray-800 to-gray-900"></div>
         </div>
       )}
     </nav>

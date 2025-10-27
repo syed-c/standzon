@@ -128,9 +128,11 @@ export function PhoneInput({ value, onChange, placeholder, required, label, clas
     }
   }, [value]);
 
-  const handleCountryCodeChange = (newCode: string) => {
-    setCountryCode(newCode);
-    const fullNumber = phoneNumber ? `${newCode} ${phoneNumber}` : newCode;
+  const handleCountryCodeChange = (newValue: string) => {
+    // Extract just the code part (e.g., "+1" from "+1-US")
+    const code = newValue.split('-')[0];
+    setCountryCode(code);
+    const fullNumber = phoneNumber ? `${code} ${phoneNumber}` : code;
     onChange(fullNumber);
   };
 
@@ -149,7 +151,7 @@ export function PhoneInput({ value, onChange, placeholder, required, label, clas
         </Label>
       )}
       <div className="flex gap-2">
-        <Select value={countryCode} onValueChange={handleCountryCodeChange}>
+        <Select value={`${countryCode}-${COUNTRY_CODES.find(c => c.code === countryCode)?.country || 'US'}`} onValueChange={handleCountryCodeChange}>
           <SelectTrigger className="w-28">
             <SelectValue>
               <span className="flex items-center gap-1">
@@ -160,7 +162,7 @@ export function PhoneInput({ value, onChange, placeholder, required, label, clas
           </SelectTrigger>
           <SelectContent position="popper" align="start" sideOffset={4} className="z-50">
             {COUNTRY_CODES.map((country, index) => (
-              <SelectItem key={`${country.code}-${country.country}-${index}`} value={country.code}>
+              <SelectItem key={`${country.country}-${index}`} value={`${country.code}-${country.country}`}>
                 <span className="flex items-center gap-2">
                   <span>{country.flag}</span>
                   <span>{country.code}</span>
