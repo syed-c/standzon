@@ -157,7 +157,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {services.map((service: any, index: number) => (
                 <li key={index}>
-                  <a href={service.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors">
+                  <a href={service.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight">
                     {service.label || service}
                   </a>
                 </li>
@@ -171,7 +171,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {locations.map((location: any, index: number) => (
                 <li key={index}>
-                  <a href={location.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors">
+                  <a href={location.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight">
                     {location.label || location}
                   </a>
                 </li>
@@ -185,7 +185,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {resources.map((resource: any, index: number) => (
                 <li key={index}>
-                  <a href={resource.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors">
+                  <a href={resource.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight">
                     {resource.label || resource}
                   </a>
                 </li>
@@ -209,7 +209,7 @@ export default function Footer() {
                   { label: 'Terms of Service', href: '/legal/terms-of-service' },
                   { label: 'Cookie Policy', href: '/legal/cookie-policy' },
                 ]).map((l: any, i: number) => (
-                  <a key={i} href={l.href} className="text-gray-400 hover:text-pink-400 transition-colors">
+                  <a key={i} href={l.href} className="text-gray-400 hover:text-pink-400 transition-colors touch-active no-tap-highlight">
                     {l.label}
                   </a>
                 ))}
@@ -223,7 +223,7 @@ export default function Footer() {
                   key={index}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-pink-400 hover:bg-gray-700 transition-all duration-300"
+                  className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-pink-400 hover:bg-gray-700 transition-all duration-300 touch-active no-tap-highlight"
                 >
                   {social.icon === 'linkedin' ? <FiLinkedin className="w-4 h-4" />
                    : social.icon === 'twitter' ? <FiTwitter className="w-4 h-4" />

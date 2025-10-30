@@ -255,8 +255,8 @@ export default function RecentLeadsSection({
                 href={b.href || "#"}
                 className={
                   i === 0
-                    ? "px-4 py-2 bg-white text-emerald-600 font-semibold rounded-lg hover:bg-emerald-50 transition-colors text-sm md:text-base"
-                    : "px-4 py-2 border border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors text-sm md:text-base"
+                    ? "px-4 py-2 bg-white text-emerald-600 font-semibold rounded-lg hover:bg-emerald-50 transition-colors text-sm md:text-base touch-active no-tap-highlight"
+                    : "px-4 py-2 border border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors text-sm md:text-base touch-active no-tap-highlight"
                 }
               >
                 {b.text || (i === 0 ? "Primary" : "Secondary")}

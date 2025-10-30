@@ -814,6 +814,59 @@ a:focus {
   }
 }
 
+/* ✅ MOBILE OPTIMIZATION: Enhanced touch interactions */
+@media (hover: none), (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  .no-touch-hover:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    background-color: inherit !important;
+  }
+  
+  /* Enhance active states for better touch feedback */
+  .touch-active:active {
+    transform: scale(0.98) !important;
+    transition: transform 0.1s ease-out !important;
+  }
+  
+  /* Larger touch targets for interactive elements */
+  .touch-enlarge {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 12px !important;
+  }
+  
+  /* Touch-friendly form elements */
+  input, select, textarea, button {
+    touch-action: manipulation;
+  }
+  
+  /* Better tap highlight removal */
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  /* Enhanced focus states for touch devices */
+  :focus-visible {
+    outline-offset: 2px;
+    outline-width: 2px;
+  }
+  
+  /* Touch-friendly dropdowns */
+  .touch-dropdown {
+    padding: 12px 16px;
+  }
+  
+  /* Better touch scrolling */
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+}
+
 /* ✅ MOBILE OPTIMIZATION: Improved spacing for small screens */
 @media (max-width: 640px) {
   .container {

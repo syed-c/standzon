@@ -309,7 +309,7 @@ export default function LocationsSection({
                 activeTab === continent
                   ? `bg-gradient-to-r ${data.color} text-white shadow-lg transform scale-105`
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-pink-300'
-              }`}
+              } touch-active no-tap-highlight`}
             >
               <span className="text-xl">{data.icon}</span>
               <span>{continent}</span>
@@ -369,7 +369,7 @@ export default function LocationsSection({
                   
                   {/* CTA Button */}
                   <Link href={country.href}>
-                    <Button className={`w-full bg-gradient-to-r ${currentContinent.color} hover:shadow-xl text-white group transform hover:scale-105 transition-all duration-300 border-0 shadow-md font-semibold`}>
+                    <Button className={`w-full bg-gradient-to-r ${currentContinent.color} hover:shadow-xl text-white group transform hover:scale-105 transition-all duration-300 border-0 shadow-md font-semibold touch-active no-tap-highlight`}>
                       <FiUsers className="w-4 h-4 mr-2" />
                       View All Builders
                       <FiArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -413,7 +413,7 @@ export default function LocationsSection({
           
           <div className="text-center mt-8">
             <Link href="/exhibition-stands">
-              <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-3 rounded-xl font-semibold border-0 shadow-lg hover:shadow-xl">
+              <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-3 rounded-xl font-semibold border-0 shadow-lg hover:shadow-xl touch-active no-tap-highlight">
                 Browse All Locations
                 <FiArrowRight className="w-4 h-4 ml-2" />
               </Button>
@@ -435,7 +435,7 @@ export default function LocationsSection({
             <p className="text-lg text-gray-300 mb-8">
               {expandingMarkets?.paragraph || "We're continuously growing our global network. If you don't see your location listed, contact us to discuss how we can support your exhibition needs."}
             </p>
-            <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-3 text-lg font-semibold rounded-xl">
+            <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-3 text-lg font-semibold rounded-xl touch-active no-tap-highlight">
               Contact Global Team
             </Button>
           </div>

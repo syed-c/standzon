@@ -156,13 +156,13 @@ function BuilderContactControls({ builder, location }: { builder: Builder; locat
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 sm:space-y-4">
       {/* Primary CTA - Request Quote */}
       <PublicQuoteRequest 
         builderId={builder.id}
         location={`${builder.headquarters.city}, ${builder.headquarters.country}`}
         buttonText="Request Quote"
-        className="w-full bg-gradient-to-r from-pink-600 via-rose-600 to-pink-700 hover:from-pink-700 hover:via-rose-700 hover:to-pink-800 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl"
+        className="w-full bg-gradient-to-r from-pink-600 via-rose-600 to-pink-700 hover:from-pink-700 hover:via-rose-700 hover:to-pink-800 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl min-h-[44px] touch-active no-touch-hover"
       />
 
       {/* Profile Claim System - Now with privacy protection */}
@@ -182,7 +182,7 @@ function BuilderContactControls({ builder, location }: { builder: Builder; locat
 
       {/* View Profile Button */}
       <Link href={`/builders/${builder.slug}`} className="block">
-        <Button variant="outline" size="sm" className="w-full text-gray-900 border-gray-300 hover:bg-gray-50">
+        <Button variant="outline" size="sm" className="w-full text-gray-900 border-gray-300 hover:bg-gray-50 min-h-[40px]">
           <ArrowRight className="w-3 h-3 mr-2" />
           View Profile
         </Button>
@@ -220,12 +220,12 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
   
   return (
     <Card className="h-full hover:shadow-lg transition-all duration-300 border-0 shadow-md">
-      <CardHeader className="pb-4">
-        <div className="flex items-start justify-between mb-3">
+      <CardHeader className="pb-4 sm:pb-6">
+        <div className="flex items-start justify-between mb-3 sm:mb-4">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 text-yellow-500 fill-current" />
-              <span className="font-semibold">{(builder.rating || 4.5).toFixed(1)}</span>
+              <span className="font-semibold text-base sm:text-lg">{(builder.rating || 4.5).toFixed(1)}</span>
               <span className="text-sm text-gray-500">({builder.reviewCount})</span>
             </div>
           </div>
@@ -241,13 +241,13 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
           </div>
         </div>
 
-        <CardTitle className="text-lg leading-tight">
+        <CardTitle className="text-lg sm:text-xl leading-tight">
           {builder.companyName}
         </CardTitle>
         
         <div className="space-y-2 text-sm text-gray-600">
           <div className="flex items-center gap-2">
-            <MapPin className="w-3 h-3" />
+            <MapPin className="w-3 h-3 flex-shrink-0" />
             <div className="flex flex-wrap gap-1">
               {relevantLocation ? (
                 <span className="font-medium">
@@ -266,18 +266,18 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Users className="w-3 h-3" />
+            <Users className="w-3 h-3 flex-shrink-0" />
             <span>{builder.projectsCompleted} projects completed</span>
           </div>
           <div className="flex items-center gap-2">
-            <Clock className="w-3 h-3" />
+            <Clock className="w-3 h-3 flex-shrink-0" />
             <span>Response: {builder.responseTime}</span>
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="pt-0">
-        <p className="text-gray-700 text-sm mb-4 line-clamp-2">
+        <p className="text-gray-700 text-sm mb-4 line-clamp-2 sm:line-clamp-3">
           {builder.companyDescription}
         </p>
 
@@ -307,7 +307,7 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
             <ul className="text-xs text-gray-600 space-y-1">
               {(builder.keyStrengths || []).slice(0, 3).map((strength, index) => (
                 <li key={index} className="flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-green-500" />
+                  <CheckCircle2 className="w-3 h-3 text-green-500 flex-shrink-0" />
                   {strength}
                 </li>
               ))}

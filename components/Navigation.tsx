@@ -346,14 +346,14 @@ export default function Navigation() {
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center space-x-2">
             <Link href="/quote">
-              <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-3 py-2 rounded-lg shadow-lg text-xs font-semibold">
-                <FiZap className="w-3 h-3 mr-1" />
+              <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-4 py-3 rounded-lg shadow-lg text-sm font-semibold min-h-[44px]">
+                <FiZap className="w-4 h-4 mr-1" />
                 Quote
               </Button>
             </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg transition-all duration-200 text-white hover:text-pink-400 hover:bg-slate-800/60"
+              className="p-3 rounded-lg transition-all duration-200 text-white hover:text-pink-400 hover:bg-slate-800/60 min-h-[44px] min-w-[44px] flex items-center justify-center touch-active no-tap-highlight"
               aria-label="Toggle menu"
             >
               {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
@@ -369,11 +369,11 @@ export default function Navigation() {
           <div className="h-16 flex-shrink-0 bg-slate-900 border-b border-slate-700"></div>
           
           {/* Scrollable content area */}
-          <div className="flex-1 px-4 pt-6 pb-6 space-y-3 overflow-y-auto">
+          <div className="flex-1 px-4 sm:px-6 pt-6 pb-6 space-y-4 overflow-y-auto">
             {/* Mobile Get Quote at Top */}
             <div className="mb-6">
               <Link href="/quote" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-3.5 rounded-lg shadow-lg font-semibold text-base">
+                <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-4 rounded-lg shadow-lg font-semibold text-base min-h-[56px]">
                   <FiZap className="w-5 h-5 mr-2" />
                   Get Free Quote
                 </Button>
@@ -382,21 +382,21 @@ export default function Navigation() {
 
             {/* Main Navigation */}
             {mainNavItems.map((item) => (
-              <div key={item.label} className="space-y-2">
+              <div key={item.label} className="space-y-3">
                 <Link
                   href={item.href}
-                  className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium"
+                  className="block px-4 py-4 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-xl font-medium text-lg"
                   onClick={() => setIsOpen(false)}
                 >
                   {item.label}
                 </Link>
                 {item.submenu && (
-                  <div className="ml-4 space-y-1 bg-slate-800/40 rounded-lg p-2">
+                  <div className="ml-4 space-y-2 bg-slate-800/40 rounded-xl p-3">
                     {item.submenu.map((subItem) => (
                       <Link
                         key={subItem.label}
                         href={subItem.href}
-                        className="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition-all duration-150 rounded-md"
+                        className="block px-4 py-3 text-base text-slate-300 hover:text-white hover:bg-slate-700/60 transition-all duration-150 rounded-lg"
                         onClick={() => setIsOpen(false)}
                       >
                         {subItem.label}
@@ -409,26 +409,26 @@ export default function Navigation() {
 
             {/* Account section for mobile */}
             <div className="mt-8 pt-6 border-t border-slate-700">
-              <h3 className="px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Account</h3>
+              <h3 className="px-4 text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Account</h3>
               {!currentUser ? (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <Link
                     href="/auth/login?type=builder"
-                    className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium"
+                    className="block px-4 py-4 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-xl font-medium text-lg"
                     onClick={() => setIsOpen(false)}
                   >
                     🔐 Builder Login
                   </Link>
                   <Link
                     href="/builder/register"
-                    className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium"
+                    className="block px-4 py-4 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-xl font-medium text-lg"
                     onClick={() => setIsOpen(false)}
                   >
                     🏢 Builder Registration
                   </Link>
                   <Link
                     href="/auth/login?type=admin"
-                    className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium"
+                    className="block px-4 py-4 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-xl font-medium text-lg"
                     onClick={() => setIsOpen(false)}
                   >
                     ⚡ Admin Portal
@@ -440,7 +440,7 @@ export default function Navigation() {
                     <Link
                       key={accountItem.label}
                       href={accountItem.href}
-                      className="block px-4 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium"
+                      className="block px-4 py-4 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-xl font-medium text-lg"
                       onClick={() => setIsOpen(false)}
                     >
                       {accountItem.label}

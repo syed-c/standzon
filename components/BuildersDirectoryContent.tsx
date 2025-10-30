@@ -721,16 +721,16 @@ export default function BuildersDirectoryContent() {
                   </p>
                 </div>
 
-                <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
+                <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-6 sm:gap-8">
                   {currentBuilders.map((builder) => (
                     <Card key={builder.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white">
-                      <CardHeader className="pb-4">
+                      <CardHeader className="pb-4 sm:pb-6">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <CardTitle className="text-xl font-bold mb-3 group-hover:text-blue-600 transition-colors">
+                            <CardTitle className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 group-hover:text-blue-600 transition-colors">
                               {builder.companyName}
                             </CardTitle>
-                            <div className="flex items-center gap-2 mb-3">
+                            <div className="flex items-center gap-2 mb-3 sm:mb-4">
                               <div className="flex items-center bg-yellow-50 px-2 py-1 rounded-lg">
                                 <FiStar className="w-4 h-4 text-yellow-500 fill-current" />
                                 <span className="ml-1 text-sm font-semibold text-yellow-700">
@@ -745,15 +745,15 @@ export default function BuildersDirectoryContent() {
                               </Badge>
                             </div>
                           </div>
-                          <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center">
-                            <FiAward className="w-7 h-7 text-blue-600" />
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center">
+                            <FiAward className="w-7 h-7 sm:w-8 sm:h-8 text-blue-600" />
                           </div>
                         </div>
                       </CardHeader>
                       <CardContent className="pt-0">
-                        <div className="space-y-4">
+                        <div className="space-y-4 sm:space-y-5">
                           <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
-                            <FiMapPin className="w-4 h-4 mr-2 text-blue-500" />
+                            <FiMapPin className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
                             <div className="flex flex-wrap gap-1">
                               {builder.serviceLocations && builder.serviceLocations.length > 0 ? (
                                 builder.serviceLocations.map((location, index) => (
@@ -769,18 +769,18 @@ export default function BuildersDirectoryContent() {
                           </div>
                           
                           {builder.companyDescription && (
-                            <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                            <p className="text-sm text-gray-600 line-clamp-3 sm:line-clamp-4 leading-relaxed">
                               {builder.companyDescription}
                             </p>
                           )}
 
-                          <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="grid grid-cols-2 gap-3 sm:gap-4 text-sm">
                             <div className="flex items-center bg-blue-50 px-3 py-2 rounded-lg">
-                              <FiUsers className="w-4 h-4 mr-2 text-blue-500" />
+                              <FiUsers className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
                               <span className="font-medium">{builder.projectsCompleted} projects</span>
                             </div>
                             <div className="flex items-center bg-green-50 px-3 py-2 rounded-lg">
-                              <FiClock className="w-4 h-4 mr-2 text-green-500" />
+                              <FiClock className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
                               <span className="font-medium">{builder.responseTime}</span>
                             </div>
                           </div>
@@ -795,9 +795,9 @@ export default function BuildersDirectoryContent() {
                             </div>
                           )}
 
-                          <div className="flex gap-3 pt-4">
-                            <Link href={`/builders/${builder.slug}`}>
-                              <Button variant="outline" size="sm" className="flex-1 border-gray-200 hover:border-blue-300 hover:text-blue-600">
+                          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                            <Link href={`/builders/${builder.slug}`} className="flex-1">
+                              <Button variant="outline" size="sm" className="w-full border-gray-200 hover:border-blue-300 hover:text-blue-600 min-h-[40px]">
                                 View Profile
                               </Button>
                             </Link>
@@ -806,7 +806,7 @@ export default function BuildersDirectoryContent() {
                               location={`${builder.headquarters.city}, ${builder.headquarters.country}`}
                               buttonText="Get Quote"
                               size="sm"
-                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white min-h-[40px]"
                             />
                           </div>
                         </div>
@@ -817,14 +817,14 @@ export default function BuildersDirectoryContent() {
 
                 {/* Pagination Controls */}
                 {totalPages > 1 && (
-                  <div className="mt-16 flex justify-center">
-                    <div className="flex items-center gap-2">
+                  <div className="mt-12 sm:mt-16 flex justify-center">
+                    <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-2">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
-                        className="border-gray-200"
+                        className="border-gray-200 min-h-[40px] w-full sm:w-auto touch-active no-tap-highlight"
                       >
                         <FiArrowRight className="w-4 h-4 mr-1 rotate-180" />
                         Previous
@@ -849,7 +849,7 @@ export default function BuildersDirectoryContent() {
                               variant={currentPage === pageNum ? "default" : "outline"}
                               size="sm"
                               onClick={() => setCurrentPage(pageNum)}
-                              className={currentPage === pageNum ? "bg-blue-600 hover:bg-blue-700" : "border-gray-200"}
+                              className={`${currentPage === pageNum ? "bg-blue-600 hover:bg-blue-700" : "border-gray-200"} min-h-[40px] min-w-[40px] touch-active no-tap-highlight`}
                             >
                               {pageNum}
                             </Button>
@@ -862,7 +862,7 @@ export default function BuildersDirectoryContent() {
                         size="sm"
                         onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
-                        className="border-gray-200"
+                        className="border-gray-200 min-h-[40px] w-full sm:w-auto touch-active no-tap-highlight"
                       >
                         Next
                         <FiArrowRight className="w-4 h-4 ml-1" />
@@ -889,7 +889,7 @@ export default function BuildersDirectoryContent() {
                     setSelectedCity("all");
                     setMinRating([0]);
                   }}
-                  className="bg-blue-600 hover:bg-blue-700 px-8 py-3"
+                  className="bg-blue-600 hover:bg-blue-700 px-8 py-3 touch-active no-tap-highlight"
                 >
                   Clear All Filters
                 </Button>

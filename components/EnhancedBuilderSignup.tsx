@@ -710,7 +710,7 @@ export default function EnhancedBuilderSignup() {
                       updateFormData("companyName", e.target.value)
                     }
                     placeholder="Your company name"
-                    className={errors.companyName ? "border-red-500" : ""}
+                    className={`${errors.companyName ? "border-red-500" : ""} min-h-[44px]`}
                   />
                   {errors.companyName && (
                     <p className="text-red-500 text-sm mt-1">
@@ -728,7 +728,7 @@ export default function EnhancedBuilderSignup() {
                       updateFormData("contactName", e.target.value)
                     }
                     placeholder="Full name of primary contact"
-                    className={errors.contactName ? "border-red-500" : ""}
+                    className={`${errors.contactName ? "border-red-500" : ""} min-h-[44px]`}
                   />
                   {errors.contactName && (
                     <p className="text-red-500 text-sm mt-1">
@@ -746,6 +746,7 @@ export default function EnhancedBuilderSignup() {
                       updateFormData("contactTitle", e.target.value)
                     }
                     placeholder="CEO, Manager, Director, etc."
+                    className="min-h-[44px]"
                   />
                 </div>
 
@@ -759,7 +760,7 @@ export default function EnhancedBuilderSignup() {
                       updateFormData("primaryEmail", e.target.value)
                     }
                     placeholder="contact@yourcompany.com"
-                    className={errors.primaryEmail ? "border-red-500" : ""}
+                    className={`${errors.primaryEmail ? "border-red-500" : ""} min-h-[44px]`}
                   />
                   {errors.primaryEmail && (
                     <p className="text-red-500 text-sm mt-1">
@@ -778,7 +779,7 @@ export default function EnhancedBuilderSignup() {
                       updateFormData("phoneNumber", e.target.value)
                     }
                     placeholder="+1 234 567 8900"
-                    className={errors.phoneNumber ? "border-red-500" : ""}
+                    className={`${errors.phoneNumber ? "border-red-500" : ""} min-h-[44px]`}
                   />
                   {errors.phoneNumber && (
                     <p className="text-red-500 text-sm mt-1">
@@ -795,6 +796,7 @@ export default function EnhancedBuilderSignup() {
                     value={formData.website}
                     onChange={(e) => updateFormData("website", e.target.value)}
                     placeholder="https://www.yourcompany.com"
+                    className="min-h-[44px]"
                   />
                 </div>
 
@@ -806,7 +808,7 @@ export default function EnhancedBuilderSignup() {
                     value={formData.password}
                     onChange={(e) => updateFormData("password", e.target.value)}
                     placeholder="Create a secure password"
-                    className={errors.password ? "border-red-500" : ""}
+                    className={`${errors.password ? "border-red-500" : ""} min-h-[44px]`}
                   />
                   {errors.password && (
                     <p className="text-red-500 text-sm mt-1">
@@ -825,7 +827,7 @@ export default function EnhancedBuilderSignup() {
                       updateFormData("confirmPassword", e.target.value)
                     }
                     placeholder="Confirm your password"
-                    className={errors.confirmPassword ? "border-red-500" : ""}
+                    className={`${errors.confirmPassword ? "border-red-500" : ""} min-h-[44px]`}
                   />
                   {errors.confirmPassword && (
                     <p className="text-red-500 text-sm mt-1">
@@ -859,7 +861,7 @@ export default function EnhancedBuilderSignup() {
                   }
                   placeholder="Describe your company, experience, and what makes you unique..."
                   rows={5}
-                  className={errors.companyDescription ? "border-red-500" : ""}
+                  className={`${errors.companyDescription ? "border-red-500" : ""} min-h-[120px]`}
                 />
                 {errors.companyDescription && (
                   <p className="text-red-500 text-sm mt-1">
@@ -883,6 +885,7 @@ export default function EnhancedBuilderSignup() {
                     }
                     min="1900"
                     max={new Date().getFullYear()}
+                    className="min-h-[44px]"
                   />
                 </div>
 
@@ -893,7 +896,7 @@ export default function EnhancedBuilderSignup() {
                     onValueChange={(value) => updateFormData("teamSize", value)}
                   >
                     <SelectTrigger
-                      className={errors.teamSize ? "border-red-500" : ""}
+                      className={`${errors.teamSize ? "border-red-500" : ""} min-h-[44px]`}
                     >
                       <SelectValue placeholder="Select your team size" />
                     </SelectTrigger>
@@ -1186,7 +1189,7 @@ export default function EnhancedBuilderSignup() {
                 <Button
                   variant="outline"
                   onClick={addService}
-                  className="w-full"
+                  className="w-full touch-active no-tap-highlight"
                 >
                   Add Another Service
                 </Button>

@@ -181,11 +181,11 @@ export default function HomePageContent() {
                   <>
                     <PublicQuoteRequest
                       buttonText="Get Free Quotes Now"
-                      className="text-base md:text-lg px-6 md:px-8 py-3 md:py-4"
+                      className="text-base md:text-lg px-6 md:px-8 py-3 md:py-4 touch-active no-tap-highlight"
                     />
                     <PublicQuoteRequest
                       buttonText="Find Local Builders"
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-base md:text-lg px-6 md:px-8 py-3 md:py-4"
+                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-base md:text-lg px-6 md:px-8 py-3 md:py-4 touch-active no-tap-highlight"
                     />
                   </>
                 )}

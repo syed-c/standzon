@@ -511,7 +511,7 @@ export function PublicQuoteRequest({
     <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <DialogTrigger asChild>
         <Button 
-          className={buttonClassName}
+          className={`${buttonClassName} touch-active no-tap-highlight`}
           size={size}
         >
           <Quote className="w-4 h-4 mr-2" />
@@ -576,7 +576,7 @@ export function PublicQuoteRequest({
                   onChange={(e) => handleInputChange('companyName', e.target.value)}
                   placeholder="Your company name"
                   required
-                  className="mt-1"
+                  className="mt-1 min-h-[44px]"
                 />
               </div>
 
@@ -589,7 +589,7 @@ export function PublicQuoteRequest({
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="your@email.com"
                   required
-                  className="mt-1"
+                  className="mt-1 min-h-[44px]"
                 />
               </div>
 
@@ -600,7 +600,7 @@ export function PublicQuoteRequest({
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   placeholder="+1 234 567 8900"
-                  className="mt-1"
+                  className="mt-1 min-h-[44px]"
                 />
                 <p className="text-xs text-gray-500 mt-1">Include country code (e.g., +1, +971, +44)</p>
               </div>
@@ -624,7 +624,7 @@ export function PublicQuoteRequest({
                   value={formData.exhibitionName} 
                   onValueChange={(value) => handleInputChange('exhibitionName', value)}
                 >
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger className="mt-1 min-h-[44px]">
                     <SelectValue placeholder="Select exhibition" />
                   </SelectTrigger>
                   <SelectContent>
@@ -646,7 +646,7 @@ export function PublicQuoteRequest({
                     onChange={(e) => handleInputChange('customExhibition', e.target.value)}
                     placeholder="Enter exhibition name"
                     required
-                    className="mt-1"
+                    className="mt-1 min-h-[44px]"
                   />
                 </div>
               )}
@@ -657,7 +657,7 @@ export function PublicQuoteRequest({
                   value={formData.standSize} 
                   onValueChange={(value) => handleInputChange('standSize', value)}
                 >
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger className="mt-1 min-h-[44px]">
                     <SelectValue placeholder="Select stand size" />
                   </SelectTrigger>
                   <SelectContent>
@@ -676,7 +676,7 @@ export function PublicQuoteRequest({
                   value={formData.timeline} 
                   onValueChange={(value) => handleInputChange('timeline', value)}
                 >
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger className="mt-1 min-h-[44px]">
                     <SelectValue placeholder="When do you need this?" />
                   </SelectTrigger>
                   <SelectContent>
@@ -705,7 +705,7 @@ export function PublicQuoteRequest({
                   value={formData.budget} 
                   onValueChange={(value) => handleInputChange('budget', value)}
                 >
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger className="mt-1 min-h-[44px]">
                     <SelectValue placeholder="Select budget range" />
                   </SelectTrigger>
                   <SelectContent>
@@ -726,7 +726,7 @@ export function PublicQuoteRequest({
                   onChange={(e) => handleInputChange('message', e.target.value)}
                   placeholder="Brief description of your needs, design preferences, or special requirements..."
                   rows={3}
-                  className="mt-1"
+                  className="mt-1 min-h-[120px]"
                 />
               </div>
 
@@ -758,15 +758,15 @@ export function PublicQuoteRequest({
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-start space-x-3">
                   <input
                     type="checkbox"
                     id="hasDesign"
                     checked={formData.hasDesign}
                     onChange={(e) => handleInputChange('hasDesign', e.target.checked)}
-                    className="rounded"
+                    className="mt-1 rounded h-5 w-5"
                   />
-                  <Label htmlFor="hasDesign">I have existing designs or reference materials</Label>
+                  <Label htmlFor="hasDesign" className="text-base">I have existing designs or reference materials</Label>
                 </div>
 
                 {formData.hasDesign && (
@@ -825,16 +825,16 @@ export function PublicQuoteRequest({
                 )}
 
                 {/* Required confirmation before submission */}
-                <div className="flex items-start gap-2 bg-yellow-50 border border-yellow-200 rounded-md p-3">
+                <div className="flex items-start gap-3 bg-yellow-50 border border-yellow-200 rounded-md p-4">
                   <input
                     type="checkbox"
                     id="confirmDetails"
                     checked={formData.confirmDetails}
                     onChange={(e) => handleInputChange('confirmDetails', e.target.checked)}
-                    className="mt-1 rounded"
+                    className="mt-1 rounded h-5 w-5"
                   />
-                  <Label htmlFor="confirmDetails" className="text-sm text-yellow-900">
-                    I confirm the details provided are accurate and I’m ready to submit my quote request.
+                  <Label htmlFor="confirmDetails" className="text-base text-yellow-900">
+                    I confirm the details provided are accurate and I'm ready to submit my quote request.
                   </Label>
                 </div>
               </div>
@@ -842,12 +842,12 @@ export function PublicQuoteRequest({
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex gap-3 pt-4 border-t">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
             <Button
               type="button"
               variant="outline"
               onClick={handleClose}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 hover:text-gray-900 min-h-[44px] w-full sm:w-auto"
             >
               Cancel
             </Button>
@@ -857,7 +857,7 @@ export function PublicQuoteRequest({
                 type="button"
                 variant="outline"
                 onClick={handlePrevious}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 min-h-[44px] w-full sm:w-auto"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Previous
@@ -869,7 +869,7 @@ export function PublicQuoteRequest({
                 type="button"
                 onClick={handleNext}
                 disabled={!isStepValid()}
-                className="flex-1 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700"
+                className="flex-1 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 min-h-[44px] w-full sm:w-auto"
               >
                 Next Step
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -878,7 +878,7 @@ export function PublicQuoteRequest({
               <Button
                 type="submit"
                 disabled={isSubmitting || !isStepValid()}
-                className="flex-1 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700"
+                className="flex-1 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 min-h-[44px] w-full sm:w-auto"
               >
                 {isSubmitting ? (
                   'Sending Request...'
