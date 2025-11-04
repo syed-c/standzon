@@ -285,7 +285,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'united-states',
     capital: 'Washington D.C.',
     currency: 'USD',
-    majorCities: ['New York', 'Los Angeles', 'San Francisco', 'Las Vegas', 'Chicago', 'Orlando', 'Miami', 'Atlanta', 'Dallas', 'Houston', 'Anaheim', 'Austin', 'Boston', 'Denver', 'Detroit', 'Palm Beach', 'Pittsburgh', 'San Antonio', 'San Diego', 'San Jose', 'Long Beach', 'Louisville', 'New Orleans'],
+    majorCities: ['New York', 'Los Angeles', 'San Francisco', 'Las Vegas', 'Chicago', 'Orlando', 'Miami', 'Atlanta', 'Dallas', 'Houston', 'Anaheim', 'Austin', 'Boston', 'Denver', 'Detroit', 'Palm Beach', 'Pittsburgh', 'San Antonio', 'San Diego', 'San Jose', 'Long Beach', 'Louisville', 'New Orleans', 'Florida', 'Georgia', 'Texas', 'Alaska', 'Michigan', 'Utah', 'Washington'],
     totalVenues: 320,
     annualEvents: 5200,
     keyIndustries: ['Technology', 'Healthcare', 'Automotive', 'Defense', 'Entertainment', 'Finance'],
