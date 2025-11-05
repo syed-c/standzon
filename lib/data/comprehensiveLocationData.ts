@@ -603,7 +603,9 @@ export const comprehensiveLocationData: CountryData[] = [
     language: "Portuguese",
     cities: [
       { cityName: "São Paulo", citySlug: "sao-paulo", latitude: -23.5558, longitude: -46.6396, population: 12325232 },
-      { cityName: "Rio de Janeiro", citySlug: "rio-de-janeiro", latitude: -22.9068, longitude: -43.1729, population: 6747815 }
+      { cityName: "Rio de Janeiro", citySlug: "rio-de-janeiro", latitude: -22.9068, longitude: -43.1729, population: 6747815 },
+      { cityName: "Curitiba", citySlug: "curitiba", latitude: -25.4284, longitude: -49.2733, population: 1948579 },
+      { cityName: "Brasília", citySlug: "brasilia", latitude: -15.7801, longitude: -47.9292, population: 3055548 }
     ]
   },
   {
@@ -628,6 +630,20 @@ export const comprehensiveLocationData: CountryData[] = [
     language: "Hebrew",
     cities: [
       { cityName: "Tel Aviv", citySlug: "tel-aviv", latitude: 32.0853, longitude: 34.7818, population: 460613 }
+    ]
+  },
+  {
+    countryName: "Colombia",
+    countryCode: "CO",
+    countrySlug: "colombia",
+    continent: "South America",
+    currency: "COP",
+    timezone: "America/Bogota",
+    language: "Spanish",
+    cities: [
+      { cityName: "Bogotá", citySlug: "bogota", latitude: 4.6097, longitude: -74.0818, population: 7412566 },
+      { cityName: "Medellín", citySlug: "medellin", latitude: 6.2442, longitude: -75.5812, population: 2509788 },
+      { cityName: "Cali", citySlug: "cali", latitude: 3.4372, longitude: -76.5225, population: 2227627 }
     ]
   }
 ];

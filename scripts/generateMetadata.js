@@ -37,7 +37,6 @@ const comprehensiveLocationData = [
       { cityName: "San Diego", citySlug: "san-diego", state: "California" },
       { cityName: "San Jose", citySlug: "san-jose", state: "California" },
       { cityName: "Texas", citySlug: "texas", state: "Texas" },
-      { cityName: "Washington DC", citySlug: "washington-dc", state: "District of Columbia" },
       { cityName: "New Orleans", citySlug: "new-orleans", state: "Louisiana" },
       { cityName: "Utah", citySlug: "utah", state: "Utah" },
       { cityName: "Michigan", citySlug: "michigan", state: "Michigan" },
