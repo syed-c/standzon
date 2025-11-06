@@ -153,6 +153,16 @@ const STATIC_PAGES: PageItem[] = [
   { title: 'Mexico Exhibition Stands', path: '/exhibition-stands/mexico', type: 'country' },
   { title: 'Japan Exhibition Stands', path: '/exhibition-stands/japan', type: 'country' },
   { title: 'South Korea Exhibition Stands', path: '/exhibition-stands/south-korea', type: 'country' },
+  { title: 'Costa Rica Exhibition Stands', path: '/exhibition-stands/costa-rica', type: 'country' },
+  { title: 'Panama Exhibition Stands', path: '/exhibition-stands/panama', type: 'country' },
+  { title: 'Guatemala Exhibition Stands', path: '/exhibition-stands/guatemala', type: 'country' },
+  { title: 'Ecuador Exhibition Stands', path: '/exhibition-stands/ecuador', type: 'country' },
+  { title: 'Thailand Exhibition Stands', path: '/exhibition-stands/thailand', type: 'country' },
+  { title: 'Philippines Exhibition Stands', path: '/exhibition-stands/philippines', type: 'country' },
+  { title: 'Iraq Exhibition Stands', path: '/exhibition-stands/iraq', type: 'country' },
+  { title: 'Iran Exhibition Stands', path: '/exhibition-stands/iran', type: 'country' },
+  { title: 'Qatar Exhibition Stands', path: '/exhibition-stands/qatar', type: 'country' },
+  { title: 'Kuwait Exhibition Stands', path: '/exhibition-stands/kuwait', type: 'country' },
   
   // City pages for India
   { title: 'Exhibition Stands in Bangalore, India', path: '/exhibition-stands/india/bangalore', type: 'city' },

@@ -55,7 +55,17 @@ const COUNTRY_DATA = {
   'czech-republic': { name: 'Czech Republic', flag: '🇨🇿', code: 'CZ' },
   'mexico': { name: 'Mexico', flag: '🇲🇽', code: 'MX' },
   'hong-kong': { name: 'Hong Kong', flag: '🇭🇰', code: 'HK' },
-  'portugal': { name: 'Portugal', flag: '🇵🇹', code: 'PT' }
+  'portugal': { name: 'Portugal', flag: '🇵🇹', code: 'PT' },
+  'costa-rica': { name: 'Costa Rica', flag: '🇨🇷', code: 'CR' },
+  'panama': { name: 'Panama', flag: '🇵🇦', code: 'PA' },
+  'guatemala': { name: 'Guatemala', flag: '🇬🇹', code: 'GT' },
+  'ecuador': { name: 'Ecuador', flag: '🇪🇨', code: 'EC' },
+  'thailand': { name: 'Thailand', flag: '🇹🇭', code: 'TH' },
+  'philippines': { name: 'Philippines', flag: '🇵🇭', code: 'PH' },
+  'iraq': { name: 'Iraq', flag: '🇮🇶', code: 'IQ' },
+  'iran': { name: 'Iran', flag: '🇮🇷', code: 'IR' },
+  'qatar': { name: 'Qatar', flag: '🇶🇦', code: 'QA' },
+  'kuwait': { name: 'Kuwait', flag: '🇰🇼', code: 'KW' }
 };
 
 // Fetch CMS content for the country page
