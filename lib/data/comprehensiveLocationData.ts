@@ -70,7 +70,6 @@ export const comprehensiveLocationData: CountryData[] = [
       { cityName: "San Diego", citySlug: "san-diego", state: "California", latitude: 32.7157, longitude: -117.1611, population: 1423851 },
       { cityName: "San Jose", citySlug: "san-jose", state: "California", latitude: 37.3382, longitude: -121.8863, population: 1021795 },
       { cityName: "Texas", citySlug: "texas", state: "Texas" },
-      { cityName: "Washington DC", citySlug: "washington-dc", state: "District of Columbia", latitude: 38.9072, longitude: -77.0369, population: 705749 },
       { cityName: "New Orleans", citySlug: "new-orleans", state: "Louisiana", latitude: 29.9511, longitude: -90.0715, population: 383997 },
       { cityName: "Utah", citySlug: "utah", state: "Utah" },
       { cityName: "Michigan", citySlug: "michigan", state: "Michigan" },

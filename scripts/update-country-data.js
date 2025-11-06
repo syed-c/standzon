@@ -196,7 +196,6 @@ const citiesToRemove = [
   { country: 'United States', citySlug: 'miami' },
   { country: 'United States', citySlug: 'san-diego' },
   { country: 'United States', citySlug: 'san-francisco' },
-  { country: 'United States', citySlug: 'washington-dc' },
   { country: 'Germany', citySlug: 'hamburg' },
   { country: 'Germany', citySlug: 'leipzig' },
   { country: 'Germany', citySlug: 'stuttgart' },
