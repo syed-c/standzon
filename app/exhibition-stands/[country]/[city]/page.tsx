@@ -90,13 +90,81 @@ export async function generateMetadata({
     const cityName = ('name' in cityData) ? cityData.name : cityData.cityName;
     const countryName = toTitle(countrySlug);
 
+    // Try to fetch CMS content for metadata
+    let cmsMetadata = null;
+    try {
+      const sb = getServerSupabase();
+      if (sb) {
+        const cityPageId = `${countrySlug}-${citySlug}`;
+        
+        // Special handling for Jordan, Lebanon, Israel, and Oman cities
+        const isSpecialCountry = ['jordan', 'lebanon', 'israel', 'oman'].includes(countrySlug);
+        
+        let data, error;
+        
+        if (isSpecialCountry) {
+          // Try multiple query patterns for special countries
+          const result = await sb
+            .from("page_contents")
+            .select("content")
+            .or(`id.eq.${cityPageId},id.eq.city-${cityPageId}`)
+            .order('created_at', { ascending: false })
+            .limit(1);
+            
+          if (result.data?.[0]) {
+            data = result.data[0];
+            error = null;
+          } else {
+            // Fallback to exact match if no results from OR query
+            const exactResult = await sb
+              .from("page_contents")
+              .select("content")
+              .eq("id", cityPageId)
+              .single();
+              
+            data = exactResult.data;
+            error = exactResult.error;
+          }
+        } else {
+          // Standard query for other countries
+          const result = await sb
+            .from("page_contents")
+            .select("content")
+            .eq("id", cityPageId)
+            .single();
+            
+          data = result.data;
+          error = result.error;
+        }
+
+        if (!error && data?.content) {
+          const content = data.content;
+          const seo = content.seo || {};
+          const hero = content.hero || {};
+          
+          cmsMetadata = {
+            title: seo.metaTitle || hero.title || `Exhibition Stand Builders in ${cityName}, ${countryName} | Professional Trade Show Displays`,
+            description: seo.metaDescription || `Find professional exhibition stand builders in ${cityName}, ${countryName}. Custom trade show displays, booth design, and comprehensive exhibition services.`,
+            keywords: seo.keywords || [`exhibition stands ${cityName}`, `${cityName} trade show builders`, `${cityName} booth design`, `${countryName} ${cityName} exhibition services`],
+          };
+        }
+      }
+    } catch (error) {
+      console.error("❌ Error fetching CMS metadata:", error);
+    }
+
+    // Use CMS metadata if available, otherwise fall back to default
+    const title = cmsMetadata?.title || `Exhibition Stand Builders in ${cityName}, ${countryName} | Professional Trade Show Displays`;
+    const description = cmsMetadata?.description || `Find professional exhibition stand builders in ${cityName}, ${countryName}. Custom trade show displays, booth design, and comprehensive exhibition services.`;
+    const keywords = cmsMetadata?.keywords || [`exhibition stands ${cityName}`, `${cityName} trade show builders`, `${cityName} booth design`, `${countryName} ${cityName} exhibition services`];
+
     return {
-      title: `Exhibition Stand Builders in ${cityName}, ${countryName} | Professional Trade Show Displays`,
-      description: `Find professional exhibition stand builders in ${cityName}, ${countryName}. Custom trade show displays, booth design, and comprehensive exhibition services.`,
-      keywords: `exhibition stands, ${cityName}, ${countryName}, builders, contractors, trade show displays, booth design`,
+      title,
+      description,
+      keywords,
       openGraph: {
-        title: `Exhibition Stand Builders in ${cityName}, ${countryName}`,
-        description: `Professional exhibition stand builders in ${cityName}, ${countryName}. Custom trade show displays and booth design services.`,
+        title,
+        description,
         type: "website",
       },
       alternates: {

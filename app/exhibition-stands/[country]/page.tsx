@@ -109,20 +109,52 @@ export async function generateMetadata({ params }: { params: { country: string }
     };
   }
 
+  // Try to fetch CMS content for metadata
+  let cmsMetadata = null;
+  try {
+    const sb = getServerSupabase();
+    if (sb) {
+      const result = await sb
+        .from('page_contents')
+        .select('content')
+        .eq('id', countrySlug)
+        .single();
+        
+      if (!result.error && result.data?.content) {
+        const content = result.data.content;
+        const seo = content.seo || {};
+        const hero = content.hero || {};
+        
+        cmsMetadata = {
+          title: seo.metaTitle || hero.title || `Exhibition Stand Builders in ${countryInfo.name} | Professional Trade Show Displays`,
+          description: seo.metaDescription || `Find professional exhibition stand builders across ${countryInfo.name}. Custom trade show displays, booth design, and comprehensive exhibition services.`,
+          keywords: seo.keywords || [`exhibition stands ${countryInfo.name}`, `booth builders ${countryInfo.name}`, `trade show displays ${countryInfo.name}`, `${countryInfo.name} exhibition builders`, `${countryInfo.name} booth design`, `${countryInfo.name} exhibition stands`],
+        };
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error fetching CMS metadata:', error);
+  }
+
+  // Use CMS metadata if available, otherwise fall back to default
+  const title = cmsMetadata?.title || `Exhibition Stand Builders in ${countryInfo.name} | Professional Trade Show Displays`;
+  const description = cmsMetadata?.description || `Find professional exhibition stand builders across ${countryInfo.name}. Custom trade show displays, booth design, and comprehensive exhibition services.`;
+  const keywords = cmsMetadata?.keywords || [`exhibition stands ${countryInfo.name}`, `booth builders ${countryInfo.name}`, `trade show displays ${countryInfo.name}`, `${countryInfo.name} exhibition builders`, `${countryInfo.name} booth design`, `${countryInfo.name} exhibition stands`];
+
   return {
-    title: `Exhibition Stand Builders in ${countryInfo.name} | Professional Trade Show Displays`,
-    description: `Find professional exhibition stand builders across ${countryInfo.name}. Custom trade show displays, booth design, and comprehensive exhibition services.`,
-    keywords: [`exhibition stands ${countryInfo.name}`, `booth builders ${countryInfo.name}`, `trade show displays ${countryInfo.name}`, `${countryInfo.name} exhibition builders`, `${countryInfo.name} booth design`, `${countryInfo.name} exhibition stands`],
+    title,
+    description,
+    keywords,
     openGraph: {
-      title: `Exhibition Stand Builders in ${countryInfo.name}`,
-      description: `Professional exhibition stand builders across ${countryInfo.name}. Custom trade show displays and booth design services.`,
+      title,
+      description,
       type: 'website',
       locale: 'en_US',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Exhibition Stand Builders in ${countryInfo.name}`,
-      description: `Professional exhibition stand builders across ${countryInfo.name}. Custom trade show displays and booth design services.`,
+      title,
+      description,
     },
     alternates: {
       canonical: `/exhibition-stands/${countrySlug}`,
