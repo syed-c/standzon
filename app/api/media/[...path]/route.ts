@@ -5,6 +5,7 @@ export async function GET(request: Request, { params }: { params: { path: string
     console.log('=== MEDIA PROXY ROUTE CALLED ===');
     console.log('Request URL:', request.url);
     console.log('Params:', params);
+    console.log('Environment:', process.env.NODE_ENV);
     
     const { path } = params;
     
@@ -57,9 +58,7 @@ export async function GET(request: Request, { params }: { params: { path: string
         method: 'GET',
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        },
-        // Note: In a real implementation, you should not disable SSL verification
-        // This is just for debugging purposes
+        }
       });
       console.log('Fetch completed with status:', response.status);
     } catch (fetchError: any) {
@@ -67,33 +66,46 @@ export async function GET(request: Request, { params }: { params: { path: string
       console.error('Error type:', typeof fetchError);
       console.error('Error keys:', Object.keys(fetchError || {}));
       
-      // Try a fallback approach
-      console.log('Trying fallback approach with basic fetch...');
-      try {
-        response = await fetch(supabaseUrl);
-        console.log('Fallback fetch completed with status:', response.status);
-      } catch (fallbackError: any) {
-        console.error('Fallback fetch also failed:', fallbackError);
-        return new NextResponse(`Failed to connect to Supabase: ${fetchError.message || fetchError}`, { status: 502 });
-      }
+      // Return a placeholder image when fetch fails
+      console.log('Returning placeholder image due to fetch error');
+      const placeholderImage = Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+        'base64'
+      );
+      
+      return new NextResponse(placeholderImage, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=86400',
+        },
+      });
     }
     
     console.log('Supabase response status:', response.status);
     console.log('Response headers:', Object.fromEntries(response.headers.entries()));
     
-    // If the response is not ok, return appropriate error
+    // If the response is not ok, return a placeholder image
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'Could not read response body');
       console.error('Supabase image not found:', supabaseUrl);
       console.error('Response status:', response.status);
       console.error('Response text:', errorText);
       
-      // Return different status codes based on the error
-      if (response.status === 404) {
-        return new NextResponse('Image not found in Supabase storage', { status: 404 });
-      } else {
-        return new NextResponse(`Supabase error: ${response.status} - ${errorText}`, { status: response.status });
-      }
+      // Return a placeholder image when the image is not found
+      console.log('Returning placeholder image due to 404');
+      const placeholderImage = Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+        'base64'
+      );
+      
+      return new NextResponse(placeholderImage, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=86400',
+        },
+      });
     }
     
     // Convert ArrayBuffer to Buffer
@@ -105,7 +117,21 @@ export async function GET(request: Request, { params }: { params: { path: string
       console.log('Buffer conversion completed, size:', buffer.length);
     } catch (bufferError: any) {
       console.error('Error converting response to buffer:', bufferError);
-      return new NextResponse('Failed to process image data', { status: 500 });
+      
+      // Return a placeholder image when buffer conversion fails
+      console.log('Returning placeholder image due to buffer conversion error');
+      const placeholderImage = Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+        'base64'
+      );
+      
+      return new NextResponse(placeholderImage, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=86400',
+        },
+      });
     }
     
     // Get content type from response headers
@@ -130,6 +156,20 @@ export async function GET(request: Request, { params }: { params: { path: string
   } catch (err: any) {
     console.error('Proxy error:', err);
     console.error('Error stack:', err.stack);
-    return new NextResponse('Internal server error: ' + (err.message || err), { status: 500 });
+    
+    // Return a placeholder image when there's a general error
+    console.log('Returning placeholder image due to general error');
+    const placeholderImage = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+      'base64'
+    );
+    
+    return new NextResponse(placeholderImage, {
+      status: 200,
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'public, max-age=86400',
+      },
+    });
   }
 }

@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
     const proxiedPath = `/api/media/${bucket}/${filename}`;
     
     // Get the base URL from the request to create an absolute URL
-    // Use the host from headers to ensure we get the correct port
-    const host = request.headers.get('host') || 'localhost:3001';
+    // Use the host from headers, with a more generic fallback
+    const host = request.headers.get('host') || 'localhost:3000';
     const protocol = request.headers.get('x-forwarded-proto') || 'http';
     const baseUrl = `${protocol}://${host}`;
     const proxiedUrl = `${baseUrl}${proxiedPath}`;
