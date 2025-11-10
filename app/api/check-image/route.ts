@@ -16,31 +16,27 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Check if the specific image file exists
+    // Check if the specific image file exists using Supabase client
     const bucket = 'gallery';
-    const path = 'countries/germany/2025-11-10/1762767272165-1p60c0uhnnw.jpg';
+    const path = 'countries/germany/2025-11-10/1762771365593-looafqzp4w.jpg';
     
-    // Try to get file information directly
-    const { data: fileData, error: fileError } = await supabase.storage.from(bucket).download(path);
+    console.log('Checking if file exists in Supabase:', bucket, path);
     
-    if (fileError) {
-      console.error('Supabase file download error:', fileError);
-      
-      // Try to list files in the directory to see what's there
-      const { data: listData, error: listError } = await supabase.storage.from(bucket).list('countries/germany/2025-11-10/', {
-        limit: 100,
-        offset: 0,
-        sortBy: { column: 'name', order: 'asc' }
-      });
-      
+    // Try to get file information
+    const { data: fileInfo, error: infoError } = await supabase.storage.from(bucket).list('countries/germany/2025-11-10/', {
+      limit: 100,
+      offset: 0,
+      sortBy: { column: 'name', order: 'asc' }
+    });
+    
+    if (infoError) {
+      console.error('Supabase list error:', infoError);
       return NextResponse.json({ 
-        success: false,
-        error: fileError.message,
-        fileList: listData || [],
-        listError: listError?.message || null,
-        bucket,
-        path
+        success: false, 
+        error: infoError.message,
+        operation: 'list'
       }, {
+        status: 500,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, OPTIONS',
@@ -49,13 +45,44 @@ export async function GET(request: NextRequest) {
       });
     }
     
-    // If we get here, the file exists
+    // Check if our specific file is in the list
+    const fileExists = fileInfo?.some(file => file.name === '1762771365593-looafqzp4w.jpg');
+    
+    // Also try to get metadata for the specific file
+    const { data: metaData, error: metaError } = await supabase.storage.from(bucket).list('countries/germany/2025-11-10/', {
+      limit: 100,
+      offset: 0,
+      sortBy: { column: 'name', order: 'asc' },
+      search: '1762771365593-looafqzp4w.jpg'
+    });
+    
+    // Try to download a small portion to verify accessibility
+    let downloadTest = null;
+    let downloadError = null;
+    try {
+      const { data: downloadData, error: downloadErr } = await supabase.storage.from(bucket).download(path);
+      if (downloadErr) {
+        downloadError = downloadErr.message;
+      } else {
+        downloadTest = {
+          size: downloadData?.size || 0,
+          type: downloadData?.type || 'unknown'
+        };
+      }
+    } catch (downloadException: any) {
+      downloadError = downloadException.message || String(downloadException);
+    }
+    
     return NextResponse.json({ 
       success: true,
-      message: 'Image found in Supabase storage',
+      message: 'Image check completed',
+      fileExists,
+      filesInDirectory: fileInfo?.map(f => f.name) || [],
+      specificFileMetadata: metaData,
+      downloadTest,
+      downloadError,
       bucket,
-      path,
-      fileSize: fileData?.size || 0
+      path
     }, {
       headers: {
         'Access-Control-Allow-Origin': '*',
