@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getServerSupabase } from '@/lib/supabase';
 
 // Create a proper 1x1 transparent PNG placeholder
 const createPlaceholderImage = () => {
@@ -72,29 +73,33 @@ export async function GET(request: Request, { params }: { params: { path: string
       });
     }
     
-    // Construct the Supabase Storage URL - Fixed the typo in the domain
-    const supabaseUrl = `https://elipzumpfnzmzifrcnl.supabase.co/storage/v1/object/public/${bucket}/${filePath}`;
-    
-    console.log('Proxying image from Supabase URL:', supabaseUrl);
-    
-    // Fetch the image from Supabase with specific options to handle SSL issues
-    let response;
-    try {
-      console.log('Attempting to fetch from Supabase with options...');
-      response = await fetch(supabaseUrl, {
-        method: 'GET',
+    // Initialize Supabase client
+    const supabase = getServerSupabase();
+    if (!supabase) {
+      console.error('Supabase client not configured');
+      const placeholder = createPlaceholderImage();
+      return new NextResponse(placeholder, {
+        status: 200,
         headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; Next.js Media Proxy; +https://standzon.vercel.app)'
-        }
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=86400',
+          'Access-Control-Allow-Origin': '*',
+          'X-Content-Type-Options': 'nosniff',
+        },
       });
-      console.log('Fetch completed with status:', response.status);
-    } catch (fetchError: any) {
-      console.error('Fetch error when connecting to Supabase:', fetchError);
-      console.error('Error type:', typeof fetchError);
-      console.error('Error keys:', Object.keys(fetchError || {}));
+    }
+    
+    console.log('Fetching image from Supabase using client:', bucket, filePath);
+    
+    // Fetch the image from Supabase using the client (bypasses network restrictions)
+    const { data, error } = await supabase.storage.from(bucket).download(filePath);
+    
+    if (error) {
+      console.error('Supabase client error:', error);
+      console.error('Error message:', error.message);
       
       // Return a proper placeholder image when fetch fails
-      console.log('Returning placeholder image due to fetch error');
+      console.log('Returning placeholder image due to Supabase client error');
       const placeholder = createPlaceholderImage();
       return new NextResponse(placeholder, {
         status: 200,
@@ -107,63 +112,21 @@ export async function GET(request: Request, { params }: { params: { path: string
       });
     }
     
-    console.log('Supabase response status:', response.status);
-    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+    console.log('Successfully fetched image from Supabase, size:', data.size);
     
-    // If the response is not ok, return a placeholder image
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Could not read response body');
-      console.error('Supabase image not found:', supabaseUrl);
-      console.error('Response status:', response.status);
-      console.error('Response text:', errorText);
-      
-      // Return a proper placeholder image when the image is not found
-      console.log('Returning placeholder image due to 404');
-      const placeholder = createPlaceholderImage();
-      return new NextResponse(placeholder, {
-        status: 200,
-        headers: {
-          'Content-Type': 'image/png',
-          'Cache-Control': 'public, max-age=86400',
-          'Access-Control-Allow-Origin': '*',
-          'X-Content-Type-Options': 'nosniff',
-        },
-      });
-    }
+    // Convert Blob to Buffer
+    const arrayBuffer = await data.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
     
-    // Convert ArrayBuffer to Buffer
-    let buffer;
-    try {
-      console.log('Converting response to buffer...');
-      const arrayBuffer = await response.arrayBuffer();
-      buffer = Buffer.from(arrayBuffer);
-      console.log('Buffer conversion completed, size:', buffer.length);
-    } catch (bufferError: any) {
-      console.error('Error converting response to buffer:', bufferError);
-      
-      // Return a proper placeholder image when buffer conversion fails
-      console.log('Returning placeholder image due to buffer conversion error');
-      const placeholder = createPlaceholderImage();
-      return new NextResponse(placeholder, {
-        status: 200,
-        headers: {
-          'Content-Type': 'image/png',
-          'Cache-Control': 'public, max-age=86400',
-          'Access-Control-Allow-Origin': '*',
-          'X-Content-Type-Options': 'nosniff',
-        },
-      });
-    }
-    
-    // Get content type from response headers
-    const contentType = response.headers.get('content-type') || 'application/octet-stream';
+    // Get content type from the blob
+    const contentType = data.type || 'application/octet-stream';
     
     console.log('Content type:', contentType);
     console.log('Content length:', buffer.length);
     
     // Validate that we have actual image data
     if (!buffer || buffer.length === 0) {
-      console.error('Received empty buffer from Supabase');
+      console.error('Received empty buffer from Supabase client');
       const placeholder = createPlaceholderImage();
       return new NextResponse(placeholder, {
         status: 200,
@@ -188,7 +151,7 @@ export async function GET(request: Request, { params }: { params: { path: string
       },
     });
     
-    console.log('Successfully proxied image');
+    console.log('Successfully proxied image using Supabase client');
     return nextResponse;
   } catch (err: any) {
     console.error('Proxy error:', err);
