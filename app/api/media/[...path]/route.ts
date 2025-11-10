@@ -1,5 +1,12 @@
 import { NextResponse } from 'next/server';
 
+// Create a proper 1x1 transparent PNG placeholder
+const createPlaceholderImage = () => {
+  // This is a valid 1x1 transparent PNG
+  const placeholder = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==';
+  return Buffer.from(placeholder, 'base64');
+};
+
 export async function GET(request: Request, { params }: { params: { path: string[] } }) {
   try {
     console.log('=== MEDIA PROXY ROUTE CALLED ===');
@@ -13,7 +20,17 @@ export async function GET(request: Request, { params }: { params: { path: string
     
     if (!path || !path.length) {
       console.error('Proxy error: Path is required');
-      return new NextResponse('Path is required', { status: 400 });
+      // Return a proper placeholder image
+      const placeholder = createPlaceholderImage();
+      return new NextResponse(placeholder, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=86400',
+          'Access-Control-Allow-Origin': '*',
+          'X-Content-Type-Options': 'nosniff',
+        },
+      });
     }
 
     // Convert path array to string
@@ -42,7 +59,17 @@ export async function GET(request: Request, { params }: { params: { path: string
     // If filePath is empty, it means the path was just the bucket name
     if (!filePath) {
       console.error('Proxy error: File path is required');
-      return new NextResponse('File path is required', { status: 400 });
+      // Return a proper placeholder image
+      const placeholder = createPlaceholderImage();
+      return new NextResponse(placeholder, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=86400',
+          'Access-Control-Allow-Origin': '*',
+          'X-Content-Type-Options': 'nosniff',
+        },
+      });
     }
     
     // Construct the Supabase Storage URL - Fixed the typo in the domain
@@ -57,7 +84,7 @@ export async function GET(request: Request, { params }: { params: { path: string
       response = await fetch(supabaseUrl, {
         method: 'GET',
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+          'User-Agent': 'Mozilla/5.0 (compatible; Next.js Media Proxy; +https://standzon.vercel.app)'
         }
       });
       console.log('Fetch completed with status:', response.status);
@@ -66,18 +93,16 @@ export async function GET(request: Request, { params }: { params: { path: string
       console.error('Error type:', typeof fetchError);
       console.error('Error keys:', Object.keys(fetchError || {}));
       
-      // Return a placeholder image when fetch fails
+      // Return a proper placeholder image when fetch fails
       console.log('Returning placeholder image due to fetch error');
-      const placeholderImage = Buffer.from(
-        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
-        'base64'
-      );
-      
-      return new NextResponse(placeholderImage, {
+      const placeholder = createPlaceholderImage();
+      return new NextResponse(placeholder, {
         status: 200,
         headers: {
           'Content-Type': 'image/png',
           'Cache-Control': 'public, max-age=86400',
+          'Access-Control-Allow-Origin': '*',
+          'X-Content-Type-Options': 'nosniff',
         },
       });
     }
@@ -92,18 +117,16 @@ export async function GET(request: Request, { params }: { params: { path: string
       console.error('Response status:', response.status);
       console.error('Response text:', errorText);
       
-      // Return a placeholder image when the image is not found
+      // Return a proper placeholder image when the image is not found
       console.log('Returning placeholder image due to 404');
-      const placeholderImage = Buffer.from(
-        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
-        'base64'
-      );
-      
-      return new NextResponse(placeholderImage, {
+      const placeholder = createPlaceholderImage();
+      return new NextResponse(placeholder, {
         status: 200,
         headers: {
           'Content-Type': 'image/png',
           'Cache-Control': 'public, max-age=86400',
+          'Access-Control-Allow-Origin': '*',
+          'X-Content-Type-Options': 'nosniff',
         },
       });
     }
@@ -118,18 +141,16 @@ export async function GET(request: Request, { params }: { params: { path: string
     } catch (bufferError: any) {
       console.error('Error converting response to buffer:', bufferError);
       
-      // Return a placeholder image when buffer conversion fails
+      // Return a proper placeholder image when buffer conversion fails
       console.log('Returning placeholder image due to buffer conversion error');
-      const placeholderImage = Buffer.from(
-        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
-        'base64'
-      );
-      
-      return new NextResponse(placeholderImage, {
+      const placeholder = createPlaceholderImage();
+      return new NextResponse(placeholder, {
         status: 200,
         headers: {
           'Content-Type': 'image/png',
           'Cache-Control': 'public, max-age=86400',
+          'Access-Control-Allow-Origin': '*',
+          'X-Content-Type-Options': 'nosniff',
         },
       });
     }
@@ -140,6 +161,21 @@ export async function GET(request: Request, { params }: { params: { path: string
     console.log('Content type:', contentType);
     console.log('Content length:', buffer.length);
     
+    // Validate that we have actual image data
+    if (!buffer || buffer.length === 0) {
+      console.error('Received empty buffer from Supabase');
+      const placeholder = createPlaceholderImage();
+      return new NextResponse(placeholder, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=86400',
+          'Access-Control-Allow-Origin': '*',
+          'X-Content-Type-Options': 'nosniff',
+        },
+      });
+    }
+    
     // Create response with proper headers
     const nextResponse = new NextResponse(buffer, {
       status: 200,
@@ -147,7 +183,8 @@ export async function GET(request: Request, { params }: { params: { path: string
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=86400',
         'Access-Control-Allow-Origin': '*',
-        'X-Content-Type-Options': 'nosniff'
+        'X-Content-Type-Options': 'nosniff',
+        'Accept-Ranges': 'bytes',
       },
     });
     
@@ -157,18 +194,16 @@ export async function GET(request: Request, { params }: { params: { path: string
     console.error('Proxy error:', err);
     console.error('Error stack:', err.stack);
     
-    // Return a placeholder image when there's a general error
+    // Return a proper placeholder image when there's a general error
     console.log('Returning placeholder image due to general error');
-    const placeholderImage = Buffer.from(
-      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
-      'base64'
-    );
-    
-    return new NextResponse(placeholderImage, {
+    const placeholder = createPlaceholderImage();
+    return new NextResponse(placeholder, {
       status: 200,
       headers: {
         'Content-Type': 'image/png',
         'Cache-Control': 'public, max-age=86400',
+        'Access-Control-Allow-Origin': '*',
+        'X-Content-Type-Options': 'nosniff',
       },
     });
   }
