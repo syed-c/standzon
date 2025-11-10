@@ -2,11 +2,14 @@
 
 import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { convertToProxyUrl } from '@/lib/utils/imageProxyUtils';
 
 export default function CountryGallery({ images }: { images: string[] }) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   
-  const gallery = Array.isArray(images) && images.length > 0 ? images : [
+  // Convert all image URLs to proxied URLs if they're Supabase storage URLs
+  // Let the utility function handle the base URL automatically
+  const gallery = (Array.isArray(images) && images.length > 0 ? images : [
     'https://images.unsplash.com/photo-1515165562835-c3b8c93deaab?q=80&w=1600&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1487017159836-4e23ece2e4cf?q=80&w=1600&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1600&auto=format&fit=crop',
@@ -19,7 +22,7 @@ export default function CountryGallery({ images }: { images: string[] }) {
     'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1600&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?q=80&w=1600&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?q=80&w=1600&auto=format&fit=crop'
-  ];
+  ]).map(url => convertToProxyUrl(url));
 
   const openModal = (index: number) => {
     setSelectedImage(index);
@@ -135,5 +138,3 @@ export default function CountryGallery({ images }: { images: string[] }) {
     </>
   );
 }
-
-

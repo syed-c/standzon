@@ -51,8 +51,9 @@ export async function POST(request: NextRequest) {
     const filename = `${folder}/${timestamp}-${Math.random().toString(36).substring(2, 15)}.${fileExtension}`;
 
     // Upload to Supabase Storage
+    const bucket = 'portfolio-images';
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('portfolio-images')
+      .from(bucket)
       .upload(filename, file, {
         cacheControl: '3600',
         upsert: false
@@ -68,17 +69,30 @@ export async function POST(request: NextRequest) {
 
     // Get public URL
     const { data: urlData } = supabase.storage
-      .from('portfolio-images')
+      .from(bucket)
       .getPublicUrl(filename);
 
     const publicUrl = urlData.publicUrl;
 
+    // Create proxied URL using our custom domain
+    // The proxy expects the full path including the bucket name
+    const proxiedPath = `/api/media/${bucket}/${filename}`;
+    
+    // Get the base URL from the request to create an absolute URL
+    // Use the host from headers to ensure we get the correct port
+    const host = request.headers.get('host') || 'localhost:3001';
+    const protocol = request.headers.get('x-forwarded-proto') || 'http';
+    const baseUrl = `${protocol}://${host}`;
+    const proxiedUrl = `${baseUrl}${proxiedPath}`;
+
     console.log('✅ Image uploaded to Supabase successfully:', publicUrl);
+    console.log('Generated proxied URL:', proxiedUrl);
 
     return NextResponse.json({
       success: true,
       data: {
-        url: publicUrl,
+        url: proxiedUrl, // Return the absolute proxied URL
+        directUrl: publicUrl, // Also include the direct URL for reference
         filename: filename,
         size: file.size,
         type: file.type
