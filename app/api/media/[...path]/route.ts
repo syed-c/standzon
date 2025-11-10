@@ -12,7 +12,7 @@ export async function GET(request: Request, { params }: { params: { path: string
   try {
     console.log('=== MEDIA PROXY ROUTE CALLED ===');
     console.log('Request URL:', request.url);
-    console.log('Params:', params);
+    console.log('Full params:', params);
     console.log('Environment:', process.env.NODE_ENV);
     
     const { path } = params;
@@ -51,11 +51,13 @@ export async function GET(request: Request, { params }: { params: { path: string
       bucket = path[0];
       filePath = path.slice(1).join('/');
       console.log('Using bucket from path:', bucket);
+      console.log('Remaining file path:', filePath);
     } else {
       console.log('Using default gallery bucket');
     }
     
-    console.log('File path:', filePath);
+    console.log('Final bucket:', bucket);
+    console.log('Final file path:', filePath);
     
     // If filePath is empty, it means the path was just the bucket name
     if (!filePath) {
@@ -97,6 +99,7 @@ export async function GET(request: Request, { params }: { params: { path: string
     if (error) {
       console.error('Supabase client error:', error);
       console.error('Error message:', error.message);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       
       // Return a proper placeholder image when fetch fails
       console.log('Returning placeholder image due to Supabase client error');
@@ -156,6 +159,7 @@ export async function GET(request: Request, { params }: { params: { path: string
   } catch (err: any) {
     console.error('Proxy error:', err);
     console.error('Error stack:', err.stack);
+    console.error('Error details:', JSON.stringify(err, null, 2));
     
     // Return a proper placeholder image when there's a general error
     console.log('Returning placeholder image due to general error');
