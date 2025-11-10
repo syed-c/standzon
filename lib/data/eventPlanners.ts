@@ -309,7 +309,7 @@ export const eventPlanners: EventPlanner[] = [
       coordinates: { lat: 51.5118, lng: -0.1226 }
     },
     serviceLocations: [
-      { country: 'United Kingdom', cities: ['London', 'Manchester', 'Edinburgh', 'Birmingham'], isFullCountryCoverage: true }
+      { country: 'United Kingdom', cities: ['London', 'Manchester', 'Birmingham'], isFullCountryCoverage: true }
     ],
     specializations: [
       eventPlannerSpecializations[0], // Corporate
@@ -910,7 +910,7 @@ export const eventPlanners: EventPlanner[] = [
       coordinates: { lat: 48.8698, lng: 2.3076 }
     },
     serviceLocations: [
-      { country: 'France', cities: ['Paris', 'Cannes', 'Lyon', 'Nice', 'Bordeaux'], isFullCountryCoverage: false },
+      { country: 'France', cities: ['Paris', 'Cannes', 'Lyon', 'Bordeaux'], isFullCountryCoverage: false },
       { country: 'Monaco', cities: ['Monaco'], isFullCountryCoverage: true }
     ],
     specializations: [

@@ -30,6 +30,7 @@ const COUNTRY_DATA = {
   'united-arab-emirates': { name: 'United Arab Emirates', flag: '🇦🇪', code: 'AE' },
   'saudi-arabia': { name: 'Saudi Arabia', flag: '🇸🇦', code: 'SA' },
   'oman': { name: 'Oman', flag: '🇴🇲', code: 'OM' },
+  'bahrain': { name: 'Bahrain', flag: '🇧🇭', code: 'BH' },
   'egypt': { name: 'Egypt', flag: '🇪🇬', code: 'EG' },
   'japan': { name: 'Japan', flag: '🇯🇵', code: 'JP' },
   'south-korea': { name: 'South Korea', flag: '🇰🇷', code: 'KR' },

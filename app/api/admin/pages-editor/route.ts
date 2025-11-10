@@ -214,6 +214,9 @@ const STATIC_PAGES: PageItem[] = [
   // City pages for Austria
   { title: 'Exhibition Stands in Vienna, Austria', path: '/exhibition-stands/austria/vienna', type: 'city' },
   
+  // City pages for Czech Republic
+  { title: 'Exhibition Stands in Prague, Czech Republic', path: '/exhibition-stands/czech-republic/prague', type: 'city' },
+  
   // City pages for Australia
   { title: 'Exhibition Stands in Sydney, Australia', path: '/exhibition-stands/australia/sydney', type: 'city' },
   { title: 'Exhibition Stands in Melbourne, Australia', path: '/exhibition-stands/australia/melbourne', type: 'city' },

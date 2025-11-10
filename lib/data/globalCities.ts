@@ -245,7 +245,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'poland',
     capital: 'Warsaw',
     currency: 'PLN',
-    majorCities: ['Warsaw', 'Kraków', 'Poznań', 'Wrocław'],
+    majorCities: ['Kraków', 'Wrocław'],
     totalVenues: 18,
     annualEvents: 280,
     keyIndustries: ['Manufacturing', 'Technology', 'Agriculture', 'Mining', 'Automotive'],
@@ -325,7 +325,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'brazil',
     capital: 'Brasília',
     currency: 'BRL',
-    majorCities: ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Curitiba', 'Porto Alegre'],
+    majorCities: ['São Paulo', 'Rio de Janeiro', 'Curitiba', 'Porto Alegre'],
     totalVenues: 45,
     annualEvents: 650,
     keyIndustries: ['Agriculture', 'Mining', 'Manufacturing', 'Oil & Gas', 'Technology'],
@@ -363,7 +363,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'colombia',
     capital: 'Bogotá',
     currency: 'COP',
-    majorCities: ['Bogotá', 'Medellín'],
+    majorCities: ['Bogotá'],
     totalVenues: 15,
     annualEvents: 220,
     keyIndustries: ['Coffee', 'Oil & Gas', 'Mining', 'Textiles', 'Tourism'],
@@ -517,7 +517,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'south-korea',
     capital: 'Seoul',
     currency: 'KRW',
-    majorCities: ['Seoul', 'Busan', 'Incheon'],
+    majorCities: ['Seoul', 'Busan'],
     totalVenues: 35,
     annualEvents: 580,
     keyIndustries: ['Technology', 'Automotive', 'Electronics', 'Gaming', 'Cosmetics'],
@@ -536,7 +536,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'turkey',
     capital: 'Ankara',
     currency: 'TRY',
-    majorCities: ['Istanbul', 'Ankara', 'Izmir', 'Antalya'],
+    majorCities: ['Istanbul', 'Izmir', 'Antalya'],
     totalVenues: 28,
     annualEvents: 420,
     keyIndustries: ['Textiles', 'Automotive', 'Tourism', 'Food Processing', 'Construction'],
@@ -593,7 +593,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'china',
     capital: 'Beijing',
     currency: 'CNY',
-    majorCities: ['Shanghai', 'Beijing', 'Shenzhen', 'Guangzhou', 'Chengdu', 'Hangzhou'],
+    majorCities: ['Shanghai', 'Beijing', 'Guangzhou', 'Hangzhou'],
     totalVenues: 220,
     annualEvents: 3800,
     keyIndustries: ['Manufacturing', 'Technology', 'Automotive', 'Electronics', 'Textiles'],
@@ -964,7 +964,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     exhibitionRanking: 18,
     seoData: {
       metaTitle: 'Exhibition Stand Builders in Austria | Vienna Trade Shows',
-      metaDescription: 'Expert exhibition stand builders in Austria. Professional displays for Vienna exhibitions.',
+      metaDescription: 'Expert exhibition stand builders in Austria. Professional contractors for all major Vienna trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.',
       keywords: ['Austria exhibitions', 'Vienna trade shows', 'Austrian displays', 'Central European exhibitions']
     }
   },
@@ -983,7 +983,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     exhibitionRanking: 23,
     seoData: {
       metaTitle: 'Exhibition Stand Builders in Czech Republic | Prague Trade Shows',
-      metaDescription: 'Expert exhibition stand builders in Czech Republic. Professional displays for Prague exhibitions.',
+      metaDescription: 'Expert exhibition stand builders in Czech Republic. Professional contractors for all major Prague trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.',
       keywords: ['Czech Republic exhibitions', 'Prague trade shows', 'Czech displays', 'Central European exhibitions']
     }
   },

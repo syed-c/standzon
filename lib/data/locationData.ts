@@ -92,7 +92,7 @@ export const locationData: CountryData[] = [
       { cityName: "Dallas", citySlug: "dallas", state: "Texas" },
       { cityName: "Denver", citySlug: "denver", state: "Colorado" },
       { cityName: "Detroit", citySlug: "detroit", state: "Michigan" },
-      { cityName: "Hollywood", citySlug: "hollywood", state: "California" },
+
       { cityName: "Long Beach", citySlug: "long-beach", state: "California" },
       { cityName: "Louisville", citySlug: "louisville", state: "Kentucky" },
       { cityName: "New York", citySlug: "new-york", state: "New York" },
@@ -121,7 +121,7 @@ export const locationData: CountryData[] = [
     cities: [
       { cityName: "Bangalore", citySlug: "bangalore", state: "Karnataka" },
       { cityName: "Mumbai", citySlug: "mumbai", state: "Maharashtra" },
-      { cityName: "New Delhi", citySlug: "new-delhi", state: "Delhi" },
+
       { cityName: "Hyderabad", citySlug: "hyderabad", state: "Telangana" },
       { cityName: "Kolkata", citySlug: "kolkata", state: "West Bengal" }
     ],
@@ -138,7 +138,7 @@ export const locationData: CountryData[] = [
       { cityName: "London", citySlug: "london" },
       { cityName: "Birmingham", citySlug: "birmingham" },
       { cityName: "Manchester", citySlug: "manchester" },
-      { cityName: "Glasgow", citySlug: "glasgow" }
+
     ],
   },
   {
@@ -470,7 +470,7 @@ export const locationData: CountryData[] = [
     timezone: "Asia/Manila",
     language: "Filipino",
     cities: [
-      { cityName: "Manila", citySlug: "manila" }
+
     ],
   },
   {
@@ -542,9 +542,7 @@ export const locationData: CountryData[] = [
     timezone: "Europe/Warsaw",
     language: "Polish",
     cities: [
-      { cityName: "Warsaw", citySlug: "warsaw" },
-      { cityName: "Kielce", citySlug: "kielce" },
-      { cityName: "Poznan", citySlug: "poznan" }
+
     ],
   },
   {
@@ -569,7 +567,7 @@ export const locationData: CountryData[] = [
     language: "Czech",
     cities: [
       { cityName: "Prague", citySlug: "prague" }
-    ],
+    ]
   },
   {
     countryName: "Hungary",
@@ -616,8 +614,7 @@ export const locationData: CountryData[] = [
     timezone: "America/Sao_Paulo",
     language: "Portuguese",
     cities: [
-      { cityName: "São Paulo", citySlug: "sao-paulo" },
-      { cityName: "Rio de Janeiro", citySlug: "rio-de-janeiro" }
+
     ],
   },
   {
@@ -629,7 +626,7 @@ export const locationData: CountryData[] = [
     timezone: "America/Mexico_City",
     language: "Spanish",
     cities: [
-      { cityName: "Mexico City", citySlug: "mexico-city" }
+
     ],
   }
     ];

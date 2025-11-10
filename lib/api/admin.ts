@@ -109,7 +109,7 @@ export const adminAPI = {
   async reseedDatabase(): Promise<{ success: boolean; message: string }> {
     try {
       // Use unified platform reseeding
-      await unifiedPlatformAPI.reloadFromFiles();
+      unifiedPlatformAPI.clearAll();
 
       return {
         success: true,
@@ -210,7 +210,7 @@ export const adminAPI = {
     builderData: any
   ): Promise<{ success: boolean; data?: any; error?: string }> {
     try {
-      const result = unifiedPlatformAPI.addBuilder(builderData);
+      const result = await unifiedPlatformAPI.addBuilder(builderData);
 
       if (result.success) {
         return {
@@ -313,16 +313,28 @@ export const adminAPI = {
     builders: any[]
   ): Promise<{ success: boolean; data?: any; error?: string }> => {
     try {
-      const result = await unifiedPlatformAPI.addBuilders(builders);
+      const results = [];
+      let created = 0;
+      let duplicates = 0;
+
+      for (const builder of builders) {
+        const result = await unifiedPlatformAPI.addBuilder(builder);
+        results.push(result);
+        
+        if (result.success) {
+          created++;
+        } else if (result.error && result.error.includes("already exists")) {
+          duplicates++;
+        }
+      }
 
       return {
-        success: result.success,
+        success: true,
         data: {
-          created: result.created,
-          duplicates: result.duplicates,
-          builders: result.data,
+          created,
+          duplicates,
+          builders: results.filter(r => r.success).map(r => r.data),
         },
-        error: result.error,
       };
     } catch (error) {
       console.error("Failed to bulk create builders:", error);
@@ -697,7 +709,7 @@ export const adminAPI = {
           continent: "Asia",
         },
         { country: "Qatar", code: "QA", cities: ["Doha"], continent: "Asia" },
-        { country: "Oman", code: "OM", cities: ["Muscat"], continent: "Asia" },
+        { country: "Oman", code: "OM", cities: ["Mascat"], continent: "Asia" },
         {
           country: "Saudi Arabia",
           code: "SA",
@@ -1004,23 +1016,27 @@ export const adminAPI = {
     source: "admin" | "website" = "admin"
   ): Promise<any> {
     try {
-      const result = await unifiedPlatformAPI.addBuilders(builders, source);
+      const results = [];
+      let created = 0;
+      let duplicates = 0;
 
-      console.log("🔄 Bulk add builders result:", result);
-
-      if (result.success) {
-        return {
-          success: true,
-          created: result.created,
-          duplicates: result.duplicates,
-          data: result.data,
-        };
-      } else {
-        return {
-          success: false,
-          error: result.error || "Failed to add builders",
-        };
+      for (const builder of builders) {
+        const result = await unifiedPlatformAPI.addBuilder(builder, source);
+        results.push(result);
+        
+        if (result.success) {
+          created++;
+        } else if (result.error && result.error.includes("already exists")) {
+          duplicates++;
+        }
       }
+
+      return {
+        success: true,
+        created,
+        duplicates,
+        data: results.filter(r => r.success).map(r => r.data),
+      };
     } catch (error) {
       console.error("❌ Error in bulk add builders:", error);
       return {

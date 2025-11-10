@@ -336,34 +336,6 @@ function getAdditionalMajorCities(): ExpandedCity[] {
       averageStandCost: 440
     },
     {
-      id: 'warsaw-pl',
-      name: 'Warsaw',
-      country: 'Poland',
-      countryCode: 'PL',
-      continent: 'Europe',
-      region: 'Central Europe',
-      population: '3.1M',
-      annualEvents: 280,
-      keyIndustries: ['Finance', 'Technology', 'Manufacturing'],
-      isCapital: true,
-      builderCount: 65,
-      averageStandCost: 320
-    },
-    {
-      id: 'prague-cz',
-      name: 'Prague',
-      country: 'Czech Republic',
-      countryCode: 'CZ',
-      continent: 'Europe',
-      region: 'Central Europe',
-      population: '2.1M',
-      annualEvents: 200,
-      keyIndustries: ['Tourism', 'Technology', 'Manufacturing'],
-      isCapital: true,
-      builderCount: 45,
-      averageStandCost: 300
-    },
-    {
       id: 'budapest-hu',
       name: 'Budapest',
       country: 'Hungary',
@@ -462,19 +434,7 @@ function getAdditionalMajorCities(): ExpandedCity[] {
       builderCount: 65,
       averageStandCost: 200
     },
-    {
-      id: 'ho-chi-minh-vn',
-      name: 'Ho Chi Minh City',
-      country: 'Vietnam',
-      countryCode: 'VN',
-      continent: 'Asia',
-      region: 'Southeast Asia',
-      population: '9.3M',
-      annualEvents: 240,
-      keyIndustries: ['Manufacturing', 'Textiles', 'Electronics'],
-      builderCount: 55,
-      averageStandCost: 180
-    },
+
 
     // Additional Middle East cities
     {
@@ -503,20 +463,7 @@ function getAdditionalMajorCities(): ExpandedCity[] {
       builderCount: 95,
       averageStandCost: 280
     },
-    {
-      id: 'ankara-tr',
-      name: 'Ankara',
-      country: 'Turkey',
-      countryCode: 'TR',
-      continent: 'Asia',
-      region: 'West Asia',
-      population: '5.7M',
-      annualEvents: 140,
-      keyIndustries: ['Government', 'Defense', 'Agriculture'],
-      isCapital: true,
-      builderCount: 35,
-      averageStandCost: 260
-    },
+
 
     // Additional African cities
     {

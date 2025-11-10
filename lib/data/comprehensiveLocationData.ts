@@ -88,7 +88,7 @@ export const comprehensiveLocationData: CountryData[] = [
     cities: [
       { cityName: "Bangalore", citySlug: "bangalore", state: "Karnataka", latitude: 12.9716, longitude: 77.5946, population: 8443675 },
       { cityName: "Mumbai", citySlug: "mumbai", state: "Maharashtra", latitude: 19.0760, longitude: 72.8777, population: 12442373 },
-      { cityName: "New Delhi", citySlug: "new-delhi", state: "Delhi", latitude: 28.6139, longitude: 77.2090, population: 32971776 },
+
       { cityName: "Hyderabad", citySlug: "hyderabad", state: "Telangana", latitude: 17.3850, longitude: 78.4867, population: 6809970 },
       { cityName: "Kolkata", citySlug: "kolkata", state: "West Bengal", latitude: 22.5726, longitude: 88.3639, population: 14974073 }
     ]
@@ -276,7 +276,7 @@ export const comprehensiveLocationData: CountryData[] = [
     language: "Turkish",
     cities: [
       { cityName: "Istanbul", citySlug: "istanbul", latitude: 41.0082, longitude: 28.9784, population: 15519267 },
-      { cityName: "Ankara", citySlug: "ankara", latitude: 39.9334, longitude: 32.8597, population: 5663322 }
+
     ]
   },
   {
@@ -316,7 +316,7 @@ export const comprehensiveLocationData: CountryData[] = [
       { cityName: "Beijing", citySlug: "beijing", latitude: 39.9042, longitude: 116.4074, population: 21542000 },
       { cityName: "Guangzhou", citySlug: "guangzhou", latitude: 23.1291, longitude: 113.2644, population: 18676605 },
       { cityName: "Shanghai", citySlug: "shanghai", latitude: 31.2304, longitude: 121.4737, population: 24870895 },
-      { cityName: "Shenzhen", citySlug: "shenzhen", latitude: 22.5431, longitude: 114.0579, population: 12356820 }
+
     ]
   },
   {
@@ -449,7 +449,9 @@ export const comprehensiveLocationData: CountryData[] = [
     currency: "EUR",
     timezone: "Europe/Vienna",
     language: "German",
-    cities: []
+    cities: [
+      { cityName: "Vienna", citySlug: "vienna", latitude: 48.2082, longitude: 16.3738, population: 1897491 }
+    ]
   },
   {
     countryName: "Czech Republic",
@@ -459,7 +461,9 @@ export const comprehensiveLocationData: CountryData[] = [
     currency: "CZK",
     timezone: "Europe/Prague",
     language: "Czech",
-    cities: []
+    cities: [
+      { cityName: "Prague", citySlug: "prague", latitude: 50.0755, longitude: 14.4378, population: 1272690 }
+    ]
   },
   {
     countryName: "Poland",
@@ -604,7 +608,7 @@ export const comprehensiveLocationData: CountryData[] = [
       { cityName: "São Paulo", citySlug: "sao-paulo", latitude: -23.5558, longitude: -46.6396, population: 12325232 },
       { cityName: "Rio de Janeiro", citySlug: "rio-de-janeiro", latitude: -22.9068, longitude: -43.1729, population: 6747815 },
       { cityName: "Curitiba", citySlug: "curitiba", latitude: -25.4284, longitude: -49.2733, population: 1948579 },
-      { cityName: "Brasília", citySlug: "brasilia", latitude: -15.7801, longitude: -47.9292, population: 3055548 }
+
     ]
   },
   {
@@ -641,7 +645,7 @@ export const comprehensiveLocationData: CountryData[] = [
     language: "Spanish",
     cities: [
       { cityName: "Bogotá", citySlug: "bogota", latitude: 4.6097, longitude: -74.0818, population: 7412566 },
-      { cityName: "Medellín", citySlug: "medellin", latitude: 6.2442, longitude: -75.5812, population: 2509788 },
+
       { cityName: "Cali", citySlug: "cali", latitude: 3.4372, longitude: -76.5225, population: 2227627 }
     ]
   }
