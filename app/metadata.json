@@ -439,6 +439,11 @@
     "ogImage": "/og-image-bangalore.png"
   },
   "/exhibition-stands/india/mumbai": {
+    "title": "Mumbai Exhibition Stand Builders | Trade Show Contractors",
+    "description": "Expert exhibition stand builders in Mumbai, India. Professional contractors for all major Mumbai trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
+    "keywords": "Mumbai exhibition stands, Mumbai trade show builders, Mumbai contractors, Mumbai exhibition services, India trade shows",
+    "ogImage": "/og-image-mumbai.png"
+  },
   "/exhibition-stands/united-states/tampa": {
     "title": "Tampa Exhibition Stand Builders | Trade Show Contractors",
     "description": "Expert exhibition stand builders in Tampa, United States. Professional contractors for all major Tampa trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
@@ -452,10 +457,10 @@
     "ogImage": "/og-image-tallahassee.png"
   },
   "/exhibition-stands/united-states/washington-dc": {
-    "title": "Mumbai Exhibition Stand Builders | Trade Show Contractors",
-    "description": "Expert exhibition stand builders in Mumbai, India. Professional contractors for all major Mumbai trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
-    "keywords": "Mumbai exhibition stands, Mumbai trade show builders, Mumbai contractors, Mumbai exhibition services, India trade shows",
-    "ogImage": "/og-image-mumbai.png"
+    "title": "Washington D.C. Exhibition Stand Builders | Trade Show Contractors",
+    "description": "Expert exhibition stand builders in Washington D.C., United States. Professional contractors for all major Washington D.C. trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
+    "keywords": "Washington D.C. exhibition stands, Washington D.C. trade show builders, Washington D.C. contractors, Washington D.C. exhibition services, United States trade shows",
+    "ogImage": "/og-image-washington-dc.png"
   },
   "/exhibition-stands/india/new-delhi": {
     "title": "New Delhi Exhibition Stand Builders | Trade Show Contractors",
@@ -1117,12 +1122,6 @@
     "keywords": "Manila exhibition stands, Manila trade show builders, Manila contractors, Manila exhibition services, Philippines trade shows",
     "ogImage": "/og-image-manila.png"
   },
-  "/exhibition-stands/australia/melbourne": {
-    "title": "Melbourne Exhibition Stand Builders | Trade Show Contractors",
-    "description": "Expert exhibition stand builders in Melbourne, Australia. Professional contractors for all major Melbourne trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
-    "keywords": "Melbourne exhibition stands, Melbourne trade show builders, Melbourne contractors, Melbourne exhibition services, Australia trade shows",
-    "ogImage": "/og-image-melbourne.png"
-  },
   "/exhibition-stands/mexico/mexico-city": {
     "title": "Mexico City Exhibition Stand Builders | Trade Show Contractors",
     "description": "Expert exhibition stand builders in Mexico City, Mexico. Professional contractors for all major Mexico City trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
@@ -1134,24 +1133,6 @@
     "description": "Expert exhibition stand builders in Tel Aviv, Israel. Professional contractors for all major Tel Aviv trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
     "keywords": "Tel Aviv exhibition stands, Tel Aviv trade show builders, Tel Aviv contractors, Tel Aviv exhibition services, Israel trade shows",
     "ogImage": "/og-image-tel-aviv.png"
-  },
-  "/exhibition-stands/poland/warsaw": {
-    "title": "Warsaw Exhibition Stand Builders | Trade Show Contractors",
-    "description": "Expert exhibition stand builders in Warsaw, Poland. Professional contractors for all major Warsaw trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
-    "keywords": "Warsaw exhibition stands, Warsaw trade show builders, Warsaw contractors, Warsaw exhibition services, Poland trade shows",
-    "ogImage": "/og-image-warsaw.png"
-  },
-  "/exhibition-stands/switzerland/zurich": {
-    "title": "Zurich Exhibition Stand Builders | Trade Show Contractors",
-    "description": "Expert exhibition stand builders in Zurich, Switzerland. Professional contractors for all major Zurich trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
-    "keywords": "Zurich exhibition stands, Zurich trade show builders, Zurich contractors, Zurich exhibition services, Switzerland trade shows",
-    "ogImage": "/og-image-zurich.png"
-  },
-  "/exhibition-stands/united-kingdom/birmingham": {
-    "title": "Birmingham Exhibition Stand Builders | Trade Show Contractors",
-    "description": "Expert exhibition stand builders in Birmingham, United Kingdom. Professional contractors for all major Birmingham trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
-    "keywords": "Birmingham exhibition stands, Birmingham trade show builders, Birmingham contractors, Birmingham exhibition services, United Kingdom trade shows",
-    "ogImage": "/og-image-birmingham.png"
   },
   "/exhibition-stands/kenya/nairobi": {
     "title": "Nairobi Exhibition Stand Builders | Trade Show Contractors",
@@ -1170,12 +1151,6 @@
     "description": "Expert exhibition stand builders in Osaka, Japan. Professional contractors for all major Osaka trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
     "keywords": "Osaka exhibition stands, Osaka trade show builders, Osaka contractors, Osaka exhibition services, Japan trade shows",
     "ogImage": "/og-image-osaka.png"
-  },
-  "/exhibition-stands/czech-republic/prague": {
-    "title": "Prague Exhibition Stand Builders | Trade Show Contractors",
-    "description": "Expert exhibition stand builders in Prague, Czech Republic. Professional contractors for all major Prague trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
-    "keywords": "Prague exhibition stands, Prague trade show builders, Prague contractors, Prague exhibition services, Czech Republic trade shows",
-    "ogImage": "/og-image-prague.png"
   },
   "/exhibition-stands/brazil/rio-de-janeiro": {
     "title": "Rio de Janeiro Exhibition Stand Builders | Trade Show Contractors",
@@ -1219,12 +1194,7 @@
     "keywords": "Stockholm exhibition stands, Stockholm trade show builders, Stockholm contractors, Stockholm exhibition services, Sweden trade shows",
     "ogImage": "/og-image-stockholm.png"
   },
-  "/exhibition-stands/australia/sydney": {
-    "title": "Sydney Exhibition Stand Builders | Trade Show Contractors",
-    "description": "Expert exhibition stand builders in Sydney, Australia. Professional contractors for all major Sydney trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
-    "keywords": "Sydney exhibition stands, Sydney trade show builders, Sydney contractors, Sydney exhibition services, Australia trade shows",
-    "ogImage": "/og-image-sydney.png"
-  },
+ 
   "/exhibition-stands/taiwan/taipei": {
     "title": "Taipei Exhibition Stand Builders | Trade Show Contractors",
     "description": "Expert exhibition stand builders in Taipei, Taiwan. Professional contractors for all major Taipei trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
@@ -1260,24 +1230,6 @@
     "description": "Expert exhibition stand builders in Prague, Czech Republic. Professional contractors for all major Prague trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
     "keywords": "Prague exhibition stands, Prague trade show builders, Prague contractors, Prague exhibition services, Czech Republic trade shows",
     "ogImage": "/og-image-prague.png"
-  },
-  "/exhibition-stands/poland/warsaw": {
-    "title": "Warsaw Exhibition Stand Builders | Trade Show Contractors",
-    "description": "Expert exhibition stand builders in Warsaw, Poland. Professional contractors for all major Warsaw trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
-    "keywords": "Warsaw exhibition stands, Warsaw trade show builders, Warsaw contractors, Warsaw exhibition services, Poland trade shows",
-    "ogImage": "/og-image-warsaw.png"
-  },
-  "/exhibition-stands/switzerland/zurich": {
-    "title": "Zurich Exhibition Stand Builders | Trade Show Contractors",
-    "description": "Expert exhibition stand builders in Zurich, Switzerland. Professional contractors for all major Zurich trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
-    "keywords": "Zurich exhibition stands, Zurich trade show builders, Zurich contractors, Zurich exhibition services, Switzerland trade shows",
-    "ogImage": "/og-image-zurich.png"
-  },
-  "/exhibition-stands/united-kingdom/birmingham": {
-    "title": "Birmingham Exhibition Stand Builders | Trade Show Contractors",
-    "description": "Expert exhibition stand builders in Birmingham, United Kingdom. Professional contractors for all major Birmingham trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.",
-    "keywords": "Birmingham exhibition stands, Birmingham trade show builders, Birmingham contractors, Birmingham exhibition services, United Kingdom trade shows",
-    "ogImage": "/og-image-birmingham.png"
   },
   "/booth-rental": {
     "title": "Booth Rental Services | Exhibition Stand Rental | StandsZone",
