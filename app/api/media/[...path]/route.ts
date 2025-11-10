@@ -12,12 +12,12 @@ export async function GET(request: Request, { params }: { params: { path: string
   try {
     console.log('=== MEDIA PROXY ROUTE CALLED ===');
     console.log('Request URL:', request.url);
-    console.log('Full params:', params);
+    console.log('Full params:', JSON.stringify(params));
     console.log('Environment:', process.env.NODE_ENV);
     
     const { path } = params;
     
-    console.log('Proxy route called with path:', path);
+    console.log('Proxy route called with path:', JSON.stringify(path));
     
     if (!path || !path.length) {
       console.error('Proxy error: Path is required');
@@ -116,10 +116,14 @@ export async function GET(request: Request, { params }: { params: { path: string
     }
     
     console.log('Successfully fetched image from Supabase, size:', data.size);
+    console.log('Data type:', data.type);
     
-    // Convert Blob to Buffer
+    // Convert Blob to Buffer - THIS IS THE CRITICAL PART
+    console.log('Converting Blob to Buffer...');
     const arrayBuffer = await data.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+    
+    console.log('Buffer conversion completed, size:', buffer.length);
     
     // Get content type from the blob
     const contentType = data.type || 'application/octet-stream';
@@ -142,11 +146,28 @@ export async function GET(request: Request, { params }: { params: { path: string
       });
     }
     
+    // Validate that this looks like a real image
+    if (buffer.length < 10) {
+      console.error('Buffer too small to be a valid image, size:', buffer.length);
+      const placeholder = createPlaceholderImage();
+      return new NextResponse(placeholder, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=86400',
+          'Access-Control-Allow-Origin': '*',
+          'X-Content-Type-Options': 'nosniff',
+        },
+      });
+    }
+    
     // Create response with proper headers
+    console.log('Creating final response with image data...');
     const nextResponse = new NextResponse(buffer, {
       status: 200,
       headers: {
         'Content-Type': contentType,
+        'Content-Length': buffer.length.toString(),
         'Cache-Control': 'public, max-age=86400',
         'Access-Control-Allow-Origin': '*',
         'X-Content-Type-Options': 'nosniff',
