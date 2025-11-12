@@ -174,20 +174,27 @@ handleRefresh:
 
 ## Future Enhancements (Optional)
 
-### Real-Time Updates with Convex (Future)
+### Real-Time Updates with Supabase (Future)
 If you want true real-time updates without manual refresh:
 
 ```typescript
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+// Use Supabase real-time subscriptions instead of Convex
+import { createClient } from '@supabase/supabase-js';
 
-// Replace fetch with Convex query
-const buildersFromConvex = useQuery(api.builders.getAllBuilders, {
-  limit: 500
-});
+// Subscribe to builder changes
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Convex automatically updates when data changes
-// No manual refresh needed!
+const subscription = supabase
+  .from('builder_profiles')
+  .on('*', (payload) => {
+    // Handle real-time updates
+    console.log('Builder updated:', payload);
+    // Update local state with new data
+  })
+  .subscribe();
+
+// Clean up subscription
+// subscription.unsubscribe();
 ```
 
 ### WebSocket Live Updates

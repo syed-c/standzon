@@ -182,6 +182,52 @@ export default async function CountryPage({ params }: { params: { country: strin
   
   const cmsContent = await getCountryPageContent(countrySlug);
   
+  // Fetch builders from Supabase API
+  let builders = [];
+  try {
+    // Use absolute URL for server-side fetch
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const response = await fetch(
+      `${baseUrl}/api/admin/builders?limit=1000&prioritize_real=true`,
+      { cache: "no-store" }
+    );
+    const data = await response.json();
+    
+    if (data.success && data.data && Array.isArray(data.data.builders)) {
+      // Handle country name variations (UAE vs United Arab Emirates)
+      const countryVariations = [countryInfo.name];
+      if (countryInfo.name === "United Arab Emirates") {
+        countryVariations.push("UAE");
+      } else if (countryInfo.name === "UAE") {
+        countryVariations.push("United Arab Emirates");
+      }
+      
+      // Filter builders for this country (with variations)
+      builders = data.data.builders.filter((builder: any) => {
+        const servesCountry = builder.serviceLocations?.some((loc: any) =>
+          countryVariations.includes(loc.country)
+        );
+        const headquartersMatch = countryVariations.includes(
+          builder.headquarters?.country
+        );
+        
+        return servesCountry || headquartersMatch;
+      });
+      
+      // Deduplicate builders by ID
+      const builderMap = new Map();
+      builders.forEach((builder: any) => {
+        if (!builderMap.has(builder.id)) {
+          builderMap.set(builder.id, builder);
+        }
+      });
+      
+      builders = Array.from(builderMap.values());
+    }
+  } catch (error) {
+    console.error("❌ Error loading builders:", error);
+  }
+  
   const defaultContent = {
     id: `${countrySlug}-main`,
     title: `Exhibition Stand Builders in ${countryInfo.name}`,
@@ -203,7 +249,7 @@ export default async function CountryPage({ params }: { params: { country: strin
         <Navigation />
         <CountryCityPage
         country={countryInfo.name}
-        initialBuilders={[]}
+        initialBuilders={builders}
         initialContent={mergedContent}
         cmsContent={cmsContent}
         />

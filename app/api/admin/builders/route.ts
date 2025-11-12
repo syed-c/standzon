@@ -2,8 +2,6 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
-import { ConvexHttpClient } from "convex/browser";
-import { api } from "@/convex/_generated/api";
 import { adminAPI } from "@/lib/api/admin";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import {
@@ -193,7 +191,7 @@ export async function GET(request: Request) {
       });
     }
 
-    // Try Supabase first for real builders (prioritize Supabase over Convex)
+    // Try Supabase first for real builders (NO MORE CONVEX FALLBACK)
     let buildersSource: any[] = [];
     
     try {
@@ -297,53 +295,11 @@ export async function GET(request: Request) {
       }
     } catch (supabaseErr) {
       if (isVerbose) {
-        console.warn('⚠️ Supabase fetch failed, trying Convex:', supabaseErr);
+        console.warn('⚠️ Supabase fetch failed:', supabaseErr);
       }
     }
 
-    // If Supabase had no data, try Convex as fallback
-    if (buildersSource.length === 0) {
-      try {
-        const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
-        if (convexUrl) {
-          const convex = new ConvexHttpClient(convexUrl);
-          const convexData = await convex.query(api.builders.getAllBuilders, { limit: 10000, offset: 0 });
-          const convexBuilders = Array.isArray(convexData?.builders) ? convexData.builders : [];
-          if (isVerbose) {
-            console.log(`📡 Convex returned ${convexBuilders.length} builders`);
-          }
-          if (convexBuilders.length > 0) {
-            // Map Convex format to unified shape expected by clients of this endpoint
-            buildersSource = convexBuilders.map((b: any) => ({
-              id: b._id,
-              companyName: b.companyName,
-              slug: b.slug || b.companyName?.toLowerCase()?.replace(/[^a-z0-9]/g, "-") || "",
-              rating: b.rating || 0,
-              reviewCount: b.reviewCount || 0,
-              verified: !!b.verified,
-              claimed: !!b.claimed,
-              premiumMember: !!b.premiumMember,
-              projectsCompleted: b.projectsCompleted || 0,
-              responseTime: b.responseTime || "Within 24 hours",
-              languages: b.languages || ["English"],
-              createdAt: b.createdAt,
-              source: b.source,
-              gmbImported: !!(b.gmbImported || b.importedFromGMB || b.source === "GMB_API"),
-              headquarters: {
-                city: b.headquartersCity || "Unknown",
-                country: b.headquartersCountry || "Unknown",
-                countryCode: b.headquartersCountryCode || "XX",
-                address: b.headquartersAddress || "",
-              },
-            }));
-          }
-        }
-      } catch (e) {
-        if (isVerbose) console.warn("⚠️ Convex builders fetch failed, trying persistent storage", e);
-      }
-    }
-
-    // If both Supabase and Convex had no data, try persistent storage
+    // If Supabase had no data, try persistent storage ONLY (NO MORE CONVEX FALLBACK)
     if (buildersSource.length === 0) {
       try {
         const persistentBuilders = await builderAPI.getAllBuilders();
@@ -359,7 +315,7 @@ export async function GET(request: Request) {
       }
     }
 
-    // NO FALLBACK TO STATIC DATA - Only return real builders from Supabase/Convex/persistence
+    // NO FALLBACK TO STATIC DATA - Only return real builders from Supabase/persistence
     if (buildersSource.length === 0) {
       if (isVerbose) {
         console.log(`📂 No real builders found - returning empty array (no static fallback)`);

@@ -308,6 +308,57 @@ export default async function CityPage({ params }: CityPageProps) {
 
   // Try to get CMS content
   const cmsContent = await getCityPageContent(countrySlug, citySlug);
+  
+  // Fetch builders from Supabase API
+  let builders = [];
+  try {
+    // Use absolute URL for server-side fetch
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const response = await fetch(
+      `${baseUrl}/api/admin/builders?limit=1000&prioritize_real=true`,
+      { cache: "no-store" }
+    );
+    const data = await response.json();
+    
+    if (data.success && data.data && Array.isArray(data.data.builders)) {
+      // Handle country name variations (UAE vs United Arab Emirates)
+      const countryVariations = [countryName];
+      if (countryName === "United Arab Emirates") {
+        countryVariations.push("UAE");
+      } else if (countryName === "UAE") {
+        countryVariations.push("United Arab Emirates");
+      }
+      
+      // Filter builders for this city and country
+      builders = data.data.builders.filter((builder: any) => {
+        // Check if builder serves this city and country
+        const servesCity = builder.serviceLocations?.some(
+          (loc: any) =>
+            countryVariations.includes(loc.country) &&
+            ((loc.cities && Array.isArray(loc.cities) && loc.cities.some((c: string) => c.toLowerCase().trim() === cityName.toLowerCase().trim())) ||
+             (loc.city && loc.city.toLowerCase().trim() === cityName.toLowerCase().trim()))
+        );
+        const headquartersMatch =
+          countryVariations.includes(builder.headquarters?.country) &&
+          builder.headquarters?.city &&
+          builder.headquarters?.city.toLowerCase().trim() === cityName.toLowerCase().trim();
+
+        return servesCity || headquartersMatch;
+      });
+      
+      // Deduplicate builders by ID
+      const builderMap = new Map();
+      builders.forEach((builder: any) => {
+        if (!builderMap.has(builder.id)) {
+          builderMap.set(builder.id, builder);
+        }
+      });
+      
+      builders = Array.from(builderMap.values());
+    }
+  } catch (error) {
+    console.error("❌ Error loading builders:", error);
+  }
 
   // Use default content if no CMS content is available
   const defaultContent = getDefaultCityContent(cityName, countryName);
@@ -319,7 +370,7 @@ export default async function CityPage({ params }: CityPageProps) {
       <CountryCityPage
         country={countryName}
         city={cityName}
-        initialBuilders={[]}
+        initialBuilders={builders}
         cityData={cityData}
         cmsContent={pageContent}
         showQuoteForm={true}

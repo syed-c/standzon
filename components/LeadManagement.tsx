@@ -93,131 +93,54 @@ export default function LeadManagement({ onSendNotification, onUpdateLeadStatus 
   const [statusFilter, setStatusFilter] = useState('all');
   const [cityFilter, setCityFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   
-  // Mock data - in production this would come from API
-  const [leads, setLeads] = useState<LeadRequest[]>([
-    {
-      id: 'L001',
-      clientName: 'Sarah Johnson',
-      clientEmail: 'sarah@techcorp.com',
-      clientPhone: '+1 555 0123',
-      companyName: 'TechCorp Industries',
-      eventName: 'CES 2025',
-      eventDate: '2025-01-07',
-      city: 'Las Vegas',
-      country: 'United States',
-      standSize: '400 sqm',
-      budget: '$40,000 - $50,000',
-      requirements: 'Custom tech display with LED walls and interactive demos. Need advanced AV setup.',
-      status: 'new',
-      submittedAt: '2024-12-19T10:30:00Z',
-      matchedBuilders: ['B001', 'B002', 'B003'],
-      responses: [],
-      priority: 'high',
-      source: 'website'
-    },
-    {
-      id: 'L002',
-      clientName: 'Klaus Mueller',
-      clientEmail: 'klaus@automotive.de',
-      clientPhone: '+49 30 123456',
-      companyName: 'Automotive Solutions GmbH',
-      eventName: 'Hannover Messe 2025',
-      eventDate: '2025-04-14',
-      city: 'Hannover',
-      country: 'Germany',
-      standSize: '300 sqm',
-      budget: '$30,000 - $40,000',
-      requirements: 'Industrial machinery showcase with meeting areas and product demonstration zones.',
-      status: 'sent',
-      submittedAt: '2024-12-18T14:15:00Z',
-      matchedBuilders: ['B004', 'B005'],
-      responses: [
-        {
-          builderId: 'B004',
-          builderName: 'Expo Design Germany',
-          responseTime: '4 hours',
-          status: 'quoted',
-          quoteAmount: 35000,
-          notes: 'Comprehensive solution with installation'
-        }
-      ],
-      priority: 'medium',
-      source: 'referral'
-    },
-    {
-      id: 'L003',
-      clientName: 'Maria Rodriguez',
-      clientEmail: 'maria@fashion.es',
-      clientPhone: '+34 91 123456',
-      companyName: 'Fashion Elite',
-      eventName: 'Paris Fashion Week',
-      eventDate: '2025-03-02',
-      city: 'Paris',
-      country: 'France',
-      standSize: '200 sqm',
-      budget: '$25,000 - $35,000',
-      requirements: 'Elegant fashion showcase with runway area and VIP lounge.',
-      status: 'responded',
-      submittedAt: '2024-12-17T09:45:00Z',
-      matchedBuilders: ['B006', 'B007', 'B008'],
-      responses: [
-        {
-          builderId: 'B006',
-          builderName: 'Creative Booth Co',
-          responseTime: '2 hours',
-          status: 'quoted',
-          quoteAmount: 28000
-        },
-        {
-          builderId: 'B007',
-          builderName: 'Premium Exhibits France',
-          responseTime: '6 hours',
-          status: 'quoted',
-          quoteAmount: 32000
-        }
-      ],
-      priority: 'medium',
-      source: 'website'
-    }
-  ]);
+  // State for dynamic data
+  const [leads, setLeads] = useState<LeadRequest[]>([]);
+  const [builders, setBuilders] = useState<Builder[]>([]);
 
-  const [builders, setBuilders] = useState<Builder[]>([
-    {
-      id: 'B001',
-      companyName: 'Smart Spaces Design',
-      email: 'info@smartspaces.com',
-      phone: '+1 702 555 0123',
-      city: 'Las Vegas',
-      country: 'United States',
-      serviceAreas: ['Las Vegas', 'Los Angeles', 'San Francisco'],
-      specializations: ['Technology', 'Custom Design', 'Interactive Displays'],
-      verified: true,
-      subscriptionPlan: 'professional',
-      responseRate: 92,
-      averageQuoteTime: '4 hours',
-      leadsReceived: 156,
-      leadsResponded: 143,
-      isActive: true
-    },
-    {
-      id: 'B002',
-      companyName: 'Tech Exhibition Pro',
-      email: 'contact@techexhibition.com',
-      phone: '+1 702 555 0456',
-      city: 'Las Vegas',
-      country: 'United States',
-      serviceAreas: ['Las Vegas', 'Phoenix', 'Denver'],
-      specializations: ['Technology', 'LED Displays', 'Modular Systems'],
-      verified: true,
-      subscriptionPlan: 'enterprise',
-      responseRate: 88,
-      averageQuoteTime: '3 hours',
-      leadsReceived: 203,
-      leadsResponded: 179,
-      isActive: true
-    }
-  ]);
+  // Fetch data from Supabase
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch builders from Supabase API
+        const buildersResponse = await fetch('/api/admin/builders?limit=1000');
+        const buildersData = await buildersResponse.json();
+        
+        if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
+          const transformedBuilders: Builder[] = buildersData.data.builders.map((b: any) => ({
+            id: b.id,
+            companyName: b.companyName || b.company_name || '',
+            email: b.contactInfo?.primaryEmail || b.primary_email || '',
+            phone: b.contactInfo?.phone || b.phone || '',
+            city: b.headquarters?.city || b.headquarters_city || '',
+            country: b.headquarters?.country || b.headquarters_country || '',
+            serviceAreas: b.serviceLocations?.flatMap((loc: any) => loc.cities || []) || [],
+            specializations: b.specializations || [],
+            verified: b.verified || false,
+            subscriptionPlan: b.subscriptionPlan || b.plan_type || 'free',
+            responseRate: b.responseRate || 0,
+            averageQuoteTime: b.averageQuoteTime || b.response_time || '24 hours',
+            leadsReceived: b.leadsReceived || 0,
+            leadsResponded: b.leadsResponded || 0,
+            isActive: b.isActive !== undefined ? b.isActive : true
+          }));
+          setBuilders(transformedBuilders);
+        }
+
+        // Fetch leads (this would come from your database in a real implementation)
+        // For now, we'll use an empty array
+        setLeads([]);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   console.log('LeadManagement: Component loaded');
 
@@ -239,7 +162,7 @@ export default function LeadManagement({ onSendNotification, onUpdateLeadStatus 
     new: leads.filter(l => l.status === 'new').length,
     sent: leads.filter(l => l.status === 'sent').length,
     responded: leads.filter(l => l.status === 'responded').length,
-    conversionRate: Math.round((leads.filter(l => l.status === 'responded').length / leads.length) * 100)
+    conversionRate: leads.length > 0 ? Math.round((leads.filter(l => l.status === 'responded').length / leads.length) * 100) : 0
   };
 
   const handleSendToBuilders = async (leadId: string) => {
@@ -282,6 +205,14 @@ export default function LeadManagement({ onSendNotification, onUpdateLeadStatus 
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -409,9 +340,9 @@ export default function LeadManagement({ onSendNotification, onUpdateLeadStatus 
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Cities</SelectItem>
-                    <SelectItem value="Las Vegas">Las Vegas</SelectItem>
-                    <SelectItem value="Hannover">Hannover</SelectItem>
-                    <SelectItem value="Paris">Paris</SelectItem>
+                    {Array.from(new Set(leads.map(l => l.city))).map((city) => (
+                      <SelectItem key={city} value={city}>{city}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <Button variant="outline" className="w-full">

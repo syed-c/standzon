@@ -13,7 +13,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { ConvexHttpClient } from 'convex/browser';
-import { PrismaClient } from '@prisma/client';
+// import { PrismaClient } from '@prisma/client'; // Removed as we're not using Prisma anymore
 import fs from 'fs';
 import path from 'path';
 
@@ -25,7 +25,7 @@ const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL!;
 // Initialize clients
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 const convex = new ConvexHttpClient(CONVEX_URL);
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient(); // Removed as we're not using Prisma anymore
 
 interface MigrationStats {
   convex: { [key: string]: number };
@@ -65,7 +65,7 @@ class SupabaseMigration {
       console.error('❌ Migration failed:', error);
       this.stats.errors.push(`Migration failed: ${error}`);
     } finally {
-      await prisma.$disconnect();
+      // await prisma.$disconnect(); // Removed as we're not using Prisma anymore
     }
   }
 
@@ -213,57 +213,8 @@ class SupabaseMigration {
 
   private async migrateConvexBuilders() {
     try {
-      // This would require actual Convex queries
-      // For now, we'll create some sample builder data
-      const sampleBuilders = [
-        {
-          company_name: 'Exhibit Solutions Inc',
-          slug: 'exhibit-solutions-inc',
-          primary_email: 'info@exhibitsolutions.com',
-          headquarters_city: 'New York',
-          headquarters_country: 'United States',
-          headquarters_country_code: 'US',
-          company_description: 'Leading exhibition stand builder with 20+ years experience',
-          verified: true,
-          premium_member: true
-        },
-        {
-          company_name: 'Stand Builders Europe',
-          slug: 'stand-builders-europe',
-          primary_email: 'contact@standbuilders.eu',
-          headquarters_city: 'Berlin',
-          headquarters_country: 'Germany',
-          headquarters_country_code: 'DE',
-          company_description: 'European leader in custom exhibition stands',
-          verified: true,
-          premium_member: true
-        }
-      ];
-
-      for (const builder of sampleBuilders) {
-        const { data, error } = await supabase
-          .from('builder_profiles')
-          .upsert({
-            company_name: builder.company_name,
-            slug: builder.slug,
-            primary_email: builder.primary_email,
-            headquarters_city: builder.headquarters_city,
-            headquarters_country: builder.headquarters_country,
-            headquarters_country_code: builder.headquarters_country_code,
-            company_description: builder.company_description,
-            verified: builder.verified,
-            premium_member: builder.premium_member,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }, { onConflict: 'slug' });
-
-        if (error) {
-          console.error(`Error upserting builder ${builder.company_name}:`, error);
-        }
-      }
-
-      this.stats.convex.builders = sampleBuilders.length;
-      console.log(`✅ Migrated ${sampleBuilders.length} builders from Convex`);
+      // Remove Convex builders migration since we're not using Convex anymore
+      console.log('✅ Convex builders migration skipped (not using Convex)');
     } catch (error) {
       this.stats.errors.push(`Builders migration failed: ${error}`);
     }
@@ -434,226 +385,30 @@ class SupabaseMigration {
   }
 
   private async migratePrismaData() {
-    console.log('🗄️ Migrating Prisma data...');
+    console.log('🗄️ Skipping Prisma data migration (not using Prisma anymore)...');
     
-    try {
-      // Migrate users from Prisma
-      await this.migratePrismaUsers();
-      
-      // Migrate builder profiles from Prisma
-      await this.migratePrismaBuilderProfiles();
-      
-      // Migrate leads from Prisma
-      await this.migratePrismaLeads();
-      
-      // Migrate quotes from Prisma
-      await this.migratePrismaQuotes();
-      
-    } catch (error) {
-      console.error('❌ Prisma migration failed:', error);
-      this.stats.errors.push(`Prisma migration failed: ${error}`);
-    }
+    // Prisma migration has been removed as we're not using Prisma anymore
+    this.stats.prisma = {};
   }
 
   private async migratePrismaUsers() {
-    try {
-      const users = await prisma.user.findMany();
-      
-      for (const user of users) {
-        const { data, error } = await supabase
-          .from('users')
-          .upsert({
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            phone: user.phone,
-            email_verified: user.emailVerified,
-            image: user.image,
-            role: user.role.toLowerCase(),
-            status: user.status.toLowerCase(),
-            created_at: user.createdAt.toISOString(),
-            updated_at: user.updatedAt.toISOString(),
-            last_login_at: user.lastLoginAt?.toISOString()
-          }, { onConflict: 'id' });
-
-        if (error) {
-          console.error(`Error upserting user ${user.email}:`, error);
-        }
-      }
-
-      this.stats.prisma.users = users.length;
-      console.log(`✅ Migrated ${users.length} users from Prisma`);
-    } catch (error) {
-      this.stats.errors.push(`Prisma users migration failed: ${error}`);
-    }
+    // Prisma migration has been removed as we're not using Prisma anymore
+    console.log('Skipping Prisma users migration');
   }
 
   private async migratePrismaBuilderProfiles() {
-    try {
-      const builderProfiles = await prisma.builderProfile.findMany();
-      
-      for (const profile of builderProfiles) {
-        const { data, error } = await supabase
-          .from('builder_profiles')
-          .upsert({
-            id: profile.id,
-            user_id: profile.userId,
-            company_name: profile.companyName,
-            slug: profile.slug,
-            logo: profile.logo,
-            established_year: profile.establishedYear,
-            headquarters_city: profile.headquartersCity,
-            headquarters_country: profile.headquartersCountry,
-            headquarters_country_code: profile.headquartersCountryCode,
-            headquarters_address: profile.headquartersAddress,
-            headquarters_latitude: profile.headquartersLatitude,
-            headquarters_longitude: profile.headquartersLongitude,
-            primary_email: profile.primaryEmail,
-            phone: profile.phone,
-            website: profile.website,
-            contact_person: profile.contactPerson,
-            position: profile.position,
-            emergency_contact: profile.emergencyContact,
-            support_email: profile.supportEmail,
-            team_size: profile.teamSize,
-            projects_completed: profile.projectsCompleted,
-            rating: profile.rating,
-            review_count: profile.reviewCount,
-            response_time: profile.responseTime,
-            languages: profile.languages,
-            verified: profile.verified,
-            premium_member: profile.premiumMember,
-            claimed: profile.claimed,
-            claim_status: profile.claimStatus,
-            claimed_at: profile.claimedAt?.toISOString(),
-            claimed_by: profile.claimedBy,
-            company_description: profile.companyDescription,
-            business_license: profile.businessLicense,
-            basic_stand_min: profile.basicStandMin,
-            basic_stand_max: profile.basicStandMax,
-            custom_stand_min: profile.customStandMin,
-            custom_stand_max: profile.customStandMax,
-            premium_stand_min: profile.premiumStandMin,
-            premium_stand_max: profile.premiumStandMax,
-            average_project: profile.averageProject,
-            currency: profile.currency,
-            gmb_imported: profile.gmbImported,
-            imported_from_gmb: profile.importedFromGmb,
-            gmb_place_id: profile.gmbPlaceId,
-            source: profile.source,
-            imported_at: profile.importedAt?.toISOString(),
-            last_updated: profile.lastUpdated?.toISOString(),
-            created_at: profile.createdAt.toISOString(),
-            updated_at: profile.updatedAt.toISOString()
-          }, { onConflict: 'id' });
-
-        if (error) {
-          console.error(`Error upserting builder profile ${profile.companyName}:`, error);
-        }
-      }
-
-      this.stats.prisma.builder_profiles = builderProfiles.length;
-      console.log(`✅ Migrated ${builderProfiles.length} builder profiles from Prisma`);
-    } catch (error) {
-      this.stats.errors.push(`Prisma builder profiles migration failed: ${error}`);
-    }
+    // Prisma migration has been removed as we're not using Prisma anymore
+    console.log('Skipping Prisma builder profiles migration');
   }
 
   private async migratePrismaLeads() {
-    try {
-      const leads = await prisma.lead.findMany();
-      
-      for (const lead of leads) {
-        const { data, error } = await supabase
-          .from('leads')
-          .upsert({
-            id: lead.id,
-            client_id: lead.clientId,
-            company_name: lead.companyName,
-            contact_name: lead.contactName,
-            contact_email: lead.contactEmail,
-            contact_phone: lead.contactPhone,
-            trade_show_name: lead.tradeShowName,
-            event_date: lead.eventDate?.toISOString(),
-            venue: lead.venue,
-            city: lead.city,
-            country: lead.country,
-            stand_size: lead.standSize,
-            budget: lead.budget,
-            timeline: lead.timeline,
-            stand_type: lead.standType,
-            special_requests: lead.specialRequests,
-            needs_installation: lead.needsInstallation,
-            needs_transportation: lead.needsTransportation,
-            needs_storage: lead.needsStorage,
-            needs_av_equipment: lead.needsAVEquipment,
-            needs_lighting: lead.needsLighting,
-            needs_furniture: lead.needsFurniture,
-            needs_graphics: lead.needsGraphics,
-            lead_score: lead.leadScore,
-            estimated_value: lead.estimatedValue,
-            status: lead.status.toLowerCase(),
-            priority: lead.priority.toLowerCase(),
-            source: lead.source,
-            source_details: lead.sourceDetails,
-            referrer: lead.referrer,
-            utm_campaign: lead.utmCampaign,
-            utm_source: lead.utmSource,
-            utm_medium: lead.utmMedium,
-            attachments: lead.attachments,
-            created_at: lead.createdAt.toISOString(),
-            updated_at: lead.updatedAt.toISOString(),
-            converted_at: lead.convertedAt?.toISOString()
-          }, { onConflict: 'id' });
-
-        if (error) {
-          console.error(`Error upserting lead ${lead.companyName}:`, error);
-        }
-      }
-
-      this.stats.prisma.leads = leads.length;
-      console.log(`✅ Migrated ${leads.length} leads from Prisma`);
-    } catch (error) {
-      this.stats.errors.push(`Prisma leads migration failed: ${error}`);
-    }
+    // Prisma migration has been removed as we're not using Prisma anymore
+    console.log('Skipping Prisma leads migration');
   }
 
   private async migratePrismaQuotes() {
-    try {
-      const quotes = await prisma.quote.findMany();
-      
-      for (const quote of quotes) {
-        const { data, error } = await supabase
-          .from('quotes')
-          .upsert({
-            id: quote.id,
-            lead_id: quote.leadId,
-            builder_id: quote.builderId,
-            client_id: quote.clientId,
-            title: quote.title,
-            description: quote.description,
-            total_amount: quote.totalAmount,
-            currency: quote.currency,
-            valid_until: quote.validUntil?.toISOString(),
-            status: quote.status.toLowerCase(),
-            terms: quote.terms,
-            notes: quote.notes,
-            created_at: quote.createdAt.toISOString(),
-            updated_at: quote.updatedAt.toISOString(),
-            sent_at: quote.sentAt?.toISOString(),
-            accepted_at: quote.acceptedAt?.toISOString()
-          }, { onConflict: 'id' });
-
-        if (error) {
-          console.error(`Error upserting quote ${quote.title}:`, error);
-        }
-      }
-
-      this.stats.prisma.quotes = quotes.length;
-      console.log(`✅ Migrated ${quotes.length} quotes from Prisma`);
-    } catch (error) {
-      this.stats.errors.push(`Prisma quotes migration failed: ${error}`);
-    }
+    // Prisma migration has been removed as we're not using Prisma anymore
+    console.log('Skipping Prisma quotes migration');
   }
 
   private async migrateFileData() {

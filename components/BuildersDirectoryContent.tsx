@@ -151,7 +151,16 @@ export default function BuildersDirectoryContent() {
   const [realTimeBuilders, setRealTimeBuilders] = useState<
     BuilderTransformed[]
   >([]);
-  const [realTimeStats, setRealTimeStats] = useState(builderStats);
+  const [realTimeStats, setRealTimeStats] = useState({
+    totalBuilders: 0,
+    verifiedBuilders: 0,
+    totalCountries: 0,
+    totalCities: 0,
+    averageRating: 0,
+    totalProjectsCompleted: 0,
+    importedFromGMB: 0,
+    totalReviews: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -277,10 +286,32 @@ export default function BuildersDirectoryContent() {
           setRealTimeStats(calculatedStats);
         } else {
           setRealTimeBuilders([]);
+          // Reset stats to zero when no builders found
+          setRealTimeStats({
+            totalBuilders: 0,
+            verifiedBuilders: 0,
+            totalCountries: 0,
+            totalCities: 0,
+            averageRating: 0,
+            totalProjectsCompleted: 0,
+            importedFromGMB: 0,
+            totalReviews: 0,
+          });
         }
       } catch (error) {
         console.error("❌ Error loading builder data:", error);
         setRealTimeBuilders([]);
+        // Reset stats to zero on error
+        setRealTimeStats({
+          totalBuilders: 0,
+          verifiedBuilders: 0,
+          totalCountries: 0,
+          totalCities: 0,
+          averageRating: 0,
+          totalProjectsCompleted: 0,
+          importedFromGMB: 0,
+          totalReviews: 0,
+        });
       } finally {
         setLoading(false);
         setLastUpdated(new Date());
@@ -410,9 +441,33 @@ export default function BuildersDirectoryContent() {
         };
 
         setRealTimeStats(calculatedStats);
+      } else {
+        setRealTimeBuilders([]);
+        // Reset stats to zero when no builders found
+        setRealTimeStats({
+          totalBuilders: 0,
+          verifiedBuilders: 0,
+          totalCountries: 0,
+          totalCities: 0,
+          averageRating: 0,
+          totalProjectsCompleted: 0,
+          importedFromGMB: 0,
+          totalReviews: 0,
+        });
       }
     } catch (error) {
       console.error("❌ Error refreshing builder data:", error);
+      // Reset stats to zero on error
+      setRealTimeStats({
+        totalBuilders: 0,
+        verifiedBuilders: 0,
+        totalCountries: 0,
+        totalCities: 0,
+        averageRating: 0,
+        totalProjectsCompleted: 0,
+        importedFromGMB: 0,
+        totalReviews: 0,
+      });
     } finally {
       setIsRefreshing(false);
       setLastUpdated(new Date());

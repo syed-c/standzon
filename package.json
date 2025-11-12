@@ -18,7 +18,6 @@
     "check:italy-cities": "node scripts/check-italy-cities.js",
     "add:werepair-builder": "node scripts/add-werepair-builder.js",
     "check:werepair-builder": "node scripts/check-werepair-builder.js",
-    "migrate:convex-builders": "node scripts/migrate-convex-builders.js",
     "test:builder-data": "node scripts/test-builder-data.js",
     "test:data-structure": "node scripts/test-data-structure.js",
     "debug:builder-flow": "node scripts/debug-builder-flow.js"

@@ -112,8 +112,8 @@ export default defineSchema({
     // Lead management
     status: v.string(), // 'new', 'assigned', 'contacted', 'quoted', 'won', 'lost'
     priority: v.optional(v.string()), // 'low', 'medium', 'high', 'urgent'
-    assignedBuilders: v.optional(v.array(v.id("builders"))),
-    notifiedBuilders: v.optional(v.array(v.id("builders"))),
+    assignedBuilders: v.optional(v.array(v.id("users"))),
+    notifiedBuilders: v.optional(v.array(v.id("users"))),
     responseCount: v.optional(v.number()),
     
     // Timestamps
@@ -128,148 +128,6 @@ export default defineSchema({
     .index("location", ["countryId", "cityId"])
     .index("createdAt", ["createdAt"])
     .index("priority", ["priority"]),
-
-  // Exhibition Builders - Main business directory
-  builders: defineTable({
-    companyName: v.string(),
-    slug: v.string(),
-    logo: v.optional(v.string()),
-    establishedYear: v.optional(v.number()),
-    
-    // Headquarters location
-    headquartersCity: v.optional(v.string()),
-    headquartersCountry: v.optional(v.string()),
-    headquartersCountryCode: v.optional(v.string()),
-    headquartersAddress: v.optional(v.string()),
-    headquartersLatitude: v.optional(v.number()),
-    headquartersLongitude: v.optional(v.number()),
-    
-    // Contact information
-    primaryEmail: v.string(),
-    phone: v.optional(v.string()),
-    website: v.optional(v.string()),
-    contactPerson: v.optional(v.string()),
-    position: v.optional(v.string()),
-    emergencyContact: v.optional(v.string()),
-    supportEmail: v.optional(v.string()),
-    
-    // Business details
-    teamSize: v.optional(v.number()),
-    projectsCompleted: v.optional(v.number()),
-    rating: v.optional(v.number()),
-    reviewCount: v.optional(v.number()),
-    responseTime: v.optional(v.string()),
-    languages: v.optional(v.array(v.string())),
-    
-    // Status and verification
-    verified: v.optional(v.boolean()),
-    premiumMember: v.optional(v.boolean()),
-    claimed: v.optional(v.boolean()),
-    claimStatus: v.optional(v.string()), // 'unclaimed', 'pending', 'verified', 'rejected'
-    claimedAt: v.optional(v.number()),
-    claimedBy: v.optional(v.id("users")),
-    
-    // Business information
-    companyDescription: v.optional(v.string()),
-    businessLicense: v.optional(v.string()),
-    
-    // Pricing
-    basicStandMin: v.optional(v.number()),
-    basicStandMax: v.optional(v.number()),
-    customStandMin: v.optional(v.number()),
-    customStandMax: v.optional(v.number()),
-    premiumStandMin: v.optional(v.number()),
-    premiumStandMax: v.optional(v.number()),
-    averageProject: v.optional(v.number()),
-    currency: v.optional(v.string()),
-    
-    // Import tracking
-    gmbImported: v.optional(v.boolean()),
-    importedFromGMB: v.optional(v.boolean()),
-    gmbPlaceId: v.optional(v.string()), // Google My Business Place ID
-    source: v.optional(v.string()),
-    importedAt: v.optional(v.number()),
-    lastUpdated: v.optional(v.number()),
-    
-    // Timestamps
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  })
-    .index("slug", ["slug"])
-    .index("email", ["primaryEmail"])
-    .index("country", ["headquartersCountry"])
-    .index("city", ["headquartersCity"])
-    .index("verified", ["verified"])
-    .index("claimed", ["claimed"])
-    .index("rating", ["rating"])
-    .index("gmbPlaceId", ["gmbPlaceId"]),
-
-  // Builder service locations (many-to-many relationship)
-  builderServiceLocations: defineTable({
-    builderId: v.id("builders"),
-    city: v.string(),
-    country: v.string(),
-    countryCode: v.optional(v.string()),
-    address: v.optional(v.string()),
-    latitude: v.optional(v.number()),
-    longitude: v.optional(v.number()),
-    isHeadquarters: v.optional(v.boolean()),
-    createdAt: v.number(),
-  })
-    .index("builderId", ["builderId"])
-    .index("location", ["country", "city"]),
-
-  // Builder services offered
-  builderServices: defineTable({
-    builderId: v.id("builders"),
-    name: v.string(),
-    description: v.optional(v.string()),
-    category: v.string(), // 'Design', 'Construction', 'Rental', 'Technology', 'Logistics', 'Additional'
-    priceFrom: v.optional(v.number()),
-    currency: v.optional(v.string()),
-    unit: v.optional(v.string()), // 'per sqm', 'per project', 'per day'
-    popular: v.optional(v.boolean()),
-    turnoverTime: v.optional(v.string()),
-    createdAt: v.number(),
-  })
-    .index("builderId", ["builderId"])
-    .index("category", ["category"]),
-
-  // Builder specializations/industries
-  builderSpecializations: defineTable({
-    builderId: v.id("builders"),
-    industryName: v.string(),
-    industrySlug: v.string(),
-    description: v.optional(v.string()),
-    color: v.optional(v.string()),
-    icon: v.optional(v.string()),
-    createdAt: v.number(),
-  })
-    .index("builderId", ["builderId"])
-    .index("industry", ["industrySlug"]),
-
-  // Builder portfolio items
-  builderPortfolio: defineTable({
-    builderId: v.id("builders"),
-    projectName: v.string(),
-    tradeShow: v.optional(v.string()),
-    year: v.optional(v.number()),
-    city: v.optional(v.string()),
-    country: v.optional(v.string()),
-    standSize: v.optional(v.number()),
-    industry: v.optional(v.string()),
-    clientName: v.optional(v.string()),
-    description: v.optional(v.string()),
-    images: v.optional(v.array(v.string())),
-    budget: v.optional(v.string()), // 'Budget-friendly', 'Mid-range', 'Premium'
-    featured: v.optional(v.boolean()),
-    projectType: v.optional(v.string()), // 'Custom Build', 'Modular', 'Rental', 'Hybrid'
-    technologies: v.optional(v.array(v.string())),
-    createdAt: v.number(),
-  })
-    .index("builderId", ["builderId"])
-    .index("featured", ["featured"])
-    .index("year", ["year"]),
 
   // Quote requests from potential clients
   quoteRequests: defineTable({
@@ -287,7 +145,7 @@ export default defineSchema({
     specialRequests: v.optional(v.string()),
     status: v.string(), // 'Open', 'Matched', 'Responded', 'Closed'
     priority: v.optional(v.string()), // 'Standard', 'Urgent', 'High'
-    matchedBuilders: v.optional(v.array(v.id("builders"))),
+    matchedBuilders: v.optional(v.array(v.id("users"))),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -299,7 +157,7 @@ export default defineSchema({
   // Quote responses from builders
   quoteResponses: defineTable({
     quoteRequestId: v.id("quoteRequests"),
-    builderId: v.id("builders"),
+    builderId: v.id("users"),
     builderName: v.string(),
     estimatedCost: v.optional(v.number()),
     currency: v.optional(v.string()),
@@ -401,5 +259,3 @@ export default defineSchema({
     .index("year", ["year"])
     .index("startDate", ["startDate"]),
 })
-
-

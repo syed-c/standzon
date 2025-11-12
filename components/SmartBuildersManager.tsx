@@ -193,9 +193,9 @@ export default function SmartBuildersManager({
             : 0,
         responseTime: builder.responseTime || "Within 24 hours",
         joinDate:
-          builder.createdAt || builder.lastUpdated || new Date().toISOString(),
+          (builder as any).createdAt || builder.lastUpdated || new Date().toISOString(),
         lastActive:
-          builder.updatedAt || builder.lastUpdated || new Date().toISOString(),
+          (builder as any).updatedAt || builder.lastUpdated || new Date().toISOString(),
         leadCount: Math.floor(Math.random() * 50) + 10, // Simulated for now
         revenue:
           builder.priceRange?.averageProject &&
@@ -255,94 +255,60 @@ export default function SmartBuildersManager({
     }
   };
 
-  // Load builders from unified platform
+  // Load builders from unified platform (NOW FROM SUPABASE INSTEAD OF CONVEX)
   const loadBuilders = async () => {
     try {
       setLoading(true);
-      console.log("🔄 Loading real builders from Convex...");
+      console.log("🔄 Loading real builders from Supabase...");
 
-      // Import Convex client and API
-      const { ConvexHttpClient } = await import("convex/browser");
-      const { api } = await import("@/convex/_generated/api");
+      // Fetch builders from Supabase API endpoint
+      const response = await fetch("/api/admin/builders?limit=1000&prioritize_real=true");
+      const buildersData = await response.json();
 
-      const convexUrl =
-        process.env.NEXT_PUBLIC_CONVEX_URL ||
-        "https://tame-labrador-80.convex.cloud";
-      const convex = new ConvexHttpClient(convexUrl);
-
-      // Fetch builders from Convex
-      const buildersData = await convex.query(api.builders.getAllBuilders, {
-        limit: 1000,
-        offset: 0,
-      });
-
-      console.log("📡 Convex response:", buildersData);
+      console.log("📡 Supabase response:", buildersData);
 
       if (
         buildersData &&
-        buildersData.builders &&
-        Array.isArray(buildersData.builders) &&
-        buildersData.builders.length > 0
+        buildersData.success &&
+        buildersData.data &&
+        Array.isArray(buildersData.data.builders) &&
+        buildersData.data.builders.length > 0
       ) {
         console.log(
-          "✅ Loaded builders successfully from Convex:",
-          buildersData.builders.length
+          "✅ Loaded builders successfully from Supabase:",
+          buildersData.data.builders.length
         );
-        console.log("📊 Total builders in Convex:", buildersData.total);
+        console.log("📊 Total builders in Supabase:", buildersData.data.total);
 
-        let allBuilders = [];
-
-        // Convert each builder with error handling
-        for (let i = 0; i < buildersData.builders.length; i++) {
-          try {
-            const convexBuilder = buildersData.builders[i];
-            const convertedBuilder = {
-              id: convexBuilder._id,
-              companyName: convexBuilder.companyName || "Unknown Company",
-              email: convexBuilder.primaryEmail || "",
-              phone: convexBuilder.phone || "",
-              contactPerson: convexBuilder.contactPerson || "Contact Person",
-              city: convexBuilder.headquartersCity || "Unknown",
-              country: convexBuilder.headquartersCountry || "Unknown",
-              website: convexBuilder.website || "",
-              description:
-                convexBuilder.companyDescription || "No description available",
-              services: [], // Will be populated from related tables
-              specializations: [], // Will be populated from related tables
-              portfolioImages: [], // Will be populated from related tables
-              status: convexBuilder.verified ? "active" : "pending",
-              plan: convexBuilder.premiumMember ? "professional" : "free",
-              verified: convexBuilder.verified || false,
-              featured: convexBuilder.premiumMember || false,
-              rating: convexBuilder.rating || 0,
-              projectsCompleted: convexBuilder.projectsCompleted || 0,
-              responseTime: convexBuilder.responseTime || "Within 24 hours",
-              joinDate: new Date(convexBuilder.createdAt).toISOString(),
-              lastActive: new Date(convexBuilder.updatedAt).toISOString(),
-              leadCount: Math.floor(Math.random() * 50) + 10, // Simulated for now
-              revenue: convexBuilder.averageProject || 25000,
-              certifications: [],
-              languages: convexBuilder.languages || ["English"],
-              gmbImported:
-                convexBuilder.gmbImported ||
-                convexBuilder.importedFromGMB ||
-                false,
-              claimStatus: convexBuilder.claimStatus || "unclaimed",
-            };
-
-            allBuilders.push(convertedBuilder);
-            console.log(
-              `✅ Converted builder ${i + 1}:`,
-              convertedBuilder.companyName
-            );
-          } catch (error) {
-            console.error(
-              `❌ Error converting builder ${i + 1}:`,
-              error,
-              buildersData.builders[i]
-            );
-          }
-        }
+        const allBuilders = buildersData.data.builders.map((builder: any) => ({
+          id: builder.id,
+          companyName: builder.companyName || builder.company_name || "Unknown Company",
+          email: builder.contactInfo?.primaryEmail || builder.primary_email || "",
+          phone: builder.contactInfo?.phone || builder.phone || "",
+          contactPerson: builder.contactInfo?.contactPerson || builder.contact_person || "Contact Person",
+          city: builder.headquarters?.city || builder.headquarters_city || "Unknown",
+          country: builder.headquarters?.country || builder.headquarters_country || "Unknown",
+          website: builder.contactInfo?.website || builder.website || "",
+          description: builder.companyDescription || builder.company_description || "No description available",
+          services: [], // Will be populated from related tables
+          specializations: [], // Will be populated from related tables
+          portfolioImages: [], // Will be populated from related tables
+          status: builder.verified ? "active" : "pending",
+          plan: builder.premiumMember ? "professional" : "free",
+          verified: builder.verified || false,
+          featured: builder.premiumMember || false,
+          rating: builder.rating || 0,
+          projectsCompleted: builder.projectsCompleted || builder.projects_completed || 0,
+          responseTime: builder.responseTime || builder.response_time || "Within 24 hours",
+          joinDate: builder.createdAt || new Date().toISOString(),
+          lastActive: builder.updatedAt || new Date().toISOString(),
+          leadCount: Math.floor(Math.random() * 50) + 10, // Simulated for now
+          revenue: builder.averageProject || 25000,
+          certifications: [],
+          languages: builder.languages || ["English"],
+          gmbImported: builder.gmbImported || builder.importedFromGMB || false,
+          claimStatus: builder.claimStatus || "unclaimed",
+        }));
 
         console.log(
           "🧹 All builders converted successfully:",
@@ -350,7 +316,7 @@ export default function SmartBuildersManager({
         );
         console.log(
           "📋 Final builders list:",
-          allBuilders.map((b) => ({
+          allBuilders.map((b: any) => ({
             id: b.id,
             name: b.companyName,
             gmb: b.gmbImported,
@@ -362,11 +328,11 @@ export default function SmartBuildersManager({
 
         toast({
           title: "Builders Loaded",
-          description: `Successfully loaded ${allBuilders.length} builders (${allBuilders.filter((b) => b.gmbImported).length} from GMB import).`,
+          description: `Successfully loaded ${allBuilders.length} builders (${allBuilders.filter((b: any) => b.gmbImported).length} from GMB import).`,
         });
       } else {
         console.log(
-          "⚠️ No builders found in Convex response or invalid response format"
+          "⚠️ No builders found in Supabase response or invalid response format"
         );
         console.log("Response data:", buildersData);
 
@@ -382,7 +348,7 @@ export default function SmartBuildersManager({
         });
       }
     } catch (error) {
-      console.error("❌ Error loading builders from Convex:", error);
+      console.error("❌ Error loading builders from Supabase:", error);
 
       // Set empty array on error
       setBuilders([]);
@@ -652,7 +618,7 @@ export default function SmartBuildersManager({
         if (processedBuilders.has(builder.id)) return;
 
         const duplicates = [builder];
-        const reasons = [];
+        const reasons: string[] = [];
 
         // ✅ OPTIMIZED: Only check builders that haven't been processed yet
         buildersToAnalyze.slice(actualIndex + 1).forEach((otherBuilder) => {

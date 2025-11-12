@@ -88,115 +88,78 @@ export default function BuilderLeadFlow({ onSendEmail, onUpdateLeadAccess }: Bui
   const [selectedBuilder, setSelectedBuilder] = useState<string>('');
   const [leadSearchTerm, setLeadSearchTerm] = useState('');
   const [builderSearchTerm, setBuilderSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false);
   
-  // Mock data - in production this would come from API
-  const [leads, setLeads] = useState<Lead[]>([
-    {
-      id: 'L001',
-      clientName: 'Sarah Johnson',
-      clientEmail: 'sarah@techcorp.com',
-      eventName: 'CES 2025',
-      city: 'Las Vegas',
-      country: 'United States',
-      standSize: '400 sqm',
-      budget: '$40,000 - $50,000',
-      submittedAt: '2024-12-19T10:30:00Z',
-      status: 'new'
-    },
-    {
-      id: 'L002',
-      clientName: 'Klaus Mueller',
-      clientEmail: 'klaus@automotive.de',
-      eventName: 'Hannover Messe 2025',
-      city: 'Hannover',
-      country: 'Germany',
-      standSize: '300 sqm',
-      budget: '$30,000 - $40,000',
-      submittedAt: '2024-12-18T14:15:00Z',
-      status: 'quoted',
-      quoteAmount: 35000,
-      notes: 'Follow up needed'
-    }
-  ]);
+  // State for dynamic data
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [builders, setBuilders] = useState<Builder[]>([]);
+  const [emailTemplates, setEmailTemplates] = useState<EmailTemplate[]>([]);
 
-  const [builders, setBuilders] = useState<Builder[]>([
-    {
-      id: 'B001',
-      companyName: 'Smart Spaces Design',
-      email: 'info@smartspaces.com',
-      phone: '+1 702 555 0123',
-      city: 'Las Vegas',
-      country: 'United States',
-      serviceAreas: ['Las Vegas', 'Los Angeles', 'San Francisco'],
-      specializations: ['Technology', 'Custom Design', 'Interactive Displays'],
-      subscriptionPlan: 'professional',
-      planExpiry: '2025-06-15',
-      leadsReceived: 156,
-      leadsAccessed: 143,
-      responseRate: 92,
-      averageQuoteTime: '4 hours',
-      revenue: 45600,
-      isActive: true,
-      joinedDate: '2023-03-15'
-    },
-    {
-      id: 'B002',
-      companyName: 'Budget Exhibits',
-      email: 'contact@budgetexhibits.com',
-      phone: '+1 702 555 0456',
-      city: 'Las Vegas',
-      country: 'United States',
-      serviceAreas: ['Las Vegas'],
-      specializations: ['Modular Systems', 'Budget Solutions'],
-      subscriptionPlan: 'free',
-      planExpiry: '2024-12-31',
-      leadsReceived: 89,
-      leadsAccessed: 12,
-      responseRate: 13,
-      averageQuoteTime: '2 days',
-      revenue: 0,
-      isActive: true,
-      joinedDate: '2024-08-10'
-    },
-    {
-      id: 'B003',
-      companyName: 'Premium Exhibit Solutions',
-      email: 'hello@premiumexhibits.com',
-      phone: '+1 702 555 0789',
-      city: 'Las Vegas',
-      country: 'United States',
-      serviceAreas: ['Las Vegas', 'Los Angeles', 'Phoenix', 'Denver'],
-      specializations: ['Luxury Displays', 'Double Deck', 'Technology Integration'],
-      subscriptionPlan: 'enterprise',
-      planExpiry: '2025-12-31',
-      leadsReceived: 203,
-      leadsAccessed: 199,
-      responseRate: 98,
-      averageQuoteTime: '2 hours',
-      revenue: 125800,
-      isActive: true,
-      joinedDate: '2022-11-20'
-    }
-  ]);
+  // Fetch data from Supabase
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch builders from Supabase API
+        const buildersResponse = await fetch('/api/admin/builders?limit=1000');
+        const buildersData = await buildersResponse.json();
+        
+        if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
+          const transformedBuilders: Builder[] = buildersData.data.builders.map((b: any) => ({
+            id: b.id,
+            companyName: b.companyName || b.company_name || '',
+            email: b.contactInfo?.primaryEmail || b.primary_email || '',
+            phone: b.contactInfo?.phone || b.phone || '',
+            city: b.headquarters?.city || b.headquarters_city || '',
+            country: b.headquarters?.country || b.headquarters_country || '',
+            serviceAreas: b.serviceLocations?.flatMap((loc: any) => loc.cities || []) || [],
+            specializations: b.specializations || [],
+            subscriptionPlan: b.subscriptionPlan || b.plan_type || 'free',
+            planExpiry: b.planExpiry || '2024-12-31',
+            leadsReceived: b.leadsReceived || 0,
+            leadsAccessed: b.leadsAccessed || 0,
+            responseRate: b.responseRate || 0,
+            averageQuoteTime: b.averageQuoteTime || b.response_time || '24 hours',
+            revenue: b.revenue || 0,
+            isActive: b.isActive !== undefined ? b.isActive : true,
+            joinedDate: b.joinedDate || b.created_at || new Date().toISOString()
+          }));
+          setBuilders(transformedBuilders);
+        }
 
-  const [emailTemplates, setEmailTemplates] = useState<EmailTemplate[]>([
-    {
-      id: 'T001',
-      name: 'New Lead Notification',
-      subject: 'New Exhibition Stand Lead in {city}',
-      content: 'A new lead has arrived for {eventName} in {city}. Stand size: {standSize}, Budget: {budget}. Click to view full details.',
-      type: 'lead_notification',
-      isActive: true
-    },
-    {
-      id: 'T002',
-      name: 'Upgrade Reminder',
-      subject: 'Unlock Full Lead Details - Upgrade Your Plan',
-      content: 'You have new leads waiting! Upgrade to Professional or Enterprise to access full contact details and respond to quotes.',
-      type: 'upgrade_reminder',
-      isActive: true
-    }
-  ]);
+        // Fetch email templates (this would come from your database in a real implementation)
+        // For now, we'll use a minimal set
+        setEmailTemplates([
+          {
+            id: 'T001',
+            name: 'New Lead Notification',
+            subject: 'New Exhibition Stand Lead in {city}',
+            content: 'A new lead has arrived for {eventName} in {city}. Stand size: {standSize}, Budget: {budget}. Click to view full details.',
+            type: 'lead_notification',
+            isActive: true
+          },
+          {
+            id: 'T002',
+            name: 'Upgrade Reminder',
+            subject: 'Unlock Full Lead Details - Upgrade Your Plan',
+            content: 'You have new leads waiting! Upgrade to Professional or Enterprise to access full contact details and respond to quotes.',
+            type: 'upgrade_reminder',
+            isActive: true
+          }
+        ]);
+
+        // Fetch leads (this would come from your database in a real implementation)
+        // For now, we'll use an empty array
+        setLeads([]);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   console.log('BuilderLeadFlow: Component loaded');
 
@@ -263,6 +226,14 @@ export default function BuilderLeadFlow({ onSendEmail, onUpdateLeadAccess }: Bui
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -335,7 +306,7 @@ export default function BuilderLeadFlow({ onSendEmail, onUpdateLeadAccess }: Bui
               <div>
                 <p className="text-orange-100 text-sm font-medium">Avg. Response Rate</p>
                 <p className="text-3xl font-bold">
-                  {Math.round(builders.reduce((sum, b) => sum + b.responseRate, 0) / builders.length)}%
+                  {builders.length > 0 ? Math.round(builders.reduce((sum, b) => sum + b.responseRate, 0) / builders.length) : 0}%
                 </p>
               </div>
               <Activity className="h-8 w-8 text-orange-200" />

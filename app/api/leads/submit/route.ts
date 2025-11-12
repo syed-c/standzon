@@ -1,253 +1,138 @@
-import { NextRequest, NextResponse } from "next/server";
-import { ConvexHttpClient } from "convex/browser";
-import { api } from "@/convex/_generated/api";
-import { DatabaseService } from "@/lib/supabase/database";
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
-// Initialize Convex client for server-side operations (guarded)
-const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
-const convex = convexUrl ? new ConvexHttpClient(convexUrl) : null;
-
-// Initialize Supabase database service
-const dbService = new DatabaseService();
+// Initialize Supabase client
+const getSupabase = () => {
+  return createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+};
 
 export async function POST(request: NextRequest) {
-  console.log("🎯 Lead submission API called");
-
-  // Bail out early if Convex URL is not configured
-  if (!convex) {
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          "Convex URL not configured. Set NEXT_PUBLIC_CONVEX_URL in environment variables.",
-      },
-      { status: 500 }
-    );
-  }
-
   try {
-    const body = await request.json();
-    console.log("📝 Lead submission data received:", body);
+    const supabase = getSupabase();
+    
+    // Get request data
+    const data = await request.json();
+    const { leadData } = data;
 
-    // Map the incoming data to Convex schema format
-    const leadData = {
-      // Lead source information
-      source: body.source || "public_quote_request",
-      sourceUrl: body.sourceUrl,
-
-      // Client information - map from different possible field names
-      companyName: body.companyName || body.company || "Not specified",
-      contactPerson:
-        body.contactName || body.name || body.contactPerson || "Not specified",
-      contactEmail: body.email || body.contactEmail,
-      contactPhone: body.phone || body.contactPhone,
-
-      // Project details - enhanced exhibition handling
-      exhibitionName: body.exhibitionName || body.exhibition,
-      exhibitionSlug:
-        body.exhibitionSlug ||
-        (body.exhibitionName
-          ? body.exhibitionName
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")
-              .replace(/(^-|-$)/g, "")
-          : undefined),
-      standSize: body.standSize
-        ? typeof body.standSize === "string" && body.standSize.includes("(")
-          ? parseInt(body.standSize.match(/\d+/)?.[0] || "0")
-          : parseInt(body.standSize.toString())
-        : undefined,
-      standSizeUnit: body.standSizeUnit || "sqm",
-      budget: body.budget,
-      timeline: body.timeline,
-
-      // Enhanced location information
-      countryName:
-        body.country ||
-        body.countryName ||
-        body.builderLocation?.split(",").pop()?.trim(),
-      cityName:
-        body.city ||
-        body.cityName ||
-        body.location ||
-        body.builderLocation?.split(",")[0]?.trim(),
-      venue: body.venue,
-
-      // Requirements and preferences
-      services: body.services
-        ? Array.isArray(body.services)
-          ? body.services
-          : [body.services]
-        : undefined,
-      specialRequirements:
-        body.message || body.requirements || body.specialRequirements,
-      designPreferences: body.designPreferences,
-
-      // Lead management
-      status: body.status || "new",
-      priority:
-        body.priority ||
-        body.urgency ||
-        (body.timeline?.includes("1-2 months") ? "high" : "medium"),
-      assignedBuilders: undefined,
-      notifiedBuilders: undefined,
-      responseCount: 0,
-
-      // Timestamps
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
-
-    console.log("🔄 Mapped lead data for Convex:", leadData);
+    console.log("📥 Lead submission received:", leadData);
 
     // Validate required fields
-    if (!leadData.contactEmail) {
+    if (!leadData?.companyName || !leadData?.contactEmail || !leadData?.contactPerson) {
       return NextResponse.json(
         {
           success: false,
-          error: "Email is required",
+          error: "Missing required fields: companyName, contactEmail, contactPerson",
         },
         { status: 400 }
       );
     }
 
-    console.log("💾 Creating lead in Convex database:", leadData);
+    // Set default values
+    const leadToInsert = {
+      company_name: leadData.companyName,
+      contact_person: leadData.contactPerson,
+      contact_email: leadData.contactEmail,
+      contact_phone: leadData.contactPhone || null,
+      trade_show: leadData.tradeShow || null,
+      trade_show_slug: leadData.tradeShowSlug || null,
+      stand_size: leadData.standSize || null,
+      budget: leadData.budget || null,
+      timeline: leadData.timeline || null,
+      requirements: leadData.requirements || null,
+      special_requests: leadData.specialRequests || null,
+      city_name: leadData.cityName || null,
+      country_name: leadData.countryName || null,
+      venue: leadData.venue || null,
+      status: leadData.status || "Open",
+      priority: leadData.priority || "Standard",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
 
-    // Create lead in Convex
-    const leadId = await convex.mutation(api.leads.createLead, leadData);
+    // Insert lead into Supabase
+    console.log("💾 Saving lead to Supabase...");
+    const { data: lead, error: insertError } = await supabase
+      .from('quote_requests')
+      .insert(leadToInsert)
+      .select()
+      .single();
 
-    console.log("✅ Lead created successfully with ID:", leadId);
-
-    // Also save lead to Supabase for builder dashboard
-    try {
-      console.log("💾 Saving lead to Supabase for builder dashboard...");
-      
-      // Determine if this is a general inquiry or builder-specific
-      const isGeneralInquiry = !body.builderId || body.builderId === 'public_request' || body.builderId === 'general';
-      
-      const supabaseLead = {
-        // Basic lead info
-        company_name: leadData.companyName,
-        contact_name: leadData.contactPerson,
-        contact_email: leadData.contactEmail,
-        contact_phone: leadData.contactPhone || '',
-        
-        // Event details
-        trade_show_name: leadData.exhibitionName || 'Not specified',
-        city: leadData.cityName || 'Not specified',
-        country: leadData.countryName || 'Not specified',
-        venue: leadData.venue || null,
-        
-        // Stand requirements
-        stand_size: leadData.standSize || 0,
-        budget: leadData.budget || 'To be discussed',
-        timeline: leadData.timeline || 'To be discussed',
-        special_requests: leadData.specialRequirements || '',
-        
-        // Lead management
-        status: 'NEW',
-        priority: (leadData.priority || 'MEDIUM').toUpperCase(),
-        source: leadData.source || 'unified_quote_request',
-        lead_score: (body as any).leadScore || 50,
-        
-        // Builder targeting - NEW FIELDS
-        targeted_builder_id: isGeneralInquiry ? null : body.builderId,
-        targeted_builder_name: isGeneralInquiry ? null : (body.builderName || null),
-        is_general_inquiry: isGeneralInquiry,
-        
-        // Location context (where user is looking for builders) - NEW FIELDS
-        search_location_city: body.cityName || body.builderLocation?.split(',')[0]?.trim() || null,
-        search_location_country: body.location || body.builderLocation?.split(',').pop()?.trim() || null,
-        search_location_country_code: body.countryCode || null,
-        
-        // Form metadata - NEW FIELDS
-        has_design_files: (body as any).hasDesign || false,
-        uploaded_files_count: (body as any).uploadedFilesCount || 0,
-        
-        // Timestamps
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      
-      console.log('📝 Lead details:', {
-        company: supabaseLead.company_name,
-        email: supabaseLead.contact_email,
-        eventCity: supabaseLead.city,
-        eventCountry: supabaseLead.country,
-        searchCity: supabaseLead.search_location_city,
-        searchCountry: supabaseLead.search_location_country,
-        isGeneral: supabaseLead.is_general_inquiry,
-        targetedBuilder: supabaseLead.targeted_builder_name
-      });
-
-      const supabaseResult = await dbService.createLead(supabaseLead);
-      console.log("✅ Lead saved to Supabase successfully:", supabaseResult?.id || 'saved');
-    } catch (supabaseError: any) {
-      console.error("❌ CRITICAL: Failed to save lead to Supabase:", supabaseError.message || supabaseError);
-      
-      // Log detailed error information
-      if (supabaseError.code) {
-        console.error("Supabase error code:", supabaseError.code);
-        console.error("Supabase error details:", supabaseError.details);
-        console.error("Supabase error hint:", supabaseError.hint);
-      }
-      
-      // Return error response since Supabase is critical for builder dashboards
+    if (insertError) {
+      console.error("❌ Failed to save lead to Supabase:", insertError);
       return NextResponse.json(
         {
           success: false,
           error: "Failed to save lead to database",
-          details: supabaseError.message || "Database connection error",
-          convexLeadId: leadId, // Include Convex ID for debugging
+          details: insertError.message,
         },
         { status: 500 }
       );
     }
 
-    // Get qualified builders from Convex
-    console.log("🔍 Finding qualified builders...");
-    const buildersResult = await convex.query(api.builders.getAllBuilders, { limit: 1000, offset: 0 });
+    const leadId = lead.id;
+    console.log("✅ Lead saved to Supabase successfully:", leadId);
 
-    let allBuilders: any[] = [];
-    if (
-      buildersResult &&
-      typeof buildersResult === 'object' &&
-      'builders' in buildersResult &&
-      Array.isArray(buildersResult.builders)
-    ) {
-      allBuilders = buildersResult.builders;
+    // Get qualified builders from Supabase (NO MORE CONVEX)
+    console.log("🔍 Finding qualified builders from Supabase...");
+    
+    // Fetch all builders from Supabase
+    const { data: allBuilders, error: buildersError } = await supabase
+      .from('builder_profiles')
+      .select(`
+        *,
+        builder_service_locations!left(
+          id,
+          city,
+          country,
+          country_code,
+          is_headquarters
+        )
+      `)
+      .order('created_at', { ascending: false });
+
+    if (buildersError) {
+      console.error("❌ Failed to fetch builders from Supabase:", buildersError);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to fetch builders",
+          details: buildersError.message,
+        },
+        { status: 500 }
+      );
     }
 
-    console.log(`📊 Total builders in system: ${allBuilders.length}`);
+    console.log(`📊 Total builders in system: ${allBuilders?.length || 0}`);
 
     // Enhanced qualification logic with location matching
-    const qualifiedBuilders = allBuilders.filter((builder) => {
+    const qualifiedBuilders = (allBuilders || []).filter((builder: any) => {
       if (!leadData.cityName && !leadData.countryName) {
         return true; // Show all builders if no location specified
       }
 
       // Check if builder serves the requested location
-      const builderLocation = builder.location?.toLowerCase() || "";
-      const builderCity = builder.headquartersCity?.toLowerCase() || "";
-      const builderCountry = builder.headquartersCountry?.toLowerCase() || "";
+      const builderCity = builder.headquarters_city?.toLowerCase() || "";
+      const builderCountry = builder.headquarters_country?.toLowerCase() || "";
       const leadCity = leadData.cityName?.toLowerCase() || "";
       const leadCountry = leadData.countryName?.toLowerCase() || "";
 
       // Enhanced matching logic
       const locationMatch =
-        builderLocation.includes(leadCity) ||
-        builderLocation.includes(leadCountry) ||
         builderCity === leadCity ||
-        builderCountry === leadCountry ||
-        leadCity.includes(builderLocation) ||
-        leadCountry.includes(builderLocation);
+        builderCountry === leadCountry;
 
       // Check service locations if available
-      const serviceLocationMatch = builder.serviceLocations?.some(
-        (loc: any) =>
-          loc.city?.toLowerCase() === leadCity ||
-          loc.country?.toLowerCase() === leadCountry
-      );
+      let serviceLocationMatch = false;
+      if (builder.builder_service_locations && Array.isArray(builder.builder_service_locations)) {
+        serviceLocationMatch = builder.builder_service_locations.some(
+          (loc: any) =>
+            loc.city?.toLowerCase() === leadCity ||
+            loc.country?.toLowerCase() === leadCountry
+        );
+      }
 
       return locationMatch || serviceLocationMatch;
     });
@@ -260,12 +145,10 @@ export async function POST(request: NextRequest) {
 
     try {
       // Filter builders with credits and active subscriptions
-      const buildersWithCredits = qualifiedBuilders.filter((builder) => {
+      const buildersWithCredits = qualifiedBuilders.filter((builder: any) => {
         // Simulate credit checking - in real implementation, check subscription status
-        const hasCredits =
-          builder.subscriptionPlan !== "free" ||
-          (builder.leadCredits && builder.leadCredits > 0);
-        const isActive = builder.isActive !== false;
+        const hasCredits = builder.premium_member === true;
+        const isActive = builder.is_active !== false;
         return hasCredits && isActive;
       });
 
@@ -283,30 +166,35 @@ export async function POST(request: NextRequest) {
           // 4. Deduct credits from builder account
 
           console.log(
-            `📧 Notifying builder: ${builder.companyName} (${builder.contactEmail || builder.email})`
+            `📧 Notifying builder: ${builder.company_name} (${builder.primary_email})`
           );
 
           // Simulate email sending
-          if (builder.contactEmail || builder.email) {
+          if (builder.primary_email) {
             emailsSent++;
           }
 
           notificationsSent++;
         } catch (notificationError) {
           console.error(
-            `❌ Failed to notify builder ${builder.companyName}:`,
+            `❌ Failed to notify builder ${builder.company_name}:`,
             notificationError
           );
         }
       }
 
       // Update lead with notification status
-      await convex.mutation(api.leads.updateLeadNotifications, {
-        leadId,
-        notifiedBuilders: buildersWithCredits.map((b) => b._id),
-        notificationsSent,
-        emailsSent,
-      });
+      const { error: updateError } = await supabase
+        .from('quote_requests')
+        .update({
+          matched_builders: buildersWithCredits.map((b: any) => b.id),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', leadId);
+
+      if (updateError) {
+        console.error("❌ Failed to update lead with matched builders:", updateError);
+      }
     } catch (notificationError) {
       console.error("❌ Error sending notifications:", notificationError);
     }
@@ -327,15 +215,12 @@ export async function POST(request: NextRequest) {
           status: leadData.status,
         },
         matchingBuilders: qualifiedBuilders.length,
-        qualifiedBuilders: qualifiedBuilders.slice(0, 5).map((b) => ({
-          id: b._id,
-          name: b.companyName || b.name,
-          city: b.headquartersCity,
-          country: b.headquartersCountry,
-          location: b.location,
-          hasCredits:
-            b.subscriptionPlan !== "free" ||
-            (b.leadCredits && b.leadCredits > 0),
+        qualifiedBuilders: qualifiedBuilders.slice(0, 5).map((b: any) => ({
+          id: b.id,
+          name: b.company_name,
+          city: b.headquarters_city,
+          country: b.headquarters_country,
+          hasCredits: b.premium_member === true,
         })),
         notificationsSent,
         emailsSent,
