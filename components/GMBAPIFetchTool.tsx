@@ -826,7 +826,7 @@ export default function GMBAPIFetchTool({ adminId, permissions }: GMBAPIFetchToo
                   <div key={`${listing.id}-${index}`} className="flex items-start gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
                     <Checkbox
                       checked={selectedListings.includes(listing.id)}
-                      onCheckedChange={(checked) => {
+                      onCheckedChange={(checked: any) => {
                         if (checked) {
                           setSelectedListings([...selectedListings, listing.id]);
                         } else {

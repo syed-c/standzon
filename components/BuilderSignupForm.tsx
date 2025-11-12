@@ -27,7 +27,7 @@ import {
   Star,
   Info
 } from 'lucide-react';
-import { tier1Countries, allCountries } from '@/lib/data/countries';
+import { allCountries } from '@/lib/data/countries';
 
 interface BuilderSignupFormData {
   // Company Information
@@ -489,9 +489,9 @@ export default function BuilderSignupForm() {
               <ul className="text-sm text-blue-800 space-y-1">
                 <li>• Our team will review your application within 24-48 hours</li>
                 <li>• You'll receive email confirmation once approved</li>
-                <li>• Access your builder dashboard to manage profile and quotes</li>
-                <li>• Start receiving quote requests from potential clients</li>
-                <li>• Build your reputation through client reviews and ratings</li>
+                <li>Access your builder dashboard to manage profile and quotes</li>
+                <li>Start receiving quote requests from potential clients</li>
+                <li>Build your reputation through client reviews and ratings</li>
               </ul>
             </div>
             <Button onClick={() => router.push('/')} className="mr-4">
@@ -803,7 +803,7 @@ export default function BuilderSignupForm() {
                       <Checkbox
                         id={country.code}
                         checked={formData.serviceCountries.includes(country.name)}
-                        onCheckedChange={(checked) => handleArrayUpdate('serviceCountries', country.name, checked as boolean)}
+                        onCheckedChange={(checked: boolean) => handleArrayUpdate('serviceCountries', country.name, checked)}
                       />
                       <Label htmlFor={country.code} className="text-sm cursor-pointer">
                         {country.name}
@@ -825,7 +825,7 @@ export default function BuilderSignupForm() {
                       <Checkbox
                         id={specialization}
                         checked={formData.specializations.includes(specialization)}
-                        onCheckedChange={(checked) => handleArrayUpdate('specializations', specialization, checked as boolean)}
+                        onCheckedChange={(checked: boolean) => handleArrayUpdate('specializations', specialization, checked)}
                       />
                       <Label htmlFor={specialization} className="text-sm cursor-pointer">
                         {specialization}
@@ -978,7 +978,7 @@ export default function BuilderSignupForm() {
                   <Checkbox
                     id="agreeToTerms"
                     checked={formData.agreeToTerms}
-                    onCheckedChange={(checked) => updateFormData('agreeToTerms', checked)}
+                    onCheckedChange={(checked: boolean) => updateFormData('agreeToTerms', checked)}
                     className={errors.agreeToTerms ? 'border-red-500' : ''}
                   />
                   <div>
@@ -995,7 +995,7 @@ export default function BuilderSignupForm() {
                   <Checkbox
                     id="agreeToMarketing"
                     checked={formData.agreeToMarketing}
-                    onCheckedChange={(checked) => updateFormData('agreeToMarketing', checked)}
+                    onCheckedChange={(checked: boolean) => updateFormData('agreeToMarketing', checked)}
                   />
                   <Label htmlFor="agreeToMarketing" className="cursor-pointer">
                     I agree to receive marketing communications and updates about the platform

@@ -12,7 +12,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { ConvexHttpClient } from 'convex/browser';
+// import { ConvexHttpClient } from 'convex/browser'; // Removed as we're not using Convex anymore
 // import { PrismaClient } from '@prisma/client'; // Removed as we're not using Prisma anymore
 import fs from 'fs';
 import path from 'path';
@@ -20,11 +20,11 @@ import path from 'path';
 // Configuration
 const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL!;
+// const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL!; // Removed as we're not using Convex anymore
 
 // Initialize clients
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-const convex = new ConvexHttpClient(CONVEX_URL);
+// const convex = new ConvexHttpClient(CONVEX_URL); // Removed as we're not using Convex anymore
 // const prisma = new PrismaClient(); // Removed as we're not using Prisma anymore
 
 interface MigrationStats {

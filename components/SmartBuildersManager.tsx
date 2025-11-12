@@ -1312,7 +1312,7 @@ export default function SmartBuildersManager({
                             checked={
                               selectedBuilders.length === sortedBuilders.length
                             }
-                            onCheckedChange={(checked) => {
+                            onCheckedChange={(checked: any) => {
                               if (checked) {
                                 setSelectedBuilders(
                                   sortedBuilders.map((b) => b.id)
@@ -1358,7 +1358,7 @@ export default function SmartBuildersManager({
                           <td className="py-4 px-4">
                             <Checkbox
                               checked={selectedBuilders.includes(builder.id)}
-                              onCheckedChange={(checked) => {
+                              onCheckedChange={(checked: any) => {
                                 if (checked) {
                                   setSelectedBuilders([
                                     ...selectedBuilders,
@@ -1544,7 +1544,7 @@ export default function SmartBuildersManager({
                 <Checkbox
                   id="show-duplicates-only"
                   checked={showDuplicatesOnly}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={(checked: boolean) =>
                     setShowDuplicatesOnly(checked as boolean)
                   }
                 />

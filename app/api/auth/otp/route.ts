@@ -223,7 +223,7 @@ export async function POST(request: NextRequest) {
         if (userType === "admin") {
           if (email === process.env.ADMIN_EMAIL) {
             user = {
-              id: "admin_001",
+              id: uuidv4(), // Changed from hardcoded string to proper UUID v4
               email: email,
               name: "System Administrator",
               role: "admin",
@@ -316,9 +316,9 @@ export async function POST(request: NextRequest) {
                   };
                 } else {
                   console.log('⚠️ No builder profile found, using fallback ID');
-                  const encodedId = Buffer.from(safeEmail).toString("base64").replace(/=/g, "");
+                  // Changed from base64 encoding to UUID v4 to comply with project specification
                   user = {
-                    id: `builder_${encodedId}`,
+                    id: uuidv4(), // Generate proper UUID v4 instead of string-based ID
                     email: safeEmail,
                     name: username,
                     role: "builder",
@@ -327,11 +327,10 @@ export async function POST(request: NextRequest) {
                 }
               } else {
                 console.log('⚠️ Supabase not available, using fallback ID');
-                const encodedId = Buffer.from(safeEmail).toString("base64").replace(/=/g, "");
                 user = {
-                  id: `builder_${encodedId}`,
-                  email: safeEmail,
-                  name: username,
+                  id: uuidv4(), // Generate proper UUID v4 instead of string-based ID
+                  email: email || '',
+                  name: "New Builder",
                   role: "builder",
                   verified: true,
                 };
