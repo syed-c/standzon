@@ -48,9 +48,7 @@
     "@supabase/supabase-js": "^2.48.1",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tanstack/react-table": "^8.20.5",
-    "@types/bcryptjs": "^3.0.0",
     "@types/lodash": "^4.17.15",
-    "@types/react-dom": "^19.0.3",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^1.1.0",
     "all-countries": "^2.0.2",
@@ -58,6 +56,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "convex": "^1.29.0",
     "country-list": "^2.3.0",
     "date-fns": "^3.6.0",
     "date-fns-tz": "^3.2.0",
@@ -88,6 +87,7 @@
     "recharts": "^3.4.1",
     "sharp": "^0.33.5",
     "sonner": "^2.0.7",
+    "stripe": "^17.7.0",
     "swr": "^2.3.2",
     "tailwind-merge": "^3.0.1",
     "tailwindcss": "^3.4.17",
@@ -112,9 +112,10 @@
   "devDependencies": {
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.4",
-    "@types/react-phone-number-input": "^3.1.37",
+    "@types/react-dom": "^19.0.3",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.20",
+    "critters": "^0.0.23",
     "postcss": "^8.5.6",
     "typescript": "^5.9.3"
   }
