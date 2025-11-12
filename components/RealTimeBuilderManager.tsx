@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -187,7 +188,7 @@ export default function RealTimeBuilderManager({ onBuilderUpdate }: RealTimeBuil
           });
 
           // Set defaults
-          builderData.id = `builder-${Date.now()}-${i}`;
+          builderData.id = uuidv4(); // Generate proper UUID instead of string-based ID
           builderData.establishedYear = 2020;
           builderData.teamSize = 10;
           builderData.projectsCompleted = 50;

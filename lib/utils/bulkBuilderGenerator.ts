@@ -1,7 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
 
 // Comprehensive city data for bulk import
-const COUNTRY_CITY_DATA = {
+interface CityData {
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+
+interface CountryData {
+  cities: CityData[];
+  builders: string[];
+}
+
+const COUNTRY_CITY_DATA: Record<string, CountryData> = {
   'United States': {
     cities: [
       { name: 'New York', latitude: 40.7128, longitude: -74.0060 },
@@ -113,6 +124,27 @@ const SPECIALIZATIONS = [
   { id: 'manufacturing', name: 'Manufacturing', icon: '🏭', color: '#F59E0B' }
 ];
 
+const currencyMap: Record<string, string> = {
+  'United States': 'USD',
+  'United Arab Emirates': 'USD',
+  'United Kingdom': 'GBP',
+  'Australia': 'AUD'
+};
+
+const countryCodeMap: Record<string, string> = {
+  'United States': 'US',
+  'United Arab Emirates': 'AE',
+  'United Kingdom': 'GB',
+  'Australia': 'AU'
+};
+
+const phoneFormats: Record<string, string> = {
+  'United States': '+1-XXX-XXX-XXXX',
+  'United Arab Emirates': '+971-X-XXX-XXXX',
+  'United Kingdom': '+44-XXX-XXX-XXXX',
+  'Australia': '+61-X-XXXX-XXXX'
+};
+
 export function generateBulkBuilders(country: string, count: number = 20) {
   const countryData = COUNTRY_CITY_DATA[country];
   if (!countryData) {
@@ -120,33 +152,22 @@ export function generateBulkBuilders(country: string, count: number = 20) {
   }
 
   const builders = [];
-  const currencyMap = {
-    'United States': 'USD',
-    'United Arab Emirates': 'USD',
-    'United Kingdom': 'GBP',
-    'Australia': 'AUD'
-  };
+  const currency = currencyMap[country];
+  const countryCode = countryCodeMap[country];
   
-  const countryCodeMap = {
-    'United States': 'US',
-    'United Arab Emirates': 'AE',
-    'United Kingdom': 'GB',
-    'Australia': 'AU'
-  };
-
-  const phoneFormats = {
-    'United States': '+1-XXX-XXX-XXXX',
-    'United Arab Emirates': '+971-X-XXX-XXXX',
-    'United Kingdom': '+44-XXX-XXX-XXXX',
-    'Australia': '+61-X-XXXX-XXXX'
-  };
-
+  // Generate phone number
+  const phoneFormat = phoneFormats[country];
+  const phone = phoneFormat.replace(/X/g, () => Math.floor(Math.random() * 10).toString());
+  
+  // Generate email and website
+  const companySlug = `${countryData.builders[0].toLowerCase().replace(/\s+/g, '')}-${countryData.cities[0].name.toLowerCase().replace(/\s+/g, '')}`;
+  const email = `info@${companySlug}.com`;
+  const website = `https://${companySlug}.com`;
+  
   for (let i = 0; i < count; i++) {
     const city = countryData.cities[i % countryData.cities.length];
     const builderName = countryData.builders[i % countryData.builders.length];
     const specialization = SPECIALIZATIONS[i % SPECIALIZATIONS.length];
-    const currency = currencyMap[country];
-    const countryCode = countryCodeMap[country];
     
     // Generate phone number
     const phoneFormat = phoneFormats[country];
@@ -158,7 +179,7 @@ export function generateBulkBuilders(country: string, count: number = 20) {
     const website = `https://${companySlug}.com`;
     
     const builder = {
-      id: `gmb_bulk_${Date.now()}_${i}`,
+      id: uuidv4(), // Generate proper UUID instead of string-based ID
       companyName: `${builderName} ${city.name}`,
       slug: companySlug,
       logo: '/images/builders/default-logo.png',
@@ -275,17 +296,18 @@ export function generateBulkBuilders(country: string, count: number = 20) {
   return builders;
 }
 
+const builderCounts: Record<string, number> = {
+  'United States': 25,
+  'United Arab Emirates': 15,
+  'United Kingdom': 20,
+  'Australia': 25
+};
+
 export function generateAllCountryBuilders() {
   console.log('🏗️ Generating bulk builders for all countries...');
   
-  const allBuilders = [];
+  const allBuilders: any[] = [];
   const countries = ['United States', 'United Arab Emirates', 'United Kingdom', 'Australia'];
-  const builderCounts = {
-    'United States': 25,
-    'United Arab Emirates': 15,
-    'United Kingdom': 20,
-    'Australia': 25
-  };
 
   countries.forEach(country => {
     const count = builderCounts[country];

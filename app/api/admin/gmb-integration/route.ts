@@ -3,599 +3,709 @@ import { createClient } from "@supabase/supabase-js";
 import { adminAPI } from "@/lib/api/admin";
 import { gmbProtection } from "@/lib/database/gmbDataProtection";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
+import { v4 as uuidv4 } from 'uuid';
+
+// Add CORS headers
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
+
+// Increase timeout for this API route (if supported by Next.js)
+// Note: This may not work in all Next.js versions
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
+};
+
+// Add timeout handling
+const API_TIMEOUT = 120000; // 2 minutes
 
 export async function POST(request: NextRequest) {
+  // Add CORS headers to response
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  };
+
   console.log("🚀 GMB Integration API called at:", new Date().toISOString());
 
+  // Set up timeout handling
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`GMB Integration API timeout after ${API_TIMEOUT}ms`));
+    }, API_TIMEOUT);
+  });
+
   try {
-    const { action, data } = await request.json();
-    console.log(
-      "📝 GMB Integration action:",
-      action,
-      "data keys:",
-      Object.keys(data || {})
-    );
-
-    // ✅ NEW: Handle API key testing
-    if (action === "test-api") {
-      console.log("🧪 Testing Google Places API key...");
-
-      const { apiKey } = data;
-
-      if (!apiKey || !apiKey.trim()) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "API key is required",
-          },
-          { status: 400 }
-        );
-      }
-
-      try {
-        // Test with a simple place search query
-        const testQuery = "restaurant in New York";
-        const testUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(testQuery)}&key=${apiKey}`;
-
-        console.log("📡 Making test API call to Google Places...");
-
-        const response = await fetch(testUrl);
-        const result = await response.json();
-
-        console.log("📊 Test API response status:", result.status);
-
-        if (result.status === "OK") {
-          console.log("✅ API key is valid and working");
-          return NextResponse.json({
-            success: true,
-            message: "Google Places API key is valid and working!",
-            data: {
-              status: result.status,
-              resultsCount: result.results?.length || 0,
-              testQuery,
-            },
-          });
-        } else if (result.status === "REQUEST_DENIED") {
-          console.log("❌ API key denied");
-          return NextResponse.json(
-            {
-              success: false,
-              error:
-                "API key is invalid or denied. Please check your Google Places API key and ensure it has the necessary permissions.",
-            },
-            { status: 400 }
-          );
-        } else if (result.status === "OVER_QUERY_LIMIT") {
-          console.log("⚠️ API quota exceeded");
-          return NextResponse.json(
-            {
-              success: false,
-              error:
-                "API quota exceeded. Please check your Google Cloud billing and quotas.",
-            },
-            { status: 400 }
-          );
-        } else {
-          console.log(
-            "❌ API test failed:",
-            result.error_message || result.status
-          );
-          return NextResponse.json(
-            {
-              success: false,
-              error:
-                result.error_message ||
-                `API test failed with status: ${result.status}`,
-            },
-            { status: 400 }
-          );
-        }
-      } catch (error) {
-        console.error("❌ API test request failed:", error);
-        return NextResponse.json(
-          {
-            success: false,
-            error:
-              "Failed to connect to Google Places API. Please check your internet connection and API key.",
-          },
-          { status: 500 }
-        );
-      }
-    }
-
-    // ✅ NEW: Save API key action
-    if (action === "save-api-key") {
-      console.log("💾 Saving GMB API key configuration...");
-
-      try {
-        const { apiKey, status } = data;
-
-        // Store API key configuration (in production, encrypt this)
-        (global as any).gmbApiConfig = {
-          hasKey: !!apiKey,
-          status: status,
-          lastTested: new Date().toISOString(),
-          keyPreview: apiKey ? `${apiKey.substring(0, 10)}...` : null,
-        };
-
-        console.log("✅ GMB API configuration saved");
-
-        return NextResponse.json({
-          success: true,
-          message: "API key configuration saved successfully",
-          data: {
-            status: "saved",
-            timestamp: new Date().toISOString(),
-          },
-        });
-      } catch (error) {
-        console.error("❌ Failed to save API key:", error);
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Failed to save API key configuration",
-          },
-          { status: 500 }
-        );
-      }
-    }
-
-    // ✅ NEW: Verify saved data action
-    if (action === "verify-saved-data") {
-      console.log("🔍 Verifying saved GMB data...");
-
-      try {
-        // Check if we have saved fetch results
-        const savedResults = (global as any).lastGMBFetchResults;
-
-        if (!savedResults) {
-          return NextResponse.json(
-            {
-              success: false,
-              error:
-                "No GMB fetch results found. Please fetch businesses first.",
-            },
-            { status: 404 }
-          );
-        }
-
-        // Get current platform data from Supabase (NO MORE CONVEX)
-        let allBuilders: any[] = [];
-        let gmbBuilders: any[] = [];
-        
-        try {
-          // Use absolute URL for server-side fetch
-          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-          const response = await fetch(`${baseUrl}/api/admin/builders?limit=10000`);
-          const buildersData = await response.json();
-          
-          if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
-            allBuilders = buildersData.data.builders;
-            gmbBuilders = allBuilders.filter(
-              (builder: any) =>
-                builder.gmbImported ||
-                builder.importedFromGMB ||
-                builder.source === "google_places_api" ||
-                (builder.id && String(builder.id).startsWith("gmb_"))
-            );
-          }
-        } catch (error) {
-          console.error("❌ Error fetching builders from Supabase:", error);
-        }
-
-        console.log(
-          "📊 Data verification results:",
-          {
-            lastFetchCount: savedResults.businesses.length,
-            currentGMBBuilders: gmbBuilders.length,
-            totalBuilders: allBuilders.length,
-          }
-        );
-
-        return NextResponse.json({
-          success: true,
-          message: "Data verification completed",
-          data: {
-            lastFetch: {
-              businessCount: savedResults.businesses.length,
-              timestamp: savedResults.timestamp,
-              searchCriteria: savedResults.searchCriteria,
-              sampleBusinesses: savedResults.businesses
-                .slice(0, 3)
-                .map((b: any) => ({
-                  name: b.businessName,
-                  city: b.city,
-                  country: b.country,
-                  phone: b.phone,
-                  website: b.website,
-                })),
-            },
-            currentPlatform: {
-              totalBuilders: allBuilders.length,
-              gmbImportedBuilders: gmbBuilders.length,
-              lastGMBImport:
-                gmbBuilders.length > 0
-                  ? gmbBuilders[gmbBuilders.length - 1].createdAt
-                  : null,
-            },
-            dataIntegrity: {
-              fetchedButNotSaved: Math.max(
-                0,
-                savedResults.businesses.length - gmbBuilders.length
-              ),
-              dataPersistence: "working",
-              apiConnection: "verified",
-            },
-          },
-        });
-      } catch (error) {
-        console.error("❌ Data verification failed:", error);
-        return NextResponse.json(
-          {
-            success: false,
-            error:
-              "Data verification failed: " +
-              (error instanceof Error ? error.message : "Unknown error"),
-          },
-          { status: 500 }
-        );
-      }
-    }
-
-    if (action === "fetch-businesses") {
-      console.log("🔍 Fetching businesses from GMB API:", data);
-
-      const { businessType, country, cities, radius, maxResults } = data;
-
-      if (!businessType || !country || !cities || cities.length === 0) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Missing required fields: businessType, country, cities",
-          },
-          { status: 400 }
-        );
-      }
-
-      // Get API key from localStorage (in real implementation, get from secure backend)
-      const apiKey = data.apiKey || process.env.GOOGLE_PLACES_API_KEY;
-
-      if (!apiKey) {
-        return NextResponse.json(
-          {
-            success: false,
-            error:
-              "API key not found. Please set up your Google Places API key.",
-          },
-          { status: 400 }
-        );
-      }
-
-      try {
-        // Make real Google Places API calls for each city
-        const businesses = await fetchRealGMBBusinesses(
-          apiKey,
-          businessType,
-          country,
-          cities,
-          parseInt(radius),
-          parseInt(maxResults)
-        );
-
-        console.log(
-          `✅ Successfully fetched ${businesses.length} real businesses from Google Places API`
-        );
-
-        return NextResponse.json({
-          success: true,
-          message: `Successfully fetched ${businesses.length} real businesses from Google Places API`,
-          data: {
-            businesses,
-            totalFound: businesses.length,
-            searchCriteria: {
-              businessType,
-              country,
-              cities,
-              radius,
-              maxResults,
-            },
-            verification: {
-              apiCallsMade: cities.length,
-              dataSource: "google_places_api",
-              timestamp: new Date().toISOString(),
-              canBeTested: true,
-            },
-          },
-        });
-      } catch (error) {
-        console.error("❌ Failed to fetch businesses:", error);
-        return NextResponse.json(
-          {
-            success: false,
-            error:
-              "Failed to fetch businesses: " +
-              (error instanceof Error ? error.message : "Unknown error"),
-          },
-          { status: 500 }
-        );
-      }
-    }
-
-    if (action === "create-listings") {
-      console.log(
-        "📝 Creating listings from GMB data with SUPABASE PERSISTENCE:",
-        data
-      );
-
-      const { listings, category } = data;
-
-      if (!listings || !Array.isArray(listings)) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Invalid listings data",
-          },
-          { status: 400 }
-        );
-      }
-
-      try {
-        // Transform listings to unified format (NO MORE CONVEX)
-        const unifiedBuilders = listings.map((listing) =>
-          transformGMBListingToUnifiedFormat(listing, category)
-        );
-
-        console.log(
-          `🔄 Transformed ${unifiedBuilders.length} listings to unified format`
-        );
-
-        // De-duplicate within this batch by gmbPlaceId or name+location
-        const seenKeys = new Set<string>();
-        const uniqueUnifiedBuilders = unifiedBuilders.filter((b: any) => {
-          const bd = b.builderData || {};
-          const key = `${bd.gmbPlaceId || ''}|${(bd.companyName || '').toLowerCase()}|${(bd.headquartersCity || '').toLowerCase()}|${(bd.headquartersCountry || '').toLowerCase()}`;
-          if (seenKeys.has(key)) return false;
-          seenKeys.add(key);
-          return true;
-        });
-
-        // Filter out duplicates already existing in Supabase
-        let existing: any[] = [];
-        try {
-          // Use absolute URL for server-side fetch
-          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-          const response = await fetch(`${baseUrl}/api/admin/builders?limit=10000`);
-          const buildersData = await response.json();
-          
-          if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
-            existing = buildersData.data.builders;
-          }
-        } catch (supabaseError) {
-          console.error("❌ Error fetching existing builders from Supabase:", supabaseError);
-        }
-        
-        const existingGmbSet = new Set(
-          existing.map((eb: any) => (eb.gmbPlaceId || '').toString())
-        );
-        const existingNameLoc = new Set(
-          existing.map((eb: any) => `${(eb.companyName || '').toLowerCase()}|${(eb.headquartersCity || '').toLowerCase()}|${(eb.headquartersCountry || '').toLowerCase()}`)
-        );
-
-        // Filter out existing builders
-        const newBuilders = uniqueUnifiedBuilders.filter((b: any) => {
-          const bd = b.builderData || {};
-          const gmbId = (bd.gmbPlaceId || '').toString();
-          const nameLocKey = `${(bd.companyName || '').toLowerCase()}|${(bd.headquartersCity || '').toLowerCase()}|${(bd.headquartersCountry || '').toLowerCase()}`;
-          
-          return !existingGmbSet.has(gmbId) && !existingNameLoc.has(nameLocKey);
-        });
-
-        console.log(
-          `📊 Deduplication results: ${uniqueUnifiedBuilders.length} unique → ${newBuilders.length} new builders`
-        );
-
-        // Save to Supabase
-        let createdCount = 0;
-        let failedCount = 0;
-        const errors: string[] = [];
-
-        for (const builder of newBuilders) {
-          try {
-            const response = await fetch("/api/admin/builders", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(builder.builderData),
-            });
-
-            const result = await response.json();
-            
-            if (result.success) {
-              createdCount++;
-              console.log(`✅ Created builder: ${builder.builderData.companyName}`);
-            } else {
-              failedCount++;
-              errors.push(`Failed to create ${builder.builderData.companyName}: ${result.error}`);
-              console.error(`❌ Failed to create builder: ${builder.builderData.companyName}`, result.error);
-            }
-          } catch (error) {
-            failedCount++;
-            errors.push(`Error creating ${builder.builderData.companyName}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-            console.error(`❌ Error creating builder: ${builder.builderData.companyName}`, error);
-          }
-        }
-
-        console.log(
-          `✅ GMB listing creation completed: ${createdCount} created, ${failedCount} failed`
-        );
-
-        return NextResponse.json({
-          success: true,
-          message: `GMB listing creation completed: ${createdCount} created, ${failedCount} failed`,
-          data: {
-            processed: newBuilders.length,
-            created: createdCount,
-            failed: failedCount,
-            errors: failedCount > 0 ? errors : undefined,
-            sampleResults: newBuilders
-              .slice(0, 3)
-              .map((b: any) => b.builderData.companyName),
-          },
-        });
-      } catch (error) {
-        console.error("❌ Error creating listings:", error);
-        return NextResponse.json(
-          {
-            success: false,
-            error:
-              "Failed to create listings: " +
-              (error instanceof Error ? error.message : "Unknown error"),
-          },
-          { status: 500 }
-        );
-      }
-    }
-
-    if (action === "recover-dubai-data") {
-      console.log("🔄 Recovering Dubai GMB data...");
-      const results = {
-        recovered: 0,
-        failed: 0,
-        errors: [] as string[],
-      };
-
-      try {
-        // Get saved GMB data
-        const savedData = (global as any).lastGMBFetchResults;
-        if (!savedData || !savedData.businesses) {
-          return NextResponse.json({
-            success: false,
-            error: "No saved GMB data found. Please fetch data first.",
-          }, { status: 404 });
-        }
-
-        // Filter for Dubai businesses
-        const dubaiBusinesses = savedData.businesses.filter(
-          (business: any) => business.city?.toLowerCase() === "dubai"
-        );
-
-        console.log(
-          `🔍 Found ${dubaiBusinesses.length} Dubai businesses in saved data`
-        );
-
-        for (const business of dubaiBusinesses) {
-          try {
-            // Transform to builder format
-            const builder = transformGMBBusinessToBuilder(business);
-
-            // Generate slug
-            const baseSlug = builder.companyName
-              .toLowerCase()
-              .replace(/[^a-z0-9\s-]/g, "")
-              .replace(/\s+/g, "-")
-              .replace(/-+/g, "-")
-              .trim();
-
-            // Save to Supabase instead of Convex
-            const response = await fetch("/api/admin/builders", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                companyName: builder.companyName,
-                slug: baseSlug,
-                primary_email: builder.contactInfo?.primaryEmail || "",
-                logo: builder.logo || undefined,
-                established_year: builder.establishedYear || undefined,
-                headquarters_city: builder.headquarters?.city || "Dubai",
-                headquarters_country: builder.headquarters?.country || "UAE",
-                headquarters_country_code: builder.headquarters?.countryCode || "AE",
-                headquarters_address: builder.headquarters?.address || "",
-                phone: builder.contactInfo?.phone || "",
-                website: builder.contactInfo?.website || "",
-                contact_person: builder.contactInfo?.contactPerson || "Contact Person",
-                position: builder.contactInfo?.position || "Manager",
-                company_description: builder.companyDescription || undefined,
-                team_size: builder.teamSize || undefined,
-                projects_completed: builder.projectsCompleted || undefined,
-                rating: builder.rating || undefined,
-                review_count: builder.reviewCount || undefined,
-                response_time: builder.responseTime || undefined,
-                languages: builder.languages || undefined,
-                verified: builder.verified || false,
-                premium_member: builder.premiumMember || false,
-                business_license: builder.businessLicense || undefined,
-                currency: builder.priceRange?.currency || undefined,
-                basic_stand_min: builder.priceRange?.basicStand?.min || undefined,
-                basic_stand_max: builder.priceRange?.basicStand?.max || undefined,
-                custom_stand_min: builder.priceRange?.customStand?.min || undefined,
-                custom_stand_max: builder.priceRange?.customStand?.max || undefined,
-                premium_stand_min: builder.priceRange?.premiumStand?.min || undefined,
-                premium_stand_max: builder.priceRange?.premiumStand?.max || undefined,
-                average_project: builder.priceRange?.averageProject || undefined,
-                gmb_imported: true,
-                imported_from_gmb: true,
-                source: "google_places_api",
-              }),
-            });
-
-            const result = await response.json();
-            
-            if (result.success) {
-              results.recovered++;
-            } else {
-              results.failed++;
-              results.errors.push(result.error || "Failed to create builder");
-            }
-
-          } catch (error) {
-            results.failed++;
-            results.errors.push(error instanceof Error ? error.message : "Unknown error");
-          }
-        }
-
-        console.log(
-          `✅ Data recovery complete: ${results.recovered} builders recovered`
-        );
-
-        return NextResponse.json({
-          success: true,
-          message: `Successfully recovered ${results.recovered} Dubai builders`,
-          data: results,
-        });
-      } catch (error) {
-        console.error("❌ Data recovery failed:", error);
-        return NextResponse.json(
-          {
-            success: false,
-            error:
-              "Data recovery failed: " +
-              (error instanceof Error ? error.message : "Unknown error"),
-          },
-          { status: 500 }
-        );
-      }
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Unknown action",
-      },
-      { status: 400 }
-    );
+    // Race between the actual request processing and timeout
+    const result = await Promise.race([
+      processRequest(request),
+      timeoutPromise
+    ]);
+    
+    // Add CORS headers to successful response
+    const response = result as NextResponse;
+    Object.entries(corsHeaders).forEach(([key, value]) => {
+      response.headers.set(key, value);
+    });
+    
+    return response;
   } catch (error) {
     console.error("❌ GMB Integration API error:", error);
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       {
         success: false,
         error: "Internal server error",
+        details: error instanceof Error ? error.message : "Unknown error"
       },
       { status: 500 }
     );
+    
+    // Add CORS headers to error response
+    Object.entries(corsHeaders).forEach(([key, value]) => {
+      errorResponse.headers.set(key, value);
+    });
+    
+    return errorResponse;
   }
+}
+
+async function processRequest(request: NextRequest) {
+  const { action, data } = await request.json();
+  console.log(
+    "📝 GMB Integration action:",
+    action,
+    "data keys:",
+    Object.keys(data || {})
+  );
+
+  // ✅ NEW: Handle API key testing
+  if (action === "test-api") {
+    console.log("🧪 Testing Google Places API key...");
+
+    const { apiKey } = data;
+
+    if (!apiKey || !apiKey.trim()) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "API key is required",
+        },
+        { status: 400 }
+      );
+    }
+
+    try {
+      // Test with a simple place search query
+      const testQuery = "restaurant in New York";
+      const testUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(testQuery)}&key=${apiKey}`;
+
+      console.log("📡 Making test API call to Google Places...");
+
+      const response = await fetch(testUrl);
+      const result = await response.json();
+
+      console.log("📊 Test API response status:", result.status);
+
+      if (result.status === "OK") {
+        console.log("✅ API key is valid and working");
+        return NextResponse.json({
+          success: true,
+          message: "Google Places API key is valid and working!",
+          data: {
+            status: result.status,
+            resultsCount: result.results?.length || 0,
+            testQuery,
+          },
+        });
+      } else if (result.status === "REQUEST_DENIED") {
+        console.log("❌ API key denied");
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "API key is invalid or denied. Please check your Google Places API key and ensure it has the necessary permissions.",
+          },
+          { status: 400 }
+        );
+      } else if (result.status === "OVER_QUERY_LIMIT") {
+        console.log("⚠️ API quota exceeded");
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "API quota exceeded. Please check your Google Cloud billing and quotas.",
+          },
+          { status: 400 }
+        );
+      } else {
+        console.log(
+          "❌ API test failed:",
+          result.error_message || result.status
+        );
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              result.error_message ||
+              `API test failed with status: ${result.status}`,
+          },
+          { status: 400 }
+        );
+      }
+    } catch (error) {
+      console.error("❌ API test request failed:", error);
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Failed to connect to Google Places API. Please check your internet connection and API key.",
+        },
+        { status: 500 }
+      );
+    }
+  }
+
+  // ✅ NEW: Save API key action
+  if (action === "save-api-key") {
+    console.log("💾 Saving GMB API key configuration...");
+
+    try {
+      const { apiKey, status } = data;
+
+      // Store API key configuration (in production, encrypt this)
+      (global as any).gmbApiConfig = {
+        hasKey: !!apiKey,
+        status: status,
+        lastTested: new Date().toISOString(),
+        keyPreview: apiKey ? `${apiKey.substring(0, 10)}...` : null,
+      };
+
+      console.log("✅ GMB API configuration saved");
+
+      return NextResponse.json({
+        success: true,
+        message: "API key configuration saved successfully",
+        data: {
+          status: "saved",
+          timestamp: new Date().toISOString(),
+        },
+      });
+    } catch (error) {
+      console.error("❌ Failed to save API key:", error);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to save API key configuration",
+        },
+        { status: 500 }
+      );
+    }
+  }
+
+  // ✅ NEW: Verify saved data action
+  if (action === "verify-saved-data") {
+    console.log("🔍 Verifying saved GMB data...");
+
+    try {
+      // Check if we have saved fetch results
+      const savedResults = (global as any).lastGMBFetchResults;
+
+      if (!savedResults) {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "No GMB fetch results found. Please fetch businesses first.",
+          },
+          { status: 404 }
+        );
+      }
+
+      // Get current platform data from Supabase (NO MORE CONVEX)
+      let allBuilders: any[] = [];
+      let gmbBuilders: any[] = [];
+
+      try {
+        // Use absolute URL for server-side fetch
+        const baseUrl =
+          process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+        const response = await fetch(
+          `${baseUrl}/api/admin/builders?limit=10000`
+        );
+        const buildersData = await response.json();
+
+        if (
+          buildersData.success &&
+          buildersData.data &&
+          Array.isArray(buildersData.data.builders)
+        ) {
+          allBuilders = buildersData.data.builders;
+          gmbBuilders = allBuilders.filter(
+            (builder: any) =>
+              builder.gmbImported ||
+              builder.importedFromGMB ||
+              builder.source === "google_places_api" ||
+              (builder.id && String(builder.id).startsWith("gmb_"))
+          );
+        }
+      } catch (error) {
+        console.error("❌ Error fetching builders from Supabase:", error);
+      }
+
+      console.log("📊 Data verification results:", {
+        lastFetchCount: savedResults.businesses.length,
+        currentGMBBuilders: gmbBuilders.length,
+        totalBuilders: allBuilders.length,
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: "Data verification completed",
+        data: {
+          lastFetch: {
+            businessCount: savedResults.businesses.length,
+            timestamp: savedResults.timestamp,
+            searchCriteria: savedResults.searchCriteria,
+            sampleBusinesses: savedResults.businesses
+              .slice(0, 3)
+              .map((b: any) => ({
+                name: b.businessName,
+                city: b.city,
+                country: b.country,
+                phone: b.phone,
+                website: b.website,
+              })),
+          },
+          currentPlatform: {
+            totalBuilders: allBuilders.length,
+            gmbImportedBuilders: gmbBuilders.length,
+            lastGMBImport:
+              gmbBuilders.length > 0
+                ? gmbBuilders[gmbBuilders.length - 1].createdAt
+                : null,
+          },
+          dataIntegrity: {
+            fetchedButNotSaved: Math.max(
+              0,
+              savedResults.businesses.length - gmbBuilders.length
+            ),
+            dataPersistence: "working",
+            apiConnection: "verified",
+          },
+        },
+      });
+    } catch (error) {
+      console.error("❌ Data verification failed:", error);
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Data verification failed: " +
+            (error instanceof Error ? error.message : "Unknown error"),
+        },
+        { status: 500 }
+      );
+    }
+  }
+
+  if (action === "fetch-businesses") {
+    console.log("🔍 Fetching businesses from GMB API:", data);
+
+    const { businessType, country, cities, radius, maxResults } = data;
+
+    if (!businessType || !country || !cities || cities.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Missing required fields: businessType, country, cities",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Get API key from localStorage (in real implementation, get from secure backend)
+    const apiKey = data.apiKey || process.env.GOOGLE_PLACES_API_KEY;
+
+    if (!apiKey) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "API key not found. Please set up your Google Places API key.",
+        },
+        { status: 400 }
+      );
+    }
+
+    try {
+      // Make real Google Places API calls for each city
+      const businesses = await fetchRealGMBBusinesses(
+        apiKey,
+        businessType,
+        country,
+        cities,
+        parseInt(radius),
+        parseInt(maxResults)
+      );
+
+      console.log(
+        `✅ Successfully fetched ${businesses.length} real businesses from Google Places API`
+      );
+
+      return NextResponse.json({
+        success: true,
+        message: `Successfully fetched ${businesses.length} real businesses from Google Places API`,
+        data: {
+          businesses,
+          totalFound: businesses.length,
+          searchCriteria: {
+            businessType,
+            country,
+            cities,
+            radius,
+            maxResults,
+          },
+          verification: {
+            apiCallsMade: cities.length,
+            dataSource: "google_places_api",
+            timestamp: new Date().toISOString(),
+            canBeTested: true,
+          },
+        },
+      });
+    } catch (error) {
+      console.error("❌ Failed to fetch businesses:", error);
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Failed to fetch businesses: " +
+            (error instanceof Error ? error.message : "Unknown error"),
+        },
+        { status: 500 }
+      );
+    }
+  }
+
+  if (action === "create-listings") {
+    console.log(
+      "📝 Creating listings from GMB data with SUPABASE PERSISTENCE:",
+      data
+    );
+
+    const { listings, category } = data;
+
+    if (!listings || !Array.isArray(listings)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid listings data",
+        },
+        { status: 400 }
+      );
+    }
+
+    try {
+      // Log the incoming data for debugging
+      console.log(`📥 Received ${listings.length} listings for import`);
+      if (listings.length > 0) {
+        console.log("📋 First listing sample:", JSON.stringify(listings[0], null, 2));
+      }
+
+      // Transform listings to ExhibitionBuilder shape expected by admin builders API
+      const transformedBuilders = listings.map((listing) =>
+        transformGMBToBuilder(listing)
+      );
+
+      console.log(
+        `🔄 Transformed ${transformedBuilders.length} listings to builder shape`
+      );
+
+      // De-duplicate within this batch by gmbPlaceId or name+location
+      const seenKeys = new Set<string>();
+      const uniqueBuilders = transformedBuilders.filter((b: any) => {
+        const key = `${(b.gmbData?.placeId || "").toString()}|${(b.companyName || "").toLowerCase()}|${(b.headquarters?.city || "").toLowerCase()}|${(b.headquarters?.country || "").toLowerCase()}`;
+        if (seenKeys.has(key)) return false;
+        seenKeys.add(key);
+        return true;
+      });
+
+      // Filter out duplicates already existing in Supabase
+      let existing: any[] = [];
+      try {
+        // Use absolute URL for server-side fetch
+        const baseUrl =
+          process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+        const response = await fetch(
+          `${baseUrl}/api/admin/builders?limit=10000`
+        );
+        const buildersData = await response.json();
+
+        if (
+          buildersData.success &&
+          buildersData.data &&
+          Array.isArray(buildersData.data.builders)
+        ) {
+          existing = buildersData.data.builders;
+        }
+      } catch (supabaseError) {
+        console.error(
+          "❌ Error fetching existing builders from Supabase:",
+          supabaseError
+        );
+      }
+
+      const existingGmbSet = new Set(
+        existing.map((eb: any) =>
+          (eb.gmbData?.placeId || eb.gmbPlaceId || "").toString()
+        )
+      );
+      const existingNameLoc = new Set(
+        existing.map(
+          (eb: any) =>
+            `${(eb.companyName || "").toLowerCase()}|${(eb.headquarters?.city || "").toLowerCase()}|${(eb.headquarters?.country || "").toLowerCase()}`
+        )
+      );
+
+      // Filter out existing builders
+      const newBuilders = uniqueBuilders.filter((b: any) => {
+        const gmbId = (b.gmbData?.placeId || "").toString();
+        const nameLocKey = `${(b.companyName || "").toLowerCase()}|${(b.headquarters?.city || "").toLowerCase()}|${(b.headquarters?.country || "").toLowerCase()}`;
+
+        return !existingGmbSet.has(gmbId) && !existingNameLoc.has(nameLocKey);
+      });
+
+      console.log(
+        `📊 Deduplication results: ${uniqueBuilders.length} unique → ${newBuilders.length} new builders`
+      );
+
+      // Save to Supabase using unifiedPlatformAPI instead of fetch request
+      let createdCount = 0;
+      let failedCount = 0;
+      const errors: string[] = [];
+
+      console.log(`🔄 Starting to save ${newBuilders.length} builders to Supabase...`);
+
+      // Process builders with better error handling and progress tracking
+      for (let i = 0; i < newBuilders.length; i++) {
+        const builder = newBuilders[i];
+        try {
+          console.log(`🔄 Saving builder ${i + 1}/${newBuilders.length}: ${builder.companyName} (ID: ${builder.id})`);
+          
+          // Add timeout for each builder creation
+          const builderPromise = unifiedPlatformAPI.addBuilder(builder as any, "admin");
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error(`Timeout creating builder: ${builder.companyName}`)), 30000);
+          });
+          
+          // Race between builder creation and timeout
+          const result: any = await Promise.race([builderPromise, timeoutPromise]);
+          
+          if (result.success) {
+            createdCount++;
+            console.log(`✅ Created builder: ${builder.companyName}`);
+          } else {
+            failedCount++;
+            const errorMessage = `Failed to create ${builder.companyName}: ${result.error}`;
+            errors.push(errorMessage);
+            console.error(`❌ ${errorMessage}`);
+          }
+        } catch (error) {
+          failedCount++;
+          const errorMessage = `Error creating ${builder.companyName}: ${error instanceof Error ? error.message : "Unknown error"}`;
+          errors.push(errorMessage);
+          console.error(`❌ ${errorMessage}`, error);
+        }
+        
+        // Add small delay to prevent overwhelming the system
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      console.log(
+        `✅ GMB listing creation completed: ${createdCount} created, ${failedCount} failed`
+      );
+
+      return NextResponse.json({
+        success: true,
+        message: `GMB listing creation completed: ${createdCount} created, ${failedCount} failed`,
+        data: {
+          processed: newBuilders.length,
+          created: createdCount,
+          failed: failedCount,
+          errors: failedCount > 0 ? errors : undefined,
+          sampleResults: newBuilders
+            .slice(0, 3)
+            .map((b: any) => b.companyName),
+        },
+      });
+    } catch (error) {
+      console.error("❌ Error creating listings:", error);
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Failed to create listings: " +
+            (error instanceof Error ? error.message : "Unknown error"),
+        },
+        { status: 500 }
+      );
+    }
+  }
+
+  if (action === "recover-dubai-data") {
+    console.log("🔄 Recovering Dubai GMB data...");
+    const results = {
+      recovered: 0,
+      failed: 0,
+      errors: [] as string[],
+    };
+
+    try {
+      // Get saved GMB data
+      const savedData = (global as any).lastGMBFetchResults;
+      if (!savedData || !savedData.businesses) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "No saved GMB data found. Please fetch data first.",
+          },
+          { status: 404 }
+        );
+      }
+
+      // Filter for Dubai businesses
+      const dubaiBusinesses = savedData.businesses.filter(
+        (business: any) => business.city?.toLowerCase() === "dubai"
+      );
+
+      console.log(
+        `🔍 Found ${dubaiBusinesses.length} Dubai businesses in saved data`
+      );
+
+      for (const business of dubaiBusinesses) {
+        try {
+          // Transform to builder format
+          const builder = transformGMBBusinessToBuilder(business);
+
+          // Generate slug
+          const baseSlug = builder.companyName
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-")
+            .trim();
+
+          // Save to Supabase instead of Convex
+          const response = await fetch("/api/admin/builders", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              companyName: builder.companyName,
+              slug: baseSlug,
+              primary_email: builder.contactInfo?.primaryEmail || "",
+              logo: builder.logo || undefined,
+              established_year: builder.establishedYear || undefined,
+              headquarters_city: builder.headquarters?.city || "Dubai",
+              headquarters_country: builder.headquarters?.country || "UAE",
+              headquarters_country_code:
+                builder.headquarters?.countryCode || "AE",
+              headquarters_address: builder.headquarters?.address || "",
+              phone: builder.contactInfo?.phone || "",
+              website: builder.contactInfo?.website || "",
+              contact_person:
+                builder.contactInfo?.contactPerson || "Contact Person",
+              position: builder.contactInfo?.position || "Manager",
+              company_description: builder.companyDescription || undefined,
+              team_size: builder.teamSize || undefined,
+              projects_completed: builder.projectsCompleted || undefined,
+              rating: builder.rating || undefined,
+              review_count: builder.reviewCount || undefined,
+              response_time: builder.responseTime || undefined,
+              languages: builder.languages || undefined,
+              verified: builder.verified || false,
+              premium_member: builder.premiumMember || false,
+              business_license: builder.businessLicense || undefined,
+              currency: builder.priceRange?.currency || undefined,
+              basic_stand_min:
+                builder.priceRange?.basicStand?.min || undefined,
+              basic_stand_max:
+                builder.priceRange?.basicStand?.max || undefined,
+              custom_stand_min:
+                builder.priceRange?.customStand?.min || undefined,
+              custom_stand_max:
+                builder.priceRange?.customStand?.max || undefined,
+              premium_stand_min:
+                builder.priceRange?.premiumStand?.min || undefined,
+              premium_stand_max:
+                builder.priceRange?.premiumStand?.max || undefined,
+              average_project:
+                builder.priceRange?.averageProject || undefined,
+              gmb_imported: true,
+              imported_from_gmb: true,
+              source: "google_places_api",
+            }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            results.recovered++;
+          } else {
+            results.failed++;
+            results.errors.push(result.error || "Failed to create builder");
+          }
+        } catch (error) {
+          results.failed++;
+          results.errors.push(
+            error instanceof Error ? error.message : "Unknown error"
+          );
+        }
+      }
+
+      console.log(
+        `✅ Data recovery complete: ${results.recovered} builders recovered`
+      );
+
+      return NextResponse.json({
+        success: true,
+        message: `Successfully recovered ${results.recovered} Dubai builders`,
+        data: results,
+      });
+    } catch (error) {
+      console.error("❌ Data recovery failed:", error);
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Data recovery failed: " +
+            (error instanceof Error ? error.message : "Unknown error"),
+        },
+        { status: 500 }
+      );
+    }
+  }
+
+  return NextResponse.json(
+    {
+      success: false,
+      error: "Unknown action",
+    },
+    { status: 400 }
+  );
 }
 
 // Real function to fetch businesses from Google Places API
@@ -738,6 +848,7 @@ async function processSearchResults(
   maxResults: number
 ): Promise<number> {
   let processedCount = 0;
+  const usedIds = new Set<string>();
 
   for (const place of results) {
     if (
@@ -756,8 +867,19 @@ async function processSearchResults(
       if (detailsData.status === "OK" && detailsData.result) {
         const placeDetails = detailsData.result;
 
+        // Generate a unique ID for the business using UUID
+        let uniqueId = uuidv4();
+
+        // Ensure ID uniqueness within the current batch
+        while (usedIds.has(uniqueId)) {
+          uniqueId = uuidv4();
+        }
+        
+        usedIds.add(uniqueId);
+
         // Extract business information
         const businessInfo = {
+          id: uniqueId, // Use proper UUID
           businessName: placeDetails.name,
           businessType: businessType,
           address: placeDetails.formatted_address,
@@ -779,7 +901,7 @@ async function processSearchResults(
         processedCount++;
 
         console.log(
-          `➕ Added business: ${businessInfo.businessName} (${city}, ${country})`
+          `➕ Added business: ${businessInfo.businessName} (${city}, ${country}) with ID: ${businessInfo.id}`
         );
       }
     } catch (error) {
@@ -796,6 +918,7 @@ async function processSearchResults(
 // Transform GMB business data to builder format
 function transformGMBBusinessToBuilder(business: any) {
   return {
+    id: uuidv4(), // Generate proper UUID
     companyName: business.businessName,
     headquarters: {
       city: business.city || "Unknown",
@@ -858,7 +981,9 @@ function transformGMBListingToUnifiedFormat(listing: any, category: string) {
       headquarters_address: listing.address || "",
       contact_person: "Contact Person", // Will be filled by admin
       position: "Manager", // Will be filled by admin
-      company_description: listing.description || `Professional ${category} in ${listing.city}, ${listing.country}.`,
+      company_description:
+        listing.description ||
+        `Professional ${category} in ${listing.city}, ${listing.country}.`,
       team_size: 10, // Default value
       projects_completed: Math.floor(Math.random() * 50), // Simulated value
       rating: listing.rating || 0,
@@ -900,6 +1025,13 @@ function getCountryCode(country: string): string {
 }
 
 export async function GET(request: NextRequest) {
+  // Add CORS headers to GET response
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  };
+
   const { searchParams } = new URL(request.url);
   const type = searchParams.get("type");
   const action = searchParams.get("action");
@@ -907,7 +1039,7 @@ export async function GET(request: NextRequest) {
   try {
     // Handle action=test (legacy support)
     if (action === "test") {
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         message: "GMB Integration API is working!",
         data: {
@@ -915,6 +1047,13 @@ export async function GET(request: NextRequest) {
           version: "1.0.0",
         },
       });
+      
+      // Add CORS headers
+      Object.entries(corsHeaders).forEach(([key, value]) => {
+        response.headers.set(key, value);
+      });
+      
+      return response;
     }
 
     // Handle action=builders (fetch GMB imported builders)
@@ -923,14 +1062,21 @@ export async function GET(request: NextRequest) {
         // Get current platform data from Supabase (NO MORE CONVEX)
         let allBuilders: any[] = [];
         let gmbBuilders: any[] = [];
-        
+
         try {
           // Use absolute URL for server-side fetch
-          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-          const response = await fetch(`${baseUrl}/api/admin/builders?limit=10000`);
+          const baseUrl =
+            process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+          const response = await fetch(
+            `${baseUrl}/api/admin/builders?limit=10000`
+          );
           const buildersData = await response.json();
-          
-          if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
+
+          if (
+            buildersData.success &&
+            buildersData.data &&
+            Array.isArray(buildersData.data.builders)
+          ) {
             allBuilders = buildersData.data.builders;
             gmbBuilders = allBuilders.filter(
               (builder: any) =>
@@ -948,15 +1094,21 @@ export async function GET(request: NextRequest) {
           `📊 Found ${gmbBuilders.length} GMB builders out of ${allBuilders.length} total`
         );
 
-        return NextResponse.json({
+        const response = NextResponse.json({
           success: true,
           message: `Found ${gmbBuilders.length} GMB imported builders`,
           data: {
             builders: gmbBuilders.map((builder: any) => ({
               id: builder.id,
               companyName: builder.companyName,
-              city: builder.headquarters?.city || builder.headquarters_city || "Unknown",
-              country: builder.headquarters?.country || builder.headquarters_country || "Unknown",
+              city:
+                builder.headquarters?.city ||
+                builder.headquarters_city ||
+                "Unknown",
+              country:
+                builder.headquarters?.country ||
+                builder.headquarters_country ||
+                "Unknown",
               rating: builder.rating || 0,
               reviewCount: builder.reviewCount || 0,
               verified: builder.verified || false,
@@ -974,20 +1126,34 @@ export async function GET(request: NextRequest) {
             },
           },
         });
+        
+        // Add CORS headers
+        Object.entries(corsHeaders).forEach(([key, value]) => {
+          response.headers.set(key, value);
+        });
+        
+        return response;
       } catch (error) {
         console.error("❌ Error fetching GMB builders:", error);
-        return NextResponse.json({
+        const errorResponse = NextResponse.json({
           success: false,
           error: "Failed to fetch GMB builders",
           data: { builders: [] },
+        }, { status: 500 });
+        
+        // Add CORS headers
+        Object.entries(corsHeaders).forEach(([key, value]) => {
+          errorResponse.headers.set(key, value);
         });
+        
+        return errorResponse;
       }
     }
 
     // Handle action=status (legacy support)
     if (action === "status") {
       // Return GMB integration status
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         data: {
           apiConnected: true,
@@ -997,10 +1163,17 @@ export async function GET(request: NextRequest) {
           creditsRemaining: 1000,
         },
       });
+      
+      // Add CORS headers
+      Object.entries(corsHeaders).forEach(([key, value]) => {
+        response.headers.set(key, value);
+      });
+      
+      return response;
     }
 
     // Default response for unrecognized parameters
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: false,
         error:
@@ -1008,15 +1181,29 @@ export async function GET(request: NextRequest) {
       },
       { status: 400 }
     );
+    
+    // Add CORS headers
+    Object.entries(corsHeaders).forEach(([key, value]) => {
+      response.headers.set(key, value);
+    });
+    
+    return response;
   } catch (error) {
     console.error("❌ GMB Integration GET error:", error);
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       {
         success: false,
         error: "Internal server error",
       },
       { status: 500 }
     );
+    
+    // Add CORS headers
+    Object.entries(corsHeaders).forEach(([key, value]) => {
+      errorResponse.headers.set(key, value);
+    });
+    
+    return errorResponse;
   }
 }
 
@@ -1035,12 +1222,12 @@ function transformGMBToBuilder(listing: any) {
 
     console.log("📝 Basic variables set:", { countryCode, category });
 
-    // ✅ FIXED: Generate proper unique ID for GMB builders
+    // ✅ FIXED: Generate proper UUID for GMB builders
     const gmbId =
       listing.gmbId ||
       listing.id ||
-      `gmb_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const builderId = `gmb_${gmbId}`;
+      uuidv4();
+    const builderId = gmbId; // Use the UUID directly instead of prefixing
 
     // ✅ FIXED: Add timeout for transformation
     const transformationTimeout = setTimeout(() => {
@@ -1055,6 +1242,8 @@ function transformGMBToBuilder(listing: any) {
           ?.toLowerCase()
           .replace(/\s+/g, "-")
           .replace(/[^a-z0-9-]/g, "") || "unknown-builder",
+      logo: "/images/builders/default-logo.png",
+      establishedYear: new Date().getFullYear(),
       contactInfo: {
         primaryEmail: "", // Use empty string instead of null
         phone: listing.phone || "",
@@ -1082,17 +1271,13 @@ function transformGMBToBuilder(listing: any) {
           isHeadquarters: false,
         },
       ],
-      companyDescription:
-        listing.description ||
-        `Professional ${category.toLowerCase()} services in ${listing.city || "Unknown"}`,
       rating: listing.rating || 0,
       reviewCount: listing.reviewCount || 0,
       verified: listing.verified || false,
       claimed: false,
-      claimStatus: "unclaimed",
+      claimStatus: "unclaimed" as const,
       premiumMember: false,
-      establishedYear: null,
-      teamSize: null,
+      teamSize: 0,
       projectsCompleted: 0,
       responseTime: "New to platform",
       languages: ["English"],
@@ -1115,17 +1300,47 @@ function transformGMBToBuilder(listing: any) {
           id: "gmb-service",
           name: category,
           description: `Professional ${category.toLowerCase()} services`,
-          category: "General",
-          priceFrom: null,
+          category: "Construction" as const,
+          priceFrom: 0,
           currency: "USD",
           unit: "per project",
           popular: false,
           turnoverTime: "Contact for details",
         },
       ],
+      certifications: [],
+      awards: [],
       portfolio: [],
-      keyStrengths: [],
       tradeshowExperience: [],
+      priceRange: {
+        basicStand: { min: 0, max: 0, currency: "USD", unit: "per sqm" },
+        customStand: { min: 0, max: 0, currency: "USD", unit: "per sqm" },
+        premiumStand: { min: 0, max: 0, currency: "USD", unit: "per sqm" },
+        averageProject: 0,
+        currency: "USD"
+      },
+      companyDescription:
+        listing.description ||
+        `Professional ${category.toLowerCase()} services in ${listing.city || "Unknown"}`,
+      whyChooseUs: [],
+      clientTestimonials: [],
+      socialMedia: {},
+      businessLicense: "",
+      insurance: {
+        liability: 0,
+        currency: "USD",
+        validUntil: "",
+        insurer: ""
+      },
+      sustainability: {
+        certifications: [],
+        ecoFriendlyMaterials: false,
+        wasteReduction: false,
+        carbonNeutral: false,
+        sustainabilityScore: 0
+      },
+      keyStrengths: [],
+      recentProjects: [],
       source: "google_places_api",
       gmbData: {
         originalId: gmbId,
@@ -1141,6 +1356,9 @@ function transformGMBToBuilder(listing: any) {
       createdAt: new Date().toISOString(),
       importedFromGMB: true,
       gmbImported: true, // Add this flag for compatibility
+      status: "active",
+      plan: "free",
+      contactEmail: ""
     };
 
     // Clear the timeout
@@ -1172,7 +1390,7 @@ function transformGMBToEventPlanner(listing: any) {
     const countryCode = getCountryCode(listing.country);
     const category = listing.category || "Event Planning Service";
 
-    const plannerId = `gmb_planner_${listing.gmbId || listing.id || Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const plannerId = uuidv4(); // Generate proper UUID
 
     // Determine specializations based on category
     const getEventPlannerSpecializations = (category: string) => {
@@ -1282,8 +1500,8 @@ function transformGMBToEventPlanner(listing: any) {
       },
       source: "google_places_api",
       gmbData: {
-        originalId: listing.gmbId || listing.id,
-        placeId: listing.gmbId || listing.id,
+        originalId: uuidv4(), // Generate proper UUID
+        placeId: uuidv4(), // Generate proper UUID
         fetchDate: new Date().toISOString(),
         businessHours: listing.businessHours || "Not available",
         photos: listing.photos || [],
@@ -1337,7 +1555,7 @@ function transformGMBListingToConvexFormat(listing: any, category: string) {
       reviewCount: listing.reviewCount || 0,
       verified: listing.verified || false,
       claimed: false,
-      claimStatus: "unclaimed",
+      claimStatus: "unclaimed" as const,
 
       // GMB specific fields
       gmbPlaceId: listing.gmbId || listing.id,
@@ -1370,8 +1588,6 @@ function transformGMBListingToConvexFormat(listing: any, category: string) {
   };
 }
 
-
-
 // Helper function to add event planner to platform
 async function addEventPlannerToPlatform(plannerData: any) {
   try {
@@ -1403,7 +1619,9 @@ async function addEventPlannerToPlatform(plannerData: any) {
     console.log(
       `✅ Added event planner to platform: ${plannerData.companyName}`
     );
-    console.log(`📊 Total event planners now: ${(globalThis as any).eventPlanners.length}`);
+    console.log(
+      `📊 Total event planners now: ${(globalThis as any).eventPlanners.length}`
+    );
 
     return {
       success: true,
@@ -1417,8 +1635,6 @@ async function addEventPlannerToPlatform(plannerData: any) {
     };
   }
 }
-
-
 
 // ✅ NEW: Generate Dubai builders for data recovery
 function generateDubaiBuilders(count: number): any[] {
@@ -1518,7 +1734,7 @@ function generateDubaiBuilders(count: number): any[] {
     const area = businessAreas[i % businessAreas.length];
 
     const builder = {
-      id: `gmb_dubai_recovered_${Date.now()}_${i}`,
+      id: uuidv4(), // Generate proper UUID
       companyName,
       slug: companyName
         .toLowerCase()
@@ -1559,7 +1775,7 @@ function generateDubaiBuilders(count: number): any[] {
       reviewCount: Math.floor(Math.random() * 200) + 20,
       verified: Math.random() > 0.3,
       claimed: false,
-      claimStatus: "unclaimed",
+      claimStatus: "unclaimed" as const,
       premiumMember: false,
       establishedYear: null,
       teamSize: null,
@@ -1598,8 +1814,8 @@ function generateDubaiBuilders(count: number): any[] {
       tradeshowExperience: [],
       source: "google_places_api",
       gmbData: {
-        originalId: `gmb_dubai_${i}`,
-        placeId: `gmb_dubai_${i}`,
+        originalId: uuidv4(), // Generate proper UUID
+        placeId: uuidv4(), // Generate proper UUID
         fetchDate: new Date().toISOString(),
         businessHours: "Sun-Thu: 9:00 AM - 6:00 PM",
         photos: [],
@@ -1655,4 +1871,5 @@ function generateDubaiBuilders(count: number): any[] {
   return builders;
 }
 
-
+// Add missing closing export
+export {};

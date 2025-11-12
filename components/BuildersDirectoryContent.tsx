@@ -37,6 +37,14 @@ import { builderStats } from "@/lib/data/exhibitionBuilders";
 import { GLOBAL_EXHIBITION_DATA } from "@/lib/data/globalCities";
 import PublicQuoteRequest from "@/components/PublicQuoteRequest";
 
+// Add null checks for icons to prevent runtime errors
+const SafeIcon = ({ IconComponent, ...props }: { IconComponent: any } & React.SVGProps<SVGSVGElement>) => {
+  if (!IconComponent) {
+    return null;
+  }
+  return <IconComponent {...props} />;
+};
+
 interface BuilderRaw {
   id: string;
   company_name?: string;
@@ -593,369 +601,485 @@ export default function BuildersDirectoryContent() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
                 <div className="flex items-center justify-center mb-3">
-                  <FiUsers className="w-8 h-8 text-blue-400" />
+                  <SafeIcon IconComponent={FiUsers} className="w-8 h-8 text-blue-400" />
                 </div>
                 <div className="text-2xl font-bold">{realTimeStats.totalBuilders}</div>
                 <div className="text-slate-300 text-sm">Total Builders</div>
               </div>
+              
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
                 <div className="flex items-center justify-center mb-3">
-                  <FiShield className="w-8 h-8 text-green-400" />
+                  <SafeIcon IconComponent={FiShield} className="w-8 h-8 text-green-400" />
                 </div>
                 <div className="text-2xl font-bold">{realTimeStats.verifiedBuilders}</div>
-                <div className="text-slate-300 text-sm">Verified</div>
+                <div className="text-slate-300 text-sm">Verified Builders</div>
               </div>
+              
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
                 <div className="flex items-center justify-center mb-3">
-                  <FiMapPin className="w-8 h-8 text-purple-400" />
+                  <SafeIcon IconComponent={FiGlobe} className="w-8 h-8 text-purple-400" />
                 </div>
                 <div className="text-2xl font-bold">{realTimeStats.totalCountries}</div>
                 <div className="text-slate-300 text-sm">Countries</div>
               </div>
+              
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
                 <div className="flex items-center justify-center mb-3">
-                  <FiAward className="w-8 h-8 text-yellow-400" />
+                  <SafeIcon IconComponent={FiStar} className="w-8 h-8 text-yellow-400" />
                 </div>
-                <div className="text-2xl font-bold">{realTimeStats.totalCities}</div>
-                <div className="text-slate-300 text-sm">Cities</div>
+                <div className="text-2xl font-bold">
+                  {realTimeStats.averageRating.toFixed(1)}
+                </div>
+                <div className="text-slate-300 text-sm">Avg Rating</div>
               </div>
+            </div>
+            
+            {/* CTA */}
+            <div className="max-w-2xl mx-auto">
+              <Link href="/quote">
+                <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                  <SafeIcon IconComponent={FiArrowRight} className="w-5 h-5 mr-2" />
+                  Get Free Quote from Verified Builders
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Search and Filters */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Find Your Perfect Builder
-              </h2>
-              <p className="text-gray-600">
-                Use filters to narrow down your search and find builders that match your needs
-              </p>
-              {lastUpdated && (
-                <p className="text-xs text-gray-500 mt-2">
-                  Last updated: {lastUpdated.toLocaleTimeString()}
-                </p>
-              )}
+      {/* Main Content */}
+      <div className="container mx-auto px-6 py-12">
+        {/* Filters and Search */}
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <h2 className="text-2xl font-bold text-slate-900">
+              Browse Exhibition Builders
+            </h2>
+            
+            <div className="flex items-center space-x-3">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className="border-slate-300 text-slate-700 hover:bg-slate-100"
+              >
+                <SafeIcon IconComponent={FiFilter} className="w-4 h-4 mr-2" />
+                {showFilters ? 'Hide Filters' : 'Show Filters'}
+              </Button>
+              
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="rating">Highest Rated</SelectItem>
+                  <SelectItem value="projects">Most Projects</SelectItem>
+                  <SelectItem value="experience">Most Experience</SelectItem>
+                  <SelectItem value="name">Alphabetical</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-
-            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-6">
-              {/* Search */}
-              <div className="flex-1 max-w-md">
-                <div className="relative">
-                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <Input
-                    placeholder="Search builders..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-gray-50 border-gray-200 focus:bg-white"
-                  />
-                </div>
-              </div>
-
-              {/* Filters */}
-              <div className="flex flex-wrap gap-3 items-center">
-                {/* Refresh Button */}
-                <Button
-                  variant="outline"
-                  onClick={handleRefresh}
-                  disabled={isRefreshing}
-                  className="flex items-center gap-2 border-blue-200 text-blue-600 hover:bg-blue-50"
-                >
-                  {isRefreshing ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                      Refreshing...
-                    </>
-                  ) : (
-                    <>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      Refresh
-                    </>
-                  )}
-                </Button>
-                
-                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                  <SelectTrigger className="w-48 bg-gray-50 border-gray-200">
-                    <SelectValue placeholder="Select Country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Countries</SelectItem>
-                    {countries.map((country) => (
-                      <SelectItem key={country} value={country}>
-                        {country}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={selectedCity} onValueChange={setSelectedCity}>
-                  <SelectTrigger className="w-48 bg-gray-50 border-gray-200">
-                    <SelectValue placeholder="Select City" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Cities</SelectItem>
-                    {cities.map((city) => (
-                      <SelectItem key={city} value={city}>
-                        {city}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-48 bg-gray-50 border-gray-200">
-                    <SelectValue placeholder="Sort By" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="rating">Rating</SelectItem>
-                    <SelectItem value="projects">Projects</SelectItem>
-                    <SelectItem value="experience">Experience</SelectItem>
-                    <SelectItem value="name">Name</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Button
-                  variant="outline"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 border-gray-200"
-                >
-                  <FiFilter />
-                  {showFilters ? 'Hide' : 'Show'} Filters
-                </Button>
-              </div>
-            </div>
-
-            {/* Advanced Filters */}
-            {showFilters && (
-              <div className="p-6 bg-gray-50 rounded-2xl border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          </div>
+          
+          {/* Search and Filters */}
+          {showFilters && (
+            <Card className="mb-6 border-slate-200 shadow-sm">
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                  {/* Search */}
+                  <div className="lg:col-span-2">
+                    <div className="relative">
+                      <SafeIcon IconComponent={FiSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                      <Input
+                        placeholder="Search builders, services, locations..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 border-slate-300 focus:ring-pink-500 focus:border-pink-500"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Country Filter */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
-                      Minimum Rating: {minRating[0].toFixed(1)} ⭐
-                    </label>
+                    <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                      <SelectTrigger className="border-slate-300 focus:ring-pink-500 focus:border-pink-500">
+                        <SelectValue placeholder="Country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Countries</SelectItem>
+                        {countries.map((country) => (
+                          <SelectItem key={country} value={country}>
+                            {country}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* City Filter */}
+                  <div>
+                    <Select value={selectedCity} onValueChange={setSelectedCity}>
+                      <SelectTrigger className="border-slate-300 focus:ring-pink-500 focus:border-pink-500">
+                        <SelectValue placeholder="City" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Cities</SelectItem>
+                        {cities.map((city) => (
+                          <SelectItem key={city} value={city}>
+                            {city}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Rating Filter */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-slate-700">Min Rating</span>
+                      <span className="text-sm font-bold text-pink-600">{minRating[0]}+</span>
+                    </div>
                     <Slider
                       value={minRating}
                       onValueChange={setMinRating}
                       max={5}
-                      min={0}
-                      step={0.1}
+                      step={0.5}
                       className="w-full"
                     />
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
-      </section>
-
-      {/* Builders Grid */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-6">
-          <div className="max-w-7xl mx-auto">
-            {loading ? (
-              <div className="text-center py-20">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-6"></div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Loading builders...</h3>
-                <p className="text-gray-600">Please wait while we fetch the latest builder data</p>
-              </div>
-            ) : filteredBuilders.length > 0 ? (
-              <>
-                <div className="text-center mb-12">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                    Found {filteredBuilders.length} Builders
-                  </h2>
-                  <p className="text-lg text-gray-600">
-                    Showing {startIndex + 1}-{Math.min(endIndex, filteredBuilders.length)} of {filteredBuilders.length} builders
-                  </p>
-                </div>
-
-                <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-6 sm:gap-8">
-                  {currentBuilders.map((builder) => (
-                    <Card key={builder.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white">
-                      <CardHeader className="pb-4 sm:pb-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <CardTitle className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 group-hover:text-blue-600 transition-colors">
+        
+        {/* Loading State */}
+        {loading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
+              <p className="text-slate-600">Loading exhibition builders...</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Empty State */}
+        {!loading && currentBuilders.length === 0 && (
+          <div className="text-center py-12">
+            <div className="mx-auto w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+              <SafeIcon IconComponent={FiUsers} className="w-12 h-12 text-slate-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">No builders found</h3>
+            <p className="text-slate-600 mb-6">Try adjusting your search or filter criteria</p>
+            <Button 
+              onClick={() => {
+                setSearchTerm("");
+                setSelectedCountry("all");
+                setSelectedCity("all");
+                setMinRating([0]);
+              }}
+              className="bg-pink-500 hover:bg-pink-600 text-white"
+            >
+              Clear Filters
+            </Button>
+          </div>
+        )}
+        
+        {/* Builders Grid */}
+        {!loading && currentBuilders.length > 0 && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {currentBuilders.map((builder) => (
+                <Card 
+                  key={builder.id} 
+                  className="border-slate-200 hover:border-pink-300 hover:shadow-lg transition-all duration-200 overflow-hidden"
+                >
+                  <CardContent className="p-0">
+                    {/* Header with logo and verification */}
+                    <div className="p-6 pb-4">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center text-white font-bold">
+                            {builder.companyName.charAt(0)}
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-slate-900 line-clamp-1">
                               {builder.companyName}
-                            </CardTitle>
-                            <div className="flex items-center gap-2 mb-3 sm:mb-4">
-                              <div className="flex items-center bg-yellow-50 px-2 py-1 rounded-lg">
-                                <FiStar className="w-4 h-4 text-yellow-500 fill-current" />
-                                <span className="ml-1 text-sm font-semibold text-yellow-700">
-                                  {builder.rating.toFixed(1)}
-                                </span>
-                              </div>
-                              <Badge 
-                                variant={builder.verified ? "default" : "secondary"}
-                                className={builder.verified ? "bg-green-100 text-green-800 border-green-200" : ""}
-                              >
-                                {builder.verified ? "Verified" : "Unverified"}
-                              </Badge>
+                            </h3>
+                            <div className="flex items-center space-x-1">
+                              <SafeIcon IconComponent={FiMapPin} className="w-3 h-3 text-slate-500" />
+                              <span className="text-xs text-slate-600">
+                                {builder.headquarters.city}, {builder.headquarters.country}
+                              </span>
                             </div>
-                          </div>
-                          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center">
-                            <FiAward className="w-7 h-7 sm:w-8 sm:h-8 text-blue-600" />
                           </div>
                         </div>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="space-y-4 sm:space-y-5">
-                          <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
-                            <FiMapPin className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
-                            <div className="flex flex-wrap gap-1">
-                              {builder.serviceLocations && builder.serviceLocations.length > 0 ? (
-                                builder.serviceLocations.map((location, index) => (
-                                  <span key={index} className="font-medium">
-                                    {location.country} ({location.cities.join(', ')})
-                                    {index < builder.serviceLocations.length - 1 && <span>, </span>}
-                                  </span>
-                                ))
-                              ) : (
-                                <span className="font-medium">{builder.headquarters.city}, {builder.headquarters.country}</span>
-                              )}
-                            </div>
-                          </div>
-                          
-                          {builder.companyDescription && (
-                            <p className="text-sm text-gray-600 line-clamp-3 sm:line-clamp-4 leading-relaxed">
-                              {builder.companyDescription}
-                            </p>
-                          )}
-
-                          <div className="grid grid-cols-2 gap-3 sm:gap-4 text-sm">
-                            <div className="flex items-center bg-blue-50 px-3 py-2 rounded-lg">
-                              <FiUsers className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
-                              <span className="font-medium">{builder.projectsCompleted} projects</span>
-                            </div>
-                            <div className="flex items-center bg-green-50 px-3 py-2 rounded-lg">
-                              <FiClock className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
-                              <span className="font-medium">{builder.responseTime}</span>
-                            </div>
-                          </div>
-
-                          {builder.keyStrengths && builder.keyStrengths.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {builder.keyStrengths.slice(0, 3).map((strength, index) => (
-                                <Badge key={index} variant="outline" className="text-xs bg-gray-50 text-gray-700 border-gray-200">
-                                  {strength}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-
-                          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                            <Link href={`/builders/${builder.slug}`} className="flex-1">
-                              <Button variant="outline" size="sm" className="w-full border-gray-200 hover:border-blue-300 hover:text-blue-600 min-h-[40px]">
-                                View Profile
-                              </Button>
-                            </Link>
-                            <PublicQuoteRequest 
-                              builderId={builder.id}
-                              location={`${builder.headquarters.city}, ${builder.headquarters.country}`}
-                              buttonText="Get Quote"
-                              size="sm"
-                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white min-h-[40px]"
-                            />
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                {/* Pagination Controls */}
-                {totalPages > 1 && (
-                  <div className="mt-12 sm:mt-16 flex justify-center">
-                    <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                        disabled={currentPage === 1}
-                        className="border-gray-200 min-h-[40px] w-full sm:w-auto touch-active no-tap-highlight"
-                      >
-                        <FiArrowRight className="w-4 h-4 mr-1 rotate-180" />
-                        Previous
-                      </Button>
-                      
-                      <div className="flex items-center gap-1">
-                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                          let pageNum;
-                          if (totalPages <= 5) {
-                            pageNum = i + 1;
-                          } else if (currentPage <= 3) {
-                            pageNum = i + 1;
-                          } else if (currentPage >= totalPages - 2) {
-                            pageNum = totalPages - 4 + i;
-                          } else {
-                            pageNum = currentPage - 2 + i;
-                          }
-                          
-                          return (
-                            <Button
-                              key={pageNum}
-                              variant={currentPage === pageNum ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => setCurrentPage(pageNum)}
-                              className={`${currentPage === pageNum ? "bg-blue-600 hover:bg-blue-700" : "border-gray-200"} min-h-[40px] min-w-[40px] touch-active no-tap-highlight`}
-                            >
-                              {pageNum}
-                            </Button>
-                          );
-                        })}
+                        {builder.verified && (
+                          <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
+                            <SafeIcon IconComponent={FiShield} className="w-3 h-3 mr-1" />
+                            Verified
+                          </Badge>
+                        )}
                       </div>
                       
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                        disabled={currentPage === totalPages}
-                        className="border-gray-200 min-h-[40px] w-full sm:w-auto touch-active no-tap-highlight"
-                      >
-                        Next
-                        <FiArrowRight className="w-4 h-4 ml-1" />
-                      </Button>
+                      {/* Rating and Stats */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-1">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <SafeIcon 
+                                key={i} 
+                                IconComponent={FiStar} 
+                                className={`w-4 h-4 ${i < Math.floor(builder.rating) ? 'text-yellow-400 fill-current' : 'text-slate-300'}`} 
+                              />
+                            ))}
+                          </div>
+                          <span className="text-sm font-medium text-slate-900">
+                            {builder.rating.toFixed(1)}
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-600">
+                          {builder.reviewCount} reviews
+                        </div>
+                      </div>
+                      
+                      {/* Description */}
+                      <p className="text-sm text-slate-600 mb-4 line-clamp-2">
+                        {builder.companyDescription || "Professional exhibition stand builder with years of experience."}
+                      </p>
+                      
+                      {/* Key Stats */}
+                      <div className="grid grid-cols-2 gap-3 mb-4">
+                        <div className="bg-slate-50 rounded-lg p-2 text-center">
+                          <div className="text-xs text-slate-600 mb-1">Projects</div>
+                          <div className="font-bold text-slate-900">
+                            {builder.projectsCompleted}
+                          </div>
+                        </div>
+                        <div className="bg-slate-50 rounded-lg p-2 text-center">
+                          <div className="text-xs text-slate-600 mb-1">Est. Year</div>
+                          <div className="font-bold text-slate-900">
+                            {builder.establishedYear}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Key Strengths */}
+                      {builder.keyStrengths && builder.keyStrengths.length > 0 && (
+                        <div className="mb-4">
+                          <div className="flex flex-wrap gap-1">
+                            {builder.keyStrengths.slice(0, 3).map((strength, index) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {strength}
+                              </Badge>
+                            ))}
+                            {builder.keyStrengths.length > 3 && (
+                              <Badge variant="secondary" className="text-xs">
+                                +{builder.keyStrengths.length - 3} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-20">
-                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <FiSearch className="w-12 h-12 text-gray-400" />
+                    
+                    {/* Action Buttons */}
+                    <div className="border-t border-slate-100 p-4 bg-slate-50">
+                      <div className="flex space-x-2">
+                        <Link 
+                          href={`/builders/${builder.slug}`} 
+                          className="flex-1"
+                        >
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full border-slate-300 text-slate-700 hover:bg-slate-100"
+                          >
+                            <SafeIcon IconComponent={FiEye} className="w-4 h-4 mr-1" />
+                            View Profile
+                          </Button>
+                        </Link>
+                        <Link 
+                          href={`/quote?builder=${builder.id}`}
+                          className="flex-1"
+                        >
+                          <Button 
+                            size="sm" 
+                            className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+                          >
+                            <SafeIcon IconComponent={FiArrowRight} className="w-4 h-4 mr-1" />
+                            Quote
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between border-t border-slate-200 pt-6">
+                <div className="text-sm text-slate-600">
+                  Showing {startIndex + 1}-{Math.min(endIndex, filteredBuilders.length)} of {filteredBuilders.length} builders
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  No builders found
-                </h3>
-                <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
-                  Try adjusting your search criteria or filters to find more builders
-                </p>
-                <Button 
-                  onClick={() => {
-                    setSearchTerm("");
-                    setSelectedCountry("all");
-                    setSelectedCity("all");
-                    setMinRating([0]);
-                  }}
-                  className="bg-blue-600 hover:bg-blue-700 px-8 py-3 touch-active no-tap-highlight"
-                >
-                  Clear All Filters
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="border-slate-300 text-slate-700 hover:bg-slate-100"
+                  >
+                    Previous
+                  </Button>
+                  
+                  <div className="flex items-center space-x-1">
+                    {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={currentPage === pageNum ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={currentPage === pageNum 
+                            ? "bg-pink-500 hover:bg-pink-600 text-white" 
+                            : "border-slate-300 text-slate-700 hover:bg-slate-100"
+                          }
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                    {totalPages > 5 && (
+                      <>
+                        {currentPage > 3 && (
+                          <span className="text-slate-400 px-2">...</span>
+                        )}
+                        {currentPage > 3 && currentPage < totalPages - 1 && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(currentPage)}
+                            className="border-slate-300 text-slate-700 hover:bg-slate-100"
+                          >
+                            {currentPage}
+                          </Button>
+                        )}
+                        {currentPage < totalPages - 2 && (
+                          <span className="text-slate-400 px-2">...</span>
+                        )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(totalPages)}
+                          className="border-slate-300 text-slate-700 hover:bg-slate-100"
+                        >
+                          {totalPages}
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="border-slate-300 text-slate-700 hover:bg-slate-100"
+                  >
+                    Next
+                  </Button>
+                </div>
               </div>
             )}
+          </>
+        )}
+      </div>
+      
+      {/* Featured Section */}
+      <section className="bg-gradient-to-br from-slate-900 to-slate-800 text-white py-16">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Why Choose Our Verified Builders?
+            </h2>
+            <p className="text-xl text-slate-300 mb-8">
+              Our platform connects you with pre-vetted exhibition stand builders who deliver exceptional results.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <SafeIcon IconComponent={FiShield} className="w-8 h-8 text-pink-400" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Verified Professionals</h3>
+              <p className="text-slate-300">
+                Every builder undergoes a rigorous verification process to ensure quality and reliability.
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <SafeIcon IconComponent={FiAward} className="w-8 h-8 text-blue-400" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Award-Winning Work</h3>
+              <p className="text-slate-300">
+                Our builders have won industry recognition for innovative designs and exceptional craftsmanship.
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <SafeIcon IconComponent={FiClock} className="w-8 h-8 text-purple-400" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">On-Time Delivery</h3>
+              <p className="text-slate-300">
+                Guaranteed project completion within agreed timelines with transparent communication throughout.
+              </p>
+            </div>
           </div>
         </div>
       </section>
-
+      
+      {/* CTA Section */}
+      <section className="py-16 bg-gradient-to-br from-pink-50 to-rose-50">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
+              Ready to Find Your Perfect Builder?
+            </h2>
+            <p className="text-xl text-slate-700 mb-8">
+              Get matched with verified exhibition stand builders who meet your specific requirements.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/quote">
+                <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                  <SafeIcon IconComponent={FiArrowRight} className="w-5 h-5 mr-2" />
+                  Get Free Quote
+                </Button>
+              </Link>
+              <Link href="/builders">
+                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100 px-8 py-4 text-lg font-semibold rounded-xl">
+                  <SafeIcon IconComponent={FiUsers} className="w-5 h-5 mr-2" />
+                  Browse All Builders
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+      
       <Footer />
       <WhatsAppFloat />
+      <TradeStyleBanner 
+        mainHeading="Find Exhibition Stand"
+        highlightHeading="Builders Worldwide"
+        description="Connect with verified professionals who specialize in creating stunning exhibition stands for trade shows and events."
+      />
     </div>
   );
 }

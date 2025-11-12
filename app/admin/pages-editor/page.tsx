@@ -113,11 +113,15 @@ export default function AdminPagesEditor() {
         // Client fallback: generate pages list from global dataset so Cities tab is not empty
         try {
           const mod = await import('@/lib/data/globalCities');
+          
+          // Generate pages for ALL countries, not just those with major cities listed
           const countries = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).map((c: any) => ({
             title: `${c.name} Exhibition Stands`,
             path: `/exhibition-stands/${c.slug}`,
             type: 'country'
           }));
+          
+          // Generate pages for ALL cities from the global dataset
           const cities = (mod.GLOBAL_EXHIBITION_DATA?.cities || []).map((city: any) => {
             const country = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).find((c: any) => c.name === city.country);
             return country ? {
@@ -126,8 +130,11 @@ export default function AdminPagesEditor() {
               type: 'city'
             } : null;
           }).filter(Boolean) as any[];
+          
           const fallbackPages = [...(countries as any[]), ...cities];
           console.log('🔄 Setting fallback pages:', fallbackPages.length, 'pages');
+          console.log('🌍 Countries in fallback:', countries.length);
+          console.log('🏙️ Cities in fallback:', cities.length);
           setPages(fallbackPages);
         } catch (err) {
           console.warn('Fallback generation failed:', err);
@@ -170,18 +177,37 @@ export default function AdminPagesEditor() {
     (async () => {
       try {
         const mod = await import('@/lib/data/globalCities');
-        const countries = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).map((c: any, index: number) => ({ slug: c.slug, name: c.name, index }));
-        const cities = (mod.GLOBAL_EXHIBITION_DATA?.cities || []).reduce((acc: Record<string, Array<{ slug: string; name: string }>>, city: any) => {
+        // Ensure all countries are included, even those without major cities listed
+        const countries = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).map((c: any, index: number) => ({ 
+          slug: c.slug, 
+          name: c.name, 
+          index 
+        }));
+        
+        // Build city options by country, including countries with no cities listed
+        const cities: Record<string, Array<{ slug: string; name: string }>> = {};
+        
+        // Initialize all countries with empty arrays
+        countries.forEach(country => {
+          cities[country.slug] = [];
+        });
+        
+        // Populate cities for countries that have them
+        (mod.GLOBAL_EXHIBITION_DATA?.cities || []).forEach((city: any) => {
           const country = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).find((c: any) => c.name === city.country);
-          if (!country) return acc;
-          const arr = acc[country.slug] || [];
-          arr.push({ slug: city.slug, name: city.name });
-          acc[country.slug] = arr;
-          return acc;
-        }, {} as Record<string, Array<{ slug: string; name: string }>>);
+          if (country && cities[country.slug]) {
+            cities[country.slug].push({ slug: city.slug, name: city.name });
+          }
+        });
+        
         setCountryOptions(countries);
         setCityOptionsByCountry(cities);
-      } catch {}
+        
+        console.log('🌍 Loaded country options:', countries.length, 'countries');
+        console.log('🏙️ Loaded city options for countries:', Object.keys(cities).length);
+      } catch (error) {
+        console.error('❌ Error loading country/city options:', error);
+      }
     })();
   }, []);
 

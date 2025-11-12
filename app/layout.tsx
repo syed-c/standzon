@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Inter, Poppins, Roboto, Montserrat, Red_Hat_Display } from "next/font/google";
 import { Toaster } from '@/components/ui/toaster';
 import siteMetadata from '@/app/metadata.json';
-import { ConvexClientProvider } from '@/components/convex-client-provider';
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import PerformanceMonitor from '@/components/PerformanceMonitor';
@@ -71,32 +70,38 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth h-full m-0 p-0" suppressHydrationWarning>
         <head>
+          {/* ✅ PWA: Add manifest for installable app */}
+          <link rel="manifest" href="/manifest.json" />
+          
+          {/* ✅ PWA: Add theme color for mobile browsers */}
+          <meta name="theme-color" content="#1e40af" />
+          
+          {/* ✅ PWA: Add mobile-web-app-capable meta tag */}
+          <meta name="mobile-web-app-capable" content="yes" />
+          
+          {/* ✅ PWA: Add apple mobile web app meta tags */}
+          <meta name="apple-mobile-web-app-title" content="StandsZone" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+          
           {/* ✅ PERFORMANCE: Critical resource optimization */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
           <link rel="dns-prefetch" href="//vercel.live" />
           <link rel="dns-prefetch" href="//vitals.vercel-insights.com" />
           
-          {/* ✅ CRITICAL: Preload hero section resources */}
-          <link rel="preload" href="/api/admin/pages-editor?action=get-content&path=%2F" as="fetch" crossOrigin="anonymous" />
-          <link rel="preload" href="/api/admin/footer" as="fetch" crossOrigin="anonymous" />
-          
-          {/* Note: Removed inline critical CSS and invalid preloads to avoid hydration mismatches and 404s. */}
+          {/* Note: Removed preload links that were causing warnings in development */}
         </head>
         <body className={`${inter.className} ${poppins.className} ${roboto.variable} ${montserrat.variable} ${redHatDisplay.variable} h-full m-0 p-0`} suppressHydrationWarning>
-          <ConvexClientProvider>
-            <CriticalResourcePreloader />
-            {/* <GlobalTypography /> */}
-            {children}
-            <Toaster />
-            <PerformanceMonitor />
-            <ServiceWorkerRegistration />
-            <SpeedInsights />
-            <Analytics />
-          </ConvexClientProvider>
+          <CriticalResourcePreloader />
+          {/* <GlobalTypography /> */}
+          {children}
+          <Toaster />
+          <PerformanceMonitor />
+          <ServiceWorkerRegistration />
+          <SpeedInsights />
+          <Analytics />
         </body>
     </html>
   );
 }
-
-

@@ -8,13 +8,24 @@ const supabase = createClient(
 
 export async function GET() {
   try {
+    // Try to fetch from 'builder_profiles' table first
     const { data, error } = await supabase
       .from('builder_profiles')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      // Fallback to 'builders' table
+      const { data: data2, error: error2 } = await supabase
+        .from('builders')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error2) {
+        return NextResponse.json({ error: error.message || error2.message }, { status: 500 });
+      }
+      
+      return NextResponse.json({ data: data2 });
     }
 
     return NextResponse.json({ data });
@@ -78,6 +89,7 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString()
     };
 
+    // Try to insert into 'builder_profiles' table first
     const { data, error } = await supabase
       .from('builder_profiles')
       .insert(builderData)
@@ -85,7 +97,18 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      // Fallback to 'builders' table
+      const { data: data2, error: error2 } = await supabase
+        .from('builders')
+        .insert(builderData)
+        .select()
+        .single();
+      
+      if (error2) {
+        return NextResponse.json({ error: error.message || error2.message }, { status: 500 });
+      }
+      
+      return NextResponse.json({ data: data2 }, { status: 201 });
     }
 
     return NextResponse.json({ data }, { status: 201 });

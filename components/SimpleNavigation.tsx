@@ -5,6 +5,14 @@ import { Button } from '@/components/ui/button';
 import { FiMenu, FiX, FiChevronDown, FiUser } from 'react-icons/fi';
 import Link from 'next/link';
 
+// Add null checks for icons to prevent runtime errors
+const SafeIcon = ({ IconComponent, ...props }: { IconComponent: any } & React.SVGProps<SVGSVGElement>) => {
+  if (!IconComponent) {
+    return null;
+  }
+  return <IconComponent {...props} />;
+};
+
 export default function SimpleNavigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -56,9 +64,9 @@ export default function SimpleNavigation() {
                 onClick={() => setActiveDropdown(activeDropdown === 'account' ? null : 'account')}
                 className="flex items-center space-x-1 text-gray-800 hover:text-pink-600 font-medium transition-colors"
               >
-                <FiUser className="w-4 h-4" />
+                <SafeIcon IconComponent={FiUser} className="w-4 h-4" />
                 <span>Account</span>
-                <FiChevronDown className={`w-3 h-3 transition-transform ${activeDropdown === 'account' ? 'rotate-180' : ''}`} />
+                <SafeIcon IconComponent={FiChevronDown} className={`w-3 h-3 transition-transform ${activeDropdown === 'account' ? 'rotate-180' : ''}`} />
               </button>
               
               {activeDropdown === 'account' && (
@@ -90,7 +98,7 @@ export default function SimpleNavigation() {
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-xl transition-all duration-300 text-gray-700 hover:bg-pink-50 hover:text-pink-600 border border-gray-200"
             >
-              {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+              {isOpen ? <SafeIcon IconComponent={FiX} className="w-6 h-6" /> : <SafeIcon IconComponent={FiMenu} className="w-6 h-6" />}
             </button>
           </div>
         </div>

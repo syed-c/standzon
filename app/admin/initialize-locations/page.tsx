@@ -1,219 +1,99 @@
 "use client";
 
-import { useState } from 'react';
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle, Loader2, MapPin, Building2, Globe } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { Terminal, Loader2 } from "lucide-react";
 
 export default function InitializeLocationsPage() {
   const [isInitializing, setIsInitializing] = useState(false);
-  const [initResults, setInitResults] = useState<any>(null);
-  
-  const initializeLocations = useMutation(api.locations.initializeLocations);
-  const updateBuilderCounts = useMutation(api.locations.updateLocationBuilderCounts);
-  const locationStats = useQuery(api.locations.getLocationStats);
-  const allCountries = useQuery(api.locations.getAllCountries);
+  const [progress, setProgress] = useState(0);
+  const [result, setResult] = useState<{ success: boolean; message: string; details?: any } | null>(null);
 
   const handleInitialize = async () => {
     setIsInitializing(true);
+    setProgress(0);
+    setResult(null);
+    
     try {
-      console.log("Starting location initialization...");
-      const result = await initializeLocations({});
-      setInitResults(result);
+      const response = await fetch('/api/admin/initialize-locations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       
-      if (result.success) {
-        console.log("Updating builder counts...");
-        await updateBuilderCounts({});
-      }
+      const data = await response.json();
+      setResult({
+        success: response.ok,
+        message: data.message || (response.ok ? 'Locations initialized successfully' : 'Failed to initialize locations'),
+        details: data
+      });
     } catch (error) {
-      console.error("Initialization error:", error);
-      setInitResults({
+      setResult({
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error occurred"
+        message: error instanceof Error ? error.message : 'An unexpected error occurred'
       });
     } finally {
       setIsInitializing(false);
+      setProgress(100);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Location Data Initialization
-          </h1>
-          <p className="text-gray-600">
-            Initialize countries and cities data from the comprehensive location dataset.
+    <div className="container mx-auto py-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>Initialize Location Data</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <p className="text-muted-foreground">
+            Initialize the database with comprehensive location data including countries and cities.
+            This process will populate the database with location information.
           </p>
-        </div>
-
-        {/* Current Stats */}
-        {locationStats && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Countries</p>
-                    <p className="text-2xl font-bold text-gray-900">{locationStats.totalCountries}</p>
-                  </div>
-                  <Globe className="h-8 w-8 text-blue-600" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Cities</p>
-                    <p className="text-2xl font-bold text-gray-900">{locationStats.totalCities}</p>
-                  </div>
-                  <MapPin className="h-8 w-8 text-green-600" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Builders</p>
-                    <p className="text-2xl font-bold text-gray-900">{locationStats.totalBuilders}</p>
-                  </div>
-                  <Building2 className="h-8 w-8 text-purple-600" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Verified</p>
-                    <p className="text-2xl font-bold text-gray-900">{locationStats.verifiedBuilders}</p>
-                  </div>
-                  <CheckCircle className="h-8 w-8 text-emerald-600" />
-                </div>
-              </CardContent>
-            </Card>
+          
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button 
+              onClick={handleInitialize} 
+              disabled={isInitializing}
+            >
+              {isInitializing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Initializing...
+                </>
+              ) : (
+                'Initialize Locations'
+              )}
+            </Button>
           </div>
-        )}
-
-        {/* Initialize Button */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Initialize Location Data</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
-              <Button 
-                onClick={handleInitialize}
-                disabled={isInitializing}
-                size="lg"
-              >
-                {isInitializing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Initializing...
-                  </>
-                ) : (
-                  "Initialize Countries & Cities"
-                )}
-              </Button>
-              <p className="text-sm text-gray-600">
-                This will populate the database with countries and cities from the location dataset.
+          
+          {isInitializing && (
+            <div className="space-y-2">
+              <Progress value={progress} className="w-full" />
+              <p className="text-sm text-muted-foreground text-center">
+                Initializing location data...
               </p>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Results */}
-        {initResults && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {initResults.success ? (
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                ) : (
-                  <XCircle className="h-5 w-5 text-red-600" />
+          )}
+          
+          {result && (
+            <Alert variant={result.success ? 'default' : 'destructive'}>
+              <Terminal className="h-4 w-4" />
+              <AlertDescription>
+                <p>{result.message}</p>
+                {result.details && (
+                  <pre className="mt-2 text-xs bg-muted p-2 rounded">
+                    {JSON.stringify(result.details, null, 2)}
+                  </pre>
                 )}
-                Initialization Results
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {initResults.success ? (
-                <div className="space-y-4">
-                  <p className="text-green-600 font-medium">{initResults.message}</p>
-                  {initResults.results && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-green-600">
-                          {initResults.results.countriesCreated}
-                        </p>
-                        <p className="text-sm text-gray-600">Countries Created</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-blue-600">
-                          {initResults.results.citiesCreated}
-                        </p>
-                        <p className="text-sm text-gray-600">Cities Created</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-gray-600">
-                          {initResults.results.countriesSkipped}
-                        </p>
-                        <p className="text-sm text-gray-600">Countries Skipped</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-gray-600">
-                          {initResults.results.citiesSkipped}
-                        </p>
-                        <p className="text-sm text-gray-600">Cities Skipped</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-red-600">
-                  <p className="font-medium">Error occurred during initialization:</p>
-                  <p className="text-sm mt-2">{initResults.error}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Countries List */}
-        {allCountries && allCountries.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Countries in Database</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {allCountries.map((country) => (
-                  <div key={country._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium">{country.countryName}</p>
-                      <p className="text-sm text-gray-600">
-                        {country.cityCount} cities • {country.builderCount} builders
-                      </p>
-                    </div>
-                    <Badge variant="outline">
-                      {country.countryCode}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

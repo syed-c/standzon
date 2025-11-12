@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -8,6 +7,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import logoImg from '@/components/zonelogo2.png';
 import LogoutButton from '@/components/LogoutButton';
+
+// Add null checks for icons to prevent runtime errors
+const SafeIcon = ({ IconComponent, ...props }: { IconComponent: any } & React.SVGProps<SVGSVGElement>) => {
+  if (!IconComponent) {
+    return null;
+  }
+  return <IconComponent {...props} />;
+};
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -225,7 +232,7 @@ export default function Navigation() {
                         onClick={() => handleDropdownClick(item.label)}
                       >
                         <span>{item.label}</span>
-                        <FiChevronDown className={`w-3 h-3 transition-transform duration-200 ${
+                        <SafeIcon IconComponent={FiChevronDown} className={`w-3 h-3 transition-transform duration-200 ${
                           activeDropdown === item.label ? 'rotate-180' : ''
                         }`} />
                       </button>
@@ -269,7 +276,7 @@ export default function Navigation() {
               <div className="flex items-center space-x-2">
                 <Link href="/auth/login?type=builder">
                   <Button variant="ghost" size="sm" className="text-white hover:text-pink-400 hover:bg-slate-800/60 text-sm">
-                    <FiUser className="w-4 h-4 mr-1.5" />
+                    <SafeIcon IconComponent={FiUser} className="w-4 h-4 mr-1.5" />
                     Builder Login
                   </Button>
                 </Link>
@@ -290,9 +297,9 @@ export default function Navigation() {
                   className="flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 !text-white hover:text-pink-400 hover:bg-slate-800/60 whitespace-nowrap"
                   onClick={() => handleDropdownClick('Account')}
                 >
-                  <FiUser className="w-4 h-4" />
+                  <SafeIcon IconComponent={FiUser} className="w-4 h-4" />
                   <span className="hidden xl:inline">Account</span>
-                  <FiChevronDown className={`w-3 h-3 transition-transform duration-200 ${
+                  <SafeIcon IconComponent={FiChevronDown} className={`w-3 h-3 transition-transform duration-200 ${
                     activeDropdown === 'Account' ? 'rotate-180' : ''
                   }`} />
                 </button>
@@ -337,7 +344,7 @@ export default function Navigation() {
             {/* Get Free Quote CTA Button */}
             <Link href="/quote">
               <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-5 py-2 font-semibold text-sm rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 whitespace-nowrap">
-                <FiZap className="w-4 h-4 mr-1.5" />
+                <SafeIcon IconComponent={FiZap} className="w-4 h-4 mr-1.5" />
                 Get Free Quote
               </Button>
             </Link>
@@ -347,7 +354,7 @@ export default function Navigation() {
           <div className="lg:hidden flex items-center space-x-2">
             <Link href="/quote">
               <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-4 py-3 rounded-lg shadow-lg text-sm font-semibold min-h-[44px]">
-                <FiZap className="w-4 h-4 mr-1" />
+                <SafeIcon IconComponent={FiZap} className="w-4 h-4 mr-1" />
                 Quote
               </Button>
             </Link>
@@ -356,7 +363,7 @@ export default function Navigation() {
               className="p-3 rounded-lg transition-all duration-200 text-white hover:text-pink-400 hover:bg-slate-800/60 min-h-[44px] min-w-[44px] flex items-center justify-center touch-active no-tap-highlight"
               aria-label="Toggle menu"
             >
-              {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+              {isOpen ? <SafeIcon IconComponent={FiX} className="w-6 h-6" /> : <SafeIcon IconComponent={FiMenu} className="w-6 h-6" />}
             </button>
           </div>
         </div>
@@ -374,7 +381,7 @@ export default function Navigation() {
             <div className="mb-6">
               <Link href="/quote" onClick={() => setIsOpen(false)}>
                 <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-4 rounded-lg shadow-lg font-semibold text-base min-h-[56px]">
-                  <FiZap className="w-5 h-5 mr-2" />
+                  <SafeIcon IconComponent={FiZap} className="w-5 h-5 mr-2" />
                   Get Free Quote
                 </Button>
               </Link>
@@ -455,4 +462,3 @@ export default function Navigation() {
     </nav>
   );
 }
-

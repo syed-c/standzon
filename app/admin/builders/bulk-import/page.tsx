@@ -35,6 +35,7 @@ import {
 import Link from 'next/link';
 import { ExhibitionBuilder } from '@/lib/data/exhibitionBuilders';
 import { simpleStorageAPI as storageAPI } from '@/lib/data/simpleStorage';
+import { v4 as uuidv4 } from 'uuid';
 
 interface UploadError {
   row: number;
@@ -309,7 +310,7 @@ export default function EnhancedBulkUploadPage() {
     const portfolioUrls = data.portfolioImages.split(',').map(url => url.trim()).filter(url => url);
 
     return {
-      id: `builder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: uuidv4(), // Generate proper UUID instead of string-based ID
       companyName: data.companyName,
       slug,
       logo: data.imageUrl || '/images/builders/default-logo.png',
@@ -323,14 +324,15 @@ export default function EnhancedBulkUploadPage() {
         longitude: 0,
         isHeadquarters: true
       },
-      serviceLocations: cities.map(city => ({
+      serviceLocations: cities.map((city, index) => ({
+        id: uuidv4(), // Generate proper UUID
         city,
         country: data.country,
         countryCode: getCountryCode(data.country),
         address: `${city}, ${data.country}`,
         latitude: 0,
         longitude: 0,
-        isHeadquarters: false
+        isHeadquarters: index === 0
       })),
       contactInfo: {
         primaryEmail: data.email,
@@ -340,7 +342,7 @@ export default function EnhancedBulkUploadPage() {
         position: 'Sales Manager'
       },
       services: services.map((service, index) => ({
-        id: `service-${index}`,
+        id: uuidv4(), // Generate proper UUID instead of string-based ID
         name: service,
         description: `Professional ${service.toLowerCase()} services`,
         category: 'Design' as const,
@@ -352,7 +354,7 @@ export default function EnhancedBulkUploadPage() {
       })),
       specializations: [
         { 
-          id: 'general', 
+          id: uuidv4(), // Generate proper UUID
           name: 'General Exhibition', 
           slug: 'general', 
           description: '', 
@@ -367,7 +369,7 @@ export default function EnhancedBulkUploadPage() {
       certifications: [],
       awards: [],
       portfolio: portfolioUrls.map((url, index) => ({
-        id: `portfolio-${index}`,
+        id: uuidv4(), // Generate proper UUID
         projectName: `Project ${index + 1}`,
         tradeShow: 'Various Trade Shows',
         year: new Date().getFullYear(),
@@ -409,7 +411,7 @@ export default function EnhancedBulkUploadPage() {
       ],
       clientTestimonials: [],
       socialMedia: {},
-      businessLicense: `LICENSE-${Date.now()}`,
+      businessLicense: `LICENSE-${uuidv4().substring(0, 8)}`, // Generate unique license ID
       insurance: {
         liability: 1000000,
         currency: 'USD',

@@ -10,8 +10,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Quote, Send, CheckCircle, Users, Shield, Globe, MapPin, Star, ArrowRight, ArrowLeft, Building, Calendar, DollarSign, Upload, X, FileText, Image as ImageIcon } from 'lucide-react';
-import { useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
 
 interface PublicQuoteRequestProps {
   location?: string;
@@ -194,17 +192,47 @@ export function PublicQuoteRequest({
   }
   
   // Query exhibitions from database based on location
-  const exhibitionsFromDB = useQuery(api.exhibitions.getExhibitionsByCountry, { 
-    countryCode: detectedCountryCode 
-  });
+  // const exhibitionsFromDB = useQuery(api.exhibitions.getExhibitionsByCountry, { 
+  //   countryCode: detectedCountryCode 
+  // });
   
   // City-specific exhibitions if cityName is provided
-  const cityExhibitionsFromDB = cityName
-    ? useQuery(api.exhibitions.getExhibitionsByCity as any, {
-        countryCode: detectedCountryCode,
-        cityName: cityName,
-      })
-    : null;
+  // const cityExhibitionsFromDB = cityName
+  //   ? useQuery(api.exhibitions.getExhibitionsByCity as any, {
+  //       countryCode: detectedCountryCode,
+  //       cityName: cityName,
+  //     })
+  //   : null;
+  
+  // Replace Convex queries with Supabase implementation
+  const [exhibitionsFromDB, setExhibitionsFromDB] = useState<any[]>([]);
+  const [cityExhibitionsFromDB, setCityExhibitionsFromDB] = useState<any[] | null>(null);
+  
+  useEffect(() => {
+    const fetchExhibitions = async () => {
+      try {
+        // Fetch country-specific exhibitions
+        const countryResponse = await fetch(`/api/exhibitions?countryCode=${detectedCountryCode}`);
+        if (countryResponse.ok) {
+          const countryData = await countryResponse.json();
+          setExhibitionsFromDB(countryData.data || []);
+        }
+        
+        // Fetch city-specific exhibitions if cityName is provided
+        if (cityName) {
+          const cityResponse = await fetch(`/api/exhibitions?countryCode=${detectedCountryCode}&cityName=${cityName}`);
+          if (cityResponse.ok) {
+            const cityData = await cityResponse.json();
+            setCityExhibitionsFromDB(cityData.data || []);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching exhibitions:', error);
+      }
+    };
+    
+    fetchExhibitions();
+  }, [detectedCountryCode, cityName]);
   
   // Fallback exhibitions if database is empty or loading
   const fallbackExhibitions = [
@@ -230,7 +258,7 @@ export function PublicQuoteRequest({
       dbExhibitions = cityExhibitionsFromDB.map((ex: any) => ex.name);
       console.log(`🏙️ Found ${dbExhibitions.length} city-specific exhibitions for ${cityName}`);
     } else if (exhibitionsFromDB && exhibitionsFromDB.length > 0) {
-      dbExhibitions = exhibitionsFromDB.map(ex => ex.name);
+      dbExhibitions = exhibitionsFromDB.map((ex: any) => ex.name);
       console.log(`🌍 Found ${dbExhibitions.length} country-specific exhibitions for ${detectedCountryCode}`);
     }
     

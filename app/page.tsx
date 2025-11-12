@@ -1,15 +1,24 @@
-import HomePageContent from "@/components/HomePageContent";
-import type { Metadata } from "next";
-import siteMetadata from "@/app/metadata.json";
+'use client';
 
-// Export metadata from centralized metadata.json
-export const metadata: Metadata = siteMetadata["/"];
-
-// Featured builders section removed for production
-
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+import HomePageContent from '@/components/HomePageContent';
+import OfflineSupport from '@/components/OfflineSupport';
+import OfflineTest from '@/components/OfflineTest';
+import { useIndexedDB } from '@/hooks/useIndexedDB';
+import { useEffect } from 'react';
 
 export default function Home() {
-  return <HomePageContent />;
+  const { addRecentlyVisited } = useIndexedDB();
+  
+  useEffect(() => {
+    // Track this page visit
+    addRecentlyVisited('/', 'Home');
+  }, [addRecentlyVisited]);
+  
+  return (
+    <>
+      <HomePageContent />
+      <OfflineTest />
+      <OfflineSupport />
+    </>
+  );
 }

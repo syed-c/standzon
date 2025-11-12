@@ -58,19 +58,30 @@ export async function getBuilders() {
   
   try {
     console.log('Fetching builders from Supabase...');
-    // Using the correct table name as seen in the screenshot
-    const { data, error } = await supabase
+    // Using the correct table name - checking both possible table names
+    const { data: data1, error: error1 } = await supabase
+      .from('builder_profiles')
+      .select('*')
+      .order('company_name');
+    
+    if (!error1 && data1) {
+      console.log('Builders fetched successfully from builder_profiles:', data1?.length || 0, 'builders found');
+      return data1 || [];
+    }
+    
+    // Fallback to 'builders' table
+    const { data: data2, error: error2 } = await supabase
       .from('builders')
       .select('*')
       .order('company_name');
     
-    if (error) {
-      console.error('Error fetching builders:', error);
+    if (error2) {
+      console.error('Error fetching builders from both tables:', error1, error2);
       return [];
     }
     
-    console.log('Builders fetched successfully:', data?.length || 0, 'builders found');
-    return data || [];
+    console.log('Builders fetched successfully from builders:', data2?.length || 0, 'builders found');
+    return data2 || [];
   } catch (err) {
     console.error('Exception fetching builders:', err);
     return [];

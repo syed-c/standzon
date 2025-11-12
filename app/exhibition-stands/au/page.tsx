@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
-import { preloadQuery } from "convex/nextjs";
-import { api } from "@/convex/_generated/api";
+import { notFound } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
@@ -63,6 +62,9 @@ export default async function AustraliaPage() {
   console.log('🇦🇺 Loading Australia page with modern UI...');
   
   const cmsContent = await getAustraliaPageContent();
+  if (!cmsContent) {
+    notFound();
+  }
   
   const defaultContent = {
     id: 'au-main',

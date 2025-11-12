@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
+import { notFound } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';

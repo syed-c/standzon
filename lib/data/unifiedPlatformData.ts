@@ -1,8 +1,4 @@
-
-
-
-
-
+import { v4 as uuidv4 } from 'uuid';
 
 // Unified Real-Time Platform Data System
 // This system ensures all data stays synchronized between admin dashboard and website
@@ -33,6 +29,24 @@ export interface DataEvent {
   data: any;
   timestamp: string;
   source: 'admin' | 'website' | 'api';
+}
+
+// Helper: country name to ISO code fallback
+function getCountryCode(country: string): string {
+  const countryCodeMap: Record<string, string> = {
+    'United States': 'US',
+    'United Kingdom': 'GB',
+    'United Arab Emirates': 'AE',
+    'New Zealand': 'NZ',
+    'South Africa': 'ZA',
+    'South Korea': 'KR',
+    'Saudi Arabia': 'SA',
+    'Germany': 'DE',
+    'France': 'FR',
+    'Italy': 'IT',
+    'Spain': 'ES'
+  };
+  return countryCodeMap[country] || country.substring(0, 2).toUpperCase();
 }
 
 // ✅ SIMPLIFIED: Basic UnifiedDataManager without complex dependencies
@@ -261,10 +275,22 @@ class UnifiedDataManager {
       }
 
       // Normalize to ExhibitionBuilder shape with safe defaults
+      // Generate safe slug if missing
+      const baseSlug = (builder.slug || builder.companyName || builder.company_name || '')
+        .toString()
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '');
+      const safeSlug = baseSlug
+        ? `${baseSlug}-${uuidv4().substring(0, 8)}`
+        : `builder-${uuidv4().substring(0, 8)}`;
+
+      console.log('📝 Normalizing builder data for:', builder.companyName);
+
       const normalized: ExhibitionBuilder = {
         id: builder.id,
         companyName: builder.companyName || builder.company_name || 'Unnamed Builder',
-        slug: (builder.slug || '').toString(),
+        slug: safeSlug,
         logo: builder.logo || '/images/builders/default-logo.png',
         establishedYear: builder.establishedYear || new Date().getFullYear(),
         headquarters: builder.headquarters || {
@@ -324,6 +350,8 @@ class UnifiedDataManager {
         contactEmail: builder.contactEmail || builder.contactInfo?.primaryEmail || '',
       };
 
+      console.log('✅ Builder normalized successfully:', normalized.companyName);
+
       // Add to memory
       this.data.builders.push(normalized);
       
@@ -335,26 +363,37 @@ class UnifiedDataManager {
       try {
         console.log('🔄 Attempting to persist builder to Supabase...');
         const { getServerSupabase } = await import('@/lib/supabase');
+        console.log('✅ Supabase module imported successfully');
+        
         const sb = getServerSupabase();
         console.log('🔍 Supabase client:', sb ? '✅ Available' : '❌ Not available');
         
         if (sb) {
+          // Ensure required fields are present
+          const fallbackEmail = normalized.contactInfo.primaryEmail && normalized.contactInfo.primaryEmail.trim() !== ''
+            ? normalized.contactInfo.primaryEmail
+            : `no-email+${normalized.slug}@standzon.com`;
+
           console.log('📝 Inserting builder to Supabase:', {
             id: normalized.id,
             company_name: normalized.companyName,
-            primary_email: normalized.contactInfo.primaryEmail
+            slug: normalized.slug,
+            primary_email: fallbackEmail
           });
           
-          const result = await sb.from('builder_profiles').insert({
+          // Add timeout for Supabase insert operation
+          const insertPromise = sb.from('builder_profiles').insert({
             id: normalized.id,
             company_name: normalized.companyName,
             slug: normalized.slug,
-            primary_email: normalized.contactInfo.primaryEmail,
+            primary_email: fallbackEmail,
             phone: normalized.contactInfo.phone,
             contact_person: normalized.contactInfo.contactPerson,
             company_description: normalized.companyDescription,
             headquarters_city: normalized.headquarters.city,
             headquarters_country: normalized.headquarters.country,
+            headquarters_country_code: (normalized.headquarters as any).countryCode || null,
+            headquarters_address: normalized.headquarters.address || null,
             verified: normalized.verified,
             claimed: normalized.claimed,
             claim_status: normalized.claimStatus || 'unclaimed',
@@ -363,7 +402,83 @@ class UnifiedDataManager {
             source: normalized.source || 'unified_platform'
           });
           
-          console.log('✅ Builder persisted to Supabase successfully:', result);
+          // Timeout for Supabase operation
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Supabase insert operation timeout')), 30000);
+          });
+          
+          const { error: builderInsertError } = await Promise.race([insertPromise, timeoutPromise]) as any;
+
+          if (builderInsertError) {
+            console.error('❌ Failed to insert builder profile:', builderInsertError);
+          } else {
+            console.log('✅ Builder profile inserted successfully');
+          }
+
+          // Also persist service locations if provided
+          if (normalized.serviceLocations && normalized.serviceLocations.length > 0 && !builderInsertError) {
+            try {
+              const serviceLocationRecords = [] as any[];
+
+              // Add headquarters as a location as well
+              if (normalized.headquarters) {
+                serviceLocationRecords.push({
+                  builder_id: normalized.id,
+                  city: normalized.headquarters.city,
+                  country: normalized.headquarters.country,
+                  country_code: (normalized.headquarters as any).countryCode || null,
+                  address: normalized.headquarters.address || null,
+                  latitude: (normalized.headquarters as any).latitude || null,
+                  longitude: (normalized.headquarters as any).longitude || null,
+                  is_headquarters: true
+                });
+              }
+
+              for (const loc of normalized.serviceLocations) {
+                // Support both grouped `{ country, cities: [] }` and detailed location objects
+                if ((loc as any).cities && (loc as any).country) {
+                  for (const city of (loc as any).cities) {
+                    serviceLocationRecords.push({
+                      builder_id: normalized.id,
+                      city,
+                      country: (loc as any).country,
+                      country_code: (loc as any).countryCode || getCountryCode((loc as any).country),
+                      is_headquarters: false
+                    });
+                  }
+                } else {
+                  serviceLocationRecords.push({
+                    builder_id: normalized.id,
+                    city: (loc as any).city || normalized.headquarters.city,
+                    country: (loc as any).country || normalized.headquarters.country,
+                    country_code: (loc as any).countryCode || getCountryCode((loc as any).country || normalized.headquarters.country),
+                    address: (loc as any).address || null,
+                    latitude: (loc as any).latitude || null,
+                    longitude: (loc as any).longitude || null,
+                    is_headquarters: false
+                  });
+                }
+              }
+
+              if (serviceLocationRecords.length > 0) {
+                // Add timeout for service locations insert operation
+                const locationsInsertPromise = sb.from('builder_service_locations').insert(serviceLocationRecords);
+                const locationsTimeoutPromise = new Promise((_, reject) => {
+                  setTimeout(() => reject(new Error('Supabase service locations insert operation timeout')), 30000);
+                });
+                
+                const { error: locationsError } = await Promise.race([locationsInsertPromise, locationsTimeoutPromise]) as any;
+
+                if (locationsError) {
+                  console.error('❌ Failed to insert service locations:', locationsError);
+                } else {
+                  console.log(`✅ Inserted ${serviceLocationRecords.length} service locations`);
+                }
+              }
+            } catch (locErr) {
+              console.error('❌ Error persisting service locations:', locErr);
+            }
+          }
         } else {
           console.log('❌ Supabase client not available - builder not persisted to database');
         }

@@ -18,10 +18,15 @@ import {
   Plus, Save, X, Eye, ExternalLink, Award, Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ExhibitionBuilder } from '@/lib/data/exhibitionBuilders';
 import { tier1Countries } from '@/lib/data/countries';
 
 export default function ManageBuildersPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const builderId = searchParams?.get('id');
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCountry, setFilterCountry] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -36,7 +41,12 @@ export default function ManageBuildersPage() {
   // Load builders from API
   useEffect(() => {
     loadBuilders();
-  }, []);
+    
+    // If there's a builder ID in the URL, load that builder for editing
+    if (builderId) {
+      loadBuilderForEditing(builderId);
+    }
+  }, [builderId]);
 
   const loadBuilders = async () => {
     try {
@@ -63,6 +73,20 @@ export default function ManageBuildersPage() {
       setBuilders([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadBuilderForEditing = async (id: string) => {
+    try {
+      const response = await fetch(`/api/builders/${id}`);
+      const result = await response.json();
+      
+      if (result.data) {
+        setEditingBuilder(result.data);
+        setIsEditing(true);
+      }
+    } catch (error) {
+      console.error('Error loading builder for editing:', error);
     }
   };
 

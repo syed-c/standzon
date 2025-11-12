@@ -1,7 +1,5 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { useState, useEffect } from "react";
 
 type LeadsCTAButton = { text?: string; href?: string };
@@ -19,16 +17,32 @@ export default function RecentLeadsSection({
   const [displayLeads, setDisplayLeads] = useState<any[]>([]);
   const [isUsingMockData, setIsUsingMockData] = useState(false);
 
-  // Try to fetch real leads data from Convex
-  let recentLeads;
-  try {
-    recentLeads = useQuery(api.leads.getRecentLeadsForPublic, { limit: 10 });
-  } catch (error) {
-    console.log("⚠️ Convex query failed, using mock data:", error);
-    recentLeads = null;
-  }
+  // Try to fetch real leads data from Supabase
+  const [recentLeads, setRecentLeads] = useState<any[]>([]);
+  
+  useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        const response = await fetch('/api/leads/recent?limit=10');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && Array.isArray(data.data)) {
+            setRecentLeads(data.data);
+            return;
+          }
+        }
+        // If API fails, use mock data
+        setRecentLeads([]);
+      } catch (error) {
+        console.log("⚠️ Supabase query failed, using mock data:", error);
+        setRecentLeads([]);
+      }
+    };
+    
+    fetchLeads();
+  }, []);
 
-  // Fallback mock data for when Convex is not available
+  // Fallback mock data for when Supabase is not available
   const mockLeads = [
     {
       id: "1",
@@ -114,7 +128,7 @@ export default function RecentLeadsSection({
 
   useEffect(() => {
     if (recentLeads && Array.isArray(recentLeads) && recentLeads.length > 0) {
-      console.log("✅ Using real Convex data:", recentLeads.length, "leads");
+      console.log("✅ Using real Supabase data:", recentLeads.length, "leads");
       setDisplayLeads(recentLeads);
       setIsUsingMockData(false);
     } else {

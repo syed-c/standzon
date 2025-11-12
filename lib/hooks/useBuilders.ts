@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getBuilders } from '@/lib/supabase';
+import { getAllBuilders, updateBuilder, getBuilderById } from '@/lib/supabase/builders';
+import { db } from '@/lib/supabase/database';
 
 export interface Builder {
   id: string;
@@ -46,9 +47,12 @@ export function useBuilders() {
       try {
         setLoading(true);
         setError(null);
-        const data = await getBuilders();
+        console.log('Fetching builders from Supabase...');
+        const data = await getAllBuilders();
+        console.log('Fetched builders:', data?.length || 0);
         setBuilders(data);
       } catch (err) {
+        console.error('Error fetching builders:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch builders');
       } finally {
         setLoading(false);
@@ -60,6 +64,7 @@ export function useBuilders() {
 
   const addBuilder = async (builderData: Partial<Builder>) => {
     try {
+      // This would need to be implemented in the builders API
       const response = await fetch('/api/builders', {
         method: 'POST',
         headers: {
@@ -82,23 +87,19 @@ export function useBuilders() {
     }
   };
 
-  const updateBuilder = async (id: string, updates: Partial<Builder>) => {
+  const updateBuilderHook = async (id: string, updates: Partial<Builder>) => {
     try {
-      const response = await fetch(`/api/builders/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update builder');
-      }
-
-      const { data } = await response.json();
-      setBuilders(prev => prev.map(builder => builder.id === id ? data : builder));
+      // Remove fields that shouldn't be updated directly
+      const { id: _, created_at, ...updateData } = updates;
+      
+      // Add updated timestamp
+      const dataWithTimestamp = {
+        ...updateData,
+        updated_at: new Date().toISOString()
+      };
+      
+      const data = await updateBuilder(id, dataWithTimestamp);
+      setBuilders(prev => prev.map(builder => builder.id === id ? { ...builder, ...data } : builder));
       return data;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update builder');
@@ -106,17 +107,9 @@ export function useBuilders() {
     }
   };
 
-  const deleteBuilder = async (id: string) => {
+  const deleteBuilderHook = async (id: string) => {
     try {
-      const response = await fetch(`/api/builders/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete builder');
-      }
-
+      await db.deleteBuilder(id);
       setBuilders(prev => prev.filter(builder => builder.id !== id));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete builder');
@@ -128,12 +121,24 @@ export function useBuilders() {
     try {
       setLoading(true);
       setError(null);
-      const data = await getBuilders();
+      console.log('Refreshing builders from Supabase...');
+      const data = await getAllBuilders();
+      console.log('Refreshed builders:', data?.length || 0);
       setBuilders(data);
     } catch (err) {
+      console.error('Error refreshing builders:', err);
       setError(err instanceof Error ? err.message : 'Failed to refresh builders');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getBuilder = async (id: string) => {
+    try {
+      return await getBuilderById(id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch builder');
+      throw err;
     }
   };
 
@@ -142,8 +147,9 @@ export function useBuilders() {
     loading,
     error,
     addBuilder,
-    updateBuilder,
-    deleteBuilder,
+    updateBuilder: updateBuilderHook,
+    deleteBuilder: deleteBuilderHook,
     refreshBuilders,
+    getBuilder,
   };
 }

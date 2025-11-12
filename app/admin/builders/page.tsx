@@ -5,6 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { 
   Building2, 
   Mail, 
@@ -16,7 +19,9 @@ import {
   Search,
   Edit,
   Trash2,
-  Eye
+  Eye,
+  Save,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -25,8 +30,10 @@ import Sidebar from '@/components/admin/Sidebar';
 import Topbar from '@/components/admin/Topbar';
 
 export default function BuildersManagementPage() {
-  const { builders, loading, error, deleteBuilder } = useBuilders();
+  const { builders, loading, error, deleteBuilder, updateBuilder, refreshBuilders } = useBuilders();
   const [searchTerm, setSearchTerm] = useState('');
+  const [editingBuilderId, setEditingBuilderId] = useState<string | null>(null);
+  const [editingBuilderData, setEditingBuilderData] = useState<Record<string, any>>({});
 
   const filteredBuilders = builders.filter(builder =>
     builder.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -35,13 +42,54 @@ export default function BuildersManagementPage() {
   );
 
   const handleDelete = async (id: string, name: string) => {
-    if (confirm(`Are you sure you want to delete ${name}?`)) {
+    if (confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
       try {
         await deleteBuilder(id);
         console.log(`Builder ${name} deleted successfully`);
       } catch (error) {
         console.error('Failed to delete builder:', error);
+        alert('Failed to delete builder. Please try again.');
       }
+    }
+  };
+
+  const startEditing = (builder: any) => {
+    setEditingBuilderId(builder.id);
+    setEditingBuilderData({ ...builder });
+  };
+
+  const cancelEditing = () => {
+    setEditingBuilderId(null);
+    setEditingBuilderData({});
+  };
+
+  const saveEditing = async () => {
+    if (!editingBuilderId) return;
+    
+    try {
+      await updateBuilder(editingBuilderId, editingBuilderData);
+      setEditingBuilderId(null);
+      setEditingBuilderData({});
+      console.log('Builder updated successfully');
+    } catch (error) {
+      console.error('Failed to update builder:', error);
+      alert('Failed to update builder. Please try again.');
+    }
+  };
+
+  const handleInputChange = (field: string, value: string | boolean | number | undefined) => {
+    if (value === undefined) {
+      // Remove the field from the object if value is undefined
+      setEditingBuilderData(prev => {
+        const newData = { ...prev };
+        delete newData[field];
+        return newData;
+      });
+    } else {
+      setEditingBuilderData(prev => ({
+        ...prev,
+        [field]: value
+      }));
     }
   };
 
@@ -69,6 +117,12 @@ export default function BuildersManagementPage() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Builders</h1>
             <p className="text-gray-600">{error}</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="mt-4"
+            >
+              Retry
+            </Button>
           </div>
         </div>
       </div>
@@ -86,12 +140,21 @@ export default function BuildersManagementPage() {
               Manage exhibition stand builders ({builders.length} total)
             </p>
           </div>
-          <Link href="/admin/add-builder">
-            <Button className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add Builder
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={refreshBuilders}
+              disabled={loading}
+            >
+              {loading ? 'Refreshing...' : 'Refresh'}
             </Button>
-          </Link>
+            <Link href="/admin/builders/add">
+              <Button className="flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Add Builder
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Search */}
@@ -111,98 +174,262 @@ export default function BuildersManagementPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredBuilders.map((builder) => (
             <Card key={builder.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-lg font-semibold">
-                    {builder.company_name}
-                  </CardTitle>
-                  <div className="flex gap-1">
-                    {builder.verified && (
-                      <Badge variant="secondary" className="text-xs">Verified</Badge>
-                    )}
-                    {builder.premium_member && (
-                      <Badge variant="default" className="text-xs">Premium</Badge>
-                    )}
+              {editingBuilderId === builder.id ? (
+                // Edit mode
+                <CardContent className="space-y-4 pt-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="company_name">Company Name</Label>
+                    <Input
+                      id="company_name"
+                      value={editingBuilderData.company_name || ''}
+                      onChange={(e) => handleInputChange('company_name', e.target.value)}
+                    />
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {/* Location */}
-                <div className="flex items-center text-gray-600">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  <span>
-                    {builder.headquarters_city || 'Unknown City'}, {builder.headquarters_country || 'Unknown Country'}
-                  </span>
-                </div>
-
-                {/* Contact Info */}
-                <div className="flex items-center text-gray-600">
-                  <Mail className="w-4 h-4 mr-2" />
-                  <span className="truncate">{builder.primary_email}</span>
-                </div>
-
-                {builder.phone && (
-                  <div className="flex items-center text-gray-600">
-                    <Phone className="w-4 h-4 mr-2" />
-                    <span>{builder.phone}</span>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="primary_email">Email</Label>
+                    <Input
+                      id="primary_email"
+                      type="email"
+                      value={editingBuilderData.primary_email || ''}
+                      onChange={(e) => handleInputChange('primary_email', e.target.value)}
+                    />
                   </div>
-                )}
-
-                {builder.website && (
-                  <div className="flex items-center text-gray-600">
-                    <Globe className="w-4 h-4 mr-2" />
-                    <a 
-                      href={builder.website} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline truncate"
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input
+                      id="phone"
+                      value={editingBuilderData.phone || ''}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="website">Website</Label>
+                    <Input
+                      id="website"
+                      value={editingBuilderData.website || ''}
+                      onChange={(e) => handleInputChange('website', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="headquarters_city">City</Label>
+                    <Input
+                      id="headquarters_city"
+                      value={editingBuilderData.headquarters_city || ''}
+                      onChange={(e) => handleInputChange('headquarters_city', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="headquarters_country">Country</Label>
+                    <Input
+                      id="headquarters_country"
+                      value={editingBuilderData.headquarters_country || ''}
+                      onChange={(e) => handleInputChange('headquarters_country', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="contact_person">Contact Person</Label>
+                    <Input
+                      id="contact_person"
+                      value={editingBuilderData.contact_person || ''}
+                      onChange={(e) => handleInputChange('contact_person', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="position">Position</Label>
+                    <Input
+                      id="position"
+                      value={editingBuilderData.position || ''}
+                      onChange={(e) => handleInputChange('position', e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="team_size">Team Size</Label>
+                    <Input
+                      id="team_size"
+                      type="number"
+                      value={editingBuilderData.team_size || ''}
+                      onChange={(e) => handleInputChange('team_size', e.target.value ? parseInt(e.target.value) : undefined)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="projects_completed">Projects Completed</Label>
+                    <Input
+                      id="projects_completed"
+                      type="number"
+                      value={editingBuilderData.projects_completed || ''}
+                      onChange={(e) => handleInputChange('projects_completed', e.target.value ? parseInt(e.target.value) : undefined)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="rating">Rating (0-5)</Label>
+                    <Input
+                      id="rating"
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="5"
+                      value={editingBuilderData.rating || ''}
+                      onChange={(e) => handleInputChange('rating', e.target.value ? parseFloat(e.target.value) : undefined)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="company_description">Description</Label>
+                    <Textarea
+                      id="company_description"
+                      value={editingBuilderData.company_description || ''}
+                      onChange={(e) => handleInputChange('company_description', e.target.value)}
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="verified">Verified</Label>
+                    <Switch
+                      id="verified"
+                      checked={editingBuilderData.verified || false}
+                      onCheckedChange={(checked) => handleInputChange('verified', checked)}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="premium_member">Premium Member</Label>
+                    <Switch
+                      id="premium_member"
+                      checked={editingBuilderData.premium_member || false}
+                      onCheckedChange={(checked) => handleInputChange('premium_member', checked)}
+                    />
+                  </div>
+                  
+                  <div className="flex gap-2 pt-4 border-t">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={cancelEditing}
                     >
-                      {builder.website}
-                    </a>
+                      <X className="w-4 h-4 mr-1" />
+                      Cancel
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      onClick={saveEditing}
+                    >
+                      <Save className="w-4 h-4 mr-1" />
+                      Save
+                    </Button>
                   </div>
-                )}
+                </CardContent>
+              ) : (
+                // View mode
+                <>
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-lg font-semibold">
+                        {builder.company_name}
+                      </CardTitle>
+                      <div className="flex gap-1">
+                        {builder.verified && (
+                          <Badge variant="secondary" className="text-xs">Verified</Badge>
+                        )}
+                        {builder.premium_member && (
+                          <Badge variant="default" className="text-xs">Premium</Badge>
+                        )}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {/* Location */}
+                    <div className="flex items-center text-gray-600">
+                      <MapPin className="w-4 h-4 mr-2" />
+                      <span>
+                        {builder.headquarters_city || 'Unknown City'}, {builder.headquarters_country || 'Unknown Country'}
+                      </span>
+                    </div>
 
-                {/* Rating */}
-                {builder.rating && (
-                  <div className="flex items-center text-gray-600">
-                    <Star className="w-4 h-4 mr-2 text-yellow-500" />
-                    <span>{builder.rating}/5.0</span>
-                  </div>
-                )}
+                    {/* Contact Info */}
+                    <div className="flex items-center text-gray-600">
+                      <Mail className="w-4 h-4 mr-2" />
+                      <span className="truncate">{builder.primary_email}</span>
+                    </div>
 
-                {/* Stats */}
-                <div className="flex gap-4 text-sm text-gray-500">
-                  {builder.team_size && (
-                    <span>{builder.team_size} team members</span>
-                  )}
-                  {builder.projects_completed && (
-                    <span>{builder.projects_completed} projects</span>
-                  )}
-                </div>
+                    {builder.phone && (
+                      <div className="flex items-center text-gray-600">
+                        <Phone className="w-4 h-4 mr-2" />
+                        <span>{builder.phone}</span>
+                      </div>
+                    )}
 
-                {/* Actions */}
-                <div className="flex gap-2 pt-3 border-t">
-                  <Button size="sm" variant="outline" asChild>
-                    <Link href={`/builders/${builder.slug}`}>
-                      <Eye className="w-4 h-4 mr-1" />
-                      View
-                    </Link>
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Edit className="w-4 h-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    onClick={() => handleDelete(builder.id, builder.company_name)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="w-4 h-4 mr-1" />
-                    Delete
-                  </Button>
-                </div>
-              </CardContent>
+                    {builder.website && (
+                      <div className="flex items-center text-gray-600">
+                        <Globe className="w-4 h-4 mr-2" />
+                        <a 
+                          href={builder.website} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline truncate"
+                        >
+                          {builder.website}
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Rating */}
+                    {builder.rating && (
+                      <div className="flex items-center text-gray-600">
+                        <Star className="w-4 h-4 mr-2 text-yellow-500" />
+                        <span>{builder.rating}/5.0</span>
+                      </div>
+                    )}
+
+                    {/* Stats */}
+                    <div className="flex gap-4 text-sm text-gray-500">
+                      {builder.team_size && (
+                        <span>{builder.team_size} team members</span>
+                      )}
+                      {builder.projects_completed && (
+                        <span>{builder.projects_completed} projects</span>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-2 pt-3 border-t">
+                      <Button size="sm" variant="outline" asChild>
+                        <Link href={`/builders/${builder.slug}`}>
+                          <Eye className="w-4 h-4 mr-1" />
+                          View
+                        </Link>
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => startEditing(builder)}
+                      >
+                        <Edit className="w-4 h-4 mr-1" />
+                        Edit
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handleDelete(builder.id, builder.company_name)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Delete
+                      </Button>
+                    </div>
+                  </CardContent>
+                </>
+              )}
             </Card>
           ))}
         </div>
@@ -221,7 +448,7 @@ export default function BuildersManagementPage() {
               }
             </p>
             {!searchTerm && (
-              <Link href="/admin/add-builder">
+              <Link href="/admin/builders/add">
                 <Button>
                   <Plus className="w-4 h-4 mr-2" />
                   Add Builder

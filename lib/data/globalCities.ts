@@ -74,7 +74,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'united-kingdom',
     capital: 'London',
     currency: 'GBP',
-    majorCities: ['London', 'Birmingham', 'Manchester'],
+    majorCities: ['London', 'Birmingham', 'Manchester', 'Glasgow'],
     totalVenues: 55,
     annualEvents: 950,
     keyIndustries: ['Financial Services', 'Technology', 'Healthcare', 'Creative Industries', 'Energy'],
@@ -188,7 +188,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'netherlands',
     capital: 'Amsterdam',
     currency: 'EUR',
-    majorCities: ['Amsterdam', 'Rotterdam', 'Utrecht', 'The Hague', 'Eindhoven'],
+    majorCities: ['Amsterdam', 'Rotterdam', 'Utrecht', 'The Hague', 'Eindhoven', 'Maastricht', 'Vijfhuizen'],
     totalVenues: 22,
     annualEvents: 380,
     keyIndustries: ['Agriculture', 'Technology', 'Logistics', 'Energy', 'Healthcare'],
@@ -245,7 +245,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'poland',
     capital: 'Warsaw',
     currency: 'PLN',
-    majorCities: ['Kraków', 'Wrocław'],
+    majorCities: ['Kraków', 'Wrocław', 'Kielce', 'Poznan', 'Warsaw'],
     totalVenues: 18,
     annualEvents: 280,
     keyIndustries: ['Manufacturing', 'Technology', 'Agriculture', 'Mining', 'Automotive'],
@@ -276,6 +276,105 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     }
   },
 
+  // Added Austria - Missing from CMS
+  {
+    id: 'austria',
+    name: 'Austria',
+    countryCode: 'AT',
+    continent: 'Europe',
+    slug: 'austria',
+    capital: 'Vienna',
+    currency: 'EUR',
+    majorCities: ['Vienna', 'Graz', 'Linz'],
+    totalVenues: 12,
+    annualEvents: 220,
+    keyIndustries: ['Tourism', 'Manufacturing', 'Technology', 'Finance', 'Agriculture'],
+    exhibitionRanking: 19,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Austria | Vienna Graz Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Austria. Professional displays for Vienna, Graz, Linz exhibitions.',
+      keywords: ['Austria exhibition stands', 'Vienna trade shows', 'Austrian displays', 'European exhibitions']
+    }
+  },
+
+  // Added Nordic Countries - Missing from CMS
+  {
+    id: 'denmark',
+    name: 'Denmark',
+    countryCode: 'DK',
+    continent: 'Europe',
+    slug: 'denmark',
+    capital: 'Copenhagen',
+    currency: 'DKK',
+    majorCities: ['Copenhagen', 'Aarhus', 'Odense'],
+    totalVenues: 10,
+    annualEvents: 160,
+    keyIndustries: ['Technology', 'Design', 'Food & Beverage', 'Energy', 'Healthcare'],
+    exhibitionRanking: 20,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Denmark | Copenhagen Aarhus Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Denmark. Professional displays for Copenhagen, Aarhus, Odense.',
+      keywords: ['Denmark exhibitions', 'Copenhagen trade shows', 'Danish displays', 'Nordic exhibitions']
+    }
+  },
+  {
+    id: 'norway',
+    name: 'Norway',
+    countryCode: 'NO',
+    continent: 'Europe',
+    slug: 'norway',
+    capital: 'Oslo',
+    currency: 'NOK',
+    majorCities: ['Oslo', 'Bergen', 'Trondheim'],
+    totalVenues: 8,
+    annualEvents: 140,
+    keyIndustries: ['Oil & Gas', 'Maritime', 'Technology', 'Energy', 'Fisheries'],
+    exhibitionRanking: 21,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Norway | Oslo Bergen Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Norway. Professional displays for Oslo, Bergen, Trondheim.',
+      keywords: ['Norway exhibitions', 'Oslo trade shows', 'Norwegian displays', 'Nordic exhibitions']
+    }
+  },
+  {
+    id: 'sweden',
+    name: 'Sweden',
+    countryCode: 'SE',
+    continent: 'Europe',
+    slug: 'sweden',
+    capital: 'Stockholm',
+    currency: 'SEK',
+    majorCities: ['Stockholm', 'Gothenburg', 'Malmö'],
+    totalVenues: 12,
+    annualEvents: 180,
+    keyIndustries: ['Technology', 'Automotive', 'Manufacturing', 'Healthcare', 'Energy'],
+    exhibitionRanking: 19,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Sweden | Stockholm Gothenburg Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Sweden. Professional displays for Stockholm, Gothenburg, Malmö.',
+      keywords: ['Sweden exhibitions', 'Stockholm trade shows', 'Swedish displays', 'Nordic exhibitions']
+    }
+  },
+  {
+    id: 'finland',
+    name: 'Finland',
+    countryCode: 'FI',
+    continent: 'Europe',
+    slug: 'finland',
+    capital: 'Helsinki',
+    currency: 'EUR',
+    majorCities: ['Helsinki', 'Espoo', 'Tampere'],
+    totalVenues: 8,
+    annualEvents: 140,
+    keyIndustries: ['Technology', 'Forestry', 'Manufacturing', 'Design', 'Energy'],
+    exhibitionRanking: 22,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Finland | Helsinki Espoo Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Finland. Professional displays for Helsinki, Espoo, Tampere.',
+      keywords: ['Finland exhibitions', 'Helsinki trade shows', 'Finnish displays', 'Nordic exhibitions']
+    }
+  },
+
   // 🌎 NORTH AMERICA - Complete Integration
   {
     id: 'united-states',
@@ -285,7 +384,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     slug: 'united-states',
     capital: 'Washington D.C.',
     currency: 'USD',
-    majorCities: ['New York', 'Los Angeles', 'San Francisco', 'Las Vegas', 'Chicago', 'Orlando', 'Miami', 'Atlanta', 'Dallas', 'Houston', 'Anaheim', 'Austin', 'Boston', 'Denver', 'Detroit', 'Palm Beach', 'Pittsburgh', 'San Antonio', 'San Diego', 'San Jose', 'Long Beach', 'Louisville', 'New Orleans', 'Florida', 'Georgia', 'Texas', 'Alaska', 'Michigan', 'Utah', 'Washington'],
+    majorCities: ['New York', 'Los Angeles', 'San Francisco', 'Las Vegas', 'Chicago', 'Orlando', 'Miami', 'Atlanta', 'Dallas', 'Houston', 'Anaheim', 'Austin', 'Boston', 'Denver', 'Detroit', 'Palm Beach', 'Pittsburgh', 'San Antonio', 'San Diego', 'San Jose', 'Long Beach', 'Louisville', 'New Orleans', 'Florida', 'Georgia', 'Texas', 'Alaska', 'Michigan', 'Utah', 'Washington', 'Tallahassee'],
     totalVenues: 320,
     annualEvents: 5200,
     keyIndustries: ['Technology', 'Healthcare', 'Automotive', 'Defense', 'Entertainment', 'Finance'],
@@ -458,17 +557,17 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     countryCode: 'OM',
     continent: 'Asia',
     slug: 'oman',
-    capital: 'Muscat',
+    capital: 'Mascat',
     currency: 'OMR',
-    majorCities: ['Muscat', 'Salalah', 'Sohar'],
+    majorCities: ['Mascat', 'Salalah', 'Sohar'],
     totalVenues: 8,
     annualEvents: 150,
     keyIndustries: ['Oil & Gas', 'Tourism', 'Agriculture', 'Fisheries', 'Mining'],
     exhibitionRanking: 25,
     seoData: {
-      metaTitle: 'Exhibition Stand Builders in Oman | Muscat Trade Shows',
-      metaDescription: 'Expert exhibition stand builders in Oman. Professional displays for Muscat exhibitions.',
-      keywords: ['Oman exhibitions', 'Muscat trade shows', 'Omani displays', 'Gulf exhibitions']
+      metaTitle: 'Exhibition Stand Builders in Oman | Mascat Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Oman. Professional displays for Mascat exhibitions.',
+      keywords: ['Oman exhibitions', 'Mascat trade shows', 'Omani displays', 'Gulf exhibitions']
     }
   },
   {
@@ -721,7 +820,7 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
     }
   },
   {
-    id: 'nigeria',
+   id: 'nigeria',
     name: 'Nigeria',
     countryCode: 'NG',
     continent: 'Africa',
@@ -756,6 +855,141 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
       metaTitle: 'Exhibition Stand Builders in Morocco | Casablanca Marrakech Trade Shows',
       metaDescription: 'Expert exhibition stand builders in Morocco. Professional displays for Casablanca, Marrakech.',
       keywords: ['Morocco exhibitions', 'Casablanca trade shows', 'Marrakech displays', 'North African exhibitions']
+    }
+  },
+  // Gulf Countries - Added for CMS integration
+  {
+    id: 'qatar',
+    name: 'Qatar',
+    countryCode: 'QA',
+    continent: 'Asia',
+    slug: 'qatar',
+    capital: 'Doha',
+    currency: 'QAR',
+    majorCities: ['Doha'],
+    totalVenues: 8,
+    annualEvents: 150,
+    keyIndustries: ['Oil & Gas', 'Finance', 'Sports', 'Tourism', 'Construction'],
+    exhibitionRanking: 25,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Qatar | Doha Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Qatar. Professional displays for Doha exhibitions.',
+      keywords: ['Qatar exhibitions', 'Doha trade shows', 'Qatari displays', 'Gulf exhibitions']
+    }
+  },
+  {
+    id: 'bahrain',
+    name: 'Bahrain',
+    countryCode: 'BH',
+    continent: 'Asia',
+    slug: 'bahrain',
+    capital: 'Manama',
+    currency: 'BHD',
+    majorCities: ['Manama'],
+    totalVenues: 6,
+    annualEvents: 120,
+    keyIndustries: ['Finance', 'Oil & Gas', 'Aluminum', 'Tourism', 'Islamic Banking'],
+    exhibitionRanking: 26,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Bahrain | Manama Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Bahrain. Professional displays for Manama exhibitions.',
+      keywords: ['Bahrain exhibitions', 'Manama trade shows', 'Bahraini displays', 'Gulf exhibitions']
+    }
+  },
+  {
+    id: 'kuwait',
+    name: 'Kuwait',
+    countryCode: 'KW',
+    continent: 'Asia',
+    slug: 'kuwait',
+    capital: 'Kuwait City',
+    currency: 'KWD',
+    majorCities: ['Kuwait City'],
+    totalVenues: 8,
+    annualEvents: 140,
+    keyIndustries: ['Oil & Gas', 'Finance', 'Real Estate', 'Trade', 'Shipping'],
+    exhibitionRanking: 24,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Kuwait | Kuwait City Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Kuwait. Professional displays for Kuwait City exhibitions.',
+      keywords: ['Kuwait exhibitions', 'Kuwait City trade shows', 'Kuwaiti displays', 'Gulf exhibitions']
+    }
+  },
+  // Middle Eastern Countries - Added for CMS integration
+  {
+    id: 'iran',
+    name: 'Iran',
+    countryCode: 'IR',
+    continent: 'Asia',
+    slug: 'iran',
+    capital: 'Tehran',
+    currency: 'IRR',
+    majorCities: ['Tehran'],
+    totalVenues: 8,
+    annualEvents: 140,
+    keyIndustries: ['Oil & Gas', 'Automotive', 'Petrochemicals', 'Manufacturing', 'Carpet'],
+    exhibitionRanking: 22,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Iran | Tehran Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Iran. Professional displays for Tehran exhibitions.',
+      keywords: ['Iran exhibitions', 'Tehran trade shows', 'Iranian displays', 'Middle East exhibitions']
+    }
+  },
+  {
+    id: 'iraq',
+    name: 'Iraq',
+    countryCode: 'IQ',
+    continent: 'Asia',
+    slug: 'iraq',
+    capital: 'Baghdad',
+    currency: 'IQD',
+    majorCities: ['Baghdad'],
+    totalVenues: 6,
+    annualEvents: 120,
+    keyIndustries: ['Oil & Gas', 'Construction', 'Agriculture', 'Textiles', 'Banking'],
+    exhibitionRanking: 26,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Iraq | Baghdad Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Iraq. Professional displays for Baghdad exhibitions.',
+      keywords: ['Iraq exhibitions', 'Baghdad trade shows', 'Iraqi displays', 'Middle East exhibitions']
+    }
+  },
+  {
+    id: 'jordan',
+    name: 'Jordan',
+    countryCode: 'JO',
+    continent: 'Asia',
+    slug: 'jordan',
+    capital: 'Amman',
+    currency: 'JOD',
+    majorCities: ['Amman'],
+    totalVenues: 6,
+    annualEvents: 120,
+    keyIndustries: ['Tourism', 'Information Technology', 'Pharmaceuticals', 'Textiles', 'Agriculture'],
+    exhibitionRanking: 25,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Jordan | Amman Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Jordan. Professional displays for Amman exhibitions.',
+      keywords: ['Jordan exhibitions', 'Amman trade shows', 'Jordanian displays', 'Middle East exhibitions']
+    }
+  },
+  {
+    id: 'lebanon',
+    name: 'Lebanon',
+    countryCode: 'LB',
+    continent: 'Asia',
+    slug: 'lebanon',
+    capital: 'Beirut',
+    currency: 'LBP',
+    majorCities: ['Beirut'],
+    totalVenues: 6,
+    annualEvents: 120,
+    keyIndustries: ['Banking', 'Tourism', 'Real Estate', 'Food & Beverage', 'Information Technology'],
+    exhibitionRanking: 24,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Lebanon | Beirut Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Lebanon. Professional displays for Beirut exhibitions.',
+      keywords: ['Lebanon exhibitions', 'Beirut trade shows', 'Lebanese displays', 'Middle East exhibitions']
     }
   },
   // New countries added
@@ -949,137 +1183,240 @@ const EXHIBITION_COUNTRIES: ExhibitionCountry[] = [
       keywords: ['Switzerland exhibitions', 'Zurich trade shows', 'Geneva displays', 'Swiss exhibitions']
     }
   },
+  // Additional Countries - Added for CMS integration
   {
-    id: 'austria',
-    name: 'Austria',
-    countryCode: 'AT',
-    continent: 'Europe',
-    slug: 'austria',
-    capital: 'Vienna',
-    currency: 'EUR',
-    majorCities: [],
-    totalVenues: 10,
-    annualEvents: 180,
-    keyIndustries: ['Technology', 'Manufacturing', 'Tourism', 'Energy', 'Healthcare'],
-    exhibitionRanking: 18,
+    id: 'india',
+    name: 'India',
+    countryCode: 'IN',
+    continent: 'Asia',
+    slug: 'india',
+    capital: 'New Delhi',
+    currency: 'INR',
+    majorCities: ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata'],
+    totalVenues: 35,
+    annualEvents: 580,
+    keyIndustries: ['Information Technology', 'Pharmaceuticals', 'Textiles', 'Automotive', 'Engineering'],
+    exhibitionRanking: 9,
     seoData: {
-      metaTitle: 'Exhibition Stand Builders in Austria | Vienna Trade Shows',
-      metaDescription: 'Expert exhibition stand builders in Austria. Professional contractors for all major Vienna trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.',
-      keywords: ['Austria exhibitions', 'Vienna trade shows', 'Austrian displays', 'Central European exhibitions']
+      metaTitle: 'Exhibition Stand Builders in India | Mumbai Delhi Bangalore Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in India. Professional displays for Mumbai, Delhi, Bangalore exhibitions.',
+      keywords: ['India exhibitions', 'Mumbai trade shows', 'Indian displays', 'Asia exhibitions']
     }
   },
   {
-    id: 'czech-republic',
-    name: 'Czech Republic',
-    countryCode: 'CZ',
-    continent: 'Europe',
-    slug: 'czech-republic',
-    capital: 'Prague',
-    currency: 'CZK',
-    majorCities: [],
-    totalVenues: 8,
-    annualEvents: 140,
-    keyIndustries: ['Manufacturing', 'Technology', 'Automotive', 'Tourism', 'Energy'],
-    exhibitionRanking: 23,
+    id: 'israel',
+    name: 'Israel',
+    countryCode: 'IL',
+    continent: 'Asia',
+    slug: 'israel',
+    capital: 'Jerusalem',
+    currency: 'ILS',
+    majorCities: ['Tel Aviv', 'Jerusalem', 'Haifa'],
+    totalVenues: 12,
+    annualEvents: 220,
+    keyIndustries: ['Technology', 'Defense', 'Diamonds', 'Agriculture', 'Healthcare'],
+    exhibitionRanking: 19,
     seoData: {
-      metaTitle: 'Exhibition Stand Builders in Czech Republic | Prague Trade Shows',
-      metaDescription: 'Expert exhibition stand builders in Czech Republic. Professional contractors for all major Prague trade shows, exhibitions, and conventions. Custom booth design, construction, and installation services.',
-      keywords: ['Czech Republic exhibitions', 'Prague trade shows', 'Czech displays', 'Central European exhibitions']
+      metaTitle: 'Exhibition Stand Builders in Israel | Tel Aviv Jerusalem Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Israel. Professional displays for Tel Aviv, Jerusalem exhibitions.',
+      keywords: ['Israel exhibitions', 'Tel Aviv trade shows', 'Israeli displays', 'Middle East exhibitions']
     }
   },
   {
-    id: 'hungary',
-    name: 'Hungary',
-    countryCode: 'HU',
-    continent: 'Europe',
-    slug: 'hungary',
-    capital: 'Budapest',
-    currency: 'HUF',
-    majorCities: ['Budapest'],
-    totalVenues: 8,
-    annualEvents: 140,
-    keyIndustries: ['Manufacturing', 'Technology', 'Tourism', 'Agriculture', 'Energy'],
-    exhibitionRanking: 24,
-    seoData: {
-      metaTitle: 'Exhibition Stand Builders in Hungary | Budapest Trade Shows',
-      metaDescription: 'Expert exhibition stand builders in Hungary. Professional displays for Budapest exhibitions.',
-      keywords: ['Hungary exhibitions', 'Budapest trade shows', 'Hungarian displays', 'Central European exhibitions']
-    }
-  },
-  {
-    id: 'nigeria',
-    name: 'Nigeria',
-    countryCode: 'NG',
-    continent: 'Africa',
-    slug: 'nigeria',
-    capital: 'Abuja',
-    currency: 'NGN',
-    majorCities: ['Lagos'],
-    totalVenues: 8,
-    annualEvents: 140,
-    keyIndustries: ['Oil & Gas', 'Agriculture', 'Technology', 'Banking', 'Entertainment'],
-    exhibitionRanking: 24,
-    seoData: {
-      metaTitle: 'Exhibition Stand Builders in Nigeria | Lagos Trade Shows',
-      metaDescription: 'Expert exhibition stand builders in Nigeria. Professional displays for Lagos exhibitions.',
-      keywords: ['Nigeria exhibitions', 'Lagos trade shows', 'Nigerian displays', 'West African exhibitions']
-    }
-  },
-  {
-    id: 'kenya',
-    name: 'Kenya',
-    countryCode: 'KE',
-    continent: 'Africa',
-    slug: 'kenya',
-    capital: 'Nairobi',
-    currency: 'KES',
-    majorCities: ['Nairobi'],
-    totalVenues: 6,
-    annualEvents: 120,
-    keyIndustries: ['Agriculture', 'Tourism', 'Technology', 'Tea', 'Coffee'],
-    exhibitionRanking: 26,
-    seoData: {
-      metaTitle: 'Exhibition Stand Builders in Kenya | Nairobi Trade Shows',
-      metaDescription: 'Expert exhibition stand builders in Kenya. Professional displays for Nairobi exhibitions.',
-      keywords: ['Kenya exhibitions', 'Nairobi trade shows', 'Kenyan displays', 'East African exhibitions']
-    }
-  },
-  {
-    id: 'brazil',
-    name: 'Brazil',
-    countryCode: 'BR',
-    continent: 'South America',
-    slug: 'brazil',
-    capital: 'Brasília',
-    currency: 'BRL',
-    majorCities: ['São Paulo', 'Rio de Janeiro'],
-    totalVenues: 25,
-    annualEvents: 420,
-    keyIndustries: ['Agriculture', 'Mining', 'Manufacturing', 'Oil & Gas', 'Technology'],
-    exhibitionRanking: 8,
-    seoData: {
-      metaTitle: 'Exhibition Stand Builders in Brazil | São Paulo Rio Trade Shows',
-      metaDescription: 'Expert exhibition stand builders in Brazil. Professional displays for São Paulo, Rio de Janeiro.',
-      keywords: ['Brazil exhibitions', 'São Paulo trade shows', 'Rio de Janeiro displays', 'Brazilian exhibitions']
-    }
-  },
-  {
-    id: 'mexico',
-    name: 'Mexico',
-    countryCode: 'MX',
-    continent: 'North America',
-    slug: 'mexico',
-    capital: 'Mexico City',
-    currency: 'MXN',
-    majorCities: ['Mexico City'],
+    id: 'philippines',
+    name: 'Philippines',
+    countryCode: 'PH',
+    continent: 'Asia',
+    slug: 'philippines',
+    capital: 'Manila',
+    currency: 'PHP',
+    majorCities: ['Manila', 'Cebu', 'Davao'],
     totalVenues: 15,
     annualEvents: 280,
-    keyIndustries: ['Manufacturing', 'Automotive', 'Technology', 'Agriculture', 'Tourism'],
-    exhibitionRanking: 15,
+    keyIndustries: ['Business Process Outsourcing', 'Manufacturing', 'Agriculture', 'Tourism', 'Electronics'],
+    exhibitionRanking: 21,
     seoData: {
-      metaTitle: 'Exhibition Stand Builders in Mexico | Mexico City Trade Shows',
-      metaDescription: 'Expert exhibition stand builders in Mexico. Professional displays for Mexico City exhibitions.',
-      keywords: ['Mexico exhibitions', 'Mexico City trade shows', 'Mexican displays', 'North American exhibitions']
+      metaTitle: 'Exhibition Stand Builders in Philippines | Manila Cebu Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Philippines. Professional displays for Manila, Cebu exhibitions.',
+      keywords: ['Philippines exhibitions', 'Manila trade shows', 'Filipino displays', 'Southeast Asia exhibitions']
+    }
+  },
+  {
+    id: 'thailand',
+    name: 'Thailand',
+    countryCode: 'TH',
+    continent: 'Asia',
+    slug: 'thailand',
+    capital: 'Bangkok',
+    currency: 'THB',
+    majorCities: ['Bangkok', 'Chiang Mai', 'Phuket'],
+    totalVenues: 18,
+    annualEvents: 320,
+    keyIndustries: ['Tourism', 'Manufacturing', 'Agriculture', 'Automotive', 'Technology'],
+    exhibitionRanking: 16,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Thailand | Bangkok Chiang Mai Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Thailand. Professional displays for Bangkok, Chiang Mai exhibitions.',
+      keywords: ['Thailand exhibitions', 'Bangkok trade shows', 'Thai displays', 'Southeast Asia exhibitions']
+    }
+  },
+  // Added Taiwan - Missing from CMS
+  {
+    id: 'taiwan',
+    name: 'Taiwan',
+    countryCode: 'TW',
+    continent: 'Asia',
+    slug: 'taiwan',
+    capital: 'Taipei',
+    currency: 'TWD',
+    majorCities: ['Taipei', 'Kaohsiung', 'Taichung'],
+    totalVenues: 12,
+    annualEvents: 220,
+    keyIndustries: ['Technology', 'Electronics', 'Manufacturing', 'Healthcare', 'Automotive'],
+    exhibitionRanking: 17,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Taiwan | Taipei Kaohsiung Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Taiwan. Professional displays for Taipei, Kaohsiung, Taichung exhibitions.',
+      keywords: ['Taiwan exhibitions', 'Taipei trade shows', 'Taiwanese displays', 'East Asian exhibitions']
+    }
+  },
+  // Added Philippines - Missing from CMS
+  {
+    id: 'philippines',
+    name: 'Philippines',
+    countryCode: 'PH',
+    continent: 'Asia',
+    slug: 'philippines',
+    capital: 'Manila',
+    currency: 'PHP',
+    majorCities: ['Manila', 'Cebu', 'Davao'],
+    totalVenues: 15,
+    annualEvents: 280,
+    keyIndustries: ['Business Process Outsourcing', 'Manufacturing', 'Agriculture', 'Tourism', 'Electronics'],
+    exhibitionRanking: 21,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Philippines | Manila Cebu Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Philippines. Professional displays for Manila, Cebu exhibitions.',
+      keywords: ['Philippines exhibitions', 'Manila trade shows', 'Filipino displays', 'Southeast Asia exhibitions']
+    }
+  },
+  // Added Thailand - Missing from CMS
+  {
+    id: 'thailand',
+    name: 'Thailand',
+    countryCode: 'TH',
+    continent: 'Asia',
+    slug: 'thailand',
+    capital: 'Bangkok',
+    currency: 'THB',
+    majorCities: ['Bangkok', 'Chiang Mai', 'Phuket'],
+    totalVenues: 18,
+    annualEvents: 320,
+    keyIndustries: ['Tourism', 'Manufacturing', 'Agriculture', 'Automotive', 'Technology'],
+    exhibitionRanking: 16,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Thailand | Bangkok Chiang Mai Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Thailand. Professional displays for Bangkok, Chiang Mai exhibitions.',
+      keywords: ['Thailand exhibitions', 'Bangkok trade shows', 'Thai displays', 'Southeast Asia exhibitions']
+    }
+  },
+  // Added Vietnam - Missing from CMS
+  {
+    id: 'vietnam',
+    name: 'Vietnam',
+    countryCode: 'VN',
+    continent: 'Asia',
+    slug: 'vietnam',
+    capital: 'Hanoi',
+    currency: 'VND',
+    majorCities: ['Hanoi', 'Ho Chi Minh City', 'Da Nang'],
+    totalVenues: 12,
+    annualEvents: 180,
+    keyIndustries: ['Manufacturing', 'Technology', 'Agriculture', 'Textiles', 'Tourism'],
+    exhibitionRanking: 22,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Vietnam | Hanoi Ho Chi Minh City Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Vietnam. Professional displays for Hanoi, Ho Chi Minh City, Da Nang exhibitions.',
+      keywords: ['Vietnam exhibitions', 'Hanoi trade shows', 'Vietnamese displays', 'Southeast Asian exhibitions']
+    }
+  },
+  // Added Switzerland - Missing from CMS
+  {
+    id: 'switzerland',
+    name: 'Switzerland',
+    countryCode: 'CH',
+    continent: 'Europe',
+    slug: 'switzerland',
+    capital: 'Bern',
+    currency: 'CHF',
+    majorCities: ['Zurich', 'Geneva', 'Basel', 'Bern', 'Lugano'],
+    totalVenues: 15,
+    annualEvents: 280,
+    keyIndustries: ['Banking', 'Pharmaceuticals', 'Technology', 'Manufacturing', 'Tourism'],
+    exhibitionRanking: 13,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Switzerland | Zurich Geneva Basel Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Switzerland. Professional displays for Zurich, Geneva, Basel.',
+      keywords: ['Switzerland exhibitions', 'Zurich trade shows', 'Geneva displays', 'Swiss exhibitions']
+    }
+  },
+  {
+    id: 'portugal',
+    name: 'Portugal',
+    countryCode: 'PT',
+    continent: 'Europe',
+    slug: 'portugal',
+    capital: 'Lisbon',
+    currency: 'EUR',
+    majorCities: ['Lisbon', 'Porto', 'Faro'],
+    totalVenues: 12,
+    annualEvents: 220,
+    keyIndustries: ['Tourism', 'Textiles', 'Cork', 'Wine', 'Technology'],
+    exhibitionRanking: 20,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Portugal | Lisbon Porto Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Portugal. Professional displays for Lisbon, Porto exhibitions.',
+      keywords: ['Portugal exhibitions', 'Lisbon trade shows', 'Portuguese displays', 'Europe exhibitions']
+    }
+  },
+  // Added New Zealand - Missing from CMS
+  {
+    id: 'new-zealand',
+    name: 'New Zealand',
+    countryCode: 'NZ',
+    continent: 'Oceania',
+    slug: 'new-zealand',
+    capital: 'Wellington',
+    currency: 'NZD',
+    majorCities: ['Auckland', 'Wellington', 'Christchurch'],
+    totalVenues: 8,
+    annualEvents: 120,
+    keyIndustries: ['Agriculture', 'Tourism', 'Technology', 'Manufacturing', 'Energy'],
+    exhibitionRanking: 25,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in New Zealand | Auckland Wellington Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in New Zealand. Professional displays for Auckland, Wellington, Christchurch exhibitions.',
+      keywords: ['New Zealand exhibitions', 'Auckland trade shows', 'NZ displays', 'Oceania exhibitions']
+    }
+  },
+  // Added Australia - Missing from CMS
+  {
+    id: 'australia',
+    name: 'Australia',
+    countryCode: 'AU',
+    continent: 'Oceania',
+    slug: 'australia',
+    capital: 'Canberra',
+    currency: 'AUD',
+    majorCities: ['Sydney', 'Melbourne', 'Brisbane', 'Perth'],
+    totalVenues: 25,
+    annualEvents: 420,
+    keyIndustries: ['Mining', 'Agriculture', 'Technology', 'Healthcare', 'Tourism'],
+    exhibitionRanking: 11,
+    seoData: {
+      metaTitle: 'Exhibition Stand Builders in Australia | Sydney Melbourne Brisbane Trade Shows',
+      metaDescription: 'Expert exhibition stand builders in Australia. Professional displays for Sydney, Melbourne, Brisbane.',
+      keywords: ['Australia exhibitions', 'Sydney trade shows', 'Melbourne displays', 'Australian exhibitions']
     }
   }
 ];

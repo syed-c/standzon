@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { UserManager } from "@/lib/auth/config";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import { claimNotificationService } from "@/lib/email/emailService";
+import { v4 as uuidv4 } from 'uuid';
 
 // Add global type declaration
 declare global {
@@ -338,7 +339,7 @@ export async function POST(request: NextRequest) {
             } catch (encodeError) {
               console.error("❌ Error creating provisional user ID:", encodeError);
               user = {
-                id: `builder_${Date.now()}`,
+                id: uuidv4(), // Generate proper UUID instead of string-based ID
                 email: email || '',
                 name: "New Builder",
                 role: "builder",

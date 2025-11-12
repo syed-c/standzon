@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -174,7 +175,7 @@ export default function AdminBuilderManager() {
           validationErrors.push(`Row ${index + 2}: ${errors.join(', ')}`);
         } else {
           validBuilders.push({
-            id: `bulk-${Date.now()}-${index}`,
+            id: uuidv4(),
             companyName: builder.companyName,
             contactInfo: {
               contactPerson: builder.contactPerson,
@@ -188,7 +189,7 @@ export default function AdminBuilderManager() {
             },
             services: builder.services.split(',').map(s => ({
               name: s.trim(),
-              id: s.trim().toLowerCase().replace(/\s+/g, '-')
+              id: uuidv4()
             })),
             description: builder.specializations,
             status: 'active' as const,

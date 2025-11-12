@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
-import { preloadQuery } from "convex/nextjs";
-import { api } from "@/convex/_generated/api";
+// import { preloadQuery } from "convex/nextjs";
+// import { api } from "@/convex/_generated/api";
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
@@ -99,8 +99,8 @@ async function getCountryPageContent(countrySlug: string) {
   return null;
 }
 
-export async function generateMetadata({ params }: { params: { country: string } }): Promise<Metadata> {
-  const countrySlug = params.country;
+export async function generateMetadata({ params }: { params: Promise<{ country: string }> }): Promise<Metadata> {
+  const { country: countrySlug } = await params;
   const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
   
   if (!countryInfo) {
@@ -163,8 +163,8 @@ export async function generateMetadata({ params }: { params: { country: string }
   };
 }
 
-export default async function CountryPage({ params }: { params: { country: string } }) {
-  const countrySlug = params.country;
+export default async function CountryPage({ params }: { params: Promise<{ country: string }> }) {
+  const { country: countrySlug } = await params;
   const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
   
   if (!countryInfo) {
@@ -244,14 +244,22 @@ export default async function CountryPage({ params }: { params: { country: strin
     ...(countryBlock || {})
   };
 
+  // Prepare country data for the client component
+  const countryData = {
+    countryName: countryInfo.name,
+    countryCode: countryInfo.code,
+    flag: countryInfo.flag,
+    cities: [] // We'll populate this if needed
+  };
+
     return (
       <div className="font-inter">
         <Navigation />
         <CountryCityPage
-        country={countryInfo.name}
-        initialBuilders={builders}
-        initialContent={mergedContent}
-        cmsContent={cmsContent}
+          country={countryInfo.name}
+          initialBuilders={builders}
+          initialContent={mergedContent}
+          cmsContent={cmsContent}
         />
         <Footer />
         <WhatsAppFloat />

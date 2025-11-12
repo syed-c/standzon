@@ -370,22 +370,38 @@ export default function GMBAPIFetchTool({ adminId, permissions }: GMBAPIFetchToo
 
   // Generate mock business data
   const generateMockBusinesses = (category: string, city: string, country: string, count: number): GMBListing[] => {
-    return Array.from({ length: count }, (_, index) => ({
-      id: `${city.toLowerCase()}-${category.toLowerCase().replace(/\s+/g, '-')}-${index + 1}`,
-      businessName: `${category} ${city} ${index + 1}`,
-      address: `${index + 1} Main Street, ${city}, ${country}`,
-      phone: `+1-555-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-      website: `https://${category.toLowerCase().replace(/\s+/g, '')}-${city.toLowerCase()}.com`,
-      email: `info@${category.toLowerCase().replace(/\s+/g, '')}-${city.toLowerCase()}.com`,
-      rating: Math.round((Math.random() * 2 + 3) * 10) / 10,
-      reviewCount: Math.floor(Math.random() * 200) + 10,
-      category,
-      city,
-      country,
-      claimStatus: Math.random() > 0.7 ? 'claimed' : 'unclaimed',
-      businessHours: '9:00 AM - 6:00 PM',
-      description: `Professional ${category.toLowerCase()} serving ${city} and surrounding areas.`
-    }));
+    const usedIds = new Set<string>();
+    
+    return Array.from({ length: count }, (_, index) => {
+      // Generate a unique ID
+      let id = `${city.toLowerCase()}-${category.toLowerCase().replace(/\s+/g, '-')}-${index + 1}`;
+      
+      // Ensure ID uniqueness
+      let counter = 1;
+      while (usedIds.has(id)) {
+        id = `${city.toLowerCase()}-${category.toLowerCase().replace(/\s+/g, '-')}-${index + 1}-${counter}`;
+        counter++;
+      }
+      
+      usedIds.add(id);
+      
+      return {
+        id,
+        businessName: `${category} ${city} ${index + 1}`,
+        address: `${index + 1} Main Street, ${city}, ${country}`,
+        phone: `+1-555-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+        website: `https://${category.toLowerCase().replace(/\s+/g, '')}-${city.toLowerCase()}.com`,
+        email: `info@${category.toLowerCase().replace(/\s+/g, '')}-${city.toLowerCase()}.com`,
+        rating: Math.round((Math.random() * 2 + 3) * 10) / 10,
+        reviewCount: Math.floor(Math.random() * 200) + 10,
+        category,
+        city,
+        country,
+        claimStatus: Math.random() > 0.7 ? 'claimed' : 'unclaimed',
+        businessHours: '9:00 AM - 6:00 PM',
+        description: `Professional ${category.toLowerCase()} serving ${city} and surrounding areas.`
+      };
+    });
   };
 
   // Handle select all listings
@@ -443,44 +459,55 @@ export default function GMBAPIFetchTool({ adminId, permissions }: GMBAPIFetchToo
       }
 
       // Real import
-      const response = await fetch('/api/admin/gmb-integration', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          action: 'create-listings',
-          data: {
-            listings: listingsToImport,
-            category: selectedCategory
-          }
-        })
-      });
-
-      const result = await response.json();
-      
-      if (result.success) {
-        setImportStats({
-          created: result.data.created,
-          total: selectedListings.length,
-          errors: result.data.failed
+      try {
+        const response = await fetch('/api/admin/gmb-integration', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'create-listings',
+            data: {
+              listings: listingsToImport,
+              category: selectedCategory
+            }
+          })
         });
-        
-        setImportProgress(100);
-        
-        if (result.data.duplicates > 0) {
-          toast.success(`✅ Import complete! Created: ${result.data.created}, Duplicates skipped: ${result.data.duplicates}, Failed: ${result.data.failed}`);
-        } else {
-          toast.success(`✅ Successfully imported ${result.data.created} builders to platform`);
+
+        // Check if the response is ok
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const result = await response.json();
         
-        // Clear selections after successful import
-        setSelectedListings([]);
-        setSearchResults([]);
-      } else {
-        console.error('❌ Import failed:', result.error);
-        toast.error(`❌ Import failed: ${result.error}`);
+        if (result.success) {
+          setImportStats({
+            created: result.data.created,
+            total: selectedListings.length,
+            errors: result.data.failed
+          });
+          
+          setImportProgress(100);
+          
+          if (result.data.duplicates > 0) {
+            toast.success(`✅ Import complete! Created: ${result.data.created}, Duplicates skipped: ${result.data.duplicates}, Failed: ${result.data.failed}`);
+          } else {
+            toast.success(`✅ Successfully imported ${result.data.created} builders to platform`);
+          }
+          
+          // Clear selections after successful import
+          setSelectedListings([]);
+          setSearchResults([]);
+        } else {
+          console.error('❌ Import failed:', result.error);
+          toast.error(`❌ Import failed: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Import error:', error);
+        toast.error(`❌ Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
+
     } catch (error) {
       console.error('Import error:', error);
       toast.error('❌ Import failed. Please try again or contact support.');
@@ -795,8 +822,8 @@ export default function GMBAPIFetchTool({ adminId, permissions }: GMBAPIFetchToo
           <CardContent>
             <div className="space-y-3">
               <div className="max-h-96 overflow-y-auto space-y-2 scroll-smooth">
-                {searchResults.map((listing) => (
-                  <div key={listing.id} className="flex items-start gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                {searchResults.map((listing, index) => (
+                  <div key={`${listing.id}-${index}`} className="flex items-start gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
                     <Checkbox
                       checked={selectedListings.includes(listing.id)}
                       onCheckedChange={(checked) => {

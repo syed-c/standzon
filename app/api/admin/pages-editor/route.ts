@@ -110,10 +110,13 @@ export async function GET(request: NextRequest) {
     
     // Include all country pages from global dataset
     try {
+      console.log('🌍 Generating pages for', GLOBAL_EXHIBITION_DATA.countries.length, 'countries');
       GLOBAL_EXHIBITION_DATA.countries.forEach((c) => {
         pages.push({ title: `${c.name} Exhibition Stands`, path: `/exhibition-stands/${c.slug}`, type: 'country' });
       });
+      
       // Include all city pages from global dataset
+      console.log('🏙️ Generating pages for', GLOBAL_EXHIBITION_DATA.cities.length, 'cities');
       GLOBAL_EXHIBITION_DATA.cities.forEach((city) => {
         const country = GLOBAL_EXHIBITION_DATA.countries.find((c) => c.name === city.country);
         if (country) {
@@ -124,7 +127,10 @@ export async function GET(request: NextRequest) {
           });
         }
       });
-    } catch {}
+    } catch (error) {
+      console.error('❌ Error generating pages from global dataset:', error);
+    }
+    
     try {
       const all = storageAPI.getAllPageContents();
       all.forEach((pc) => {
@@ -137,10 +143,15 @@ export async function GET(request: NextRequest) {
           type: pc.type,
         });
       });
-    } catch {}
+    } catch (error) {
+      console.error('❌ Error adding storage API pages:', error);
+    }
+    
     // De-duplicate by path
     const seen = new Set<string>();
     const unique = pages.filter(p => (seen.has(p.path) ? false : (seen.add(p.path), true)));
+    
+    console.log('📊 Total unique pages generated:', unique.length);
     return NextResponse.json(
       { success: true, data: unique },
       { headers: { 'Cache-Control': 'no-store, max-age=0' } }
@@ -577,3 +588,5 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Failed to update page' }, { status: 500 });
   }
 }
+
+

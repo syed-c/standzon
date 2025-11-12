@@ -1,50 +1,35 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    console.log('=== ENVIRONMENT TEST ===');
+    console.log("Testing environment variables...");
     
-    // Check environment variables
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const envVars = {
+      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      SUPABASE_URL: process.env.SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      ENABLE_PERSISTENCE: process.env.ENABLE_PERSISTENCE
+    };
     
-    console.log('SUPABASE_URL:', supabaseUrl);
-    console.log('SUPABASE_SERVICE_ROLE_KEY exists:', !!supabaseServiceKey);
+    console.log("Environment variables:", envVars);
     
-    // Check if we're in development or production
-    const isDev = process.env.NODE_ENV === 'development';
-    console.log('NODE_ENV:', process.env.NODE_ENV);
-    console.log('Is Development:', isDev);
-    
-    // Check if fetch is working at all
-    console.log('Testing basic fetch...');
-    try {
-      const response = await fetch('https://httpbin.org/get');
-      console.log('Basic fetch status:', response.status);
-    } catch (fetchErr: any) {
-      console.error('Basic fetch failed:', fetchErr.message);
-    }
-    
-    // Test Supabase URL construction
-    const testBucket = 'gallery';
-    const testPath = 'countries/germany/2025-11-10/1762767272165-1p60c0uhnnw.jpg';
-    const testSupabaseUrl = `https://elipzumpfnzmzifrcnl.supabase.co/storage/v1/object/public/${testBucket}/${testPath}`;
-    
-    console.log('Test Supabase URL:', testSupabaseUrl);
+    // Check if required Supabase variables are present
+    const supabaseConfigured = !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+    const publicSupabaseConfigured = !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
     
     return NextResponse.json({ 
-      success: true,
-      message: 'Environment test completed',
-      env: {
-        supabaseUrl: supabaseUrl ? '[REDACTED]' : null,
-        hasServiceKey: !!supabaseServiceKey,
-        nodeEnv: process.env.NODE_ENV,
-        isDev: isDev
-      },
-      testUrl: testSupabaseUrl
+      success: true, 
+      envVars,
+      supabaseConfigured,
+      publicSupabaseConfigured
     });
-  } catch (err: any) {
-    console.error('Environment test error:', err);
-    return new NextResponse('Test failed: ' + (err.message || String(err)), { status: 500 });
+  } catch (error) {
+    console.error("Environment variable test failed:", error);
+    return NextResponse.json({ 
+      success: false, 
+      error: "Failed to test environment variables",
+      details: error instanceof Error ? error.message : "Unknown error"
+    }, { status: 500 });
   }
 }

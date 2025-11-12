@@ -1,32 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { usePreloadedQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Building2, Star, Phone, Globe, Mail } from "lucide-react";
 import Link from "next/link";
-import { Preloaded } from "convex/react";
 import PublicQuoteRequest from "@/components/PublicQuoteRequest";
 
 interface EnhancedCountryPageClientProps {
   countrySlug: string;
-  preloadedCountryData: Preloaded<typeof api.locations.getCountryBySlug>;
-  preloadedBuildersData: Preloaded<typeof api.locations.getBuildersForLocation>;
+  countryData: any;
+  builders: any[];
 }
 
 export default function EnhancedCountryPageClient({
   countrySlug,
-  preloadedCountryData,
-  preloadedBuildersData,
+  countryData,
+  builders: initialBuilders,
 }: EnhancedCountryPageClientProps) {
   const [showAllBuilders, setShowAllBuilders] = useState(false);
 
   // Use preloaded data for SSR
-  const countryData = usePreloadedQuery(preloadedCountryData);
-  const initialBuilders = usePreloadedQuery(preloadedBuildersData);
 
   if (!countryData) {
     return (
@@ -166,7 +161,7 @@ export default function EnhancedCountryPageClient({
                 )
                 .map((city: any) => (
                   <Link
-                    key={city._id}
+                    key={city.id}
                     href={`/exhibition-stands/${countrySlug}/${city.citySlug}`}
                     className="group"
                   >
@@ -205,7 +200,7 @@ export default function EnhancedCountryPageClient({
                       self.findIndex((c: any) => c.citySlug === city.citySlug)
                   )
                   .map((city: any, index: number, filteredCities: any[]) => (
-                    <span key={city._id}>
+                    <span key={city.id}>
                       <Link
                         href={`/exhibition-stands/${countrySlug}/${city.citySlug}`}
                         className="text-blue-600 hover:text-blue-800 hover:underline"
@@ -257,7 +252,7 @@ export default function EnhancedCountryPageClient({
                 .slice(0, showAllBuilders ? undefined : 12)
                 .map((builder) => (
                   <Card
-                    key={builder._id}
+                    key={builder.id}
                     className="hover:shadow-lg transition-shadow"
                   >
                     <CardHeader>
@@ -268,13 +263,13 @@ export default function EnhancedCountryPageClient({
                               href={`/builders/${builder.slug}`}
                               className="hover:text-blue-600 transition-colors"
                             >
-                              {builder.companyName}
+                              {builder.company_name}
                             </Link>
                           </CardTitle>
-                          {builder.headquartersCity && (
+                          {builder.headquarters_city && (
                             <p className="text-sm text-gray-600 flex items-center gap-1">
                               <MapPin className="h-4 w-4" />
-                              {builder.headquartersCity}
+                              {builder.headquarters_city}
                             </p>
                           )}
                         </div>
@@ -297,9 +292,9 @@ export default function EnhancedCountryPageClient({
                               {builder.rating}
                             </span>
                           </div>
-                          {builder.reviewCount && (
+                          {builder.review_count && (
                             <span className="text-sm text-gray-600">
-                              ({builder.reviewCount} reviews)
+                              ({builder.review_count} reviews)
                             </span>
                           )}
                         </div>
@@ -325,10 +320,10 @@ export default function EnhancedCountryPageClient({
                             </a>
                           </div>
                         )}
-                        {builder.primaryEmail && (
+                        {builder.primary_email && (
                           <div className="flex items-center gap-2">
                             <Mail className="h-4 w-4" />
-                            <span>{builder.primaryEmail}</span>
+                            <span>{builder.primary_email}</span>
                           </div>
                         )}
                       </div>

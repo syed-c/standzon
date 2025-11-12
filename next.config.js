@@ -151,6 +151,19 @@ const nextConfig = {
     }
     return redirects;
   },
+  // Handle problematic static file requests
+  async rewrites() {
+    return [
+      {
+        source: '/_next/static/chunks/main-app.js',
+        destination: '/api/static/main-app.js',
+      },
+      {
+        source: '/.well-known/:path*',
+        destination: '/api/static/.well-known/:path*',
+      },
+    ];
+  },
   allowedDevOrigins: [
     "*.macaly.dev",
     "*.macaly.app",

@@ -136,50 +136,136 @@ export class DatabaseService {
   // Builder Profiles
   async getBuilders() {
     if (!this.client) throw new Error('Supabase client not initialized');
-    const { data, error } = await this.client
+    
+    // Try 'builder_profiles' table first
+    const { data: data1, error: error1 } = await this.client
       .from('builder_profiles')
       .select('*')
       .order('created_at', { ascending: false });
     
-    if (error) throw error;
-    return data;
+    if (!error1) {
+      return data1;
+    }
+    
+    // Fallback to 'builders' table
+    const { data: data2, error: error2 } = await this.client
+      .from('builders')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error2) throw error1 || error2;
+    return data2;
   }
 
   async getBuilderBySlug(slug: string) {
     if (!this.client) throw new Error('Supabase client not initialized');
-    const { data, error } = await this.client
+    
+    // Try 'builder_profiles' table first
+    const { data: data1, error: error1 } = await this.client
       .from('builder_profiles')
       .select('*')
       .eq('slug', slug)
       .single();
     
-    if (error) throw error;
-    return data;
+    if (!error1 && data1) {
+      return data1;
+    }
+    
+    // Fallback to 'builders' table
+    const { data: data2, error: error2 } = await this.client
+      .from('builders')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+    
+    if (error2) throw error1 || error2;
+    return data2;
   }
 
   async createBuilder(builder: any) {
     if (!this.client) throw new Error('Supabase client not initialized');
-    const { data, error } = await this.client
+    
+    // Try 'builder_profiles' table first
+    const { data: data1, error: error1 } = await this.client
       .from('builder_profiles')
       .insert(builder)
       .select()
       .single();
     
-    if (error) throw error;
-    return data;
+    if (!error1) {
+      return data1;
+    }
+    
+    // Fallback to 'builders' table
+    const { data: data2, error: error2 } = await this.client
+      .from('builders')
+      .insert(builder)
+      .select()
+      .single();
+    
+    if (error2) throw error1 || error2;
+    return data2;
   }
 
   async updateBuilder(id: string, updates: any) {
     if (!this.client) throw new Error('Supabase client not initialized');
-    const { data, error } = await this.client
+    
+    // Try 'builder_profiles' table first
+    const { data: data1, error: error1 } = await this.client
       .from('builder_profiles')
       .update(updates)
       .eq('id', id)
       .select()
       .single();
     
-    if (error) throw error;
-    return data;
+    if (!error1) {
+      return data1;
+    }
+    
+    // Fallback to 'builders' table
+    const { data: data2, error: error2 } = await this.client
+      .from('builders')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error2) throw error1 || error2;
+    return data2;
+  }
+
+  async deleteBuilder(id: string) {
+    if (!this.client) throw new Error('Supabase client not initialized');
+    
+    console.log('Deleting builder from DatabaseService:', id);
+    
+    // Try 'builder_profiles' table first
+    const { error: error1 } = await this.client
+      .from('builder_profiles')
+      .delete()
+      .eq('id', id);
+    
+    if (!error1) {
+      console.log('Deleted builder from builder_profiles via DatabaseService');
+      return true;
+    }
+    
+    // Fallback to 'builders' table
+    const { error: error2 } = await this.client
+      .from('builders')
+      .delete()
+      .eq('id', id);
+    
+    if (!error2) {
+      console.log('Deleted builder from builders via DatabaseService');
+      return true;
+    }
+    
+    console.error('Failed to delete builder from both tables via DatabaseService');
+    if (error1) console.error('Error from builder_profiles:', error1.message);
+    if (error2) console.error('Error from builders:', error2.message);
+    
+    throw error1 || error2;
   }
 
   // Countries

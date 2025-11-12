@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -441,7 +442,7 @@ export default function BuilderSignupForm() {
         const registeredBuilders = JSON.parse(localStorage.getItem('registeredBuilders') || '[]');
         registeredBuilders.push({
           ...builderData,
-          id: result.data?.id || `reg_${Date.now()}`,
+          id: result.data?.id || uuidv4(), // Generate proper UUID instead of string-based ID
           registeredAt: new Date().toISOString(),
           source: 'registration'
         });
@@ -1028,9 +1029,9 @@ export default function BuilderSignupForm() {
                       <ul className="text-sm text-gray-700 space-y-1">
                         <li>• Your profile will be immediately visible to potential clients</li>
                         <li>• You'll receive a welcome email with verification link</li>
-                        <li>• Access your builder dashboard to manage profile and quotes</li>
-                        <li>• Start receiving quote requests from potential clients</li>
-                        <li>• Build your reputation through client reviews and ratings</li>
+                        <li>Access your builder dashboard to manage profile and quotes</li>
+                        <li>Start receiving quote requests from potential clients</li>
+                        <li>Build your reputation through client reviews and ratings</li>
                       </ul>
                     </div>
                   </div>
