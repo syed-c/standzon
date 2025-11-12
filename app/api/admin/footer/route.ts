@@ -76,6 +76,36 @@ export async function GET() {
     }
     
     const data = await enhancedStorage.readData(STORAGE_KEY, null);
+    
+    // Ensure sitemap link is always included in the bottom links
+    if (data && data.bottom && Array.isArray(data.bottom.links)) {
+      // Check if sitemap link already exists
+      const hasSitemap = data.bottom.links.some((link: any) => 
+        link.label === 'Sitemap' || link.href === 'https://standszone.com/sitemap'
+      );
+      
+      // If sitemap link doesn't exist, add it after "Cookie Policy"
+      if (!hasSitemap) {
+        const cookiePolicyIndex = data.bottom.links.findIndex((link: any) => 
+          link.label === 'Cookie Policy'
+        );
+        
+        if (cookiePolicyIndex !== -1) {
+          // Insert sitemap link after Cookie Policy
+          data.bottom.links.splice(cookiePolicyIndex + 1, 0, {
+            label: 'Sitemap',
+            href: 'https://standszone.com/sitemap'
+          });
+        } else {
+          // If Cookie Policy doesn't exist, add sitemap at the end
+          data.bottom.links.push({
+            label: 'Sitemap',
+            href: 'https://standszone.com/sitemap'
+          });
+        }
+      }
+    }
+    
     return NextResponse.json({ success: true, data });
   } catch (e) {
     console.error("Footer API GET error:", e);
@@ -91,6 +121,41 @@ export async function PUT(request: NextRequest) {
     }
     
     const body = await request.json();
+    
+    // Ensure sitemap link is always included in the bottom links
+    let bottomLinks = body.bottom?.links || [
+      { label: "Privacy Policy", href: "/legal/privacy-policy" },
+      { label: "Terms of Service", href: "/legal/terms-of-service" },
+      { label: "Cookie Policy", href: "/legal/cookie-policy" },
+      { label: "Sitemap", href: "https://standszone.com/sitemap" },
+    ];
+    
+    // Check if sitemap link already exists in the provided links
+    const hasSitemap = bottomLinks.some((link: any) => 
+      link.label === 'Sitemap' || link.href === 'https://standszone.com/sitemap'
+    );
+    
+    // If sitemap link doesn't exist, add it after "Cookie Policy"
+    if (!hasSitemap) {
+      const cookiePolicyIndex = bottomLinks.findIndex((link: any) => 
+        link.label === 'Cookie Policy'
+      );
+      
+      if (cookiePolicyIndex !== -1) {
+        // Insert sitemap link after Cookie Policy
+        bottomLinks.splice(cookiePolicyIndex + 1, 0, {
+          label: 'Sitemap',
+          href: 'https://standszone.com/sitemap'
+        });
+      } else {
+        // If Cookie Policy doesn't exist, add sitemap at the end
+        bottomLinks.push({
+          label: 'Sitemap',
+          href: 'https://standszone.com/sitemap'
+        });
+      }
+    }
+    
     const payload = {
       paragraph: body.paragraph || "",
       contact: {
@@ -108,12 +173,7 @@ export async function PUT(request: NextRequest) {
       },
       bottom: {
         copyright: body.bottom?.copyright || "© 2024 StandsZone. All rights reserved.",
-        links: body.bottom?.links || [
-          { label: "Privacy Policy", href: "/legal/privacy-policy" },
-          { label: "Terms of Service", href: "/legal/terms-of-service" },
-          { label: "Cookie Policy", href: "/legal/cookie-policy" },
-          { label: "Sitemap", href: "https://standszone.com/sitemap" },
-        ],
+        links: bottomLinks,
       },
       social: body.social || [
         { label: "LinkedIn", href: "#", icon: "linkedin" },
