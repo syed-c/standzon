@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { tier1Countries } from '@/lib/data/countries';
 import { tradeShows } from '@/lib/data/tradeShows';
 
-export default function ContentEditorPage() {
+function ContentEditorClient() {
   const [activeTab, setActiveTab] = useState('countries');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -495,5 +495,40 @@ export default function ContentEditorPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function LoadingComponent() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="w-20 h-8 bg-gray-200 rounded"></div>
+            <div>
+              <div className="h-6 bg-gray-200 rounded w-48 mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-64"></div>
+            </div>
+          </div>
+          <div className="w-24 h-6 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+      
+      <div className="p-6 max-w-7xl mx-auto space-y-6">
+        <div className="p-8 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading content editor...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function ContentEditorPage() {
+  return (
+    <Suspense fallback={<LoadingComponent />}>
+      <ContentEditorClient />
+    </Suspense>
   );
 }
