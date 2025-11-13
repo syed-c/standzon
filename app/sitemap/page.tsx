@@ -26,9 +26,12 @@ export default function SitemapPage() {
   const countries = GLOBAL_EXHIBITION_DATA.countries || [];
   const cities = GLOBAL_EXHIBITION_DATA.cities || [];
 
-  // Group cities by country and remove duplicates
+  console.log(`Processing ${countries.length} countries and ${cities.length} cities`);
+
+  // Group cities by country name (not slug) to match the data structure
   const citiesByCountry: Record<string, Array<{ name: string; slug: string }>> = {};
   const seenCities = new Set<string>();
+  
   cities.forEach((city) => {
     const countryName = city.country;
     const cityKey = `${countryName}-${city.slug}`;
@@ -48,11 +51,13 @@ export default function SitemapPage() {
     });
   });
 
+  console.log(`Grouped cities by country:`, Object.keys(citiesByCountry).length);
+
   // Organize countries by continent and remove duplicates
   const seenCountries = new Set<string>();
   countries.forEach((country) => {
     const continent = country.continent || "Other";
-    const countryKey = `${continent}-${country.slug}`;
+    const countryKey = `${continent}-${country.name}`;
     
     // Skip duplicates
     if (seenCountries.has(countryKey)) {
@@ -61,7 +66,9 @@ export default function SitemapPage() {
     seenCountries.add(countryKey);
     
     if (continents[continent]) {
+      // Get cities for this country by matching country name
       const countryCities = citiesByCountry[country.name] || [];
+      
       // Remove duplicate cities within a country
       const uniqueCities = Array.from(
         new Map(countryCities.map(city => [city.slug, city])).values()
@@ -74,6 +81,8 @@ export default function SitemapPage() {
       });
     }
   });
+
+  console.log('Continents with data:', Object.entries(continents).filter(([_, countries]) => countries.length > 0).map(([continent, countries]) => `${continent}: ${countries.length}`));
 
   return (
     <div className="container mx-auto py-12 px-4">
