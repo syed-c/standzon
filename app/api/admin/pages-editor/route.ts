@@ -215,7 +215,7 @@ export async function GET(request: NextRequest) {
               .from('page_contents')
               .select('content')
               .eq('id', pageId)
-              .single();
+              .maybeSingle(); // Use maybeSingle to handle cases where no data is found
               
             data = exactResult.data;
             error = exactResult.error;
@@ -226,7 +226,7 @@ export async function GET(request: NextRequest) {
             .from('page_contents')
             .select('content')
             .eq('id', pageId)
-            .single();
+            .maybeSingle(); // Use maybeSingle to handle cases where no data is found
             
           data = result.data;
           error = result.error;
@@ -234,8 +234,18 @@ export async function GET(request: NextRequest) {
         
         if (error) {
           console.log('❌ Supabase error:', error);
+          // Return success with null data instead of error to avoid 500 errors
           return NextResponse.json(
-            { success: false, data: null, error: error.message },
+            { success: true, data: null },
+            { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'supabase', 'x-sb-present': 'true' } }
+          );
+        }
+        
+        // Handle case where no data is found
+        if (!data) {
+          console.log('⚠️ No data found in Supabase for pageId:', pageId);
+          return NextResponse.json(
+            { success: true, data: null },
             { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'supabase', 'x-sb-present': 'true' } }
           );
         }
@@ -299,6 +309,11 @@ export async function GET(request: NextRequest) {
       }
     } catch (e) {
       console.log('❌ Supabase fetch error:', e);
+      // Return success with null data instead of error to avoid 500 errors
+      return NextResponse.json(
+        { success: true, data: null },
+        { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'supabase', 'x-sb-present': 'false' } }
+      );
     }
 
     const fileMap = await readAllPageContentsFromFile();

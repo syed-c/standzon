@@ -152,7 +152,9 @@ export default function BuildersDirectoryContent() {
         );
         const data = await res.json();
         if (data?.success && data?.data) setSaved(data.data);
-      } catch {}
+      } catch (error) {
+        console.warn("Failed to load CMS data for builders page:", error);
+      }
     })();
   }, []);
 

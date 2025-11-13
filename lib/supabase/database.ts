@@ -6,6 +6,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { supabase, supabaseAdmin } from '@/lib/supabase/client';
 
 // Create Supabase clients
 export function createSupabaseClient() {
@@ -38,29 +39,30 @@ export function createSupabaseServiceClient() {
 }
 
 // Export default client (only create if environment variables are available)
-let supabase: any = null;
-let supabaseAdmin: any = null;
+let supabaseClient: any = null;
+let supabaseAdminClient: any = null;
 
 try {
-  supabase = createSupabaseClient();
+  supabaseClient = createSupabaseClient();
 } catch (error) {
   console.warn('Supabase client not initialized:', error);
 }
 
 try {
-  supabaseAdmin = createSupabaseServiceClient();
+  supabaseAdminClient = createSupabaseServiceClient();
 } catch (error) {
   console.warn('Supabase admin client not initialized:', error);
 }
 
-export { supabase, supabaseAdmin };
+export { supabaseClient as supabase, supabaseAdminClient as supabaseAdmin };
 
 // Database service class
 export class DatabaseService {
   private client: any = null;
 
   constructor() {
-    this.client = supabaseAdmin || supabase;
+    // Use admin client if available (bypasses RLS), otherwise use regular client
+    this.client = supabaseAdmin || supabaseClient || supabaseAdminClient;
     if (!this.client) {
       console.warn('Supabase admin client not available, some admin features may not work properly.');
     }
@@ -143,9 +145,13 @@ export class DatabaseService {
       .select('*')
       .order('created_at', { ascending: false });
     
-    if (!error1) {
+    if (!error1 && data1 && data1.length > 0) {
+      console.log('Found builders in builder_profiles:', data1.length);
       return data1;
     }
+    
+    console.log('No data in builder_profiles table or error occurred, trying builders table...');
+    if (error1) console.log('builder_profiles error:', error1.message);
     
     // Fallback to 'builders' table
     const { data: data2, error: error2 } = await this.client
@@ -153,8 +159,17 @@ export class DatabaseService {
       .select('*')
       .order('created_at', { ascending: false });
     
-    if (error2) throw error1 || error2;
-    return data2;
+    if (!error2 && data2) {
+      console.log('Found builders in builders:', data2.length);
+      return data2;
+    }
+    
+    console.log('No builders found in either table');
+    if (error1) console.error('Error from builder_profiles:', error1.message);
+    if (error2) console.error('Error from builders:', error2.message);
+    
+    // Return empty array if no data found in either table
+    return [];
   }
 
   async getBuilderBySlug(slug: string) {

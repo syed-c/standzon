@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,7 +22,11 @@ import {
   Eye,
   Save,
   X,
-  RefreshCw
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
 } from 'lucide-react';
 import Link from 'next/link';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -31,25 +35,95 @@ import Topbar from '@/components/admin/Topbar';
 import { useBuilders } from '@/lib/hooks/useBuilders';
 
 function BuildersManagementClient() {
-  const { builders, loading, error, deleteBuilder, updateBuilder, refreshBuilders } = useBuilders();
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingBuilderId, setEditingBuilderId] = useState<string | null>(null);
   const [editingBuilderData, setEditingBuilderData] = useState<Record<string, any>>({});
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  
+  const buildersPerPage = 10;
+  const { 
+    builders, 
+    totalBuilders, 
+    loading, 
+    error, 
+    deleteBuilder: deleteBuilderHook, 
+    updateBuilder, 
+    fetchBuilders, // Use the fetchBuilders function from the hook
+    addBuilder
+  } = useBuilders();
 
+  // Fetch builders on initial load
+  useEffect(() => {
+    fetchBuilders(buildersPerPage, 0);
+  }, []); // Empty dependency array - run only once on mount
+
+  // Filter builders based on search term
   const filteredBuilders = builders.filter(builder =>
     builder.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     builder.headquarters_city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     builder.headquarters_country?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Calculate pagination values
+  const totalPages = Math.ceil(totalBuilders / buildersPerPage);
+  
+  // Handle search with pagination reset
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  // Handle page change
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  // Handle next page
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  // Handle previous page
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Handle first page
+  const firstPage = () => {
+    setCurrentPage(1);
+  };
+
+  // Handle last page
+  const lastPage = () => {
+    setCurrentPage(totalPages);
+  };
+
+  // Fetch builders when page changes
+  useEffect(() => {
+    // Fetch builders with the correct offset based on current page
+    fetchBuilders(buildersPerPage, (currentPage - 1) * buildersPerPage);
+  }, [currentPage]); // Only run when currentPage changes
+
   const handleDelete = async (id: string, name: string) => {
     if (confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
       try {
-        await deleteBuilder(id);
+        setDeletingId(id);
+        await deleteBuilderHook(id);
         console.log(`Builder ${name} deleted successfully`);
+        // Refresh the current page after deletion
+        fetchBuilders(buildersPerPage, (currentPage - 1) * buildersPerPage);
       } catch (error) {
         console.error('Failed to delete builder:', error);
         alert('Failed to delete builder. Please try again.');
+      } finally {
+        setDeletingId(null);
       }
     }
   };
@@ -72,6 +146,8 @@ function BuildersManagementClient() {
       setEditingBuilderId(null);
       setEditingBuilderData({});
       console.log('Builder updated successfully');
+      // Refresh the current page after update
+      fetchBuilders(buildersPerPage, (currentPage - 1) * buildersPerPage);
     } catch (error) {
       console.error('Failed to update builder:', error);
       alert('Failed to update builder. Please try again.');
@@ -94,7 +170,7 @@ function BuildersManagementClient() {
     }
   };
 
-  if (loading) {
+  if (loading && builders.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4">
@@ -111,7 +187,7 @@ function BuildersManagementClient() {
     );
   }
 
-  if (error) {
+  if (error && builders.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4">
@@ -137,13 +213,13 @@ function BuildersManagementClient() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Builders Management</h1>
           <p className="text-gray-600 mt-2">
-            Manage exhibition stand builders ({builders.length} total)
+            Manage exhibition stand builders ({totalBuilders} total)
           </p>
         </div>
         <div className="flex gap-2">
           <Button 
             variant="outline" 
-            onClick={refreshBuilders}
+            onClick={() => fetchBuilders(buildersPerPage, (currentPage - 1) * buildersPerPage)}
             disabled={loading}
           >
             {loading ? (
@@ -174,32 +250,32 @@ function BuildersManagementClient() {
           <Input
             placeholder="Search builders by name, city, or country..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="pl-10"
           />
         </div>
       </div>
 
       {/* Builders Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {filteredBuilders.map((builder) => (
           <Card key={builder.id} className="hover:shadow-lg transition-shadow">
             {editingBuilderId === builder.id ? (
               // Edit mode
               <CardContent className="space-y-4 pt-6">
                 <div className="space-y-2">
-                  <Label htmlFor="company_name">Company Name</Label>
+                  <Label htmlFor={`company_name_${builder.id}`}>Company Name</Label>
                   <Input
-                    id="company_name"
+                    id={`company_name_${builder.id}`}
                     value={editingBuilderData.company_name || ''}
                     onChange={(e) => handleInputChange('company_name', e.target.value)}
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="primary_email">Email</Label>
+                  <Label htmlFor={`primary_email_${builder.id}`}>Email</Label>
                   <Input
-                    id="primary_email"
+                    id={`primary_email_${builder.id}`}
                     type="email"
                     value={editingBuilderData.primary_email || ''}
                     onChange={(e) => handleInputChange('primary_email', e.target.value)}
@@ -207,63 +283,63 @@ function BuildersManagementClient() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
+                  <Label htmlFor={`phone_${builder.id}`}>Phone</Label>
                   <Input
-                    id="phone"
+                    id={`phone_${builder.id}`}
                     value={editingBuilderData.phone || ''}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="website">Website</Label>
+                  <Label htmlFor={`website_${builder.id}`}>Website</Label>
                   <Input
-                    id="website"
+                    id={`website_${builder.id}`}
                     value={editingBuilderData.website || ''}
                     onChange={(e) => handleInputChange('website', e.target.value)}
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="headquarters_city">City</Label>
+                  <Label htmlFor={`headquarters_city_${builder.id}`}>City</Label>
                   <Input
-                    id="headquarters_city"
+                    id={`headquarters_city_${builder.id}`}
                     value={editingBuilderData.headquarters_city || ''}
                     onChange={(e) => handleInputChange('headquarters_city', e.target.value)}
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="headquarters_country">Country</Label>
+                  <Label htmlFor={`headquarters_country_${builder.id}`}>Country</Label>
                   <Input
-                    id="headquarters_country"
+                    id={`headquarters_country_${builder.id}`}
                     value={editingBuilderData.headquarters_country || ''}
                     onChange={(e) => handleInputChange('headquarters_country', e.target.value)}
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="contact_person">Contact Person</Label>
+                  <Label htmlFor={`contact_person_${builder.id}`}>Contact Person</Label>
                   <Input
-                    id="contact_person"
+                    id={`contact_person_${builder.id}`}
                     value={editingBuilderData.contact_person || ''}
                     onChange={(e) => handleInputChange('contact_person', e.target.value)}
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="position">Position</Label>
+                  <Label htmlFor={`position_${builder.id}`}>Position</Label>
                   <Input
-                    id="position"
+                    id={`position_${builder.id}`}
                     value={editingBuilderData.position || ''}
                     onChange={(e) => handleInputChange('position', e.target.value)}
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="team_size">Team Size</Label>
+                  <Label htmlFor={`team_size_${builder.id}`}>Team Size</Label>
                   <Input
-                    id="team_size"
+                    id={`team_size_${builder.id}`}
                     type="number"
                     value={editingBuilderData.team_size || ''}
                     onChange={(e) => handleInputChange('team_size', e.target.value ? parseInt(e.target.value) : undefined)}
@@ -271,9 +347,9 @@ function BuildersManagementClient() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="projects_completed">Projects Completed</Label>
+                  <Label htmlFor={`projects_completed_${builder.id}`}>Projects Completed</Label>
                   <Input
-                    id="projects_completed"
+                    id={`projects_completed_${builder.id}`}
                     type="number"
                     value={editingBuilderData.projects_completed || ''}
                     onChange={(e) => handleInputChange('projects_completed', e.target.value ? parseInt(e.target.value) : undefined)}
@@ -281,9 +357,9 @@ function BuildersManagementClient() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="rating">Rating (0-5)</Label>
+                  <Label htmlFor={`rating_${builder.id}`}>Rating (0-5)</Label>
                   <Input
-                    id="rating"
+                    id={`rating_${builder.id}`}
                     type="number"
                     step="0.1"
                     min="0"
@@ -294,9 +370,9 @@ function BuildersManagementClient() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="company_description">Description</Label>
+                  <Label htmlFor={`company_description_${builder.id}`}>Description</Label>
                   <Textarea
-                    id="company_description"
+                    id={`company_description_${builder.id}`}
                     value={editingBuilderData.company_description || ''}
                     onChange={(e) => handleInputChange('company_description', e.target.value)}
                     rows={3}
@@ -304,18 +380,18 @@ function BuildersManagementClient() {
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="verified">Verified</Label>
+                  <Label htmlFor={`verified_${builder.id}`}>Verified</Label>
                   <Switch
-                    id="verified"
+                    id={`verified_${builder.id}`}
                     checked={editingBuilderData.verified || false}
                     onCheckedChange={(checked) => handleInputChange('verified', checked)}
                   />
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="premium_member">Premium Member</Label>
+                  <Label htmlFor={`premium_member_${builder.id}`}>Premium Member</Label>
                   <Switch
-                    id="premium_member"
+                    id={`premium_member_${builder.id}`}
                     checked={editingBuilderData.premium_member || false}
                     onCheckedChange={(checked) => handleInputChange('premium_member', checked)}
                   />
@@ -432,9 +508,19 @@ function BuildersManagementClient() {
                       variant="outline" 
                       onClick={() => handleDelete(builder.id, builder.company_name)}
                       className="text-red-600 hover:text-red-700"
+                      disabled={deletingId === builder.id}
                     >
-                      <Trash2 className="w-4 h-4 mr-1" />
-                      Delete
+                      {deletingId === builder.id ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
+                          Deleting...
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Delete
+                        </>
+                      )}
                     </Button>
                   </div>
                 </CardContent>
@@ -465,6 +551,80 @@ function BuildersManagementClient() {
               </Button>
             </Link>
           )}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalBuilders > buildersPerPage && (
+        <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6">
+          <div className="flex flex-1 justify-between sm:hidden">
+            <Button
+              onClick={prevPage}
+              disabled={currentPage === 1}
+              variant="outline"
+              size="sm"
+            >
+              Previous
+            </Button>
+            <Button
+              onClick={nextPage}
+              disabled={currentPage === totalPages}
+              variant="outline"
+              size="sm"
+            >
+              Next
+            </Button>
+          </div>
+          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-gray-700">
+                Showing <span className="font-medium">{(currentPage - 1) * buildersPerPage + 1}</span> to{' '}
+                <span className="font-medium">{Math.min(currentPage * buildersPerPage, totalBuilders)}</span> of{' '}
+                <span className="font-medium">{totalBuilders}</span> results
+              </p>
+            </div>
+            <div>
+              <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                <Button
+                  onClick={firstPage}
+                  disabled={currentPage === 1}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-l-md"
+                >
+                  <ChevronsLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  onClick={prevPage}
+                  disabled={currentPage === 1}
+                  variant="outline"
+                  size="sm"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <div className="flex items-center px-3 py-2 text-sm font-medium">
+                  Page {currentPage} of {totalPages}
+                </div>
+                <Button
+                  onClick={nextPage}
+                  disabled={currentPage === totalPages}
+                  variant="outline"
+                  size="sm"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  onClick={lastPage}
+                  disabled={currentPage === totalPages}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-r-md"
+                >
+                  <ChevronsRight className="h-4 w-4" />
+                </Button>
+              </nav>
+            </div>
+          </div>
         </div>
       )}
     </div>

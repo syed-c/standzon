@@ -4,17 +4,26 @@
  * This provides a simple way to access Supabase from client-side components
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js'
 
-// Get environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Regular client for frontend operations (respects RLS)
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
-// Create the client
-export const supabase = createClient(supabaseUrl!, supabaseAnonKey!);
+// Admin client for backend/admin operations (bypasses RLS)
+export const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY 
+  ? createClient(
+      process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+  : null
 
 // Helper function to check if Supabase is configured
 export function isSupabaseConfigured(): boolean {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   return !!(supabaseUrl && supabaseAnonKey);
 }
 
@@ -58,30 +67,40 @@ export async function getBuilders() {
   
   try {
     console.log('Fetching builders from Supabase...');
-    // Using the correct table name - checking both possible table names
-    const { data: data1, error: error1 } = await supabase
+    
+    // Use admin client if available (bypasses RLS)
+    const client = supabaseAdmin || supabase;
+    
+    // Try 'builder_profiles' table first
+    const { data: data1, error: error1 } = await client
       .from('builder_profiles')
       .select('*')
       .order('company_name');
     
-    if (!error1 && data1) {
-      console.log('Builders fetched successfully from builder_profiles:', data1?.length || 0, 'builders found');
-      return data1 || [];
+    if (!error1 && data1 && data1.length > 0) {
+      console.log('Builders fetched successfully from builder_profiles:', data1.length, 'builders found');
+      return data1;
     }
     
+    console.log('No data in builder_profiles table or error occurred, trying builders table...');
+    if (error1) console.log('builder_profiles error:', error1.message);
+    
     // Fallback to 'builders' table
-    const { data: data2, error: error2 } = await supabase
+    const { data: data2, error: error2 } = await client
       .from('builders')
       .select('*')
       .order('company_name');
     
-    if (error2) {
-      console.error('Error fetching builders from both tables:', error1, error2);
-      return [];
+    if (!error2 && data2) {
+      console.log('Builders fetched successfully from builders:', data2.length, 'builders found');
+      return data2;
     }
     
-    console.log('Builders fetched successfully from builders:', data2?.length || 0, 'builders found');
-    return data2 || [];
+    console.log('No builders found in either table');
+    if (error1) console.error('Error from builder_profiles:', error1.message);
+    if (error2) console.error('Error from builders:', error2.message);
+    
+    return [];
   } catch (err) {
     console.error('Exception fetching builders:', err);
     return [];

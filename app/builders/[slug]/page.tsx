@@ -7,19 +7,13 @@ import { getServerSupabase } from "@/lib/supabase";
 export default async function BuilderProfilePage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
   console.log("🚀 BuilderProfilePage: Starting");
   
-  let slug: string;
-  try {
-    const resolvedParams = await params;
-    slug = resolvedParams.slug;
-    console.log("✅ Params resolved, slug:", slug);
-  } catch (error) {
-    console.error("❌ Error resolving params:", error);
-    notFound();
-  }
+  const { slug } = params;
+  console.log("✅ Params resolved, slug:", slug);
+  console.log("✅ Slug length:", slug.length);
 
   console.log("🔍 Server: Looking for builder with slug:", slug);
 
@@ -43,7 +37,7 @@ export default async function BuilderProfilePage({
           .from('builder_profiles')
           .select('*')
           .eq('slug', slug)
-          .maybeSingle();
+          .maybeSingle(); // Use maybeSingle instead of single to handle cases where no data is found
         
         console.log("🔍 Supabase query result:", { data: supabaseBuilder, error });
         
@@ -206,6 +200,64 @@ export default async function BuilderProfilePage({
             planType: 'free',
           } as any;
           console.log("✅ Server: Found builder in Supabase:", builder?.companyName);
+        } else {
+          // Try the 'builders' table as fallback
+          console.log("🔍 Server: Trying 'builders' table as fallback");
+          const { data: buildersTableData, error: buildersError } = await sb
+            .from('builders')
+            .select('*')
+            .eq('slug', slug)
+            .maybeSingle();
+          
+          console.log("🔍 Builders table query result:", { data: buildersTableData, error: buildersError });
+          
+          if (buildersError) {
+            console.log("❌ Server: Builders table error:", buildersError);
+          } else if (buildersTableData) {
+            // Convert builders table data to the expected format
+            builder = {
+              id: buildersTableData.id,
+              companyName: buildersTableData.company_name,
+              slug: buildersTableData.slug || slug,
+              logo: buildersTableData.logo || "/images/builders/default-logo.png",
+              establishedYear: new Date().getFullYear(),
+              headquarters: {
+                city: buildersTableData.headquarters_city || "Unknown",
+                country: buildersTableData.headquarters_country || "Unknown",
+              },
+              serviceLocations: [{
+                country: buildersTableData.headquarters_country || "Unknown",
+                cities: [buildersTableData.headquarters_city || "Unknown"]
+              }],
+              contactInfo: {
+                primaryEmail: buildersTableData.primary_email || "",
+                phone: buildersTableData.phone || "",
+                website: buildersTableData.website || "",
+                contactPerson: "Contact Person",
+                position: "Manager",
+              },
+              teamSize: 0,
+              businessType: 'company',
+              services: [],
+              portfolio: [],
+              specializations: [
+                { id: 'general', name: 'Exhibition Builder', icon: '🏗️', color: '#3B82F6' }
+              ],
+              companyDescription: buildersTableData.company_description || 'Professional exhibition services provider',
+              keyStrengths: ["Professional Service", "Quality Work", "Local Expertise"],
+              projectsCompleted: 0,
+              rating: buildersTableData.rating || 0,
+              reviewCount: buildersTableData.review_count || 0,
+              responseTime: 'Contact for response time',
+              languages: ['English'],
+              verified: buildersTableData.verified || false,
+              premiumMember: false,
+              claimed: buildersTableData.claimed || false,
+              claimStatus: buildersTableData.claim_status || 'unclaimed',
+              planType: 'free',
+            } as any;
+            console.log("✅ Server: Found builder in builders table:", builder?.companyName);
+          }
         }
       }
     } catch (error) {
@@ -215,10 +267,29 @@ export default async function BuilderProfilePage({
 
   if (!builder) {
     console.log("❌ Server: Builder not found with slug:", slug);
+    // Let's also try to find a builder with a similar slug (in case of URL encoding issues)
+    try {
+      const sb = getServerSupabase();
+      if (sb) {
+        console.log("🔍 Server: Trying fuzzy search for builder with slug:", slug);
+        const { data: allBuilders, error } = await sb
+          .from('builder_profiles')
+          .select('*');
+        
+        if (!error && allBuilders) {
+          const similarBuilder = allBuilders.find(b => b.slug && b.slug.includes(slug.substring(0, Math.min(20, slug.length))));
+          if (similarBuilder) {
+            console.log("🔍 Server: Found similar builder:", similarBuilder.company_name, similarBuilder.slug);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("❌ Server: Error in fuzzy search:", error);
+    }
+    
     notFound();
   }
 
   console.log("✅ Server: Found builder:", builder.companyName);
   return <BuilderProfileClient slug={slug} initialBuilder={builder} />;
 }
-

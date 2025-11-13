@@ -20,10 +20,18 @@ export async function POST(request: NextRequest) {
 
     // Generate slug from company name if not provided
     if (!body.slug) {
-      body.slug = body.company_name
+      // Create a shorter, more manageable slug
+      let baseSlug = body.company_name
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');
+      
+      // Limit slug length to 50 characters to avoid routing issues
+      if (baseSlug.length > 50) {
+        baseSlug = baseSlug.substring(0, 50).replace(/-+$/, ''); // Remove trailing dashes
+      }
+      
+      body.slug = baseSlug;
     }
 
     // Set default values

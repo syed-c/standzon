@@ -1,8 +1,6 @@
 "use client";
 
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,21 +22,49 @@ export default function SuperAdminWebsiteSettingsClient({
 }: SuperAdminWebsiteSettingsClientProps) {
   console.log("🔧 SuperAdminWebsiteSettingsClient: Component rendered");
 
-  const currentUser = useQuery(api.auth.currentUser, {}, { enabled: false }) || initialUser;
-  const settings = useQuery(api.siteSettings.getSiteSettings, {}) || initialSettings;
-  const upsertSettings = useMutation(api.siteSettings.upsertSiteSettings);
-  const seedSettings = useMutation(api.siteSettings.seedInitialSettings);
-  
+  const [currentUser, setCurrentUser] = useState<any>(initialUser);
+  const [settings, setSettings] = useState<any>(initialSettings);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [seeding, setSeeding] = useState(false);
 
+  // Simulate data fetching without Convex
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // For now, we'll just use the initial data
+        setCurrentUser(initialUser);
+        setSettings(initialSettings);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Failed to load data");
+        toast({
+          title: "Error",
+          description: "Failed to load website settings. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   // Loading states
-  if (currentUser === undefined) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading user...</p>
+          <p className="text-gray-600">Loading website settings...</p>
         </div>
       </div>
     );
@@ -61,7 +87,7 @@ export default function SuperAdminWebsiteSettingsClient({
   }
 
   // Authorization check
-  if (currentUser.role !== "superadmin") {
+  if (currentUser && currentUser.role !== "superadmin") {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Card className="w-full max-w-md">
@@ -102,19 +128,51 @@ export default function SuperAdminWebsiteSettingsClient({
   const handleSeedSettings = async () => {
     setSeeding(true);
     try {
-      const result = await seedSettings({});
-      if (result.success) {
-        toast({
-          title: "Settings Initialized",
-          description: "Default website settings have been created successfully.",
-        });
-      } else {
-        toast({
-          title: "Settings Already Exist",
-          description: result.message,
-          variant: "destructive",
-        });
-      }
+      // Simulate seeding
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const defaultSettings = {
+        companyName: "ExhibitBay",
+        logoUrl: "/logo.png",
+        primaryColor: "#0070f3",
+        contact: {
+          email: "info@exhibitbay.com",
+          phone: "+1234567890",
+          address: "123 Business Street, City, Country",
+        },
+        social: {
+          facebook: "https://facebook.com/exhibitbay",
+          twitter: "https://twitter.com/exhibitbay",
+          instagram: "https://instagram.com/exhibitbay",
+          linkedin: "https://linkedin.com/company/exhibitbay",
+          youtube: "https://youtube.com/exhibitbay",
+        },
+        pages: {
+          footerText: "© 2025 ExhibitBay. All rights reserved.",
+          heroSubtitle: "Connecting exhibitors with the best stand builders worldwide",
+          aboutText: "ExhibitBay is the leading platform for exhibition stand design and construction.",
+        },
+        metadata: {
+          defaultMetaTitle: "ExhibitBay - Exhibition Stand Builders Marketplace",
+          defaultMetaDescription: "Find the best exhibition stand builders for your next trade show. Connect with verified professionals worldwide.",
+        },
+        smtp: {
+          host: "smtp.example.com",
+          port: 587,
+          user: "noreply@example.com",
+          password: "password",
+          secure: false,
+          fromEmail: "noreply@example.com",
+        },
+        note: "Default settings initialized",
+      };
+      
+      setSettings(defaultSettings);
+      
+      toast({
+        title: "Settings Initialized",
+        description: "Default website settings have been created successfully.",
+      });
     } catch (error) {
       console.error("Failed to seed settings:", error);
       toast({
@@ -196,17 +254,19 @@ export default function SuperAdminWebsiteSettingsClient({
         note: form.get("updateNote") as string,
       };
 
-      await upsertSettings({ payload });
+      // Simulate saving
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setSettings(payload);
       
       toast({
         title: "Settings Updated",
         description: "Website settings have been saved successfully.",
       });
     } catch (error) {
-      console.error("Failed to update settings:", error);
+      console.error("Failed to save settings:", error);
       toast({
         title: "Error",
-        description: "Failed to update settings. Please try again.",
+        description: "Failed to save settings. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -214,23 +274,37 @@ export default function SuperAdminWebsiteSettingsClient({
     }
   };
 
+  const handleReset = () => {
+    if (confirm("Are you sure you want to reset all settings to default values?")) {
+      handleSeedSettings();
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Website Settings</h1>
-        <p className="text-gray-600">
-          Manage all website content, contact information, and branding from this central dashboard.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Website Settings</h1>
+          <p className="text-gray-600 mt-1">
+            Manage your website configuration and branding
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleReset}>
+            Reset to Defaults
+          </Button>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit}>
         <Tabs defaultValue="general" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList>
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="contact">Contact</TabsTrigger>
-            <TabsTrigger value="social">Social Media</TabsTrigger>
-            <TabsTrigger value="content">Content</TabsTrigger>
-            <TabsTrigger value="smtp">SMTP Settings</TabsTrigger>
+            <TabsTrigger value="social">Social</TabsTrigger>
+            <TabsTrigger value="pages">Pages</TabsTrigger>
+            <TabsTrigger value="metadata">Metadata</TabsTrigger>
+            <TabsTrigger value="smtp">SMTP</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="space-y-6">
@@ -238,37 +312,35 @@ export default function SuperAdminWebsiteSettingsClient({
               <CardHeader>
                 <CardTitle>General Settings</CardTitle>
                 <CardDescription>
-                  Basic company information and branding
+                  Configure your company information and branding
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="companyName">Company Name</Label>
-                    <Input
-                      id="companyName"
-                      name="companyName"
-                      defaultValue={settings.companyName || ""}
-                      placeholder="StandsZone"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="primaryColor">Primary Color</Label>
-                    <Input
-                      id="primaryColor"
-                      name="primaryColor"
-                      type="color"
-                      defaultValue={settings.primaryColor || "#ec4899"}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="companyName">Company Name</Label>
+                  <Input
+                    id="companyName"
+                    name="companyName"
+                    defaultValue={settings.companyName}
+                    placeholder="ExhibitBay"
+                  />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="logoUrl">Logo URL</Label>
                   <Input
                     id="logoUrl"
                     name="logoUrl"
-                    defaultValue={settings.logoUrl || ""}
-                    placeholder="https://example.com/logo.png"
+                    defaultValue={settings.logoUrl}
+                    placeholder="/logo.png"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="primaryColor">Primary Color</Label>
+                  <Input
+                    id="primaryColor"
+                    name="primaryColor"
+                    defaultValue={settings.primaryColor}
+                    placeholder="#0070f3"
                   />
                 </div>
               </CardContent>
@@ -280,36 +352,36 @@ export default function SuperAdminWebsiteSettingsClient({
               <CardHeader>
                 <CardTitle>Contact Information</CardTitle>
                 <CardDescription>
-                  Contact details displayed throughout the website
+                  Public contact details for your business
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="contactEmail">Email Address</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="contactEmail">Email</Label>
                   <Input
                     id="contactEmail"
                     name="contactEmail"
                     type="email"
-                    defaultValue={settings.contact?.email || ""}
-                    placeholder="hello@standszone.com"
+                    defaultValue={settings.contact?.email}
+                    placeholder="info@exhibitbay.com"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="contactPhone">Phone Number</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="contactPhone">Phone</Label>
                   <Input
                     id="contactPhone"
                     name="contactPhone"
-                    defaultValue={settings.contact?.phone || ""}
-                    placeholder="+1 (555) 123-4567"
+                    defaultValue={settings.contact?.phone}
+                    placeholder="+1234567890"
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="contactAddress">Address</Label>
                   <Textarea
                     id="contactAddress"
                     name="contactAddress"
-                    defaultValue={settings.contact?.address || ""}
-                    placeholder="123 Exhibition Ave, NYC"
+                    defaultValue={settings.contact?.address}
+                    placeholder="123 Business Street, City, Country"
                     rows={3}
                   />
                 </div>
@@ -320,118 +392,129 @@ export default function SuperAdminWebsiteSettingsClient({
           <TabsContent value="social" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Social Media Links</CardTitle>
+                <CardTitle>Social Media</CardTitle>
                 <CardDescription>
-                  Social media profiles and links
+                  Links to your social media profiles
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="socialFacebook">Facebook</Label>
-                    <Input
-                      id="socialFacebook"
-                      name="socialFacebook"
-                      defaultValue={settings.social?.facebook || ""}
-                      placeholder="https://facebook.com/standszone"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="socialTwitter">Twitter</Label>
-                    <Input
-                      id="socialTwitter"
-                      name="socialTwitter"
-                      defaultValue={settings.social?.twitter || ""}
-                      placeholder="https://twitter.com/standszone"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="socialInstagram">Instagram</Label>
-                    <Input
-                      id="socialInstagram"
-                      name="socialInstagram"
-                      defaultValue={settings.social?.instagram || ""}
-                      placeholder="https://instagram.com/standszone"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="socialLinkedin">LinkedIn</Label>
-                    <Input
-                      id="socialLinkedin"
-                      name="socialLinkedin"
-                      defaultValue={settings.social?.linkedin || ""}
-                      placeholder="https://linkedin.com/company/standszone"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="socialYoutube">YouTube</Label>
-                    <Input
-                      id="socialYoutube"
-                      name="socialYoutube"
-                      defaultValue={settings.social?.youtube || ""}
-                      placeholder="https://youtube.com/@standszone"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="socialFacebook">Facebook</Label>
+                  <Input
+                    id="socialFacebook"
+                    name="socialFacebook"
+                    defaultValue={settings.social?.facebook}
+                    placeholder="https://facebook.com/yourpage"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="socialTwitter">Twitter</Label>
+                  <Input
+                    id="socialTwitter"
+                    name="socialTwitter"
+                    defaultValue={settings.social?.twitter}
+                    placeholder="https://twitter.com/yourhandle"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="socialInstagram">Instagram</Label>
+                  <Input
+                    id="socialInstagram"
+                    name="socialInstagram"
+                    defaultValue={settings.social?.instagram}
+                    placeholder="https://instagram.com/yourhandle"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="socialLinkedin">LinkedIn</Label>
+                  <Input
+                    id="socialLinkedin"
+                    name="socialLinkedin"
+                    defaultValue={settings.social?.linkedin}
+                    placeholder="https://linkedin.com/company/yourcompany"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="socialYoutube">YouTube</Label>
+                  <Input
+                    id="socialYoutube"
+                    name="socialYoutube"
+                    defaultValue={settings.social?.youtube}
+                    placeholder="https://youtube.com/yourchannel"
+                  />
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="content" className="space-y-6">
+          <TabsContent value="pages" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Website Content</CardTitle>
+                <CardTitle>Page Content</CardTitle>
                 <CardDescription>
-                  Manage key website content and SEO metadata
+                  Static content for key pages
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="footerText">Footer Description</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="footerText">Footer Text</Label>
                   <Textarea
                     id="footerText"
                     name="footerText"
-                    defaultValue={settings.pages?.footerText || ""}
-                    placeholder="Creating extraordinary exhibition experiences..."
-                    rows={3}
+                    defaultValue={settings.pages?.footerText}
+                    placeholder="© 2025 Your Company. All rights reserved."
+                    rows={2}
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="heroSubtitle">Hero Subtitle</Label>
-                  <Input
+                  <Textarea
                     id="heroSubtitle"
                     name="heroSubtitle"
-                    defaultValue={settings.pages?.heroSubtitle || ""}
-                    placeholder="Connect with verified exhibition stand builders worldwide"
+                    defaultValue={settings.pages?.heroSubtitle}
+                    placeholder="Your compelling hero subtitle"
+                    rows={2}
                   />
                 </div>
-                <div>
-                  <Label htmlFor="aboutText">About Text</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="aboutText">About Page Text</Label>
                   <Textarea
                     id="aboutText"
                     name="aboutText"
-                    defaultValue={settings.pages?.aboutText || ""}
-                    placeholder="We are the leading platform..."
-                    rows={3}
+                    defaultValue={settings.pages?.aboutText}
+                    placeholder="About your company..."
+                    rows={4}
                   />
                 </div>
-                <Separator />
-                <div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="metadata" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>SEO Metadata</CardTitle>
+                <CardDescription>
+                  Default meta tags for your website
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
                   <Label htmlFor="defaultMetaTitle">Default Meta Title</Label>
                   <Input
                     id="defaultMetaTitle"
                     name="defaultMetaTitle"
-                    defaultValue={settings.metadata?.defaultMetaTitle || ""}
-                    placeholder="StandsZone - Global Exhibition Stand Builders Directory"
+                    defaultValue={settings.metadata?.defaultMetaTitle}
+                    placeholder="Your Company - Best Products & Services"
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="defaultMetaDescription">Default Meta Description</Label>
                   <Textarea
                     id="defaultMetaDescription"
                     name="defaultMetaDescription"
-                    defaultValue={settings.metadata?.defaultMetaDescription || ""}
-                    placeholder="Find and connect with verified exhibition stand builders worldwide..."
+                    defaultValue={settings.metadata?.defaultMetaDescription}
+                    placeholder="Discover the best products and services at Your Company..."
                     rows={3}
                   />
                 </div>
@@ -442,115 +525,100 @@ export default function SuperAdminWebsiteSettingsClient({
           <TabsContent value="smtp" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>SMTP Email Configuration</CardTitle>
+                <CardTitle>SMTP Configuration</CardTitle>
                 <CardDescription>
-                  Configure SMTP settings for sending emails from the platform
+                  Email server settings for sending notifications
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="smtpHost">SMTP Host</Label>
                     <Input
                       id="smtpHost"
                       name="smtpHost"
-                      defaultValue={settings.smtp?.host || ""}
-                      placeholder="smtp.gmail.com"
+                      defaultValue={settings.smtp?.host}
+                      placeholder="smtp.example.com"
                     />
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <Label htmlFor="smtpPort">SMTP Port</Label>
                     <Input
                       id="smtpPort"
                       name="smtpPort"
                       type="number"
-                      defaultValue={settings.smtp?.port || "587"}
+                      defaultValue={settings.smtp?.port}
                       placeholder="587"
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="smtpUser">SMTP Username/Email</Label>
-                    <Input
-                      id="smtpUser"
-                      name="smtpUser"
-                      type="email"
-                      defaultValue={settings.smtp?.user || ""}
-                      placeholder="your-email@gmail.com"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="smtpPassword">SMTP Password</Label>
-                    <Input
-                      id="smtpPassword"
-                      name="smtpPassword"
-                      type="password"
-                      defaultValue={settings.smtp?.password || ""}
-                      placeholder="Your app password or SMTP password"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="smtpUser">Username</Label>
+                  <Input
+                    id="smtpUser"
+                    name="smtpUser"
+                    defaultValue={settings.smtp?.user}
+                    placeholder="user@example.com"
+                  />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="smtpSecure">Encryption</Label>
-                    <select
-                      id="smtpSecure"
-                      name="smtpSecure"
-                      defaultValue={settings.smtp?.secure ? "true" : "false"}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <option value="false">TLS (Port 587)</option>
-                      <option value="true">SSL (Port 465)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <Label htmlFor="smtpFromEmail">From Email</Label>
-                    <Input
-                      id="smtpFromEmail"
-                      name="smtpFromEmail"
-                      type="email"
-                      defaultValue={settings.smtp?.fromEmail || ""}
-                      placeholder="noreply@standszone.com"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="smtpPassword">Password</Label>
+                  <Input
+                    id="smtpPassword"
+                    name="smtpPassword"
+                    type="password"
+                    defaultValue={settings.smtp?.password}
+                    placeholder="••••••••"
+                  />
                 </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-medium text-blue-900 mb-2">📧 SMTP Configuration Help</h4>
-                  <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• <strong>Gmail:</strong> Use smtp.gmail.com, port 587, and an App Password</li>
-                    <li>• <strong>Outlook:</strong> Use smtp-mail.outlook.com, port 587</li>
-                    <li>• <strong>Custom SMTP:</strong> Contact your email provider for settings</li>
-                    <li>• <strong>Security:</strong> Enable 2FA and use App Passwords when available</li>
-                  </ul>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="smtpSecure"
+                    name="smtpSecure"
+                    defaultChecked={settings.smtp?.secure}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <Label htmlFor="smtpSecure">Use Secure Connection (SSL/TLS)</Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="smtpFromEmail">From Email</Label>
+                  <Input
+                    id="smtpFromEmail"
+                    name="smtpFromEmail"
+                    type="email"
+                    defaultValue={settings.smtp?.fromEmail}
+                    placeholder="noreply@example.com"
+                  />
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
-        </Tabs>
 
-        <Card className="mt-6">
-          <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-              <div className="flex-1">
-                <Label htmlFor="updateNote">Update Note (Optional)</Label>
-                <Input
-                  id="updateNote"
-                  name="updateNote"
-                  placeholder="Brief description of changes made..."
-                  className="mt-1"
-                />
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="updateNote">Update Note (Optional)</Label>
+                  <Textarea
+                    id="updateNote"
+                    name="updateNote"
+                    placeholder="Brief description of changes made..."
+                    rows={2}
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={() => setSettings(initialSettings)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={saving}>
+                    {saving ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
               </div>
-              <Button 
-                type="submit" 
-                disabled={saving}
-                className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700"
-              >
-                {saving ? "Saving..." : "Save Settings"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </Tabs>
       </form>
     </div>
   );

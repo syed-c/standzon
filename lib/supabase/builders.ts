@@ -1,24 +1,30 @@
-import { supabase } from '@/lib/supabase/client';
+import { supabase, supabaseAdmin } from '@/lib/supabase/client';
+
+// Use admin client if available (bypasses RLS), otherwise use regular client
+const client = supabaseAdmin || supabase;
 
 export async function getAllBuilders() {
   console.log('Fetching all builders from Supabase...');
   
   // Try 'builders' table first (it has more data according to our test)
-  const { data: data1, error: error1 } = await supabase
+  const { data: data1, error: error1 } = await client
     .from('builders')
-    .select('*');
+    .select('*')
+    .order('created_at', { ascending: false });
   
-  if (!error1 && data1) {
+  if (!error1 && data1 && data1.length > 0) {
     console.log('Found builders in builders table:', data1.length);
     return data1;
   }
   
-  console.log('No data in builders table, trying builder_profiles table...');
+  console.log('No data in builders table or error occurred, trying builder_profiles table...');
+  console.log('Builders table error (if any):', error1?.message);
   
   // Fallback to 'builder_profiles' table
-  const { data: data2, error: error2 } = await supabase
+  const { data: data2, error: error2 } = await client
     .from('builder_profiles')
-    .select('*');
+    .select('*')
+    .order('created_at', { ascending: false });
   
   if (!error2 && data2) {
     console.log('Found builders in builder_profiles:', data2.length);
@@ -29,6 +35,7 @@ export async function getAllBuilders() {
   if (error1) console.error('Error from builders:', error1.message);
   if (error2) console.error('Error from builder_profiles:', error2.message);
   
+  // Return empty array if no data found in either table
   return [];
 }
 
@@ -36,7 +43,7 @@ export async function getBuilderBySlug(slug: string) {
   console.log('Fetching builder by slug:', slug);
   
   // Try 'builders' table first (it has more data according to our test)
-  const { data: data1, error: error1 } = await supabase
+  const { data: data1, error: error1 } = await client
     .from('builders')
     .select('*')
     .eq('slug', slug)
@@ -48,7 +55,7 @@ export async function getBuilderBySlug(slug: string) {
   }
   
   // Fallback to 'builder_profiles' table
-  const { data: data2, error: error2 } = await supabase
+  const { data: data2, error: error2 } = await client
     .from('builder_profiles')
     .select('*')
     .eq('slug', slug)
@@ -69,7 +76,7 @@ export async function getBuilderById(id: string) {
   console.log('Fetching builder by ID:', id);
   
   // Try 'builders' table first (it has more data according to our test)
-  const { data: data1, error: error1 } = await supabase
+  const { data: data1, error: error1 } = await client
     .from('builders')
     .select('*')
     .eq('id', id)
@@ -81,7 +88,7 @@ export async function getBuilderById(id: string) {
   }
   
   // Fallback to 'builder_profiles' table
-  const { data: data2, error: error2 } = await supabase
+  const { data: data2, error: error2 } = await client
     .from('builder_profiles')
     .select('*')
     .eq('id', id)
@@ -102,7 +109,7 @@ export async function createBuilder(builderData: any) {
   console.log('Creating builder:', builderData);
   
   // Try to insert into 'builders' table first (it has more data according to our test)
-  const { data: data1, error: error1 } = await supabase
+  const { data: data1, error: error1 } = await client
     .from('builders')
     .insert([builderData])
     .select();
@@ -113,7 +120,7 @@ export async function createBuilder(builderData: any) {
   }
   
   // Fallback to 'builder_profiles' table
-  const { data: data2, error: error2 } = await supabase
+  const { data: data2, error: error2 } = await client
     .from('builder_profiles')
     .insert([builderData])
     .select();
@@ -133,7 +140,7 @@ export async function updateBuilder(id: string, updates: any) {
   console.log('Updating builder:', id, updates);
   
   // Try to update in 'builders' table first (it has more data according to our test)
-  const { data: data1, error: error1 } = await supabase
+  const { data: data1, error: error1 } = await client
     .from('builders')
     .update(updates)
     .eq('id', id)
@@ -146,7 +153,7 @@ export async function updateBuilder(id: string, updates: any) {
   }
   
   // Fallback to 'builder_profiles' table
-  const { data: data2, error: error2 } = await supabase
+  const { data: data2, error: error2 } = await client
     .from('builder_profiles')
     .update(updates)
     .eq('id', id)
@@ -168,7 +175,7 @@ export async function deleteBuilder(id: string) {
   console.log('Deleting builder:', id);
   
   // Try to delete from 'builders' table first (it has more data according to our test)
-  const { error: error1 } = await supabase
+  const { error: error1 } = await client
     .from('builders')
     .delete()
     .eq('id', id);
@@ -179,7 +186,7 @@ export async function deleteBuilder(id: string) {
   }
   
   // Fallback to 'builder_profiles' table
-  const { error: error2 } = await supabase
+  const { error: error2 } = await client
     .from('builder_profiles')
     .delete()
     .eq('id', id);
