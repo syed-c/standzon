@@ -8,8 +8,6 @@ export const metadata: Metadata = {
 };
 
 export default function AdvancedAdminPage() {
-  console.log('Advanced Admin Dashboard page loaded');
-
   return (
     <div className="min-h-screen">
       <AdvancedAdminDashboard 

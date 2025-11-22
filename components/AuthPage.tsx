@@ -73,7 +73,7 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
 
   // Check for signup success parameter
   useEffect(() => {
-    if (searchParams.get('signup') === 'success') {
+    if (searchParams?.get('signup') === 'success') {
       setShowSuccessMessage(true);
       // Hide success message after 5 seconds
       setTimeout(() => setShowSuccessMessage(false), 5000);
@@ -374,7 +374,6 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
         });
       }
     } catch (error) {
-      console.error("❌ OTP request failed:", error);
       setErrors({
         submit: "Network error. Please check your connection and try again.",
       });
@@ -398,8 +397,6 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
     setErrors({});
 
     try {
-      console.log("🔐 Verifying OTP for:", otpForm.email);
-
       const response = await fetch("/api/auth/otp", {
         method: "POST",
         headers: {
@@ -416,8 +413,6 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
       const data = await response.json();
 
       if (data.success) {
-        console.log("✅ OTP verification successful:", data.data.user);
-
         // Store user session
         const userSessionData = {
           ...data.data.user,
@@ -425,37 +420,24 @@ export default function AuthPage({ mode, userType }: AuthPageProps) {
           loginMethod: "otp",
         };
         
-        console.log("💾 Storing user session data:", userSessionData);
         localStorage.setItem("currentUser", JSON.stringify(userSessionData));
         
         // Also set a cookie for middleware compatibility
         document.cookie = `builder_auth=${userSessionData.id}; path=/; max-age=86400; SameSite=Lax`;
         
-        // Verify the data was stored
-        const storedData = localStorage.getItem("currentUser");
-        console.log("✅ Verified stored data:", storedData);
-
         // Redirect based on user type
-        console.log("🔄 Redirecting user to dashboard...");
-        console.log("👤 User data:", data.data.user);
-        console.log("🏢 User type:", userType);
-        
         // Force redirect immediately without delay
         if (userType === "builder") {
-          console.log("🔗 Redirecting to builder dashboard immediately");
           window.location.href = "/builder/dashboard";
         } else if (userType === "admin") {
-          console.log("🔗 Redirecting to admin dashboard");
           window.location.href = "/admin/dashboard";
         } else {
-          console.log("🔗 Redirecting to quote page");
           window.location.href = "/quote";
         }
       } else {
         setErrors({ submit: data.error || "Invalid OTP. Please try again." });
       }
     } catch (error) {
-      console.error("❌ OTP verification failed:", error);
       setErrors({
         submit: "Network error. Please check your connection and try again.",
       });

@@ -56,7 +56,7 @@ class IndexedDBCache {
         timestamp: Date.now()
       });
     } catch (error) {
-      console.warn('Failed to save page to IndexedDB:', error);
+      // Silently fail in production
     }
   }
   
@@ -74,7 +74,6 @@ class IndexedDBCache {
       
       return result ? result.content : null;
     } catch (error) {
-      console.warn('Failed to get page from IndexedDB:', error);
       return null;
     }
   }
@@ -91,7 +90,7 @@ class IndexedDBCache {
         timestamp: Date.now()
       });
     } catch (error) {
-      console.warn('Failed to save user preference:', error);
+      // Silently fail in production
     }
   }
   
@@ -109,7 +108,6 @@ class IndexedDBCache {
       
       return result ? result.value : null;
     } catch (error) {
-      console.warn('Failed to get user preference:', error);
       return null;
     }
   }
@@ -147,7 +145,7 @@ class IndexedDBCache {
         timestamp: Date.now()
       });
     } catch (error) {
-      console.warn('Failed to add recently visited page:', error);
+      // Silently fail in production
     }
   }
   
@@ -167,7 +165,6 @@ class IndexedDBCache {
       // Sort by timestamp descending
       return result.sort((a, b) => b.timestamp - a.timestamp);
     } catch (error) {
-      console.warn('Failed to get recently visited pages:', error);
       return [];
     }
   }
@@ -196,7 +193,6 @@ export default function ServiceWorkerRegistration() {
         navigator.serviceWorker.getRegistrations?.().then(regs => 
           regs.forEach(r => {
             r.unregister().catch(() => {});
-            console.log('🧹 Unregistered service worker in development');
           })
         );
         return;
@@ -209,7 +205,6 @@ export default function ServiceWorkerRegistration() {
             if ('caches' in window) {
               const cacheNames = await caches.keys();
               await Promise.all(cacheNames.map(name => caches.delete(name)));
-              console.log('🧹 Cleared all caches in development');
             }
           }
           
@@ -224,15 +219,12 @@ export default function ServiceWorkerRegistration() {
             scope: '/'
           });
           
-          console.log('🚀 Service Worker registered successfully:', registration);
-          
           // Handle updates
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  console.log('🔄 New service worker available, skipping waiting...');
                   // Force the new service worker to activate immediately
                   newWorker.postMessage({ type: 'SKIP_WAITING' });
                 }
@@ -241,7 +233,7 @@ export default function ServiceWorkerRegistration() {
           });
           
         } catch (error) {
-          console.warn('⚠️ Service Worker registration failed:', error);
+          // Silently fail in production
         }
       };
       

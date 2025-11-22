@@ -45,8 +45,6 @@ export default function AdminLoginPage() {
     setSuccess("");
 
     try {
-      console.log("🔐 Requesting OTP for admin:", email);
-
       const response = await fetch("/api/auth/otp", {
         method: "POST",
         headers: {
@@ -62,7 +60,6 @@ export default function AdminLoginPage() {
       const data = await response.json();
 
       if (data.success) {
-        console.log("✅ OTP sent successfully");
         setStep("verify");
 
         setSuccess(`OTP sent to ${email}. Please check your email.`);
@@ -70,7 +67,6 @@ export default function AdminLoginPage() {
         setError(data.error || "Failed to send OTP. Please try again.");
       }
     } catch (error) {
-      console.error("❌ OTP request failed:", error);
       setError("Network error. Please check your connection and try again.");
     } finally {
       setIsLoading(false);
@@ -87,8 +83,6 @@ export default function AdminLoginPage() {
     setError("");
 
     try {
-      console.log("🔐 Verifying OTP for admin:", email);
-
       const response = await fetch("/api/auth/otp", {
         method: "POST",
         headers: {
@@ -105,8 +99,6 @@ export default function AdminLoginPage() {
       const data = await response.json();
 
       if (data.success) {
-        console.log("✅ Admin OTP verification successful:", data.data.user);
-
         // Store admin session
         localStorage.setItem(
           "currentUser",
@@ -128,7 +120,6 @@ export default function AdminLoginPage() {
         setError(data.error || "Invalid OTP. Please try again.");
       }
     } catch (error) {
-      console.error("❌ Admin OTP verification failed:", error);
       setError("Network error. Please check your connection and try again.");
     } finally {
       setIsLoading(false);

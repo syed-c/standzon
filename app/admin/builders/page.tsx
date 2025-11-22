@@ -116,11 +116,9 @@ function BuildersManagementClient() {
       try {
         setDeletingId(id);
         await deleteBuilderHook(id);
-        console.log(`Builder ${name} deleted successfully`);
         // Refresh the current page after deletion
         fetchBuilders(buildersPerPage, (currentPage - 1) * buildersPerPage);
       } catch (error) {
-        console.error('Failed to delete builder:', error);
         alert('Failed to delete builder. Please try again.');
       } finally {
         setDeletingId(null);
@@ -145,11 +143,9 @@ function BuildersManagementClient() {
       await updateBuilder(editingBuilderId, editingBuilderData);
       setEditingBuilderId(null);
       setEditingBuilderData({});
-      console.log('Builder updated successfully');
       // Refresh the current page after update
       fetchBuilders(buildersPerPage, (currentPage - 1) * buildersPerPage);
     } catch (error) {
-      console.error('Failed to update builder:', error);
       alert('Failed to update builder. Please try again.');
     }
   };

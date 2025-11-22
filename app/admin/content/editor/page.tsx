@@ -23,8 +23,6 @@ function ContentEditorClient() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  console.log('Content Editor page loaded');
-
   // Generate all platform pages
   const allPages = [
     // Country pages
@@ -87,13 +85,11 @@ function ContentEditorClient() {
   const handleEditPage = (page: any) => {
     setSelectedItem({ ...page });
     setIsEditing(true);
-    console.log('Editing page:', page.title);
   };
 
   const handleSavePage = () => {
     if (!selectedItem) return;
     
-    console.log('Saving page changes:', selectedItem.title);
     // In a real app, this would make an API call to save changes
     
     // Update the page in the local array (for demo purposes)

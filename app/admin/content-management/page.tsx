@@ -239,8 +239,6 @@ export default function ContentManagementPage() {
 
   const handleSavePage = async (page: PageContent) => {
     try {
-      console.log('Saving page:', page);
-      
       // Update the page in the local state
       setPages(prev => prev.map(p => p.id === page.id ? page : p));
       
@@ -261,8 +259,6 @@ export default function ContentManagementPage() {
 
   const handleSaveNavigation = async () => {
     try {
-      console.log('Saving navigation:', navigationItems);
-      
       toast({
         title: "Navigation Updated",
         description: "Navigation menu has been saved successfully.",

@@ -44,8 +44,6 @@ export default function BulkAddCitiesPage() {
   const [showBulkForm, setShowBulkForm] = useState(false);
   const [csvContent, setCsvContent] = useState('');
 
-  console.log('Bulk add cities page loaded');
-
   const addNewCity = () => {
     const newCity: CityData = {
       name: '',
@@ -61,19 +59,16 @@ export default function BulkAddCitiesPage() {
     };
 
     setCities(prev => [...prev, newCity]);
-    console.log('New city row added');
   };
 
   const updateCity = (index: number, field: keyof CityData, value: any) => {
     setCities(prev => prev.map((city, i) => 
       i === index ? { ...city, [field]: value } : city
     ));
-    console.log(`Updated city ${index} ${field}:`, value);
   };
 
   const removeCity = (index: number) => {
     setCities(prev => prev.filter((_, i) => i !== index));
-    console.log('City removed at index:', index);
   };
 
   const saveCities = async () => {
@@ -96,8 +91,6 @@ export default function BulkAddCitiesPage() {
     setProgress(0);
 
     try {
-      console.log('Saving cities to system...', cities);
-
       // Simulate processing
       for (let i = 0; i < cities.length; i++) {
         setProgress((i / cities.length) * 100);
@@ -106,7 +99,6 @@ export default function BulkAddCitiesPage() {
 
       setProgress(100);
       
-      console.log('Cities saved successfully:', cities.length);
       toast.success(`Successfully added ${cities.length} cities to the system`);
 
       // Reset form
@@ -114,7 +106,6 @@ export default function BulkAddCitiesPage() {
       setSelectedCountry('');
 
     } catch (error: any) {
-      console.error('Error saving cities:', error);
       toast.error('Failed to save cities');
     } finally {
       setIsProcessing(false);
@@ -150,7 +141,6 @@ export default function BulkAddCitiesPage() {
     link.download = 'cities-template.csv';
     link.click();
     
-    console.log('Cities template downloaded');
     toast.success('Template downloaded successfully');
   };
 
@@ -191,11 +181,9 @@ export default function BulkAddCitiesPage() {
         }
 
         setCities(cityData);
-        console.log('CSV loaded with', cityData.length, 'cities');
         toast.success(`Loaded ${cityData.length} cities from CSV`);
 
       } catch (error: any) {
-        console.error('CSV parsing error:', error);
         toast.error('Failed to parse CSV file');
       }
     };

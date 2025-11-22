@@ -86,20 +86,9 @@ export default function DataSummaryPage() {
   const [isPublishing, setIsPublishing] = useState(false);
   const { toast } = useToast();
 
-  console.log('📊 DataSummaryPage loaded with state:', {
-    activeTab,
-    searchQuery,
-    filterContinent,
-    filterPriority,
-    sortBy,
-    isLoading,
-    isPublishing
-  });
-
   // Load comprehensive summary data
   const loadSummaryData = async () => {
     setIsLoading(true);
-    console.log('🔄 Loading comprehensive summary data...');
 
     try {
       const allCountries = GLOBAL_EXHIBITION_DATA.countries;
@@ -162,11 +151,9 @@ export default function DataSummaryPage() {
         publishingTasks
       };
 
-      console.log('✅ Summary data loaded:', summaryData);
       setSummaryData(summaryData);
 
     } catch (error) {
-      console.error('❌ Error loading summary data:', error);
       toast({
         title: "Load Failed",
         description: "Failed to load summary data. Please try again.",
@@ -179,7 +166,6 @@ export default function DataSummaryPage() {
 
   // Start bulk publishing
   const startBulkPublishing = async (items: Array<{ type: 'country' | 'city', id: string, name: string }>) => {
-    console.log('🚀 Starting bulk publishing for:', items);
     setIsPublishing(true);
 
     try {
@@ -206,7 +192,6 @@ export default function DataSummaryPage() {
       }, 2000);
 
     } catch (error) {
-      console.error('❌ Bulk publishing failed:', error);
       toast({
         title: "Publishing Failed",
         description: "Failed to start bulk publishing. Please try again.",

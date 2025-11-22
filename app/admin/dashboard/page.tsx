@@ -47,8 +47,6 @@ const mockAdmin = {
 };
 
 export default function SmartAdminDashboardPage() {
-  console.log('Smart Admin AI Dashboard loaded for:', mockAdmin);
-
   return (
     <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
       {/* Consolidated Budget Card placeholder wrapper; keep logic inside SuperAdminDashboard */}

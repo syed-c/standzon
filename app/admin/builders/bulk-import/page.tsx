@@ -150,8 +150,6 @@ export default function EnhancedBulkUploadPage() {
   ];
 
   const downloadEnhancedTemplate = () => {
-    console.log('Downloading enhanced CSV template for bulk builder upload');
-    
     const headers = Object.keys(enhancedSampleData[0]);
     const csvContent = [
       headers.join(','),
@@ -170,7 +168,6 @@ export default function EnhancedBulkUploadPage() {
   };
 
   const handleFileChange = async (file: File) => {
-    console.log('File selected for upload:', file.name, file.size);
     setUploadFile(file);
     setUploadResult(null);
     setShowPreview(false);
@@ -188,7 +185,7 @@ export default function EnhancedBulkUploadPage() {
       setPreviewData(parsedData);
       setShowPreview(true);
     } catch (error) {
-      console.error('Error reading file for preview:', error);
+      // Silently handle errors in production
     }
   };
 
@@ -456,7 +453,7 @@ export default function EnhancedBulkUploadPage() {
     return countryMap[country] || 'US';
   };
 
-  const processUpload = async () => {
+  const handleEnhancedUpload = async () => {
     if (!uploadFile) return;
     
     setIsUploading(true);
@@ -464,8 +461,6 @@ export default function EnhancedBulkUploadPage() {
     setUploadResult(null);
     
     try {
-      console.log('Starting enhanced bulk upload process for file:', uploadFile.name);
-      
       // Read file content
       const fileContent = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -478,7 +473,6 @@ export default function EnhancedBulkUploadPage() {
       
       // Parse CSV data
       const parsedData = parseCSV(fileContent);
-      console.log('Parsed CSV data:', parsedData.length, 'rows');
       
       setUploadProgress(40);
       
@@ -509,14 +503,6 @@ export default function EnhancedBulkUploadPage() {
         const newBuilder = createBuilderProfile(builderData);
         newBuilders.push(newBuilder);
         
-        console.log('Builder created:', {
-          name: newBuilder.companyName,
-          cities: newBuilder.serviceLocations.map(loc => loc.city).join(', '),
-          country: newBuilder.headquarters.country,
-          services: newBuilder.services.length,
-          portfolio: newBuilder.portfolio.length
-        });
-        
         setUploadProgress(60 + ((i + 1) / parsedData.length) * 35);
       }
       
@@ -536,19 +522,7 @@ export default function EnhancedBulkUploadPage() {
         builders: newBuilders
       });
       
-      console.log('Enhanced bulk upload completed:', {
-        created,
-        duplicates,
-        builders: newBuilders.map(b => ({
-          name: b.companyName,
-          id: b.id,
-          cities: b.serviceLocations.length,
-          services: b.services.length
-        }))
-      });
-      
     } catch (error) {
-      console.error('Upload error:', error);
       setUploadResult({
         success: false,
         created: 0,
@@ -805,7 +779,7 @@ export default function EnhancedBulkUploadPage() {
 
               {/* Enhanced Upload Button */}
               <Button 
-                onClick={processUpload}
+                onClick={handleEnhancedUpload}
                 disabled={!uploadFile || isUploading}
                 className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-lg py-6"
                 size="lg"

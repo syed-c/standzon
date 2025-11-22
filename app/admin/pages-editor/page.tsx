@@ -22,8 +22,6 @@ type PageItem = {
 };
 
 export default function AdminPagesEditor() {
-  console.log('🎯 AdminPagesEditor component rendered');
-  
   // Simple client-side guard: require admin session in localStorage
   React.useEffect(() => {
     try {
@@ -100,16 +98,12 @@ export default function AdminPagesEditor() {
   const loadPages = async () => {
     setLoading(true);
     try {
-      console.log('🔄 Loading pages from API...');
       const res = await fetch('/api/admin/pages-editor?action=list', { cache: 'no-store' });
       const data = await res.json();
-      console.log('📊 API Response:', { success: data.success, dataLength: data.data?.length, data: data.data });
       
       if (data.success && Array.isArray(data.data)) {
-        console.log('✅ Setting pages from API data:', data.data.length, 'pages');
         setPages(data.data);
       } else {
-        console.log('⚠️ API data not valid, using fallback...');
         // Client fallback: generate pages list from global dataset so Cities tab is not empty
         try {
           const mod = await import('@/lib/data/globalCities');
@@ -132,17 +126,12 @@ export default function AdminPagesEditor() {
           }).filter(Boolean) as any[];
           
           const fallbackPages = [...(countries as any[]), ...cities];
-          console.log('🔄 Setting fallback pages:', fallbackPages.length, 'pages');
-          console.log('🌍 Countries in fallback:', countries.length);
-          console.log('🏙️ Cities in fallback:', cities.length);
           setPages(fallbackPages);
         } catch (err) {
-          console.warn('Fallback generation failed:', err);
           setPages([]);
         }
       }
     } catch (e) {
-      console.error('Failed to load pages', e);
       setPages([]);
     } finally {
       setLoading(false);
@@ -150,11 +139,9 @@ export default function AdminPagesEditor() {
   };
 
   useEffect(() => {
-    console.log('🚀 useEffect triggered - loading pages...');
     try {
     loadPages();
     } catch (error) {
-      console.error('❌ Error in loadPages:', error);
     }
     
     // Load footer data
@@ -202,11 +189,7 @@ export default function AdminPagesEditor() {
         
         setCountryOptions(countries);
         setCityOptionsByCountry(cities);
-        
-        console.log('🌍 Loaded country options:', countries.length, 'countries');
-        console.log('🏙️ Loaded city options for countries:', Object.keys(cities).length);
       } catch (error) {
-        console.error('❌ Error loading country/city options:', error);
       }
     })();
   }, []);

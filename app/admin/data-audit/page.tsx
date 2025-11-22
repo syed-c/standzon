@@ -9,8 +9,6 @@ import Sidebar from '@/components/admin/Sidebar';
 import Topbar from '@/components/admin/Topbar';
 
 export default function DataAuditPage() {
-  console.log('🔍 Loading Data Audit Admin Page');
-  
   return (
     <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
       {/* main content only, no old Navigation/Footer. */}

@@ -2,8 +2,6 @@ import React from 'react';
 import FeaturedBuildersManager from '@/components/FeaturedBuildersManager';
 
 export default function FeaturedBuildersPage() {
-  console.log('Featured Builders Management Page loaded');
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
