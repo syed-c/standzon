@@ -275,14 +275,14 @@ export default function Navigation() {
             {!currentUser ? (
               <div className="flex items-center space-x-2">
                 <Link href="/auth/login?type=builder">
-                  <Button variant="ghost" size="sm" className="text-white hover:text-pink-400 hover:bg-slate-800/60 text-sm">
+                  <Button variant="ghost" size="sm" className="text-white text-sm">
                     <SafeIcon IconComponent={FiUser} className="w-4 h-4 mr-1.5" />
                     Builder Login
                   </Button>
                 </Link>
                 <span className="text-slate-600">|</span>
                 <Link href="/builder/register">
-                  <Button variant="ghost" size="sm" className="text-white hover:text-pink-400 hover:bg-slate-800/60 text-sm">
+                  <Button variant="ghost" size="sm" className="text-white text-sm">
                     Join as Builder
                   </Button>
                 </Link>
@@ -343,7 +343,7 @@ export default function Navigation() {
 
             {/* Get Free Quote CTA Button */}
             <Link href="/quote">
-              <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-5 py-2 font-semibold text-sm rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 whitespace-nowrap">
+              <Button className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-5 py-2 font-semibold text-sm rounded-lg shadow-lg transition-all duration-200 whitespace-nowrap">
                 <SafeIcon IconComponent={FiZap} className="w-4 h-4 mr-1.5" />
                 Get Free Quote
               </Button>
@@ -353,7 +353,7 @@ export default function Navigation() {
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center space-x-2">
             <Link href="/quote">
-              <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-4 py-3 rounded-lg shadow-lg text-sm font-semibold min-h-[44px]">
+              <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-3 rounded-lg shadow-lg text-sm font-semibold min-h-[44px]">
                 <SafeIcon IconComponent={FiZap} className="w-4 h-4 mr-1" />
                 Quote
               </Button>
@@ -380,7 +380,7 @@ export default function Navigation() {
             {/* Mobile Get Quote at Top */}
             <div className="mb-6">
               <Link href="/quote" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-4 rounded-lg shadow-lg font-semibold text-base min-h-[56px]">
+                <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-4 rounded-lg shadow-lg font-semibold text-base min-h-[56px]">
                   <SafeIcon IconComponent={FiZap} className="w-5 h-5 mr-2" />
                   Get Free Quote
                 </Button>

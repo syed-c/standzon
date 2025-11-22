@@ -211,7 +211,7 @@ export default function MobileResponsiveDemo() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button size="sm" className="flex-1 text-xs h-8 bg-blue-600 hover:bg-blue-700 text-white">
+          <Button size="sm" className="flex-1 text-xs h-8 bg-blue-600 text-white">
             Contact
           </Button>
           <Button size="sm" variant="outline" className="flex-1 text-xs h-8 text-gray-900">

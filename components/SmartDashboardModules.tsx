@@ -250,7 +250,7 @@ export function SmartBuilders({
           <p className="text-gray-600 mt-1">AI-powered builder operations and bulk management</p>
         </div>
         <div className="flex space-x-3">
-          <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50">
+          <Button variant="outline" className="border-blue-200 text-blue-700">
             <Brain className="h-4 w-4 mr-2" />
             AI Recommendations
           </Button>
@@ -273,7 +273,7 @@ export function SmartBuilders({
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 pr-16 h-12 text-lg border-blue-200 focus:border-blue-400 focus:ring-blue-400"
               />
-              <Button size="sm" className="absolute right-2 top-2 bg-blue-500 hover:bg-blue-600">
+              <Button size="sm" className="absolute right-2 top-2 bg-blue-500">
                 <Wand2 className="h-4 w-4" />
               </Button>
             </div>
@@ -393,10 +393,10 @@ export function SmartBuilders({
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Button size="sm" variant="outline" className="hover:bg-blue-50 hover:border-blue-300">
+                    <Button size="sm" variant="outline">
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button size="sm" variant="outline" className="hover:bg-green-50 hover:border-green-300">
+                    <Button size="sm" variant="outline">
                       <Edit className="h-4 w-4" />
                     </Button>
                   </div>
@@ -633,7 +633,7 @@ export function AIInsights({
                     <h4 className="font-semibold text-red-900">{insight.title}</h4>
                     <p className="text-sm text-red-700">{insight.description}</p>
                   </div>
-                  <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white">
+                  <Button size="sm" className="bg-red-600 text-white">
                     <Send className="h-4 w-4 mr-2" />
                     Take Action
                   </Button>
@@ -712,7 +712,7 @@ export function AIInsights({
               {insight.actionRequired && (
                 <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                   <span className="text-sm font-medium text-blue-900">Action Required</span>
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Button size="sm" className="bg-blue-600 text-white">
                     <MousePointer className="h-4 w-4 mr-2" />
                     Take Action
                   </Button>

@@ -629,7 +629,7 @@ export default function EnhancedBulkUploadPage() {
             <CardContent className="p-8 space-y-6">
               <Button 
                 onClick={downloadEnhancedTemplate}
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-lg py-6"
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white text-lg py-6"
                 size="lg"
               >
                 <Download className="h-5 w-5 mr-3" />
@@ -685,7 +685,7 @@ export default function EnhancedBulkUploadPage() {
                 className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${ 
                   dragActive 
                     ? 'border-green-500 bg-green-50' 
-                    : 'border-gray-300 hover:border-green-400 hover:bg-gray-50'
+                    : 'border-gray-300'
                 }`}
                 onDrop={handleDrop}
                 onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
@@ -781,7 +781,7 @@ export default function EnhancedBulkUploadPage() {
               <Button 
                 onClick={handleEnhancedUpload}
                 disabled={!uploadFile || isUploading}
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-lg py-6"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white text-lg py-6"
                 size="lg"
               >
                 {isUploading ? (

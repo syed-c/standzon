@@ -231,7 +231,7 @@ export default function ManageBuildersClient({ initialBuilders }: ManageBuilders
               {filteredBuilders.length} Builders
             </Badge>
             <Link href="/admin/builders/add">
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button className="bg-blue-600">
                 <Plus className="w-4 h-4 mr-2" />
                 Add New Builder
               </Button>

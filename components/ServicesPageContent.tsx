@@ -126,12 +126,12 @@ export default function ServicesPageContent() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/quote">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+                <Button size="lg" className="bg-white text-blue-600">
                   Get Free Quote
                 </Button>
               </Link>
               <Link href="/builders">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
+                <Button size="lg" variant="outline" className="border-white text-white">
                   Browse Builders
                 </Button>
               </Link>
@@ -272,12 +272,12 @@ export default function ServicesPageContent() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/quote">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+              <Button size="lg" className="bg-white text-blue-600">
                 Get Free Quote
               </Button>
             </Link>
             <Link href="/builders">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
+              <Button size="lg" variant="outline" className="border-white text-white">
                 Browse Builders
               </Button>
             </Link>

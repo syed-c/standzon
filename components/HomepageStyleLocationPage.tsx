@@ -287,10 +287,10 @@ export function HomepageStyleLocationPage({
             {stats.totalBuilders} verified builders • {stats.verifiedBuilders} verified • {stats.averageRating.toFixed(1)}★ average rating
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 text-lg">
+            <Button className="bg-pink-600 text-white px-8 py-3 text-lg">
               Get Free Quotes
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-navy-900 px-8 py-3 text-lg">
+            <Button variant="outline" className="border-white text-white px-8 py-3 text-lg">
               View All Builders
             </Button>
           </div>

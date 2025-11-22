@@ -305,7 +305,7 @@ export default function AdminRegistrationsPage() {
             ) : (
               <div className="grid grid-cols-1 gap-4">
                 {filteredRegistrations.map(registration => (
-                  <Card key={registration.id} className="hover:shadow-md transition-shadow">
+                  <Card key={registration.id} className="transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
@@ -428,7 +428,7 @@ export default function AdminRegistrationsPage() {
                                       <div className="flex space-x-3">
                                         <Button 
                                           onClick={() => handleApprove(selectedReg.id)}
-                                          className="bg-green-600 hover:bg-green-700 flex-1"
+                                          className="bg-green-600 flex-1"
                                         >
                                           <CheckCircle className="w-4 h-4 mr-2" />
                                           Approve Registration
@@ -521,7 +521,7 @@ export default function AdminRegistrationsPage() {
                           <Button 
                             size="sm" 
                             onClick={() => handleApprove(registration.id)}
-                            className="bg-green-600 hover:bg-green-700"
+                            className="bg-green-600"
                           >
                             <CheckCircle className="w-4 h-4 mr-1" />
                             Approve
@@ -559,7 +559,7 @@ export default function AdminRegistrationsPage() {
                                 <div className="flex space-x-3 pt-4">
                                   <Button 
                                     onClick={() => handleApprove(registration.id)}
-                                    className="bg-green-600 hover:bg-green-700 flex-1"
+                                    className="bg-green-600 flex-1"
                                   >
                                     Approve
                                   </Button>

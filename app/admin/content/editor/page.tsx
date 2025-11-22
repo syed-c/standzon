@@ -207,7 +207,7 @@ function ContentEditorClient() {
               {/* Pages List */}
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {filteredPages.map((page) => (
-                  <div key={page.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                  <div key={page.id} className="p-4 border rounded-lg transition-shadow">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 mb-2">

@@ -264,7 +264,7 @@ export default function WorkingGlobalPagesManager() {
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh Data
           </Button>
-          <Button onClick={generateAllPages} disabled={generating} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={generateAllPages} disabled={generating} className="bg-blue-600">
             <Zap className="w-4 h-4 mr-2" />
             {generating ? 'Generating...' : 'Generate All Pages'}
           </Button>

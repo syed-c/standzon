@@ -139,7 +139,7 @@ export default function BuilderProfileTemplate({ builder, isGmbImported, display
                     </div>
                   </div>
 
-                  <Button size="lg" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white" onClick={onOpenQuote}>
+                  <Button size="lg" className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white" onClick={onOpenQuote}>
                     <Quote className="w-4 h-4 mr-2" />
                     {c.ctaRequestQuote}
                   </Button>

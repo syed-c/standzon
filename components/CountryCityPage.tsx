@@ -338,7 +338,7 @@ export function CountryCityPage({
                 placeholder="Enter your email"
                 className="bg-white/10 border-white/20 text-white placeholder:text-white/70"
               />
-              <Button className="bg-white text-purple-600 hover:bg-gray-100 font-semibold shadow-lg">
+              <Button className="bg-white text-purple-600 font-semibold shadow-lg">
                 Notify Me
               </Button>
             </div>

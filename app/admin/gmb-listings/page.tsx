@@ -27,7 +27,7 @@ export default function GMBListingsPage() {
           <div className="flex items-center space-x-4">
             <Button 
               onClick={() => window.location.href = '/admin/dashboard'}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-blue-600 text-white"
             >
               Back to Dashboard
             </Button>
@@ -130,7 +130,7 @@ export default function GMBListingsPage() {
                 </p>
                 <Button 
                   onClick={() => window.location.href = '/admin/dashboard'}
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="bg-green-600 text-white"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Go to GMB Fetch Tool

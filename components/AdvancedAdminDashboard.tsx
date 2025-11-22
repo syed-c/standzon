@@ -210,7 +210,7 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Link href="/admin/builders/bulk-import">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                    <Button className="w-full bg-blue-600 text-white">
                       <Upload className="w-4 h-4 mr-2" />
                       Import Builders (CSV)
                     </Button>
@@ -240,7 +240,7 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Link href="/admin/tradeshows/bulk-import">
-                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                    <Button className="w-full bg-green-600 text-white">
                       <Upload className="w-4 h-4 mr-2" />
                       Import Trade Shows (CSV)
                     </Button>
@@ -270,7 +270,7 @@ const AdvancedAdminDashboard: React.FC<AdvancedAdminDashboardProps> = ({ adminId
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Link href="/admin/content/cities/bulk-add">
-                    <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
+                    <Button className="w-full bg-orange-600 text-white">
                       <Plus className="w-4 h-4 mr-2" />
                       Add Global Cities
                     </Button>

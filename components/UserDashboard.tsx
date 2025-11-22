@@ -527,7 +527,7 @@ export default function UserDashboard({ userType, userId }: DashboardProps) {
 
             <Dialog open={showAddExhibition} onOpenChange={setShowAddExhibition}>
               <DialogTrigger asChild>
-                <Button className="bg-theme-600 hover:bg-theme-700 text-white">
+                <Button className="bg-theme-600 text-white">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Exhibition
                 </Button>
@@ -850,7 +850,7 @@ export default function UserDashboard({ userType, userId }: DashboardProps) {
         </div>
 
         <div className="flex gap-3 pt-4">
-          <Button type="submit" className="flex-1 bg-theme-600 hover:bg-theme-700 text-white">
+          <Button type="submit" className="flex-1 bg-theme-600 text-white">
             Add Exhibition
           </Button>
           <Button type="button" variant="outline" onClick={onClose}>
@@ -916,7 +916,7 @@ export default function UserDashboard({ userType, userId }: DashboardProps) {
               <div className="text-center py-8">
                 <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500">No messages yet</p>
-                <Button className="mt-4 bg-theme-600 hover:bg-theme-700 text-white">Start a conversation</Button>
+                <Button className="mt-4 bg-theme-600 text-white">Start a conversation</Button>
               </div>
             </CardContent>
           </Card>

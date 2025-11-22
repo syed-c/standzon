@@ -219,7 +219,7 @@ export default function AdminLoginPage() {
                   </Alert>
                 )}
 
-                <Button onClick={handleSendOTP} disabled={isLoading} className="w-full bg-red-600 hover:bg-red-700">
+                <Button onClick={handleSendOTP} disabled={isLoading} className="w-full bg-red-600">
                   {isLoading ? "Sending OTP..." : "Send OTP"}
                   {!isLoading && <Send className="w-4 h-4 ml-2" />}
                 </Button>
@@ -269,7 +269,7 @@ export default function AdminLoginPage() {
                   <Button
                     onClick={handleVerifyOTP}
                     disabled={isLoading || otp.length !== 6}
-                    className="bg-red-600 hover:bg-red-700"
+                    className="bg-red-600"
                   >
                     {isLoading ? "Verifying..." : "Login"}
                   </Button>
@@ -322,7 +322,7 @@ export default function AdminLoginPage() {
                   </Alert>
                 )}
 
-                <Button onClick={handlePasswordLogin} disabled={isLoading} className="w-full bg-red-600 hover:bg-red-700">
+                <Button onClick={handlePasswordLogin} disabled={isLoading} className="w-full bg-red-600">
                   {isLoading ? "Signing in..." : "Login"}
                 </Button>
               </div>

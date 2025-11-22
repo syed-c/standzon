@@ -111,7 +111,7 @@ export default function ManageTradeShowsPage() {
               {filteredShows.length} Shows
             </Badge>
             <Link href="/admin/tradeshows/add">
-              <Button className="bg-purple-600 hover:bg-purple-700">
+              <Button className="bg-purple-600">
                 <Plus className="w-4 h-4 mr-2" />
                 Add New Show
               </Button>
@@ -173,7 +173,7 @@ export default function ManageTradeShowsPage() {
         {/* Trade Shows List */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredShows.map((show) => (
-            <Card key={show.id} className="hover:shadow-lg transition-shadow">
+            <Card key={show.id} className="transition-shadow">
               <CardHeader>
                 <CardTitle className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
@@ -246,7 +246,7 @@ export default function ManageTradeShowsPage() {
                     size="sm"
                     variant="outline"
                     onClick={() => handleDeleteShow(show.id)}
-                    className="text-red-600 hover:bg-red-50"
+                    className="text-red-600"
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>

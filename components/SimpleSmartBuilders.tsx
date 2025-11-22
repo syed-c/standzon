@@ -64,7 +64,7 @@ export default function SimpleSmartBuilders() {
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <h2 className="text-lg font-semibold text-red-800 mb-2">Error Loading Builders</h2>
           <p className="text-red-700 mb-4">{error}</p>
-          <Button onClick={loadBuilders} className="bg-red-600 hover:bg-red-700 text-white">
+          <Button onClick={loadBuilders} className="bg-red-600 text-white">
             <RefreshCw className="h-4 w-4 mr-2" />
             Retry
           </Button>
@@ -91,7 +91,7 @@ export default function SimpleSmartBuilders() {
             )}
           </p>
         </div>
-        <Button onClick={loadBuilders} variant="outline" className="text-gray-700 border-gray-300 hover:bg-gray-50">
+        <Button onClick={loadBuilders} variant="outline" className="text-gray-700 border-gray-300">
           <RefreshCw className="h-4 w-4 mr-2" />
           Refresh
         </Button>

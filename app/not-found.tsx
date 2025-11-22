@@ -15,13 +15,13 @@ export default function NotFound() {
         
         <div className="space-y-4">
           <Link href="/">
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg">
+            <Button className="w-full bg-blue-600 text-white px-8 py-3 rounded-lg">
               Go Home
             </Button>
           </Link>
           
           <Link href="/exhibition-stands">
-            <Button variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-3 rounded-lg">
+            <Button variant="outline" className="w-full border-blue-600 text-blue-600 px-8 py-3 rounded-lg">
               Browse Exhibition Stands
             </Button>
           </Link>

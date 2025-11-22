@@ -137,7 +137,7 @@ export default function RealTimePlatformAnalytics() {
       <div className="text-center py-12">
         <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-gray-700 mb-2">Failed to Load Analytics</h3>
-        <Button onClick={loadAnalytics} className="bg-blue-600 hover:bg-blue-700">
+        <Button onClick={loadAnalytics} className="bg-blue-600">
           <RefreshCw className="h-4 w-4 mr-2" />
           Retry
         </Button>
@@ -172,7 +172,7 @@ export default function RealTimePlatformAnalytics() {
           >
             {isLive ? 'Pause' : 'Resume'} Live Updates
           </Button>
-          <Button onClick={loadAnalytics} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={loadAnalytics} className="bg-blue-600">
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
@@ -463,7 +463,7 @@ export default function RealTimePlatformAnalytics() {
                       </div>
                       <p className="text-gray-600 mb-4">{insight.description}</p>
                       {insight.actionRequired && (
-                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                        <Button size="sm" className="bg-blue-600">
                           <MousePointer className="h-4 w-4 mr-2" />
                           Take Action
                         </Button>
@@ -559,19 +559,19 @@ export default function RealTimePlatformAnalytics() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 h-auto p-4 flex flex-col items-center space-y-2">
+            <Button className="bg-gradient-to-r from-blue-500 to-blue-600 h-auto p-4 flex flex-col items-center space-y-2">
               <Target className="h-6 w-6" />
               <span className="font-medium">Optimize Geographic Matching</span>
               <span className="text-xs opacity-75">Improve local builder prioritization</span>
             </Button>
             
-            <Button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 h-auto p-4 flex flex-col items-center space-y-2">
+            <Button className="bg-gradient-to-r from-green-500 to-green-600 h-auto p-4 flex flex-col items-center space-y-2">
               <Clock className="h-6 w-6" />
               <span className="font-medium">Response Time Incentives</span>
               <span className="text-xs opacity-75">Boost fast-responding builders</span>
             </Button>
             
-            <Button className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 h-auto p-4 flex flex-col items-center space-y-2">
+            <Button className="bg-gradient-to-r from-purple-500 to-purple-600 h-auto p-4 flex flex-col items-center space-y-2">
               <Brain className="h-6 w-6" />
               <span className="font-medium">Algorithm Enhancement</span>
               <span className="text-xs opacity-75">Update matching weights</span>

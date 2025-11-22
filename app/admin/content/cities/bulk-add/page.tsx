@@ -350,7 +350,7 @@ export default function BulkAddCitiesPage() {
                       variant="outline" 
                       size="sm"
                       onClick={() => removeCity(index)}
-                      className="text-red-600 hover:text-red-700"
+                      className="text-red-600"
                     >
                       <XCircle className="w-4 h-4" />
                     </Button>

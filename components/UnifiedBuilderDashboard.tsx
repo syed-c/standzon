@@ -1346,7 +1346,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Services Offered</span>
-                <Button onClick={addService} disabled={saving} className="bg-red-600 text-white hover:bg-red-700 font-medium">
+                <Button onClick={addService} disabled={saving} className="bg-red-600 text-white font-medium">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Service
                 </Button>
@@ -1406,7 +1406,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Service Locations</span>
-                <Button onClick={addServiceLocation} disabled={saving} className="bg-red-600 text-white hover:bg-red-700 font-medium">
+                <Button onClick={addServiceLocation} disabled={saving} className="bg-red-600 text-white font-medium">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Location
                 </Button>
@@ -1599,7 +1599,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
                 <p className="text-sm text-gray-400 mb-4">
                   Leads will appear here when clients request quotes from your service areas
                 </p>
-                <Button variant="outline" className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300">Learn More About Leads</Button>
+                <Button variant="outline" className="border-red-200 text-red-600">Learn More About Leads</Button>
               </div>
             </CardContent>
           </Card>

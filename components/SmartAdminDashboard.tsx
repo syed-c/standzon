@@ -1314,7 +1314,7 @@ export default function SmartAdminDashboard({
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <a href="/admin/gmb-integration">
-                      <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white">
+                      <Button className="w-full justify-start bg-green-600 text-white">
                         <Globe className="h-5 w-5" />
                         GMB Auto-Import
                         <Badge className="ml-auto bg-green-100 text-green-800 text-xs">

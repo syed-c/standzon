@@ -642,7 +642,7 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                                 View Profile
                               </Button>
                             </Link>
-                            <Button size="sm" className="bg-pink-600 hover:bg-pink-700 text-white">
+                            <Button size="sm" className="bg-pink-600 text-white">
                               <MessageSquare className="h-4 w-4 mr-1" />
                               Contact
                             </Button>
@@ -720,7 +720,7 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                     </div>
                   )}
 
-                  <Button className="w-full bg-pink-600 hover:bg-pink-700 text-white">
+                  <Button className="w-full bg-pink-600 text-white">
                     Get Custom Quote
                   </Button>
                 </CardContent>

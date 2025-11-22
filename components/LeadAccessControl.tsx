@@ -116,7 +116,7 @@ function LeadCard({ lead, builderPlan, isActive }: {
           <p className="text-sm text-gray-500 mb-4">
             Upgrade your plan to access lead details and contact information
           </p>
-          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+          <Button size="sm" className="bg-blue-600">
             <CreditCard className="w-4 h-4 mr-2" />
             Upgrade Plan
           </Button>
@@ -263,7 +263,7 @@ function LeadCard({ lead, builderPlan, isActive }: {
               </Select>
             </>
           ) : (
-            <Button size="sm" className="flex-1 bg-blue-600 hover:bg-blue-700">
+            <Button size="sm" className="flex-1 bg-blue-600">
               <CreditCard className="w-4 h-4 mr-2" />
               Upgrade to Contact
             </Button>
@@ -404,7 +404,7 @@ export function LeadAccessControl({ builderId, builderName, planType, isActive }
           
           {!isActive && (
             <div className="mt-4 pt-4 border-t">
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button className="bg-blue-600">
                 <CreditCard className="w-4 h-4 mr-2" />
                 Activate Plan
               </Button>
@@ -452,7 +452,7 @@ export function LeadAccessControl({ builderId, builderName, planType, isActive }
                 }
               </p>
               {!isActive && (
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button className="bg-blue-600">
                   <CreditCard className="w-4 h-4 mr-2" />
                   Activate Plan
                 </Button>

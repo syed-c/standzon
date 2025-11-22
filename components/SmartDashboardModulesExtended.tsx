@@ -290,7 +290,7 @@ export function SmartEvents({ eventIntelligence }: { eventIntelligence: EventInt
           <p className="text-gray-600 mt-1">AI-powered event creation and optimization</p>
         </div>
         <div className="flex space-x-3">
-          <Button variant="outline" className="border-cyan-200 text-cyan-700 hover:bg-cyan-50">
+          <Button variant="outline" className="border-cyan-200 text-cyan-700">
             <Brain className="h-4 w-4 mr-2" />
             AI Suggest Events
           </Button>
@@ -425,7 +425,7 @@ export function SmartEvents({ eventIntelligence }: { eventIntelligence: EventInt
                 <Badge className="bg-green-100 text-green-800">Hot</Badge>
               </div>
               <p className="text-sm text-green-700 mb-3">AI Expo Chicago 2025 - Technology sector shows 230% growth potential</p>
-              <Button size="sm" className="w-full bg-green-600 hover:bg-green-700 text-white">
+              <Button size="sm" className="w-full bg-green-600 text-white">
                 <Plus className="h-4 w-4 mr-2" />
                 Create Event
               </Button>
@@ -437,7 +437,7 @@ export function SmartEvents({ eventIntelligence }: { eventIntelligence: EventInt
                 <Badge className="bg-blue-100 text-blue-800">Rising</Badge>
               </div>
               <p className="text-sm text-blue-700 mb-3">Healthcare Innovation Summit - Austin market expanding rapidly</p>
-              <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              <Button size="sm" className="w-full bg-blue-600 text-white">
                 <Target className="h-4 w-4 mr-2" />
                 Explore Market
               </Button>
@@ -449,7 +449,7 @@ export function SmartEvents({ eventIntelligence }: { eventIntelligence: EventInt
                 <Badge className="bg-purple-100 text-purple-800">Timing</Badge>
               </div>
               <p className="text-sm text-purple-700 mb-3">Q2 Fashion Week - Perfect timing for luxury brand exhibitions</p>
-              <Button size="sm" className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+              <Button size="sm" className="w-full bg-purple-600 text-white">
                 <Calendar className="h-4 w-4 mr-2" />
                 Schedule Event
               </Button>

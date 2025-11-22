@@ -198,7 +198,7 @@ export default function GermanyTradeShows() {
                   <span>Europe's Exhibition Hub</span>
                 </div>
               </div>
-              <Button className="bg-blue-primary hover:bg-blue-dark text-white px-8 py-4 text-lg">
+              <Button className="bg-blue-primary text-white px-8 py-4 text-lg">
                 Get Exhibition Stand Quote
               </Button>
             </div>
@@ -364,14 +364,14 @@ export default function GermanyTradeShows() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/contact">
-              <Button className="bg-white text-blue-primary hover:bg-gray-100 px-8 py-4 text-lg">
+              <Button className="bg-white text-blue-primary px-8 py-4 text-lg">
                 Get Free Quote
               </Button>
             </Link>
             <Link href="/exhibition-stands/germany">
               <Button
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-primary px-8 py-4 text-lg"
+                className="border-white text-white px-8 py-4 text-lg"
               >
                 View German Contractors
               </Button>

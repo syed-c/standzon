@@ -180,11 +180,11 @@ export default function BlogPage() {
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Badge className="bg-navy-900 text-white hover:bg-navy-800 cursor-pointer px-4 py-2">
+            <Badge className="bg-navy-900 text-white cursor-pointer px-4 py-2">
               All Articles
             </Badge>
             {categories.map((category) => (
-              <Badge key={category.name} className={`${category.color} hover:opacity-80 cursor-pointer px-4 py-2`}>
+              <Badge key={category.name} className={`${category.color} cursor-pointer px-4 py-2`}>
                 {category.name} ({category.count})
               </Badge>
             ))}
@@ -200,7 +200,7 @@ export default function BlogPage() {
           </h2>
           <div className="grid lg:grid-cols-3 gap-8">
             {featuredArticles.map((article) => (
-              <Card key={article.slug} className="group hover:shadow-xl transition-all duration-300 overflow-hidden">
+              <Card key={article.slug} className="group transition-all duration-300 overflow-hidden">
                 <div className="h-48 bg-gradient-to-br from-blue-primary to-blue-dark flex items-center justify-center relative">
                   <div className="text-center text-white p-6">
                     <div className="text-4xl mb-2">📝</div>
@@ -229,7 +229,7 @@ export default function BlogPage() {
                     <span>{article.readTime}</span>
                   </div>
                   
-                  <h3 className="text-xl font-bold text-navy-900 mb-3 group-hover:text-blue-primary transition-colors">
+                  <h3 className="text-xl font-bold text-navy-900 mb-3">
                     {article.title}
                   </h3>
                   <p className="text-gray-600 mb-4 text-sm leading-relaxed">{article.excerpt}</p>
@@ -249,7 +249,7 @@ export default function BlogPage() {
                     ))}
                   </div>
                   
-                  <Link href={`/blog/${article.slug}`} className="text-blue-primary hover:text-blue-dark font-medium text-sm flex items-center">
+                  <Link href={`/blog/${article.slug}`} className="text-blue-primary font-medium text-sm flex items-center">
                     Read Full Article <FiArrowRight className="ml-1 w-4 h-4" />
                   </Link>
                 </CardContent>
@@ -267,7 +267,7 @@ export default function BlogPage() {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {recentArticles.map((article) => (
-              <Card key={article.slug} className="group hover:shadow-lg transition-all duration-300">
+              <Card key={article.slug} className="group transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
                     <Badge className="bg-gray-100 text-gray-700 text-xs">
@@ -276,7 +276,7 @@ export default function BlogPage() {
                     <span>{article.readTime}</span>
                   </div>
                   
-                  <h3 className="text-lg font-bold text-navy-900 mb-3 group-hover:text-blue-primary transition-colors">
+                  <h3 className="text-lg font-bold text-navy-900 mb-3">
                     {article.title}
                   </h3>
                   <p className="text-gray-600 mb-4 text-sm leading-relaxed">{article.excerpt}</p>
@@ -306,7 +306,7 @@ export default function BlogPage() {
                     ))}
                   </div>
                   
-                  <Link href={`/blog/${article.slug}`} className="text-blue-primary hover:text-blue-dark font-medium text-sm flex items-center">
+                  <Link href={`/blog/${article.slug}`} className="text-blue-primary font-medium text-sm flex items-center">
                     Read More <FiArrowRight className="ml-1 w-4 h-4" />
                   </Link>
                 </CardContent>
@@ -315,7 +315,7 @@ export default function BlogPage() {
           </div>
           
           <div className="text-center mt-12">
-            <Button className="bg-blue-primary hover:bg-blue-dark text-white px-8 py-3">
+            <Button className="bg-blue-primary text-white px-8 py-3">
               Load More Articles
             </Button>
           </div>
@@ -338,7 +338,7 @@ export default function BlogPage() {
               placeholder="Enter your email address"
               className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-light"
             />
-            <Button className="bg-white text-blue-primary hover:bg-gray-100 px-8 py-3">
+            <Button className="bg-white text-blue-primary px-8 py-3">
               Subscribe
             </Button>
           </div>

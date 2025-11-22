@@ -81,7 +81,7 @@ export default function SimpleNavigation() {
 
             {/* Get Quote Button */}
             <Link href="/quote">
-              <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-6 py-2 font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+              <Button className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-6 py-2 font-semibold rounded-lg shadow-lg transition-all duration-300">
                 Get Quote
               </Button>
             </Link>

@@ -639,7 +639,7 @@ export default function BuildersDirectoryContent() {
             {/* CTA */}
             <div className="max-w-2xl mx-auto">
               <Link href="/quote">
-                <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-4 text-lg font-semibold rounded-xl shadow-lg transition-all duration-200">
                   <SafeIcon IconComponent={FiArrowRight} className="w-5 h-5 mr-2" />
                   Get Free Quote from Verified Builders
                 </Button>
@@ -1059,13 +1059,13 @@ export default function BuildersDirectoryContent() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/quote">
-                <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                <Button className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg transition-all duration-200">
                   <SafeIcon IconComponent={FiArrowRight} className="w-5 h-5 mr-2" />
                   Get Free Quote
                 </Button>
               </Link>
               <Link href="/builders">
-                <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100 px-8 py-4 text-lg font-semibold rounded-xl">
+                <Button variant="outline" className="border-slate-300 text-slate-700 px-8 py-4 text-lg font-semibold rounded-xl">
                   <SafeIcon IconComponent={FiUsers} className="w-5 h-5 mr-2" />
                   Browse All Builders
                 </Button>

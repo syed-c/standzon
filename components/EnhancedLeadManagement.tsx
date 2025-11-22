@@ -712,7 +712,7 @@ export default function EnhancedLeadManagement({
                   </span>
                 </div>
               </div>
-              <Button className="bg-purple-600 hover:bg-purple-700">
+              <Button className="bg-purple-600">
                 <Crown className="h-4 w-4 mr-2" />
                 Upgrade Now
               </Button>

@@ -436,9 +436,9 @@ export default function DataSummaryPage() {
 
                 {/* Quick Actions */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="hover:shadow-lg transition-all cursor-pointer group">
+                  <Card className="transition-all cursor-pointer group">
                     <CardContent className="p-6 text-center">
-                      <Crown className="h-12 w-12 text-yellow-500 mx-auto mb-4 group-hover:scale-110 transition-transform" />
+                      <Crown className="h-12 w-12 text-yellow-500 mx-auto mb-4 transition-transform" />
                       <h3 className="font-semibold mb-2">Publish Priority Countries</h3>
                       <p className="text-sm text-gray-600 mb-4">
                         Publish {summaryData.missingCountries.filter(c => c.priority === 'high').length} high-priority countries
@@ -458,9 +458,9 @@ export default function DataSummaryPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="hover:shadow-lg transition-all cursor-pointer group">
+                  <Card className="transition-all cursor-pointer group">
                     <CardContent className="p-6 text-center">
-                      <Zap className="h-12 w-12 text-blue-500 mx-auto mb-4 group-hover:scale-110 transition-transform" />
+                      <Zap className="h-12 w-12 text-blue-500 mx-auto mb-4 transition-transform" />
                       <h3 className="font-semibold mb-2">Publish Top Cities</h3>
                       <p className="text-sm text-gray-600 mb-4">
                         Publish {summaryData.missingCities.filter(c => c.priority === 'high').length} major exhibition cities
@@ -482,9 +482,9 @@ export default function DataSummaryPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="hover:shadow-lg transition-all cursor-pointer group">
+                  <Card className="transition-all cursor-pointer group">
                     <CardContent className="p-6 text-center">
-                      <Sparkles className="h-12 w-12 text-purple-500 mx-auto mb-4 group-hover:scale-110 transition-transform" />
+                      <Sparkles className="h-12 w-12 text-purple-500 mx-auto mb-4 transition-transform" />
                       <h3 className="font-semibold mb-2">Smart Batch Publish</h3>
                       <p className="text-sm text-gray-600 mb-4">
                         Automatically select and publish optimal batch
@@ -587,7 +587,7 @@ export default function DataSummaryPage() {
                       <ScrollArea className="h-96">
                         <div className="space-y-2">
                           {filteredMissingCountries.map((country) => (
-                            <div key={country.id} className="flex items-center justify-between p-3 border rounded hover:bg-gray-50">
+                            <div key={country.id} className="flex items-center justify-between p-3 border rounded">
                               <div>
                                 <span className="font-medium">{country.name}</span>
                                 <div className="flex items-center gap-2 mt-1">
@@ -633,7 +633,7 @@ export default function DataSummaryPage() {
                       <ScrollArea className="h-96">
                         <div className="space-y-2">
                           {filteredMissingCities.map((city) => (
-                            <div key={city.id} className="flex items-center justify-between p-3 border rounded hover:bg-gray-50">
+                            <div key={city.id} className="flex items-center justify-between p-3 border rounded">
                               <div>
                                 <span className="font-medium">{city.name}</span>
                                 <p className="text-xs text-gray-500">{city.country}</p>

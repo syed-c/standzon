@@ -225,7 +225,7 @@ export default function BulkImportTradeShowsPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-4">
-              <Button onClick={generateTradeShowTemplate} className="bg-purple-600 hover:bg-purple-700">
+              <Button onClick={generateTradeShowTemplate} className="bg-purple-600">
                 <Download className="w-4 h-4 mr-2" />
                 Download Trade Show Template
               </Button>
@@ -272,7 +272,7 @@ export default function BulkImportTradeShowsPage() {
               <Button 
                 onClick={processCSVFile}
                 disabled={!selectedFile || isUploading}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-green-600"
               >
                 <Upload className="w-4 h-4 mr-2" />
                 {isUploading ? 'Processing...' : 'Import Trade Shows'}
@@ -348,7 +348,7 @@ export default function BulkImportTradeShowsPage() {
                 <Input id="country" placeholder="Country" />
               </div>
             </div>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-blue-600">
               <Calendar className="w-4 h-4 mr-2" />
               Add Trade Show
             </Button>

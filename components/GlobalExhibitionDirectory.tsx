@@ -496,7 +496,7 @@ export default function GlobalExhibitionDirectory() {
                               View Details
                             </a>
                           </Button>
-                          <Button asChild size="sm" variant="outline" className="text-gray-900 border-gray-300 hover:bg-gray-50">
+                          <Button asChild size="sm" variant="outline" className="text-gray-900 border-gray-300">
                             <a href={getBuilderSearchUrl(exhibition.country, exhibition.city)}>
                               <Building2 className="h-4 w-4 mr-2" />
                               Find Builders
@@ -755,7 +755,7 @@ export default function GlobalExhibitionDirectory() {
                           </div>
                         </div>
                         
-                        <Button asChild className="w-full group-hover:bg-gradient-to-r group-hover:from-yellow-600 group-hover:to-orange-600 transition-all">
+                        <Button asChild className="w-full transition-all">
                           <a href={`/trade-shows/${exhibition.slug}`}>
                             <Eye className="h-4 w-4 mr-2" />
                             View Exhibition
@@ -823,7 +823,7 @@ export default function GlobalExhibitionDirectory() {
                           </div>
                         </div>
                         
-                        <Button asChild className="w-full group-hover:bg-gradient-to-r group-hover:from-red-600 group-hover:to-pink-600 transition-all">
+                        <Button asChild className="w-full transition-all">
                           <a href={`/trade-shows/${exhibition.slug}`}>
                             <Eye className="h-4 w-4 mr-2" />
                             View Exhibition
@@ -902,13 +902,13 @@ export default function GlobalExhibitionDirectory() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-white text-pink-600 hover:bg-gray-100">
+            <Button asChild size="lg" className="bg-white text-pink-600">
               <a href="/builders">
                 <Building2 className="h-5 w-5 mr-2" />
                 Find Booth Builders
               </a>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-pink-600">
+            <Button asChild size="lg" variant="outline" className="border-white text-white">
               <a href="/quote">
                 <Calendar className="h-5 w-5 mr-2" />
                 Plan Your Exhibition

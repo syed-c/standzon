@@ -182,7 +182,7 @@ function BuilderContactControls({ builder, location }: { builder: Builder; locat
 
       {/* View Profile Button */}
       <Link href={`/builders/${builder.slug}`} className="block">
-        <Button variant="outline" size="sm" className="w-full text-gray-900 border-gray-300 hover:bg-gray-50 min-h-[40px]">
+        <Button variant="outline" size="sm" className="w-full text-gray-900 border-gray-300 min-h-[40px]">
           <ArrowRight className="w-3 h-3 mr-2" />
           View Profile
         </Button>

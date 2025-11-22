@@ -471,7 +471,7 @@ export function AutoGenerationSystem() {
                   <Button size="sm" variant="outline">
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700">
+                  <Button size="sm" variant="outline" className="text-green-600">
                     <BarChart3 className="h-4 w-4" />
                   </Button>
                 </div>

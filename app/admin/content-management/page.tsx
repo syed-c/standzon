@@ -388,7 +388,7 @@ export default function ContentManagementPage() {
                         className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                           selectedPage?.id === page.id
                             ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-200 hover:border-gray-300'
+                            : 'border-gray-200'
                         }`}
                         onClick={() => setSelectedPage(page)}
                       >

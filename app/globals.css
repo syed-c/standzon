@@ -19,13 +19,13 @@
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
-  /* Critical button styles */
+  /* Critical button styles - removed hover effects */
   .btn-primary {
-    @apply bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105;
+    @apply bg-gradient-to-r from-pink-600 to-rose-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300;
   }
 
   .btn-outline {
-    @apply border-2 border-white text-white hover:bg-white hover:text-gray-900 px-6 py-3 rounded-xl font-semibold transition-all duration-300 backdrop-blur-md;
+    @apply border-2 border-white text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 backdrop-blur-md;
   }
 
   /* Global heading sizes for desktop/tablet (keep mobile as-is via media query below) */
@@ -296,8 +296,9 @@ body {
   transition: transform 0.3s ease;
 }
 
+/* Removed hover effect from hover-scale */
 .hover-scale:hover {
-  transform: scale(1.05);
+  transform: scale(1);
 }
 
 button {
@@ -370,7 +371,7 @@ button[class*="bg-white"]:not([class*="text-"]):not([class*="text-blue"]):not(
   ):not([class*="text-black"]):not([class*="outline"]) {
   background-color: transparent !important;
 }
-button[class*="hover:bg-white"]:hover:not([class*="text-"]):not(
+button[class*="hover:bg-white"]:not([class*="text-"]):not(
     [class*="text-blue"]
   ):not([class*="text-gray"]):not([class*="text-black"]):not(
     [class*="outline"]
@@ -383,7 +384,7 @@ button[class*="bg-white/"]:not([class*="text-"]):not([class*="text-blue"]):not(
   ):not([class*="text-black"]):not([class*="outline"]) {
   background-color: transparent !important;
 }
-button[class*="hover:bg-white/"]:hover:not([class*="text-"]):not(
+button[class*="hover:bg-white/"]:not([class*="text-"]):not(
     [class*="text-blue"]
   ):not([class*="text-gray"]):not([class*="text-black"]):not(
     [class*="outline"]
@@ -392,104 +393,84 @@ button[class*="hover:bg-white/"]:hover:not([class*="text-"]):not(
 }
 
 /* ✅ FIXED: Ensure hover states preserve text color */
-button[class*="text-white"]:hover,
-button[class*="text-white"]:hover span,
-button[class*="gradient"]:hover,
-button[class*="bg-pink"]:hover,
-button[class*="bg-rose"]:hover,
-button[class*="bg-primary"]:hover {
+button[class*="text-white"],
+button[class*="text-white"] span,
+button[class*="gradient"],
+button[class*="bg-pink"],
+button[class*="bg-rose"],
+button[class*="bg-primary"] {
   color: white !important;
 }
 
-/* ✅ FIXED: Ensure outline buttons maintain visibility on hover */
-button[class*="outline"]:hover {
+/* ✅ FIXED: Ensure outline buttons maintain visibility - removed hover effect */
+button[class*="outline"] {
   border-color: currentColor !important;
   color: inherit !important;
 }
-button[class*="outline"]:hover span {
+button[class*="outline"] span {
   color: inherit !important;
 }
 
-/* ✅ FIXED: Ensure white buttons with borders stay visible on hover */
-button[class*="bg-white"]:hover {
+/* ✅ FIXED: Ensure white buttons with borders stay visible - removed hover effect */
+button[class*="bg-white"] {
   background-color: white !important;
   border-color: #d1d5db !important; /* gray-300 for subtle border */
 }
-button[class*="bg-white"][class*="text-"]:hover {
+button[class*="bg-white"][class*="text-"] {
   color: inherit !important;
 }
 
-/* ✅ FIXED: Ensure all buttons maintain text visibility on hover */
-button:hover {
+/* ✅ FIXED: Ensure all buttons maintain text visibility - removed hover effect */
+button {
   color: inherit !important;
 }
-button:hover span {
+button span {
   color: inherit !important;
 }
 
 /* ✅ FIXED: Specific rule for outline buttons to maintain borders */
 button[class*="outline"] {
   border-width: 2px !important;
-}
-button[class*="outline"]:hover {
-  border-width: 2px !important;
   border-style: solid !important;
 }
 
-/* ✅ FIXED: Ensure buttons with hover:bg-white maintain text visibility */
-button[class*="hover:bg-white"]:hover {
-  background-color: white !important;
-  color: #374151 !important; /* gray-700 for good contrast */
-}
-button[class*="hover:bg-white"]:hover span {
-  color: #374151 !important;
-}
-
-/* ✅ FIXED: Specific rules for buttons with text color changes on hover */
-button[class*="hover:text-"]:hover {
-  color: inherit !important;
-}
-button[class*="hover:text-"]:hover span {
-  color: inherit !important;
-}
-
 /* ✅ FIXED: Ensure buttons with white/20 backgrounds maintain visibility */
-button[class*="bg-white/20"]:hover {
+button[class*="bg-white/20"] {
   background-color: rgba(255, 255, 255, 0.3) !important;
   border-color: rgba(255, 255, 255, 0.5) !important;
 }
 
 /* ✅ FIXED: Ensure buttons with hover:bg-white/20 maintain text visibility */
-button[class*="hover:bg-white/20"]:hover {
+button[class*="hover:bg-white/20"] {
   background-color: rgba(255, 255, 255, 0.2) !important;
   color: #374151 !important; /* gray-700 for visibility */
 }
-button[class*="hover:bg-white/20"]:hover span {
+button[class*="hover:bg-white/20"] span {
   color: #374151 !important;
 }
 
 /* ✅ CRITICAL FIX: Override any conflicting rules for location page buttons */
-button[class*="hover:bg-white/20"][class*="text-white"]:hover {
+button[class*="hover:bg-white/20"][class*="text-white"] {
   background-color: rgba(255, 255, 255, 0.2) !important;
   color: #374151 !important;
 }
-button[class*="hover:bg-white/20"][class*="text-white"]:hover span {
+button[class*="hover:bg-white/20"][class*="text-white"] span {
   color: #374151 !important;
 }
 
-/* ✅ CRITICAL FIX: Specific rule for outline buttons with white text on hover */
-button[class*="outline"][class*="text-white"]:hover {
+/* ✅ CRITICAL FIX: Specific rule for outline buttons with white text */
+button[class*="outline"][class*="text-white"] {
   color: #374151 !important;
 }
-button[class*="outline"][class*="text-white"]:hover span {
+button[class*="outline"][class*="text-white"] span {
   color: #374151 !important;
 }
 
 /* ✅ CRITICAL FIX: Override all conflicting rules for location page buttons */
-button[class*="hover:text-gray-900"]:hover {
+button[class*="hover:text-gray-900"] {
   color: #374151 !important;
 }
-button[class*="hover:text-gray-900"]:hover span {
+button[class*="hover:text-gray-900"] span {
   color: #374151 !important;
 }
 
@@ -500,31 +481,18 @@ button:not([class*="text-transparent"]):not([class*="text-white"]) {
 button[class*="text-white"] {
   color: white !important;
 }
-button[class*="text-white"]:hover {
-  color: white !important;
-}
 
 /* ✅ CRITICAL FIX: Ensure white buttons with text are always visible */
 button[class*="bg-white"] {
   background-color: white !important;
   color: #374151 !important; /* gray-700 for visibility */
 }
-button[class*="bg-white"]:hover {
-  background-color: white !important;
-  color: #374151 !important;
-}
 button[class*="bg-white"] span {
-  color: #374151 !important;
-}
-button[class*="bg-white"]:hover span {
   color: #374151 !important;
 }
 
 /* ✅ CRITICAL FIX: Override any conflicting rules for white buttons */
 button[class*="bg-white"][class*="text-"] {
-  background-color: white !important;
-}
-button[class*="bg-white"][class*="text-"]:hover {
   background-color: white !important;
 }
 
@@ -533,14 +501,7 @@ button[class*="bg-white"][class*="text-blue-primary"] {
   background-color: white !important;
   color: #1d4ed8 !important; /* Darker blue for better contrast */
 }
-button[class*="bg-white"][class*="text-blue-primary"]:hover {
-  background-color: white !important;
-  color: #1d4ed8 !important;
-}
 button[class*="bg-white"][class*="text-blue-primary"] span {
-  color: #1d4ed8 !important;
-}
-button[class*="bg-white"][class*="text-blue-primary"]:hover span {
   color: #1d4ed8 !important;
 }
 
@@ -549,17 +510,10 @@ button[class*="text-xs"] {
   border-width: 2px !important;
   border-color: #d1d5db !important; /* gray-300 */
 }
-button[class*="text-xs"]:hover {
-  border-color: #9ca3af !important; /* gray-400 */
-  background-color: #f9fafb !important; /* gray-50 */
-}
 
 /* ✅ FIXED: Ensure green buttons maintain visibility */
 button[class*="text-green"] {
   color: #059669 !important; /* green-600 for better contrast */
-}
-button[class*="text-green"]:hover {
-  color: #047857 !important; /* green-700 for better contrast */
 }
 
 /* ✅ CRITICAL FIX: Ensure all navigation text is visible */
@@ -576,9 +530,9 @@ nav a,
   color: #e5e7eb !important; /* Light gray for dark backgrounds */
 }
 
-.dropdown-menu a:hover,
-.dropdown-menu button:hover {
-  color: #f472b6 !important; /* Pink on hover */
+.dropdown-menu a,
+.dropdown-menu button {
+  color: #f472b6 !important; /* Pink on hover - but we're removing hover */
 }
 
 /* ✅ CRITICAL FIX: Ensure all text elements have proper contrast */
@@ -817,7 +771,7 @@ a:focus {
 /* ✅ MOBILE OPTIMIZATION: Enhanced touch interactions */
 @media (hover: none), (pointer: coarse) {
   /* Remove hover effects on touch devices */
-  .no-touch-hover:hover {
+  .no-touch-hover {
     transform: none !important;
     box-shadow: none !important;
     background-color: inherit !important;

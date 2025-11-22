@@ -291,7 +291,7 @@ export default function FeaturedBuilders() {
 
             <div className="text-center mt-12">
               <Link href="/builders">
-                <Button variant="outline" className="px-8 py-3 text-lg border-pink-200 text-pink-700 hover:bg-pink-50">
+                <Button variant="outline" className="px-8 py-3 text-lg border-pink-200 text-pink-700">
                   View All Builders
                 </Button>
               </Link>

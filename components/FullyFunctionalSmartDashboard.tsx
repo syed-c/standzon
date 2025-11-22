@@ -610,13 +610,17 @@ function SmartOverviewEnhanced({ analytics, insights, onRefresh }: any) {
                 <TrendingUp className="h-4 w-4 mr-1" />
                 <span className="text-sm">+{((analytics?.conversionRate || 0) * 0.15).toFixed(1)}% vs last month</span>
               </div>
-              <Button className="mt-4 bg-white/20 hover:bg-white/30 border border-white/20" onClick={onRefresh}>
+              <Button className="bg-white/20 border border-white/20" onClick={onRefresh}>
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh Live Data
+                Refresh Intelligence
               </Button>
             </div>
           </div>
         </div>
+          <Button className="bg-white/20 border border-white/20" onClick={onRefresh}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh Status
+          </Button>
       </div>
 
       {/* Enhanced Live KPI Grid */}
@@ -637,7 +641,7 @@ function SmartOverviewEnhanced({ analytics, insights, onRefresh }: any) {
             <div className="mt-4 bg-white/20 rounded-full h-2">
               <div className="bg-white h-2 rounded-full w-3/4 animate-pulse"></div>
             </div>
-            <Button className="mt-4 w-full bg-white/20 hover:bg-white/30 text-white border-0 text-xs">
+            <Button className="mt-4 w-full bg-white/20 text-white border-0 text-xs">
               <ExternalLink className="h-3 w-3 mr-1" />
               View Revenue Details
             </Button>
@@ -657,7 +661,7 @@ function SmartOverviewEnhanced({ analytics, insights, onRefresh }: any) {
               </div>
               <Building className="h-8 w-8 text-blue-200" />
             </div>
-            <Button className="mt-4 w-full bg-white/20 hover:bg-white/30 text-white border-0 text-xs">
+            <Button className="mt-4 w-full bg-white/20 text-white border-0 text-xs">
               <Eye className="h-3 w-3 mr-1" />
               Manage Builders
             </Button>
@@ -677,7 +681,7 @@ function SmartOverviewEnhanced({ analytics, insights, onRefresh }: any) {
               </div>
               <MessageSquare className="h-8 w-8 text-purple-200" />
             </div>
-            <Button className="mt-4 w-full bg-white/20 hover:bg-white/30 text-white border-0 text-xs">
+            <Button className="mt-4 w-full bg-white/20 text-white border-0 text-xs">
               <Target className="h-3 w-3 mr-1" />
               Review Leads
             </Button>
@@ -697,7 +701,7 @@ function SmartOverviewEnhanced({ analytics, insights, onRefresh }: any) {
               </div>
               <Globe className="h-8 w-8 text-orange-200" />
             </div>
-            <Button className="mt-4 w-full bg-white/20 hover:bg-white/30 text-white border-0 text-xs">
+            <Button className="mt-4 w-full bg-white/20 text-white border-0 text-xs">
               <MapPin className="h-3 w-3 mr-1" />
               View Global Map
             </Button>
@@ -888,25 +892,25 @@ function SmartOverviewEnhanced({ analytics, insights, onRefresh }: any) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 h-auto p-4 flex flex-col items-center space-y-2 transition-all duration-200 hover:scale-105">
+            <Button className="bg-gradient-to-r from-blue-500 to-blue-600 h-auto p-4 flex flex-col items-center space-y-2 transition-all duration-200">
               <Plus className="h-6 w-6" />
               <span className="font-medium">Add Builder</span>
               <span className="text-xs opacity-75">High demand detected in Berlin</span>
             </Button>
             
-            <Button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 h-auto p-4 flex flex-col items-center space-y-2 transition-all duration-200 hover:scale-105">
+            <Button className="bg-gradient-to-r from-green-500 to-green-600 h-auto p-4 flex flex-col items-center space-y-2 transition-all duration-200">
               <Upload className="h-6 w-6" />
               <span className="font-medium">Bulk Import</span>
               <span className="text-xs opacity-75">Optimize workflow efficiency</span>
             </Button>
             
-            <Button className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 h-auto p-4 flex flex-col items-center space-y-2 transition-all duration-200 hover:scale-105">
+            <Button className="bg-gradient-to-r from-purple-500 to-purple-600 h-auto p-4 flex flex-col items-center space-y-2 transition-all duration-200">
               <MessageSquare className="h-6 w-6" />
               <span className="font-medium">Review Leads</span>
               <span className="text-xs opacity-75">{analytics?.totalLeads || 0} pending responses</span>
             </Button>
             
-            <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 h-auto p-4 flex flex-col items-center space-y-2 transition-all duration-200 hover:scale-105">
+            <Button className="bg-gradient-to-r from-orange-500 to-orange-600 h-auto p-4 flex flex-col items-center space-y-2 transition-all duration-200">
               <BarChart3 className="h-6 w-6" />
               <span className="font-medium">Analytics</span>
               <span className="text-xs opacity-75">New insights available</span>
@@ -2115,14 +2119,15 @@ function SmartEventsModule({ events, onRefresh }: any) {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <Button className="bg-white/20 hover:bg-white/30 border border-white/20" onClick={() => setShowAddEvent(true)}>
+            <Button className="bg-white/20 border border-white/20" onClick={() => setShowAddEvent(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Event
             </Button>
-            <Button className="bg-white/20 hover:bg-white/30 border border-white/20" onClick={onRefresh}>
+            <Button className="bg-white/20 border border-white/20" onClick={onRefresh}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Sync Events
             </Button>
+          </div>
           </div>
         </div>
       </div>
@@ -2172,9 +2177,9 @@ function SmartEventsModule({ events, onRefresh }: any) {
                   View Details
                 </Button>
                 <Button size="sm" className={`flex-1 ml-2 ${
-                  event.status === 'published' ? 'bg-green-600 hover:bg-green-700' :
-                  event.status === 'draft' ? 'bg-blue-600 hover:bg-blue-700' :
-                  'bg-yellow-600 hover:bg-yellow-700'
+                  event.status === 'published' ? 'bg-green-600' :
+                  event.status === 'draft' ? 'bg-blue-600' :
+                  'bg-yellow-600'
                 }`}>
                   {event.status === 'published' ? 'Published' :
                    event.status === 'draft' ? 'Publish' : 'Review'}
@@ -2717,11 +2722,11 @@ function AIInsightsModule({ insights, onRefresh }: any) {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <Button className="bg-white/20 hover:bg-white/30 border border-white/20" onClick={generateNewInsights}>
+            <Button className="bg-white/20 border border-white/20" onClick={generateNewInsights}>
               <Brain className="h-4 w-4 mr-2" />
               Generate Insights
             </Button>
-            <Button className="bg-white/20 hover:bg-white/30 border border-white/20" onClick={onRefresh}>
+            <Button className="bg-white/20 border border-white/20" onClick={onRefresh}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
@@ -2790,7 +2795,7 @@ function AIInsightsModule({ insights, onRefresh }: any) {
                 <div className="flex items-center space-x-2">
                   <Button 
                     size="sm" 
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-blue-600"
                   >
                     <Send className="h-3 w-3 mr-1" />
                     Take Action
@@ -3072,7 +3077,7 @@ function SmartLeadsModule({ leads, builders, onRefresh }: any) {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <Button className="bg-white/20 hover:bg-white/30 border border-white/20">
+            <Button className="bg-white/20 border border-white/20">
               <Download className="h-4 w-4 mr-2" />
               Export Leads
             </Button>

@@ -255,7 +255,7 @@ function BuildersManagementClient() {
       {/* Builders Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {filteredBuilders.map((builder) => (
-          <Card key={builder.id} className="hover:shadow-lg transition-shadow">
+          <Card key={builder.id} className="transition-shadow">
             {editingBuilderId === builder.id ? (
               // Edit mode
               <CardContent className="space-y-4 pt-6">
@@ -458,7 +458,7 @@ function BuildersManagementClient() {
                         href={builder.website} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline truncate"
+                        className="text-blue-600 truncate"
                       >
                         {builder.website}
                       </a>
@@ -503,7 +503,7 @@ function BuildersManagementClient() {
                       size="sm" 
                       variant="outline" 
                       onClick={() => handleDelete(builder.id, builder.company_name)}
-                      className="text-red-600 hover:text-red-700"
+                      className="text-red-600"
                       disabled={deletingId === builder.id}
                     >
                       {deletingId === builder.id ? (

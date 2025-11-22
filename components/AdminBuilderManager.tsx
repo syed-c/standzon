@@ -262,7 +262,7 @@ export default function AdminBuilderManager() {
           </Button>
           <Dialog open={isBulkUploadOpen} onOpenChange={setIsBulkUploadOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button className="bg-blue-600 text-white">
                 <Upload className="w-4 h-4 mr-2" />
                 Bulk Upload
               </Button>
@@ -622,7 +622,7 @@ export default function AdminBuilderManager() {
                 <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={saveBuilderChanges} className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button onClick={saveBuilderChanges} className="bg-blue-600 text-white">
                   Save Changes
                 </Button>
               </div>

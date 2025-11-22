@@ -524,7 +524,7 @@ export default function QuoteRequestContent() {
                         >
                           View Profile
                         </Button>
-                        <Button size="sm" className="bg-blue-primary hover:bg-blue-dark">
+                        <Button size="sm" className="bg-blue-primary">
                           Contact Now
                         </Button>
                       </div>

@@ -140,10 +140,10 @@ export default function HannoverMesse2025() {
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button className="bg-blue-primary hover:bg-blue-dark text-white px-8 py-4 text-lg">
+                <Button className="bg-blue-primary text-white px-8 py-4 text-lg">
                   Get Stand Quote
                 </Button>
-                <Button variant="outline" className="border-white text-white hover:bg-white hover:text-navy-900 px-8 py-4 text-lg">
+                <Button variant="outline" className="border-white text-white px-8 py-4 text-lg">
                   Download Brochure
                 </Button>
               </div>
@@ -248,7 +248,7 @@ export default function HannoverMesse2025() {
                     ))}
                   </ul>
                   <Button 
-                    className={`w-full ${option.popular ? 'bg-blue-primary hover:bg-blue-dark text-white' : 'border-blue-primary text-blue-primary hover:bg-blue-primary hover:text-white'}`}
+                    className={`w-full ${option.popular ? 'bg-blue-primary text-white' : 'border-blue-primary text-blue-primary'}`}
                     variant={option.popular ? "default" : "outline"}
                   >
                     Get Quote
@@ -295,7 +295,7 @@ export default function HannoverMesse2025() {
                 </div>
               </div>
               <Link href="/contact">
-                <Button className="bg-blue-primary hover:bg-blue-dark text-white px-8 py-4 text-lg">
+                <Button className="bg-blue-primary text-white px-8 py-4 text-lg">
                   Get Your Stand Quote <FiArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
@@ -345,12 +345,12 @@ export default function HannoverMesse2025() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/contact">
-              <Button className="bg-white text-blue-primary hover:bg-gray-100 px-8 py-4 text-lg">
+              <Button className="bg-white text-blue-primary px-8 py-4 text-lg">
                 Get Free Quote
               </Button>
             </Link>
             <Link href="/exhibition-stands/germany/hannover">
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-primary px-8 py-4 text-lg">
+              <Button variant="outline" className="border-white text-white px-8 py-4 text-lg">
                 View Hannover Contractors
               </Button>
             </Link>

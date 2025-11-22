@@ -666,7 +666,7 @@ export function LocationPageEditor({ pageData, isVisible, onClose, onSave }: Loc
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={handleSave} disabled={isSaving} className="bg-blue-600">
               {isSaving ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>

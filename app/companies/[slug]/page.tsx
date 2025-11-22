@@ -174,7 +174,7 @@ export default async function CompanyProfile({ params }: Props) {
                       <FiGlobe className="text-blue-primary" />
                       <span className="text-white">{company.contact.website}</span>
                     </div>
-                    <Button className="w-full bg-blue-primary hover:bg-blue-dark text-white mt-4">
+                    <Button className="w-full bg-blue-primary text-white mt-4">
                       Request Free Quote
                     </Button>
                   </div>
@@ -280,10 +280,10 @@ export default async function CompanyProfile({ params }: Props) {
             Our team is ready to bring your vision to life.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-white text-blue-primary hover:bg-gray-100 px-8 py-4 text-lg">
+            <Button className="bg-white text-blue-primary px-8 py-4 text-lg">
               Request Free Quote
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-blue-primary px-8 py-4 text-lg">
+            <Button variant="outline" className="border-white text-white px-8 py-4 text-lg">
               View More Projects
             </Button>
           </div>

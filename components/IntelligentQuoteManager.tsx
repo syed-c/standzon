@@ -368,11 +368,11 @@ export default function IntelligentQuoteManager({ adminMode = false, clientView 
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-white">
+          <Button variant="outline" className="border-primary-blue text-primary-blue">
             <FiSettings className="w-4 h-4 mr-2" />
             Preferences
           </Button>
-          <Button className="bg-primary-blue hover:bg-blue-dark text-white">
+          <Button className="bg-primary-blue text-white">
             <FiZap className="w-4 h-4 mr-2" />
             Auto-Match All
           </Button>
@@ -542,7 +542,7 @@ export default function IntelligentQuoteManager({ adminMode = false, clientView 
                     </Button>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button size="sm" className="bg-primary-blue hover:bg-blue-dark text-white">
+                        <Button size="sm" className="bg-primary-blue text-white">
                           <FiEye className="w-4 h-4 mr-2" />
                           View Details
                         </Button>
@@ -834,7 +834,7 @@ function BuilderMatchesView({ matches, quote }: { matches: BuilderMatch[]; quote
                     View Profile
                   </Button>
                 </Link>
-                <Button size="sm" className="bg-primary-blue hover:bg-blue-dark text-white">
+                <Button size="sm" className="bg-primary-blue text-white">
                   <FiSend className="w-4 h-4 mr-2" />
                   Send Quote Request
                 </Button>

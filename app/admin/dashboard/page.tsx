@@ -56,7 +56,7 @@ export default function SmartAdminDashboardPage() {
             <h2 className="text-lg font-semibold text-gray-900">Consolidated Budget</h2>
             <div className="flex items-center gap-2">
               {['D','W','M','Y','Custom'].map(x => (
-                <button key={x} className="px-2.5 py-1 rounded-lg text-sm bg-gray-100 hover:bg-gray-200 text-gray-800">{x}</button>
+                <button key={x} className="px-2.5 py-1 rounded-lg text-sm bg-gray-100 text-gray-800">{x}</button>
               ))}
             </div>
           </div>
@@ -74,10 +74,10 @@ export default function SmartAdminDashboardPage() {
             <h2 className="text-lg font-semibold text-gray-900">All deals</h2>
             <div className="flex items-center gap-2">
               {['Filter','Sort','Search'].map(x => (
-                <button key={x} className="px-2.5 py-1.5 rounded-lg text-sm bg-gray-100 hover:bg-gray-200 text-gray-800">{x}</button>
+                <button key={x} className="px-2.5 py-1.5 rounded-lg text-sm bg-gray-100 text-gray-800">{x}</button>
               ))}
-              <button className="px-3 py-1.5 rounded-lg text-sm bg-gray-100 hover:bg-gray-200 text-gray-900">Export</button>
-              <button className="px-3 py-1.5 rounded-lg text-sm bg-indigo-600 text-white hover:bg-indigo-700">Add New</button>
+              <button className="px-3 py-1.5 rounded-lg text-sm bg-gray-100 text-gray-900">Export</button>
+              <button className="px-3 py-1.5 rounded-lg text-sm bg-indigo-600 text-white">Add New</button>
             </div>
           </div>
           <div className="p-6">
@@ -93,7 +93,7 @@ export default function SmartAdminDashboardPage() {
                 <tbody>
                   {/* Placeholder rows to preserve layout only; real data lives in existing admin pages */}
                   {[1,2,3].map(i => (
-                    <tr key={i} className="border-t border-gray-100 hover:bg-gray-50">
+                    <tr key={i} className="border-t border-gray-100">
                       <td className="py-3 pr-6">0{i}</td>
                       <td className="py-3 pr-6">Sample Deal {i}</td>
                       <td className="py-3 pr-6">Contact {i}</td>

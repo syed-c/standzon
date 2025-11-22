@@ -194,7 +194,7 @@ export default function VenueManagementSummary() {
                 { name: 'Dubai World Trade Centre', city: 'Dubai', country: 'UAE', capacity: '580,000 sqft', ranking: 'Middle East Hub' },
                 { name: 'ExCeL London', city: 'London', country: 'United Kingdom', capacity: '100,000 sqm', ranking: 'Europe Premier' }
               ].map((venue, index) => (
-                <Card key={index} className="hover:shadow-lg transition-all duration-300">
+                <Card key={index} className="transition-all duration-300">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg">{venue.name}</CardTitle>
                     <CardDescription className="flex items-center">

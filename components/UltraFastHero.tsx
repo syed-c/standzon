@@ -30,7 +30,7 @@ const UltraFastHero = memo(function UltraFastHero({
 }: UltraFastHeroProps) {
   // Map CMS value to static Tailwind classes so they are not purged
   const headingFontClass = headingFont ? getFontClass(headingFont as any) : undefined;
-  const heroBtnClass = "inline-flex items-center justify-center gap-2 px-6 py-3 text-white font-semibold border border-white/80 rounded-full bg-gradient-to-r from-[#E11D74] to-[#F1558E] hover:from-[#F1558E] hover:to-[#E11D74] hover:scale-105 active:from-[#C31860] active:to-[#E44080] transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300";
+  const heroBtnClass = "inline-flex items-center justify-center gap-2 px-6 py-3 text-white font-semibold border border-white/80 rounded-full bg-gradient-to-r from-[#E11D74] to-[#F1558E] active:from-[#C31860] active:to-[#E44080] transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300";
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* ✅ PERFORMANCE: CSS-only gradient background (no images) */}
