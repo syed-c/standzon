@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { GLOBAL_EXHIBITION_DATA } from '@/lib/data/globalCities';
 
 // Define the base URL for the site
-const BASE_URL = 'https://standzon.com';
+const BASE_URL = 'https://standszone.com';
 
 // Helper function to generate XML sitemap
 function generateSitemapXml(): string {
