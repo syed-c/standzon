@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://standzon.com/api/sitemap
+Sitemap: https://standszone.com/api/sitemap
 
 # Prevent crawling of admin pages
 Disallow: /admin/
