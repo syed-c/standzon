@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://standzon.com/api/sitemap
+
+# Prevent crawling of admin pages
+Disallow: /admin/
+
+# Prevent crawling of API endpoints
+Disallow: /api/
+
+# Prevent crawling of sensitive authentication pages
+Disallow: /auth/
+
+# Prevent crawling of debug pages
+Disallow: /debug/
+
+# Prevent crawling of quote request pages to prevent spam
+Disallow: /quote/
