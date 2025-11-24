@@ -16,6 +16,7 @@ export default function RecentLeadsSection({
 
   const [displayLeads, setDisplayLeads] = useState<any[]>([]);
   const [isUsingMockData, setIsUsingMockData] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Try to fetch real leads data from Supabase
   const [recentLeads, setRecentLeads] = useState<any[]>([]);
@@ -23,19 +24,23 @@ export default function RecentLeadsSection({
   useEffect(() => {
     const fetchLeads = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch('/api/leads/recent?limit=10');
         if (response.ok) {
           const data = await response.json();
           if (data.success && Array.isArray(data.data)) {
             setRecentLeads(data.data);
+            setIsLoading(false);
             return;
           }
         }
         // If API fails, use mock data
         setRecentLeads([]);
+        setIsLoading(false);
       } catch (error) {
         console.log("⚠️ Supabase query failed, using mock data:", error);
         setRecentLeads([]);
+        setIsLoading(false);
       }
     };
     
@@ -147,15 +152,27 @@ export default function RecentLeadsSection({
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Open":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "Matched":
+    switch (status.toLowerCase()) {
+      case "new":
         return "bg-blue-100 text-blue-800 border-blue-200";
-      case "Responded":
+      case "assigned":
         return "bg-purple-100 text-purple-800 border-purple-200";
-      case "Closed":
+      case "contacted":
+        return "bg-indigo-100 text-indigo-800 border-indigo-200";
+      case "quoted":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "converted":
+        return "bg-teal-100 text-teal-800 border-teal-200";
+      case "lost":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "cancelled":
         return "bg-gray-100 text-gray-800 border-gray-200";
+      case "open":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "matched":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "responded":
+        return "bg-purple-100 text-purple-800 border-purple-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
@@ -180,17 +197,22 @@ export default function RecentLeadsSection({
           </svg>
         </div>
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          Live Lead Activity
+          Recent Leads & Quotes
         </h2>
         <p className="text-xl text-gray-600 mb-2">
-          Real exhibition stand requests from clients worldwide
+          Real exhibition stand requests and quotes from clients worldwide
         </p>
         <p className="text-sm text-emerald-600 font-medium">
           ✨ Updated in real-time • Join now to access these leads
         </p>
-        {isUsingMockData && (
+        {isLoading && (
           <p className="text-xs text-gray-500 mt-1">
-            (Demo data - connecting to live system...)
+            (Loading real data...)
+          </p>
+        )}
+        {!isLoading && isUsingMockData && (
+          <p className="text-xs text-gray-500 mt-1">
+            (Demo data - no real leads available yet)
           </p>
         )}
       </div>
@@ -199,7 +221,7 @@ export default function RecentLeadsSection({
         {/* Header */}
         <div className="px-3 md:px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-600">
           <div className="grid grid-cols-4 gap-1 md:gap-2 text-xs font-semibold text-white">
-            <div className="truncate">Exhibition</div>
+            <div className="truncate">Event/Request</div>
             <div className="truncate">Size</div>
             <div className="truncate">Budget</div>
             <div className="truncate">Date</div>
@@ -219,7 +241,7 @@ export default function RecentLeadsSection({
                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse mt-1 flex-shrink-0"></div>
                     <div className="min-w-0 flex-1">
                       <div className="font-semibold text-gray-900 group-hover:text-emerald-700 transition-colors truncate text-xs md:text-sm">
-                        {lead.exhibitionName}
+                        {lead.exhibitionName || lead.trade_show_name || 'Event Not Specified'}
                       </div>
                       {lead.status && (
                         <span
@@ -232,13 +254,13 @@ export default function RecentLeadsSection({
                   </div>
                 </div>
                 <div className="text-gray-700 text-xs truncate">
-                  {lead.standSize}
+                  {lead.standSize || `${lead.stand_size || 'N/A'} sqm`}
                 </div>
                 <div className="text-gray-700 text-xs truncate">
-                  {lead.budget}
+                  {lead.budget || 'Budget not specified'}
                 </div>
                 <div className="text-gray-500 text-xs truncate">
-                  {formatDate(lead.submittedAt)}
+                  {formatDate(lead.submittedAt || new Date(lead.created_at).getTime())}
                 </div>
               </div>
             </div>
@@ -250,11 +272,11 @@ export default function RecentLeadsSection({
       <div className="mt-6">
         <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-4 md:p-6 text-white">
           <h3 className="text-lg md:text-xl font-bold mb-2">
-            {ctaHeading || "Ready to Access These Leads?"}
+            {ctaHeading || "Ready to Access These Leads & Quotes?"}
           </h3>
           <p className="text-emerald-100 mb-4 text-sm md:text-base">
             {ctaParagraph ||
-              "Join our platform as a verified builder and start receiving qualified leads like these"}
+              "Join our platform as a verified builder and start receiving qualified leads and quote requests like these"}
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             {(ctaButtons && ctaButtons.length > 0

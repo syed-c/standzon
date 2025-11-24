@@ -265,84 +265,74 @@ export default function QuoteRequestContent() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsSubmitting(true);
-    console.log("Submitting quote request:", formData);
-    
+    setUploadError('');
+
     try {
-      // Get trade show details for city and country
-      const selectedShow = realExhibitions.find(show => show.slug === formData.tradeShow);
-      const tradeShowName = formData.isCustomTradeShow ? 
-        formData.customTradeShowName : 
-        (selectedShow?.name || formData.tradeShow);
-      
       // Prepare form data for submission
       const submissionData = {
-        // Contact Information
-        companyName: formData.companyName,
-        contactPerson: formData.contactPerson,
-        contactEmail: formData.contactEmail,
-        contactPhone: formData.contactPhone,
-        
-        // Event Information  
-        exhibitionName: tradeShowName,
-        eventDate: selectedShow?.startDate,
-        venue: selectedShow?.venue?.name || 'TBD',
-        city: formData.city,
-        country: formData.country,
-        location: { city: formData.city, country: formData.country },
-        isCustomTradeShow: formData.isCustomTradeShow,
-        
-        // Stand Requirements
-        standSize: formData.standSize,
-        budget: formData.budget, // This will now be properly saved
-        timeline: formData.timeline,
-        standType: formData.standType,
-        
-        // Additional Requirements
-        message: formData.specialRequests,
-        needsInstallation: formData.needsInstallation,
-        needsTransportation: formData.needsTransportation,
-        needsStorage: formData.needsStorageAfter,
-        needsAVEquipment: formData.needsAVEquipment,
-        needsLighting: formData.needsLighting,
-        needsFurniture: formData.needsFurniture,
-        needsGraphics: formData.needsGraphics,
-        hasExistingDesign: formData.hasExistingDesign,
-        
-        // File attachments info
-        designFilesCount: formData.designFiles.length,
-        designFileNames: formData.designFiles.map(f => f.name),
-        
-        // Source tracking
+        ...formData,
+        // Add any additional fields needed for the database
         source: 'website_quote_form',
-        utmSource: 'organic',
-        utmMedium: 'website'
+        status: 'Open',
+        priority: 'Standard'
       };
 
-      console.log('📤 Submitting enhanced quote data:', submissionData);
-      
-      // Submit to the API endpoint
-      const response = await fetch('/api/leads/submit', {
+      // Submit to API
+      const response = await fetch('/api/quote-requests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(submissionData)
+        body: JSON.stringify(submissionData),
       });
-      
+
+      if (!response.ok) {
+        throw new Error('Failed to submit quote request');
+      }
+
       const result = await response.json();
       
       if (result.success) {
-        console.log('✅ Quote submitted successfully:', result);
-        setShowMatches(true);
+        toast.success('Quote request submitted successfully! We will contact you shortly.');
+        // Reset form
+        setFormData({
+          country: '',
+          city: '',
+          tradeShow: '',
+          customTradeShowName: '',
+          isCustomTradeShow: false,
+          standSize: 50,
+          budget: '',
+          timeline: '',
+          companyName: '',
+          contactPerson: '',
+          contactEmail: '',
+          contactPhone: '',
+          countryCode: '+1',
+          industry: '',
+          standType: [],
+          specialRequests: '',
+          hasExistingDesign: false,
+          needsStorageAfter: false,
+          needsInstallation: true,
+          needsTransportation: false,
+          needsAVEquipment: false,
+          needsLighting: true,
+          needsFurniture: false,
+          needsGraphics: true,
+          designFiles: []
+        });
+        // Move to success step or redirect
+        setCurrentStep(4);
       } else {
-        throw new Error(result.message || 'Submission failed');
+        throw new Error(result.error || 'Failed to submit quote request');
       }
-      
     } catch (error) {
-      console.error('❌ Quote submission failed:', error);
-      alert('Failed to submit quote request. Please try again.');
+      console.error('Error submitting quote request:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to submit quote request. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -561,30 +551,54 @@ export default function QuoteRequestContent() {
   }
 
   return (
-    <div className="font-inter min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50">
       <Navigation />
-      
-      {/* Trade Shows style banner */}
-      <TradeStyleBanner
-        badgeText="Professional Trade Show Database"
-        mainHeading="Request Exhibition Stand Quote"
-        highlightHeading="& Get Matched Fast"
-        description="Get matched with verified builders who specialize in your trade show and industry."
-        stats={[
-          { icon: 'calendar', value: '24-48h', label: 'Response Time' },
-          { icon: 'map-pin', value: '40+', label: 'Countries' },
-          { icon: 'users', value: '3-5', label: 'Proposals' },
-          { icon: 'chart-line', value: '100%', label: 'Free Quotes' }
-        ]}
-        showSearch={false}
+      <TradeStyleBanner 
+        title="Request a Quote" 
+        subtitle="Get a customized quote for your exhibition stand needs" 
       />
+      
+      <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 to-emerald-600 p-6 text-white">
+            <h1 className="text-2xl md:text-3xl font-bold">Exhibition Stand Quote Request</h1>
+            <p className="text-blue-100 mt-2">
+              Tell us about your exhibition needs and we'll provide a customized quote
+            </p>
+          </div>
+          
+          <div className="p-6">
+            {/* Progress indicator */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-2">
+                {[1, 2, 3, 4].map((step) => (
+                  <div key={step} className="flex flex-col items-center">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      currentStep >= step 
+                        ? 'bg-emerald-500 text-white' 
+                        : 'bg-gray-200 text-gray-500'
+                    }`}>
+                      {step}
+                    </div>
+                    <span className="text-xs mt-1 text-gray-600">
+                      {step === 1 && 'Event'}
+                      {step === 2 && 'Company'}
+                      {step === 3 && 'Details'}
+                      {step === 4 && 'Submit'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-emerald-500 h-2 rounded-full transition-all duration-300" 
+                  style={{ width: `${(currentStep - 1) * 33.33}%` }}
+                ></div>
+              </div>
+            </div>
 
-      {/* Form Content */}
-      <section className="py-16">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Card>
-            <CardContent className="p-8">
-              {/* Step 1: Event Information */}
+            {/* Form steps */}
+            <form onSubmit={handleSubmit}>
               {currentStep === 1 && (
                 <div className="space-y-6">
                   <div className="text-center mb-6">
@@ -734,7 +748,6 @@ export default function QuoteRequestContent() {
                 </div>
               )}
 
-              {/* Step 2: Company Information */}
               {currentStep === 2 && (
                 <div className="space-y-6">
                   <div className="text-center mb-6">
@@ -824,7 +837,6 @@ export default function QuoteRequestContent() {
                 </div>
               )}
 
-              {/* Step 3: Stand Requirements */}
               {currentStep === 3 && (
                 <div className="space-y-6">
                   <div className="text-center mb-6">
@@ -979,118 +991,46 @@ export default function QuoteRequestContent() {
                 </div>
               )}
 
-              {/* Step 4: Additional Services */}
               {currentStep === 4 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-navy-900 mb-2">Additional Services</h2>
-                    <p className="text-gray-600">Select any additional services you might need</p>
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <FiCheckCircle className="w-8 h-8 text-emerald-600" />
                   </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="needsAVEquipment"
-                        checked={formData.needsAVEquipment}
-                        onCheckedChange={(checked) => updateFormData('needsAVEquipment', checked)}
-                      />
-                      <Label htmlFor="needsAVEquipment" className="text-sm cursor-pointer">
-                        Audio/Visual Equipment
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="needsLighting"
-                        checked={formData.needsLighting}
-                        onCheckedChange={(checked) => updateFormData('needsLighting', checked)}
-                      />
-                      <Label htmlFor="needsLighting" className="text-sm cursor-pointer">
-                        Professional Lighting
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="needsFurniture"
-                        checked={formData.needsFurniture}
-                        onCheckedChange={(checked) => updateFormData('needsFurniture', checked)}
-                      />
-                      <Label htmlFor="needsFurniture" className="text-sm cursor-pointer">
-                        Furniture & Seating
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="needsGraphics"
-                        checked={formData.needsGraphics}
-                        onCheckedChange={(checked) => updateFormData('needsGraphics', checked)}
-                      />
-                      <Label htmlFor="needsGraphics" className="text-sm cursor-pointer">
-                        Graphics & Printing
-                      </Label>
-                    </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Quote Request Submitted!</h2>
+                  <p className="text-gray-600 mb-6">
+                    Thank you for your quote request. Our team will review your requirements and contact you within 24 hours.
+                  </p>
+                  <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                    <h3 className="font-semibold text-blue-900 mb-2">What happens next?</h3>
+                    <ul className="text-sm text-blue-800 text-left space-y-1">
+                      <li className="flex items-start">
+                        <FiCheckCircle className="w-4 h-4 mt-0.5 mr-2 flex-shrink-0" />
+                        We'll review your requirements and match you with suitable builders
+                      </li>
+                      <li className="flex items-start">
+                        <FiCheckCircle className="w-4 h-4 mt-0.5 mr-2 flex-shrink-0" />
+                        You'll receive personalized quotes from multiple verified builders
+                      </li>
+                      <li className="flex items-start">
+                        <FiCheckCircle className="w-4 h-4 mt-0.5 mr-2 flex-shrink-0" />
+                        Compare quotes and select the best option for your needs
+                      </li>
+                    </ul>
                   </div>
-
-                  <Card className="bg-blue-50 border-blue-200">
-                    <CardContent className="pt-6">
-                      <div className="flex items-start gap-3">
-                        <FiInfo className="w-5 h-5 text-blue-primary mt-0.5 flex-shrink-0" />
-                        <div>
-                          <h4 className="font-medium text-navy-900 mb-1">What happens next?</h4>
-                          <ul className="text-sm text-gray-700 space-y-1">
-                            <li>• We'll match you with 3-5 builders who specialize in your requirements</li>
-                            <li>• Builders will contact you within 24 hours with initial quotes</li>
-                            <li>• You can compare proposals and choose the best fit</li>
-                            <li>• All quotes are completely free with no obligation</li>
-                            <li>• Your uploaded files will be shared only with matched builders</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <Button 
+                    type="button" 
+                    onClick={() => router.push('/')}
+                    className="bg-emerald-600 hover:bg-emerald-700"
+                  >
+                    Return to Home
+                  </Button>
                 </div>
               )}
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-between pt-6 border-t">
-                <Button
-                  variant="outline"
-                  onClick={prevStep}
-                  disabled={currentStep === 1}
-                >
-                  Previous
-                </Button>
-                
-                {currentStep < 4 ? (
-                  <Button
-                    onClick={nextStep}
-                    disabled={!isStepValid(currentStep)}
-                    className="bg-blue-primary hover:bg-blue-dark"
-                  >
-                    Next Step
-                    <FiArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={isSubmitting || !isStepValid(currentStep)}
-                    className="bg-green-500 hover:bg-green-600"
-                  >
-                    {isSubmitting ? (
-                      'Submitting...'
-                    ) : (
-                      <>
-                        <FiSend className="w-4 h-4 mr-2" />
-                        Submit Quote Request
-                      </>
-                    )}
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+            </form>
+          </div>
         </div>
-      </section>
-
+      </div>
+      
       <Footer />
       <WhatsAppFloat />
     </div>
