@@ -71,6 +71,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth h-full m-0 p-0" suppressHydrationWarning>
         <head>
+          {/* ✅ FAVICON: Add favicon */}
+          <link rel="icon" type="image/png" href="/favicon.png" />
+          
           {/* ✅ PWA: Add manifest for installable app */}
           <link rel="manifest" href="/manifest.json" />
           
