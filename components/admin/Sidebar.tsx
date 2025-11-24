@@ -29,6 +29,7 @@ const sections: Section[] = [
     items: [
       { label: 'Dashboard', href: '/admin/dashboard' },
       { label: 'Pages Editor', href: '/admin/pages-editor' },
+      { label: 'Portfolio', href: '/admin/portfolio' },
       { label: 'Builders', href: '/admin/builders' },
       { label: 'Leads', href: '/admin/leads' },
       { label: 'Users', href: '/admin/users' },

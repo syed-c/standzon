@@ -81,7 +81,7 @@ export default function AdminPagesEditor() {
   const [typography, setTypography] = useState<any>({ headingFont: '' });
   const { toast } = useToast();
 
-  // Quick Gallery Editors state
+  // Quick Gallery Editors state (needed for gallery sections within city/country page editors)
   const [countryOptions, setCountryOptions] = useState<Array<{ slug: string; name: string }>>([]);
   const [cityOptionsByCountry, setCityOptionsByCountry] = useState<Record<string, Array<{ slug: string; name: string }>>>({});
   const [selectedCountryForGallery, setSelectedCountryForGallery] = useState<string>('');
@@ -94,6 +94,41 @@ export default function AdminPagesEditor() {
   const [cityGalleryText, setCityGalleryText] = useState<string>('');
   const [loadingCityGallery, setLoadingCityGallery] = useState<boolean>(false);
   const [savingCityGallery, setSavingCityGallery] = useState<boolean>(false);
+
+  // Load country/city options once for gallery managers
+  useEffect(() => {
+    (async () => {
+      try {
+        const mod = await import('@/lib/data/globalCities');
+        // Ensure all countries are included, even those without major cities listed
+        const countries = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).map((c: any, index: number) => ({ 
+          slug: c.slug, 
+          name: c.name, 
+          index 
+        }));
+        
+        // Build city options by country, including countries with no cities listed
+        const cities: Record<string, Array<{ slug: string; name: string }>> = {};
+        
+        // Initialize all countries with empty arrays
+        countries.forEach(country => {
+          cities[country.slug] = [];
+        });
+        
+        // Populate cities for countries that have them
+        (mod.GLOBAL_EXHIBITION_DATA?.cities || []).forEach((city: any) => {
+          const country = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).find((c: any) => c.name === city.country);
+          if (country && cities[country.slug]) {
+            cities[country.slug].push({ slug: city.slug, name: city.name });
+          }
+        });
+        
+        setCountryOptions(countries);
+        setCityOptionsByCountry(cities);
+      } catch (error) {
+      }
+    })();
+  }, []);
 
   const loadPages = async () => {
     setLoading(true);
@@ -159,40 +194,7 @@ export default function AdminPagesEditor() {
       }).catch(()=>{});
   }, []);
 
-  // Load country/city options once for gallery managers
-  useEffect(() => {
-    (async () => {
-      try {
-        const mod = await import('@/lib/data/globalCities');
-        // Ensure all countries are included, even those without major cities listed
-        const countries = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).map((c: any, index: number) => ({ 
-          slug: c.slug, 
-          name: c.name, 
-          index 
-        }));
-        
-        // Build city options by country, including countries with no cities listed
-        const cities: Record<string, Array<{ slug: string; name: string }>> = {};
-        
-        // Initialize all countries with empty arrays
-        countries.forEach(country => {
-          cities[country.slug] = [];
-        });
-        
-        // Populate cities for countries that have them
-        (mod.GLOBAL_EXHIBITION_DATA?.cities || []).forEach((city: any) => {
-          const country = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).find((c: any) => c.name === city.country);
-          if (country && cities[country.slug]) {
-            cities[country.slug].push({ slug: city.slug, name: city.name });
-          }
-        });
-        
-        setCountryOptions(countries);
-        setCityOptionsByCountry(cities);
-      } catch (error) {
-      }
-    })();
-  }, []);
+
 
   const loadCountryGallery = async () => {
     if (!selectedCountryForGallery) return;
@@ -274,7 +276,8 @@ export default function AdminPagesEditor() {
       const res = await fetch(`/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(path)}`, { cache: 'no-store' });
       const j = await res.json();
       const key = `${selectedCountryForCityGallery}-${selectedCityForGallery}`;
-      const images = (j?.data?.sections?.cityPages?.[key]?.galleryImages || []) as string[];
+      // For city pages, gallery images are nested under countryPages
+      const images = (j?.data?.sections?.cityPages?.[key]?.countryPages?.[selectedCityForGallery]?.galleryImages || []) as string[];
       setCityGalleryText(Array.isArray(images) ? images.join('\n') : '');
     } catch {
       setCityGalleryText('');
@@ -301,6 +304,18 @@ export default function AdminPagesEditor() {
       const key = `${selectedCountryForCityGallery}-${selectedCityForGallery}`;
       const urls = cityGalleryText.split('\n').map(u => u.trim()).filter(Boolean);
       
+      // For city pages, we need to structure the data with a nested countryPages object
+      const cityData = {
+        ...currentContent.data.sections?.cityPages?.[key],
+        countryPages: {
+          ...currentContent.data.sections?.cityPages?.[key]?.countryPages,
+          [selectedCityForGallery]: {
+            ...(currentContent.data.sections?.cityPages?.[key]?.countryPages?.[selectedCityForGallery] || {}),
+            galleryImages: urls
+          }
+        }
+      };
+      
       const res = await fetch('/api/admin/pages-editor', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -314,10 +329,7 @@ export default function AdminPagesEditor() {
             ...currentContent.data.sections,
             cityPages: { 
               ...currentContent.data.sections?.cityPages,
-              [key]: { 
-                ...currentContent.data.sections?.cityPages?.[key],
-                galleryImages: urls 
-              } 
+              [key]: cityData
             } 
           }
         })
@@ -1034,119 +1046,7 @@ export default function AdminPagesEditor() {
         </div>
       </div>
 
-      {/* Quick Gallery Managers */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* Country Gallery Editor */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Country Gallery Manager</CardTitle>
-            <CardDescription>Add or update gallery images for a specific country page.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <Label>Select Country</Label>
-              <Select value={selectedCountryForGallery} onValueChange={(v)=>setSelectedCountryForGallery(v)}>
-                <SelectTrigger className="w-full"><SelectValue placeholder="Choose a country" /></SelectTrigger>
-                <SelectContent className="max-h-80">
-                  {countryOptions.map((c, index) => (
-                    <SelectItem key={`country-${c.slug}-${index}`} value={c.slug}>{c.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" onClick={loadCountryGallery} disabled={!selectedCountryForGallery || loadingCountryGallery}>
-                  {loadingCountryGallery ? 'Loading…' : 'Load Images'}
-                </Button>
-              </div>
-              <Label className="mt-2">Image URLs (one per line)</Label>
-              <Textarea rows={8} value={countryGalleryText} onChange={(e)=>setCountryGalleryText(e.target.value)} placeholder="https://example.com/1.jpg\nhttps://example.com/2.jpg" />
-              <div className="flex items-center gap-3">
-                <input type="file" accept="image/*" onChange={async (e)=>{
-                  const f = e.target.files?.[0];
-                  if (!f) return;
-                  const fd = new FormData();
-                  fd.append('file', f);
-                  fd.append('scope', `countries/${selectedCountryForGallery||'general'}`);
-                  const res = await fetch('/api/admin/gallery-upload', { method: 'POST', body: fd });
-                  const j = await res.json();
-                  if (j?.success && j.url) {
-                    setCountryGalleryText((prev)=> (prev? prev+"\n":"") + j.url);
-                    toast({ title: 'Uploaded', description: 'Image added to country gallery.' });
-                  } else {
-                    toast({ title: 'Upload failed', description: j?.error||'Could not upload', variant: 'destructive' as any });
-                  }
-                }} />
-                <span className="text-xs text-gray-500">Upload to Supabase Storage</span>
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={saveCountryGallery} disabled={!selectedCountryForGallery || savingCountryGallery}>{savingCountryGallery ? 'Saving…' : 'Save Country Gallery'}</Button>
-                <Button variant="outline" onClick={()=>setCountryGalleryText('')}>Clear</Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* City Gallery Editor */}
-        <Card>
-          <CardHeader>
-            <CardTitle>City Gallery Manager</CardTitle>
-            <CardDescription>Add or update gallery images for a specific city page.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <Label>Select Country</Label>
-              <Select value={selectedCountryForCityGallery} onValueChange={(v)=>{ setSelectedCountryForCityGallery(v); setSelectedCityForGallery(''); }}>
-                <SelectTrigger className="w-full"><SelectValue placeholder="Choose a country" /></SelectTrigger>
-                <SelectContent className="max-h-80">
-                  {countryOptions.map((c, index) => (
-                    <SelectItem key={`country-${c.slug}-${index}`} value={c.slug}>{c.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Label>Select City</Label>
-              <Select value={selectedCityForGallery} onValueChange={(v)=>setSelectedCityForGallery(v)} disabled={!selectedCountryForCityGallery}>
-                <SelectTrigger className="w-full"><SelectValue placeholder="Choose a city" /></SelectTrigger>
-                <SelectContent className="max-h-80">
-                  {(cityOptionsByCountry[selectedCountryForCityGallery]||[]).map(city => (
-                    <SelectItem key={city.slug} value={city.slug}>{city.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" onClick={loadCityGallery} disabled={!selectedCountryForCityGallery || !selectedCityForGallery || loadingCityGallery}>
-                  {loadingCityGallery ? 'Loading…' : 'Load Images'}
-                </Button>
-              </div>
-              <Label className="mt-2">Image URLs (one per line)</Label>
-              <Textarea rows={8} value={cityGalleryText} onChange={(e)=>setCityGalleryText(e.target.value)} placeholder="https://example.com/1.jpg\nhttps://example.com/2.jpg" />
-              <div className="flex items-center gap-3">
-                <input type="file" accept="image/*" onChange={async (e)=>{
-                  const f = e.target.files?.[0];
-                  if (!f) return;
-                  const fd = new FormData();
-                  fd.append('file', f);
-                  fd.append('scope', `cities/${selectedCountryForCityGallery||'country'}/${selectedCityForGallery||'city'}`);
-                  const res = await fetch('/api/admin/gallery-upload', { method: 'POST', body: fd });
-                  const j = await res.json();
-                  if (j?.success && j.url) {
-                    setCityGalleryText((prev)=> (prev? prev+"\n":"") + j.url);
-                    toast({ title: 'Uploaded', description: 'Image added to city gallery.' });
-                  } else {
-                    toast({ title: 'Upload failed', description: j?.error||'Could not upload', variant: 'destructive' as any });
-                  }
-                }} />
-                <span className="text-xs text-gray-500">Upload to Supabase Storage</span>
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={saveCityGallery} disabled={!selectedCountryForCityGallery || !selectedCityForGallery || savingCityGallery}>{savingCityGallery ? 'Saving…' : 'Save City Gallery'}</Button>
-                <Button variant="outline" onClick={()=>setCityGalleryText('')}>Clear</Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Edit Modal */}
       {editingPath && (

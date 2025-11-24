@@ -234,9 +234,23 @@ export async function GET(request: NextRequest) {
         
         if (error) {
           console.log('❌ Supabase error:', error);
+          console.log('❌ Supabase error details:', {
+            message: error.message,
+            code: error.code,
+            hint: error.hint,
+            details: error.details
+          });
           // Return success with null data instead of error to avoid 500 errors
           return NextResponse.json(
-            { success: true, data: null },
+            { 
+              success: true, 
+              data: null,
+              error: {
+                message: error.message,
+                code: error.code,
+                details: 'Supabase query failed - check server logs for details'
+              }
+            },
             { headers: { 'Cache-Control': 'no-store, max-age=0', 'x-cms-source': 'supabase', 'x-sb-present': 'true' } }
           );
         }
@@ -506,7 +520,21 @@ export async function PUT(request: NextRequest) {
           console.log('✅ Successfully saved to Supabase');
         } else {
           console.log('❌ Supabase save error:', error);
-          return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+          console.log('❌ Supabase save error details:', {
+            message: error.message,
+            code: error.code,
+            hint: error.hint,
+            details: error.details
+          });
+          return NextResponse.json({ 
+            success: false, 
+            error: error.message,
+            details: {
+              code: error.code,
+              hint: error.hint,
+              message: 'Failed to save to Supabase - check server logs for details'
+            }
+          }, { status: 500 });
         }
       }
     } catch (e) {
@@ -536,6 +564,12 @@ export async function PUT(request: NextRequest) {
           
           if (error) {
             console.error('⚠️ Special country Supabase update error:', error);
+            console.error('⚠️ Special country Supabase update error details:', {
+              message: error.message,
+              code: error.code,
+              hint: error.hint,
+              details: error.details
+            });
             
             // Try alternative ID formats as fallback
             const alternativeIds = [
@@ -558,6 +592,8 @@ export async function PUT(request: NextRequest) {
               if (!altError) {
                 console.log('✅ Alternative ID format successful:', altId);
                 break;
+              } else {
+                console.error('❌ Alternative ID format failed:', altId, altError);
               }
             }
           } else {
