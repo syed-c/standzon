@@ -93,69 +93,261 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const action = searchParams.get('action');
   if (action === 'list') {
-    // Generate all pages dynamically from global dataset
-    const pages: PageItem[] = [];
-    
-    // Add static pages
-    pages.push(
-      { title: 'Home', path: '/', type: 'static' },
-      { title: 'Custom Booth', path: '/custom-booth', type: 'static' },
-      { title: 'Booth Rental', path: '/booth-rental', type: 'static' },
-      { title: '3D Rendering & Concept Development', path: '/3d-rendering-and-concept-development', type: 'static' },
-      { title: 'Installation & Dismantle', path: '/trade-show-installation-and-dismantle', type: 'static' },
-      { title: 'Project Management', path: '/trade-show-project-management', type: 'static' },
-      { title: 'Graphics & Printing', path: '/trade-show-graphics-printing', type: 'static' },
-      { title: 'About', path: '/about', type: 'static' }
-    );
-    
-    // Include all country pages from global dataset
+    // Fetch all pages directly from Supabase page_contents table
     try {
-      console.log('🌍 Generating pages for', GLOBAL_EXHIBITION_DATA.countries.length, 'countries');
-      GLOBAL_EXHIBITION_DATA.countries.forEach((c) => {
-        pages.push({ title: `${c.name} Exhibition Stands`, path: `/exhibition-stands/${c.slug}`, type: 'country' });
-      });
-      
-      // Include all city pages from global dataset
-      console.log('🏙️ Generating pages for', GLOBAL_EXHIBITION_DATA.cities.length, 'cities');
-      GLOBAL_EXHIBITION_DATA.cities.forEach((city) => {
-        const country = GLOBAL_EXHIBITION_DATA.countries.find((c) => c.name === city.country);
-        if (country) {
-          pages.push({
-            title: `Exhibition Stands in ${city.name}, ${country.name}`,
-            path: `/exhibition-stands/${country.slug}/${city.slug}`,
-            type: 'city'
-          });
+      const sb = getServerSupabase();
+      if (sb) {
+        console.log('🔍 Fetching all pages from Supabase page_contents table...');
+        
+        const { data, error } = await sb
+          .from('page_contents')
+          .select('id, path, content, updated_at');
+        
+        if (error) {
+          console.error('❌ Error fetching pages from Supabase:', error);
+          throw error;
         }
-      });
-    } catch (error) {
-      console.error('❌ Error generating pages from global dataset:', error);
-    }
-    
-    try {
-      const all = storageAPI.getAllPageContents();
-      all.forEach((pc) => {
-        const path = pc.type === 'city'
-          ? `/exhibition-stands/${(pc.location.country || '').toLowerCase()}/${pc.location.slug}`
-          : `/exhibition-stands/${pc.location.slug}`;
-        pages.push({
-          title: pc.hero.title || pc.seo.metaTitle || pc.location.name,
-          path,
-          type: pc.type,
+        
+        console.log(`✅ Successfully fetched ${data.length} pages from Supabase`);
+        
+        // Process the page data to extract paths and titles
+        const pages: PageItem[] = data.map((record: any) => {
+          // Extract path from the record
+          let path = record.path || '';
+          let title = '';
+          let type: 'static' | 'country' | 'city' = 'static';
+          
+          // If no path, try to construct from id
+          if (!path && record.id) {
+            // For country pages: id is the country slug
+            // For city pages: id is country-city
+            if (record.id.includes('-') && !['home', 'custom-booth', 'booth-rental'].includes(record.id)) {
+              // This is likely a city page
+              const parts = record.id.split('-');
+              if (parts.length >= 2) {
+                // Reconstruct path for city page
+                path = `/exhibition-stands/${parts[0]}/${parts.slice(1).join('-')}`;
+                type = 'city';
+              }
+            } else if (!['home', 'custom-booth', 'booth-rental', '3d-rendering-and-concept-development', 
+                          'trade-show-installation-and-dismantle', 'trade-show-project-management', 
+                          'trade-show-graphics-printing'].includes(record.id)) {
+              // This is likely a country page
+              path = `/exhibition-stands/${record.id}`;
+              type = 'country';
+            } else {
+              // This is a static page
+              if (record.id === 'home') {
+                path = '/';
+              } else {
+                path = `/${record.id.replace(/-/g, '-')}`;
+              }
+              type = 'static';
+            }
+          }
+          
+          // Determine title from content or construct from path
+          if (record.content) {
+            // Try to get title from SEO data
+            if (record.content.seo && record.content.seo.metaTitle) {
+              title = record.content.seo.metaTitle;
+            } 
+            // Try to get title from hero section
+            else if (record.content.hero && record.content.hero.title) {
+              title = record.content.hero.title;
+            }
+          }
+          
+          // If no title found, construct from path
+          if (!title) {
+            if (path === '/') {
+              title = 'Home';
+            } else if (path.startsWith('/exhibition-stands/')) {
+              const parts = path.split('/').filter(Boolean);
+              if (parts.length === 2) {
+                // Country page
+                title = `${parts[1].split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')} Exhibition Stands`;
+              } else if (parts.length === 3) {
+                // City page
+                const country = parts[1].split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                const city = parts[2].split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                title = `Exhibition Stands in ${city}, ${country}`;
+              }
+            } else {
+              // Static page
+              title = path.substring(1).split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+            }
+          }
+          
+          return {
+            title,
+            path,
+            type
+          };
         });
-      });
+        
+        // Add any missing static pages that should always be present
+        const staticPages = [
+          { title: 'Home', path: '/', type: 'static' },
+          { title: 'Custom Booth', path: '/custom-booth', type: 'static' },
+          { title: 'Booth Rental', path: '/booth-rental', type: 'static' },
+          { title: '3D Rendering & Concept Development', path: '/3d-rendering-and-concept-development', type: 'static' },
+          { title: 'Installation & Dismantle', path: '/trade-show-installation-and-dismantle', type: 'static' },
+          { title: 'Project Management', path: '/trade-show-project-management', type: 'static' },
+          { title: 'Graphics & Printing', path: '/trade-show-graphics-printing', type: 'static' },
+          { title: 'About', path: '/about', type: 'static' }
+        ];
+        
+        // Merge static pages with Supabase pages, ensuring no duplicates
+        const staticPagePaths = new Set(staticPages.map(p => p.path));
+        const supabasePages = pages.filter(p => !staticPagePaths.has(p.path));
+        const allPages = [...staticPages, ...supabasePages];
+        
+        // De-duplicate by path
+        const seen = new Set<string>();
+        const unique = allPages.filter(p => (seen.has(p.path) ? false : (seen.add(p.path), true)));
+        
+        console.log('📊 Total unique pages generated:', unique.length);
+        return NextResponse.json(
+          { success: true, data: unique },
+          { headers: { 'Cache-Control': 'no-store, max-age=0' } }
+        );
+      } else {
+        // Fallback to the original implementation if Supabase is not configured
+        console.log('⚠️ Supabase not configured, falling back to global dataset');
+        
+        // Generate all pages dynamically from global dataset
+        const pages: PageItem[] = [];
+        
+        // Add static pages
+        pages.push(
+          { title: 'Home', path: '/', type: 'static' },
+          { title: 'Custom Booth', path: '/custom-booth', type: 'static' },
+          { title: 'Booth Rental', path: '/booth-rental', type: 'static' },
+          { title: '3D Rendering & Concept Development', path: '/3d-rendering-and-concept-development', type: 'static' },
+          { title: 'Installation & Dismantle', path: '/trade-show-installation-and-dismantle', type: 'static' },
+          { title: 'Project Management', path: '/trade-show-project-management', type: 'static' },
+          { title: 'Graphics & Printing', path: '/trade-show-graphics-printing', type: 'static' },
+          { title: 'About', path: '/about', type: 'static' }
+        );
+        
+        // Include all country pages from global dataset
+        try {
+          console.log('🌍 Generating pages for', GLOBAL_EXHIBITION_DATA.countries.length, 'countries');
+          GLOBAL_EXHIBITION_DATA.countries.forEach((c) => {
+            pages.push({ title: `${c.name} Exhibition Stands`, path: `/exhibition-stands/${c.slug}`, type: 'country' });
+          });
+          
+          // Include all city pages from global dataset
+          console.log('🏙️ Generating pages for', GLOBAL_EXHIBITION_DATA.cities.length, 'cities');
+          GLOBAL_EXHIBITION_DATA.cities.forEach((city) => {
+            const country = GLOBAL_EXHIBITION_DATA.countries.find((c) => c.name === city.country);
+            if (country) {
+              pages.push({
+                title: `Exhibition Stands in ${city.name}, ${country.name}`,
+                path: `/exhibition-stands/${country.slug}/${city.slug}`,
+                type: 'city'
+              });
+            }
+          });
+        } catch (error) {
+          console.error('❌ Error generating pages from global dataset:', error);
+        }
+        
+        try {
+          const all = storageAPI.getAllPageContents();
+          all.forEach((pc) => {
+            const path = pc.type === 'city'
+              ? `/exhibition-stands/${(pc.location.country || '').toLowerCase()}/${pc.location.slug}`
+              : `/exhibition-stands/${pc.location.slug}`;
+            pages.push({
+              title: pc.hero.title || pc.seo.metaTitle || pc.location.name,
+              path,
+              type: pc.type,
+            });
+          });
+        } catch (error) {
+          console.error('❌ Error adding storage API pages:', error);
+        }
+        
+        // De-duplicate by path
+        const seen = new Set<string>();
+        const unique = pages.filter(p => (seen.has(p.path) ? false : (seen.add(p.path), true)));
+        
+        console.log('📊 Total unique pages generated:', unique.length);
+        return NextResponse.json(
+          { success: true, data: unique },
+          { headers: { 'Cache-Control': 'no-store, max-age=0' } }
+        );
+      }
     } catch (error) {
-      console.error('❌ Error adding storage API pages:', error);
+      console.error('❌ Error fetching pages from Supabase:', error);
+      
+      // Fallback to the original implementation if there's an error
+      // Generate all pages dynamically from global dataset
+      const pages: PageItem[] = [];
+      
+      // Add static pages
+      pages.push(
+        { title: 'Home', path: '/', type: 'static' },
+        { title: 'Custom Booth', path: '/custom-booth', type: 'static' },
+        { title: 'Booth Rental', path: '/booth-rental', type: 'static' },
+        { title: '3D Rendering & Concept Development', path: '/3d-rendering-and-concept-development', type: 'static' },
+        { title: 'Installation & Dismantle', path: '/trade-show-installation-and-dismantle', type: 'static' },
+        { title: 'Project Management', path: '/trade-show-project-management', type: 'static' },
+        { title: 'Graphics & Printing', path: '/trade-show-graphics-printing', type: 'static' },
+        { title: 'About', path: '/about', type: 'static' }
+      );
+      
+      // Include all country pages from global dataset
+      try {
+        console.log('🌍 Generating pages for', GLOBAL_EXHIBITION_DATA.countries.length, 'countries');
+        GLOBAL_EXHIBITION_DATA.countries.forEach((c) => {
+          pages.push({ title: `${c.name} Exhibition Stands`, path: `/exhibition-stands/${c.slug}`, type: 'country' });
+        });
+        
+        // Include all city pages from global dataset
+        console.log('🏙️ Generating pages for', GLOBAL_EXHIBITION_DATA.cities.length, 'cities');
+        GLOBAL_EXHIBITION_DATA.cities.forEach((city) => {
+          const country = GLOBAL_EXHIBITION_DATA.countries.find((c) => c.name === city.country);
+          if (country) {
+            pages.push({
+              title: `Exhibition Stands in ${city.name}, ${country.name}`,
+              path: `/exhibition-stands/${country.slug}/${city.slug}`,
+              type: 'city'
+            });
+          }
+        });
+      } catch (error) {
+        console.error('❌ Error generating pages from global dataset:', error);
+      }
+      
+      try {
+        const all = storageAPI.getAllPageContents();
+        all.forEach((pc) => {
+          const path = pc.type === 'city'
+            ? `/exhibition-stands/${(pc.location.country || '').toLowerCase()}/${pc.location.slug}`
+            : `/exhibition-stands/${pc.location.slug}`;
+          pages.push({
+            title: pc.hero.title || pc.seo.metaTitle || pc.location.name,
+            path,
+            type: pc.type,
+          });
+        });
+      } catch (error) {
+        console.error('❌ Error adding storage API pages:', error);
+      }
+      
+      // De-duplicate by path
+      const seen = new Set<string>();
+      const unique = pages.filter(p => (seen.has(p.path) ? false : (seen.add(p.path), true)));
+      
+      console.log('📊 Total unique pages generated:', unique.length);
+      return NextResponse.json(
+        { success: true, data: unique },
+        { headers: { 'Cache-Control': 'no-store, max-age=0' } }
+      );
     }
-    
-    // De-duplicate by path
-    const seen = new Set<string>();
-    const unique = pages.filter(p => (seen.has(p.path) ? false : (seen.add(p.path), true)));
-    
-    console.log('📊 Total unique pages generated:', unique.length);
-    return NextResponse.json(
-      { success: true, data: unique },
-      { headers: { 'Cache-Control': 'no-store, max-age=0' } }
-    );
   }
   if (action === 'get-content') {
     const path = searchParams.get('path') || '';
