@@ -9,6 +9,7 @@ import PerformanceMonitor from '@/components/PerformanceMonitor';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import CriticalResourcePreloader from '@/components/CriticalResourcePreloader';
 import { ConvexClientProvider } from '@/components/ConvexProvider';
+import { ThemeProvider } from '@/components/ThemeProvider';
 // GlobalTypography temporarily disabled due to dev chunk issue
 
 // ✅ PERFORMANCE: Optimize font loading
@@ -97,16 +98,18 @@ export default function RootLayout({
           {/* Note: Removed preload links that were causing warnings in development */}
         </head>
         <body className={`${inter.className} ${poppins.className} ${roboto.variable} ${montserrat.variable} ${redHatDisplay.variable} h-full m-0 p-0`} suppressHydrationWarning>
-          <ConvexClientProvider>
-            <CriticalResourcePreloader />
-            {/* <GlobalTypography /> */}
-            {children}
-            <Toaster />
-            <PerformanceMonitor />
-            <ServiceWorkerRegistration />
-            <SpeedInsights />
-            <Analytics />
-          </ConvexClientProvider>
+          <ThemeProvider>
+            <ConvexClientProvider>
+              <CriticalResourcePreloader />
+              {/* <GlobalTypography /> */}
+              {children}
+              <Toaster />
+              <PerformanceMonitor />
+              <ServiceWorkerRegistration />
+              <SpeedInsights />
+              <Analytics />
+            </ConvexClientProvider>
+          </ThemeProvider>
         </body>
     </html>
   );

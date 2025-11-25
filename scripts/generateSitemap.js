@@ -1,36 +1,39 @@
-import { NextResponse } from 'next/server';
-import { GLOBAL_EXHIBITION_DATA } from '@/lib/data/globalCities';
+const fs = require('fs');
+const path = require('path');
+
+// Import the global exhibition data
+const { GLOBAL_EXHIBITION_DATA } = require('./lib/data/globalCities');
 
 // Define the base URL for the site
 const BASE_URL = 'https://standszone.com';
 
+// Add static pages
+const staticPages = [
+  '',
+  '/about',
+  '/contact',
+  '/services',
+  '/blog',
+  '/builders',
+  '/exhibitions',
+  '/trade-shows',
+  '/exhibition-stands',
+  '/custom-booth',
+  '/booth-rental',
+  '/trade-show-graphics-printing',
+  '/trade-show-installation-and-dismantle',
+  '/trade-show-project-management',
+  '/quote',
+  '/subscription',
+  '/sitemap'
+];
+
 // Helper function to generate XML sitemap
-function generateSitemapXml(): string {
+function generateSitemapXml() {
   // Start with XML declaration and opening urlset tag
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 `;
-
-  // Add static pages
-  const staticPages = [
-    '',
-    '/about',
-    '/contact',
-    '/services',
-    '/blog',
-    '/builders',
-    '/exhibitions',
-    '/trade-shows',
-    '/exhibition-stands',
-    '/custom-booth',
-    '/booth-rental',
-    '/trade-show-graphics-printing',
-    '/trade-show-installation-and-dismantle',
-    '/trade-show-project-management',
-    '/quote',
-    '/subscription',
-    '/sitemap'
-  ];
 
   // Add static pages to sitemap
   staticPages.forEach(page => {
@@ -72,13 +75,11 @@ function generateSitemapXml(): string {
   return xml;
 }
 
-// GET handler for the sitemap
-export async function GET() {
-  const sitemapXml = generateSitemapXml();
+// Generate and save the sitemap
+const sitemapXml = generateSitemapXml();
+const sitemapPath = path.join(__dirname, '..', 'public', 'sitemap.xml');
 
-  return new NextResponse(sitemapXml, {
-    headers: {
-      'Content-Type': 'application/xml',
-    },
-  });
-}
+fs.writeFileSync(sitemapPath, sitemapXml);
+
+console.log(`Sitemap generated successfully at ${sitemapPath}`);
+console.log(`Total URLs: ${staticPages.length + GLOBAL_EXHIBITION_DATA.countries.length + GLOBAL_EXHIBITION_DATA.cities.length}`);

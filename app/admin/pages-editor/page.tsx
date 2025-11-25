@@ -965,8 +965,8 @@ export default function AdminPagesEditor() {
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Pages Editor</h1>
-              <p className="text-gray-600">View and edit SEO and headings for site pages.</p>
+              <h1 className="text-3xl font-bold text-white">Pages Editor</h1>
+              <p className="text-gray-600 text-black">View and edit SEO and headings for site pages.</p>
               {cmsSource && (
                 <div className="mt-2 inline-flex items-center gap-2 text-xs px-2 py-1 rounded-full border" style={{ borderColor: cmsSource==='supabase' ? '#10b981' : '#60a5fa', color: cmsSource==='supabase' ? '#065f46' : '#1e3a8a', background: cmsSource==='supabase' ? '#ecfdf5' : '#eff6ff' }}>
                   <span className="w-2 h-2 rounded-full" style={{ background: cmsSource==='supabase' ? '#10b981' : '#3b82f6' }}></span>
@@ -974,13 +974,13 @@ export default function AdminPagesEditor() {
                 </div>
               )}
             </div>
-            <Button variant="outline" onClick={loadPages}><RefreshCw className="w-4 h-4 mr-2" /> Refresh</Button>
+            <Button variant="outline" onClick={loadPages}><RefreshCw className="w-4 h-4 mr-2 text-white" /> Refresh</Button>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><FileText className="w-5 h-5" /> Pages</CardTitle>
-              <CardDescription>Search and manage all available pages</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-black"><FileText className="w-5 h-5" /> Pages</CardTitle>
+              <CardDescription className="text-black">Search and manage all available pages</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
@@ -1021,14 +1021,14 @@ export default function AdminPagesEditor() {
                 </div>
               </div>
               {loading ? (
-                <div className="text-gray-500">Loading pages… (Debug: loading={String(loading)}, pages={pages.length})</div>
+                <div className="text-gray-500 text-black">Loading pages… (Debug: loading={String(loading)}, pages={pages.length})</div>
               ) : (
                 <div className="space-y-3">
                   {filtered.map((p) => (
                     <div key={p.path} className="flex items-center justify-between border rounded-lg p-3 bg-white">
                       <div>
-                        <div className="font-medium text-gray-900">{p.title}</div>
-                        <div className="text-sm text-gray-600">{p.path}</div>
+                        <div className="font-medium text-gray-900 text-black">{p.title}</div>
+                        <div className="text-sm text-gray-600 text-black">{p.path}</div>
                       </div>
                       <div className="flex items-center gap-2">
                         <Button variant="outline" onClick={() => window.open(p.path, '_blank')}><Eye className="w-4 h-4 mr-1" /> View</Button>
@@ -1037,7 +1037,7 @@ export default function AdminPagesEditor() {
                     </div>
                   ))}
                   {filtered.length === 0 && (
-                    <div className="text-gray-500">No pages found.</div>
+                    <div className="text-gray-500 text-black">No pages found.</div>
                   )}
                 </div>
               )}
@@ -1054,30 +1054,30 @@ export default function AdminPagesEditor() {
           <div className="bg-white rounded-lg w-full max-w-6xl max-h-[95vh] overflow-y-auto">
             <div className="p-8 space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold">Edit Page: {editingPath}</h2>
+                <h2 className="text-3xl font-bold text-black">Edit Page: {editingPath}</h2>
                 <Button variant="outline" onClick={() => setEditingPath(null)}>Close</Button>
               </div>
 
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <h3 className="font-semibold">SEO</h3>
-                  <div>
+                  <h3 className="font-semibold text-black">SEO</h3>
+                  <div className='text-black'>
                     <Label>Meta Title</Label>
                     <Input value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} placeholder="SEO Title" />
                   </div>
-                  <div>
+                  <div className='text-black'>
                     <Label>Meta Description</Label>
                     <Textarea rows={3} value={seoDescription} onChange={(e) => setSeoDescription(e.target.value)} placeholder="SEO Description" />
                   </div>
-                  <div>
+                  <div className='text-black'>
                     <Label>Meta Keywords (comma separated)</Label>
                     <Input value={seoKeywords} onChange={(e) => setSeoKeywords(e.target.value)} placeholder="keyword1, keyword2, …" />
                   </div>
 
                   {editingPath !== '/' && (
                     <>
-                      <h3 className="font-semibold mt-4">Content</h3>
-                      <div>
+                      <h3 className="font-semibold mt-4 text-black">Content</h3>
+                      <div className='text-black'>
                         <Label>H1 (Main Heading)</Label>
                         <Input value={h1} onChange={(e) => setH1(e.target.value)} placeholder="Main page heading" />
                       </div>
@@ -1086,11 +1086,11 @@ export default function AdminPagesEditor() {
                 </div>
 
                 {/* Right column: Home editor */}
-                <div className="space-y-6">
+                <div className="space-y-6 text-black">
                   {editingPath === '/' ? (
-                    <Accordion type="multiple" className="bg-transparent">
+                    <Accordion type="multiple" className="bg-transparent text-black">
                       <AccordionItem value="typography">
-                        <AccordionTrigger>Typography (Global)</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Typography (Global)</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Default Heading Font (H1–H6)</Label>
@@ -1110,7 +1110,7 @@ export default function AdminPagesEditor() {
                         </AccordionContent>
                       </AccordionItem>
                       <AccordionItem value="hero">
-                        <AccordionTrigger>Hero</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Hero</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Hero H1</Label>
@@ -1145,7 +1145,7 @@ export default function AdminPagesEditor() {
                               </div>
                             </div>
                             <div className="mt-2">
-                              <h5 className="font-semibold mb-2">Hero Buttons</h5>
+                              <h5 className="font-semibold mb-2 text-black">Hero Buttons</h5>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {(sections.heroButtons||[]).map((b:any, idx:number)=> (
                                   <div key={idx} className="border rounded p-3">
@@ -1208,7 +1208,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="leadsIntro">
-                        <AccordionTrigger>Leads Intro</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Leads Intro</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Leads Section Heading</Label>
@@ -1220,7 +1220,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="leads">
-                        <AccordionTrigger>Leads CTA</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Leads CTA</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Leads CTA Heading</Label>
@@ -1228,7 +1228,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Leads CTA Paragraph</Label>
                             <Textarea rows={3} value={sections.readyLeads?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, readyLeads:{ ...(s.readyLeads||{}), paragraph:e.target.value } }))} />
                             <div className="mt-2">
-                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              <h5 className="font-semibold mb-2 text-black">Buttons</h5>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {(sections.readyLeads?.buttons||[]).map((b:any, idx:number)=> (
                                   <div key={idx} className="border rounded p-3">
@@ -1249,7 +1249,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="globalPresence">
-                        <AccordionTrigger>Global Presence</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Global Presence</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Heading</Label>
@@ -1261,7 +1261,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="moreCountries">
-                        <AccordionTrigger>More Countries</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>More Countries</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Heading</Label>
@@ -1273,7 +1273,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="homeInfoCards">
-                        <AccordionTrigger>Home Info Cards</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Home Info Cards</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-4 bg-white border rounded-md p-3">
                             <p className="text-sm text-gray-600">Up to 4 cards are shown on the home page between the Leads section and Live Lead Activity.</p>
@@ -1298,7 +1298,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="expandingMarkets">
-                        <AccordionTrigger>Expanding Markets</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Expanding Markets</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Heading</Label>
@@ -1310,7 +1310,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="readyStart">
-                        <AccordionTrigger>Ready to Get Started</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Ready to Get Started</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Heading</Label>
@@ -1318,7 +1318,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Paragraph</Label>
                             <Textarea rows={3} value={sections.readyStart?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, readyStart:{ ...(s.readyStart||{}), paragraph:e.target.value } }))} />
                             <div className="mt-2">
-                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              <h5 className="font-semibold mb-2 text-black">Buttons</h5>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {(sections.readyStart?.buttons||[]).map((b:any, idx:number)=> (
                                   <div key={idx} className="border rounded p-3">
@@ -1339,7 +1339,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="testimonials">
-                        <AccordionTrigger>Testimonials</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Testimonials</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -1347,7 +1347,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.clientSay?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, clientSay:{ ...(s.clientSay||{}), paragraph:e.target.value } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Reviews</h5>
+                              <h5 className="font-semibold mb-2 text-black">Reviews</h5>
                               {(sections.reviews||[]).map((r:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -1388,7 +1388,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="finalCta">
-                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Final CTA</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Heading</Label>
@@ -1414,7 +1414,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
                       {/* Footer editor shared across pages */}
                       <AccordionItem value="footer">
-                        <AccordionTrigger>Footer</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Footer</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-4 bg-white border rounded-md p-3">
                             <div>
@@ -1501,7 +1501,7 @@ export default function AdminPagesEditor() {
                   ) : editingPath === '/about' ? (
                     <Accordion type="multiple" className="bg-transparent">
                       <AccordionItem value="hero">
-                        <AccordionTrigger>Hero</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Hero</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Hero H1</Label>
@@ -1513,7 +1513,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="mission">
-                        <AccordionTrigger>Mission</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Mission</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Heading</Label>
@@ -1521,7 +1521,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Paragraph (HTML allowed)</Label>
                             <Textarea rows={4} value={sections.mission?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, mission:{ ...(s.mission||{}), paragraph:e.target.value } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Bullet Points</h5>
+                              <h5 className="font-semibold mb-2 text-black">Bullet Points</h5>
                               {(sections.mission?.points||[]).map((pt:string, idx:number)=> (
                                 <div key={idx} className="flex items-center gap-2 mb-2">
                                   <Input value={pt} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.mission?.points||[])]; arr[idx]=e.target.value; return { ...s, mission:{ ...(s.mission||{}), points:arr } }; })} />
@@ -1540,7 +1540,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="vision">
-                        <AccordionTrigger>Vision</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Vision</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Heading</Label>
@@ -1552,7 +1552,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="coreValues">
-                        <AccordionTrigger>Core Values</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Core Values</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             {(sections.coreValues||[]).map((cv:any, idx:number)=> (
@@ -1572,7 +1572,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="howItWorks">
-                        <AccordionTrigger>How It Works</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>How It Works</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             {(sections.howItWorks||[]).map((step:any, idx:number)=> (
@@ -1592,7 +1592,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="team">
-                        <AccordionTrigger>Team</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Team</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             {(sections.team||[]).map((m:any, idx:number)=> (
@@ -1622,7 +1622,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="cta">
-                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Final CTA</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Heading</Label>
@@ -1650,7 +1650,7 @@ export default function AdminPagesEditor() {
                   ) : editingPath === '/custom-booth' ? (
                     <Accordion type="multiple" className="bg-transparent">
                       <AccordionItem value="hero">
-                        <AccordionTrigger>Hero</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Hero</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Hero H1</Label>
@@ -1662,7 +1662,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="whyChooseCustom">
-                        <AccordionTrigger>Why Choose Custom Design</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Why Choose Custom Design</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -1670,7 +1670,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.whyChooseCustom?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, whyChooseCustom:{ ...(s.whyChooseCustom||{}), paragraph:e.target.value } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Features</h5>
+                              <h5 className="font-semibold mb-2 text-black">Features</h5>
                               {(sections.whyChooseCustom?.features||[]).map((feature:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Feature Heading</Label>
@@ -1689,7 +1689,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="designProcess">
-                        <AccordionTrigger>Design Process</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Design Process</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -1697,7 +1697,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.designProcess?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, designProcess:{ ...(s.designProcess||{}), paragraph:e.target.value } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Process Steps</h5>
+                              <h5 className="font-semibold mb-2 text-black">Process Steps</h5>
                               {(sections.designProcess?.steps||[]).map((step:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Step Heading</Label>
@@ -1716,7 +1716,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="customDesignServices">
-                        <AccordionTrigger>Custom Design Services</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Custom Design Services</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -1725,11 +1725,11 @@ export default function AdminPagesEditor() {
                             <Textarea rows={3} value={sections.customDesignServices?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, customDesignServices:{ ...(s.customDesignServices||{}), paragraph:e.target.value } }))} />
                             
                             <div className="mt-4">
-                              <h5 className="font-semibold mb-3">Service Cards</h5>
+                              <h5 className="font-semibold mb-3 text-black">Service Cards</h5>
                               {(sections.customDesignServices?.serviceCards || []).map((card: any, idx: number) => (
                                 <div key={idx} className="border rounded p-4 mb-3 bg-gray-50">
                                   <div className="flex items-center justify-between mb-3">
-                                    <h6 className="font-medium">Card {idx + 1}</h6>
+                                    <h6 className="font-medium text-black">Card {idx + 1}</h6>
                                     <Button 
                                       type="button" 
                                       variant="outline" 
@@ -1960,7 +1960,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="customBoothCta">
-                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Final CTA</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -1968,7 +1968,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.customBoothCta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, customBoothCta:{ ...(s.customBoothCta||{}), paragraph:e.target.value } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              <h5 className="font-semibold mb-2 text-black">Buttons</h5>
                               {(sections.customBoothCta?.buttons||[]).map((button:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                               <Label>Button Text</Label>
@@ -1989,7 +1989,7 @@ export default function AdminPagesEditor() {
                   ) : editingPath === '/booth-rental' ? (
                     <Accordion type="multiple" className="bg-transparent">
                       <AccordionItem value="hero">
-                        <AccordionTrigger>Hero</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Hero</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Hero H1</Label>
@@ -2000,35 +2000,8 @@ export default function AdminPagesEditor() {
                         </AccordionContent>
                       </AccordionItem>
 
-                      <AccordionItem value="whyChoose">
-                        <AccordionTrigger>Why Choose Booth Rental</AccordionTrigger>
-                        <AccordionContent>
-                          <div className="space-y-3 bg-white border rounded-md p-3">
-                            <Label>Section Heading</Label>
-                            <Input value={sections.boothRental?.whyChoose?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), heading:e.target.value } } }))} />
-                            <Label className="mt-2 block">Section Paragraph</Label>
-                            <Textarea rows={3} value={sections.boothRental?.whyChoose?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), paragraph:e.target.value } } }))} />
-                            <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Features</h5>
-                              {(sections.boothRental?.whyChoose?.features||[]).map((feature:any, idx:number)=> (
-                                <div key={idx} className="border rounded p-3 mb-2">
-                                  <Label>Feature Heading</Label>
-                                  <Input value={feature.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.boothRental?.whyChoose?.features||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), features:arr } } }; })} />
-                                  <Label className="mt-2 block">Feature Description</Label>
-                                  <Textarea rows={2} value={feature.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.boothRental?.whyChoose?.features||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), features:arr } } }; })} />
-                                </div>
-                              ))}
-                              <div className="flex gap-2">
-                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), features:[...(s.boothRental?.whyChoose?.features||[]), { heading:'', paragraph:'' }] } } }))}>Add Feature</Button>
-                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), features:(s.boothRental?.whyChoose?.features||[]).slice(0,-1) } } }))}>Remove Last</Button>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-
                       <AccordionItem value="process">
-                        <AccordionTrigger>Rental Process</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Process Section</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -2036,7 +2009,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.boothRental?.process?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), process:{ ...(s.boothRental?.process||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Process Steps</h5>
+                              <h5 className="font-semibold mb-2 text-black">Process Steps</h5>
                               {(sections.boothRental?.process?.steps||[]).map((step:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Step Heading</Label>
@@ -2055,7 +2028,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="services">
-                        <AccordionTrigger>Booth Rental Services</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Services Section</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -2064,11 +2037,11 @@ export default function AdminPagesEditor() {
                             <Textarea rows={3} value={sections.boothRental?.services?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), services:{ ...(s.boothRental?.services||{}), paragraph:e.target.value } } }))} />
                             
                             <div className="mt-4">
-                              <h5 className="font-semibold mb-3">Service Cards</h5>
+                              <h5 className="font-semibold mb-3 text-black">Service Cards</h5>
                               {(sections.boothRental?.services?.serviceCards || []).map((card: any, idx: number) => (
                                 <div key={idx} className="border rounded p-4 mb-3 bg-gray-50">
                                   <div className="flex items-center justify-between mb-3">
-                                    <h6 className="font-medium">Card {idx + 1}</h6>
+                                    <h6 className="font-medium text-black">Card {idx + 1}</h6>
                                     <Button 
                                       type="button" 
                                       variant="outline" 
@@ -2266,7 +2239,10 @@ export default function AdminPagesEditor() {
                                       ...s, 
                                       boothRental: { 
                                         ...(s.boothRental || {}), 
-                                        services: { ...(s.boothRental?.services || {}), serviceCards: [...(s.boothRental?.services?.serviceCards || []), newCard] }
+                                        services: { 
+                                          ...(s.boothRental?.services || {}), 
+                                          serviceCards: [...(s.boothRental?.services?.serviceCards || []), newCard] 
+                                        }
                                       } 
                                     }));
                                   }}
@@ -2299,7 +2275,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="cta">
-                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Final CTA</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -2307,7 +2283,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.boothRental?.cta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), cta:{ ...(s.boothRental?.cta||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              <h5 className="font-semibold mb-2 text-black">Buttons</h5>
                               {(sections.boothRental?.cta?.buttons||[]).map((button:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Button Text</Label>
@@ -2324,15 +2300,43 @@ export default function AdminPagesEditor() {
                           </div>
                         </AccordionContent>
                       </AccordionItem>
+
+                      <AccordionItem value="whyChoose">
+                        <AccordionTrigger className='text-black'>Why Choose Section</AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 bg-white border rounded-md p-3">
+                            <Label>Section Heading</Label>
+                            <Input value={sections.boothRental?.whyChoose?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), heading:e.target.value } } }))} />
+                            <Label className="mt-2 block">Section Paragraph</Label>
+                            <Textarea rows={3} value={sections.boothRental?.whyChoose?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), paragraph:e.target.value } } }))} />
+                            <div className="mt-3">
+                              <h5 className="font-semibold mb-2 text-black">Features</h5>
+                              {(sections.boothRental?.whyChoose?.features||[]).map((feature:any, idx:number)=> (
+                                <div key={idx} className="border rounded p-3 mb-2">
+                                  <Label>Feature Heading</Label>
+                                  <Input value={feature.heading||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.boothRental?.whyChoose?.features||[])]; arr[idx]={...arr[idx], heading:e.target.value}; return { ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), features:arr } } }; })} />
+                                  <Label className="mt-2 block">Feature Description</Label>
+                                  <Textarea rows={2} value={feature.paragraph||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.boothRental?.whyChoose?.features||[])]; arr[idx]={...arr[idx], paragraph:e.target.value}; return { ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), features:arr } } }; })} />
+                                </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), features:[...(s.boothRental?.whyChoose?.features||[]), { heading:'', paragraph:'' }] } } }))}>Add Feature</Button>
+                                <Button type="button" variant="outline" onClick={()=>setSections((s:any)=>({ ...s, boothRental:{ ...(s.boothRental||{}), whyChoose:{ ...(s.boothRental?.whyChoose||{}), features:(s.boothRental?.whyChoose?.features||[]).slice(0,-1) } } }))}>Remove Last</Button>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
                     </Accordion>
                   ) : editingPath?.startsWith('/exhibition-stands/') ? (
                     <div className="space-y-8">
                       <div className="bg-white rounded-lg border border-gray-200 p-8">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center text-black">
                           <span className="text-3xl mr-3">🌍</span>
                           Country Pages Editor
                         </h3>
-                        <p className="text-gray-600 mb-6">Edit content for country-specific exhibition stand pages. All sections are organized in collapsible dropdowns for easy navigation.</p>
+                        <p className="text-gray-600 mb-6 text-black">Edit content for country-specific exhibition stand pages. All sections are organized in collapsible dropdowns for easy navigation.</p>
                         
                         <Accordion type="multiple" className="w-full">
                               {Object.entries(sections.countryPages || {}).map(([countrySlug, countryData]: [string, any]) => (
@@ -2385,7 +2389,7 @@ export default function AdminPagesEditor() {
                                     <AccordionTrigger className="px-5 py-4 hover:bg-gray-50">
                                       <div className="flex items-center">
                                         <span className="text-xl mr-3">💡</span>
-                                        <span className="font-semibold">Why Choose Local Builders</span>
+                                        <span className="font-semibold text-black">Why Choose Local Builders</span>
                                       </div>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-5 pb-6">
@@ -2434,7 +2438,7 @@ export default function AdminPagesEditor() {
                                     <AccordionTrigger className="px-5 py-4 hover:bg-gray-50">
                                       <div className="flex items-center">
                                         <span className="text-xl mr-3">🎯</span>
-                                        <span className="font-semibold">Info Cards (3 Key Advantages)</span>
+                                        <span className="font-semibold text-black">Info Cards (3 Key Advantages)</span>
                                         <Badge variant="secondary" className="ml-3 bg-green-100 text-green-800">
                                           Core Content
                                         </Badge>
@@ -2450,7 +2454,7 @@ export default function AdminPagesEditor() {
                                               }`}>
                                                 <span className="text-white font-bold text-sm">{idx + 1}</span>
                                               </div>
-                                              <h4 className="font-semibold text-gray-800">Card {idx + 1}</h4>
+                                              <h4 className="font-semibold text-gray-800 text-black">Card {idx + 1}</h4>
                                             </div>
                                             
                                             <div className="space-y-5">
@@ -2552,7 +2556,7 @@ export default function AdminPagesEditor() {
                                     <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
                                       <div className="flex items-center">
                                         <span className="text-xl mr-3">🛠️</span>
-                                        <span className="font-semibold">Services Section</span>
+                                        <span className="font-semibold text-black">Services Section</span>
                                       </div>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-4 pb-4">
@@ -2601,7 +2605,7 @@ export default function AdminPagesEditor() {
                                     <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
                                       <div className="flex items-center">
                                         <span className="text-xl mr-3">👥</span>
-                                        <span className="font-semibold">Builders Section</span>
+                                        <span className="font-semibold text-black">Builders Section</span>
                                       </div>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-4 pb-4">
@@ -2650,7 +2654,7 @@ export default function AdminPagesEditor() {
                                     <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
                                       <div className="flex items-center">
                                         <span className="text-xl mr-3">💬</span>
-                                        <span className="font-semibold">Get Quotes Section</span>
+                                        <span className="font-semibold text-black">Get Quotes Section</span>
                                       </div>
                                     </AccordionTrigger>
                                     <AccordionContent className="px-4 pb-4">
@@ -2696,11 +2700,11 @@ export default function AdminPagesEditor() {
                       
                             return (
                         <div className="bg-white rounded-lg border border-gray-200 p-8">
-                          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center text-black">
                             <span className="text-3xl mr-3">🏙️</span>
                             {cityName} Page Editor
                           </h3>
-                          <p className="text-gray-600 mb-6">Edit content for {cityName} exhibition stand services. All sections are organized in collapsible dropdowns for easy navigation.</p>
+                          <p className="text-gray-600 mb-6 text-black">Edit content for {cityName} exhibition stand services. All sections are organized in collapsible dropdowns for easy navigation.</p>
                           
                           <Accordion type="multiple" className="w-full space-y-2">
                             {/* Hero Section */}
@@ -2708,7 +2712,7 @@ export default function AdminPagesEditor() {
                               <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg">
                                 <div className="flex items-center">
                                   <span className="text-xl mr-3">🎯</span>
-                                  <span className="font-semibold">Hero Section</span>
+                                  <span className="font-semibold text-black">Hero Section</span>
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent className="px-6 pb-8">
@@ -2747,7 +2751,7 @@ export default function AdminPagesEditor() {
                               <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg">
                                 <div className="flex items-center">
                                   <span className="text-xl mr-3">👥</span>
-                                  <span className="font-semibold">Builders Section</span>
+                                  <span className="font-semibold text-black">Builders Section</span>
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent className="px-6 pb-8">
@@ -2798,7 +2802,7 @@ export default function AdminPagesEditor() {
                               <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg">
                                 <div className="flex items-center">
                                   <span className="text-xl mr-3">🛠️</span>
-                                  <span className="font-semibold">Services Section</span>
+                                  <span className="font-semibold text-black">Services Section</span>
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent className="px-6 pb-8">
@@ -2849,7 +2853,7 @@ export default function AdminPagesEditor() {
                               <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg">
                                 <div className="flex items-center">
                                   <span className="text-xl mr-3">💬</span>
-                                  <span className="font-semibold">Final Call-to-Action</span>
+                                  <span className="font-semibold text-black">Final Call-to-Action</span>
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent className="px-6 pb-8">
@@ -2918,7 +2922,7 @@ export default function AdminPagesEditor() {
                               <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg">
                                 <div className="flex items-center">
                                   <span className="text-xl mr-3">🖼️</span>
-                                  <span className="font-semibold">Gallery Images</span>
+                                  <span className="font-semibold text-black">Gallery Images</span>
                                   <Badge variant="secondary" className="ml-3">
                                     {((sections.cityPages?.[key]?.galleryImages || []) as string[]).length} images
                                   </Badge>
@@ -2963,7 +2967,7 @@ export default function AdminPagesEditor() {
                   <div className="space-y-6">
                     <Accordion type="single" collapsible className="w-full">
                       <AccordionItem value="hero">
-                        <AccordionTrigger>Hero Section</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Hero Section</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -2975,7 +2979,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="whyChoose">
-                        <AccordionTrigger>Why Choose Section</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Why Choose Section</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -2983,7 +2987,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.renderingConcept?.whyChoose?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), whyChoose:{ ...(s.renderingConcept?.whyChoose||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Features</h5>
+                              <h5 className="font-semibold mb-2 text-black">Features</h5>
                               {(sections.renderingConcept?.whyChoose?.features||[]).map((feature:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Feature Heading</Label>
@@ -3002,7 +3006,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="process">
-                        <AccordionTrigger>Process Section</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Process Section</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -3010,7 +3014,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.renderingConcept?.process?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), process:{ ...(s.renderingConcept?.process||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Process Steps</h5>
+                              <h5 className="font-semibold mb-2 text-black">Process Steps</h5>
                               {(sections.renderingConcept?.process?.steps||[]).map((step:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Step Heading</Label>
@@ -3029,7 +3033,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="services">
-                        <AccordionTrigger>Services Section</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Services Section</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -3037,7 +3041,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.renderingConcept?.services?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), services:{ ...(s.renderingConcept?.services||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Service Cards</h5>
+                              <h5 className="font-semibold mb-2 text-black">Service Cards</h5>
                               {(sections.renderingConcept?.services?.serviceCards||[]).map((card:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -3090,7 +3094,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="cta">
-                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Final CTA</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -3098,7 +3102,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.renderingConcept?.cta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, renderingConcept:{ ...(s.renderingConcept||{}), cta:{ ...(s.renderingConcept?.cta||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              <h5 className="font-semibold mb-2 text-black">Buttons</h5>
                               {(sections.renderingConcept?.cta?.buttons||[]).map((button:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Button Text</Label>
@@ -3121,7 +3125,7 @@ export default function AdminPagesEditor() {
                   <div className="space-y-6">
                     <Accordion type="single" collapsible className="w-full">
                       <AccordionItem value="hero">
-                        <AccordionTrigger>Hero Section</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Hero Section</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -3133,7 +3137,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="whyChoose">
-                        <AccordionTrigger>Why Choose Section</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Why Choose Section</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -3141,7 +3145,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.installationDismantle?.whyChoose?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), whyChoose:{ ...(s.installationDismantle?.whyChoose||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Features</h5>
+                              <h5 className="font-semibold mb-2 text-black">Features</h5>
                               {(sections.installationDismantle?.whyChoose?.features||[]).map((feature:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Feature Heading</Label>
@@ -3160,7 +3164,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="process">
-                        <AccordionTrigger>Process Section</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Process Section</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -3168,7 +3172,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.installationDismantle?.process?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), process:{ ...(s.installationDismantle?.process||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Process Steps</h5>
+                              <h5 className="font-semibold mb-2 text-black">Process Steps</h5>
                               {(sections.installationDismantle?.process?.steps||[]).map((step:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Step Heading</Label>
@@ -3187,7 +3191,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="services">
-                        <AccordionTrigger>Services Section</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Services Section</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -3195,7 +3199,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.installationDismantle?.services?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), services:{ ...(s.installationDismantle?.services||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Service Cards</h5>
+                              <h5 className="font-semibold mb-2 text-black">Service Cards</h5>
                               {(sections.installationDismantle?.services?.serviceCards||[]).map((card:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -3248,7 +3252,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="cta">
-                        <AccordionTrigger>Final CTA</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Final CTA</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -3256,7 +3260,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.installationDismantle?.cta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, installationDismantle:{ ...(s.installationDismantle||{}), cta:{ ...(s.installationDismantle?.cta||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              <h5 className="font-semibold mb-2 text-black">Buttons</h5>
                               {(sections.installationDismantle?.cta?.buttons||[]).map((button:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Button Text</Label>
@@ -3279,7 +3283,7 @@ export default function AdminPagesEditor() {
                   <div className="space-y-6">
                     <Accordion type="single" collapsible className="w-full">
                       <AccordionItem value="hero">
-                        <AccordionTrigger>Hero Section</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Hero Section</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -3291,7 +3295,7 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="whyChoose">
-                        <AccordionTrigger>Why Choose Section</AccordionTrigger>
+                        <AccordionTrigger className='text-black'>Why Choose Section</AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
@@ -3299,7 +3303,7 @@ export default function AdminPagesEditor() {
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.projectManagement?.whyChoose?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), whyChoose:{ ...(s.projectManagement?.whyChoose||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Features</h5>
+                              <h5 className="font-semibold mb-2 text-black">Features</h5>
                               {(sections.projectManagement?.whyChoose?.features||[]).map((feature:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Feature Heading</Label>
@@ -3318,15 +3322,14 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="process">
-                        <AccordionTrigger>Process Section</AccordionTrigger>
-                        <AccordionContent>
+                        <AccordionTrigger className='text-black'>Process Section</AccordionTrigger>                        <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
                             <Input value={sections.projectManagement?.process?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), process:{ ...(s.projectManagement?.process||{}), heading:e.target.value } } }))} />
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.projectManagement?.process?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), process:{ ...(s.projectManagement?.process||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Process Steps</h5>
+                              <h5 className="font-semibold mb-2 text-black">Process Steps</h5>
                               {(sections.projectManagement?.process?.steps||[]).map((step:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Step Heading</Label>
@@ -3345,15 +3348,14 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="services">
-                        <AccordionTrigger>Services Section</AccordionTrigger>
-                        <AccordionContent>
+                        <AccordionTrigger className='text-black'>Services Section</AccordionTrigger>                        <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
                             <Input value={sections.projectManagement?.services?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), heading:e.target.value } } }))} />
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.projectManagement?.services?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), services:{ ...(s.projectManagement?.services||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Service Cards</h5>
+                              <h5 className="font-semibold mb-2 text-black">Service Cards</h5>
                               {(sections.projectManagement?.services?.serviceCards||[]).map((card:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -3406,15 +3408,14 @@ export default function AdminPagesEditor() {
                       </AccordionItem>
 
                       <AccordionItem value="cta">
-                        <AccordionTrigger>Final CTA</AccordionTrigger>
-                        <AccordionContent>
+                        <AccordionTrigger className='text-black'>Final CTA</AccordionTrigger>                        <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Section Heading</Label>
                             <Input value={sections.projectManagement?.cta?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), cta:{ ...(s.projectManagement?.cta||{}), heading:e.target.value } } }))} />
                             <Label className="mt-2 block">Section Paragraph</Label>
                             <Textarea rows={3} value={sections.projectManagement?.cta?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, projectManagement:{ ...(s.projectManagement||{}), cta:{ ...(s.projectManagement?.cta||{}), paragraph:e.target.value } } }))} />
                             <div className="mt-3">
-                              <h5 className="font-semibold mb-2">Buttons</h5>
+                              <h5 className="font-semibold mb-2 text-black">Buttons</h5>
                               {(sections.projectManagement?.cta?.buttons||[]).map((button:any, idx:number)=> (
                                 <div key={idx} className="border rounded p-3 mb-2">
                                   <Label>Button Text</Label>

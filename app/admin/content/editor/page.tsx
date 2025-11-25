@@ -356,7 +356,7 @@ function ContentEditorClient() {
               <div className="space-y-4">
                 <h3 className="font-medium">SEO Settings</h3>
                 <div className="space-y-4">
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-black">
                     <Label htmlFor="meta-title">Meta Title</Label>
                     <Input
                       id="meta-title"
@@ -483,7 +483,7 @@ function ContentEditorClient() {
                 Close
               </Button>
               <Button onClick={() => handleEditPage(selectedItem)}>
-                <Edit className="w-4 h-4 mr-2" />
+                <Edit className="w-4 h-4 mr-2 text-black" />
                 Edit Page
               </Button>
             </div>

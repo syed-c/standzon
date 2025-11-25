@@ -21,6 +21,7 @@ import { realExhibitions } from '@/lib/data/realExhibitions';
 import { GLOBAL_EXHIBITION_DATA } from '@/lib/data/globalCities';
 import { exhibitionBuilders, BuilderMatchingService } from '@/lib/data/exhibitionBuilders';
 import { FiCheckCircle, FiUsers, FiCalendar, FiMapPin, FiDollarSign, FiSend, FiStar, FiArrowRight, FiInfo, FiUpload, FiX, FiFile } from 'react-icons/fi';
+import { toast } from 'sonner';
 import { COUNTRY_CODES } from '@/lib/data/countryCodes';
 
 interface QuoteFormData {
@@ -554,8 +555,11 @@ export default function QuoteRequestContent() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50">
       <Navigation />
       <TradeStyleBanner 
-        title="Request a Quote" 
-        subtitle="Get a customized quote for your exhibition stand needs" 
+        badgeText="Get Customized Quotes"
+        mainHeading="Request a Quote for Your"
+        highlightHeading="Exhibition Stand Needs"
+        description="Tell us about your exhibition needs and we'll provide a customized quote"
+        showSearch={false}
       />
       
       <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12">

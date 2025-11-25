@@ -9,7 +9,8 @@
     "lint": "next lint",
     "test:builder-data": "node scripts/test-builder-data.js",
     "test:data-structure": "node scripts/test-data-structure.js",
-    "debug:builder-flow": "node scripts/debug-builder-flow.js"
+    "debug:builder-flow": "node scripts/debug-builder-flow.js",
+    "generate:sitemap": "node scripts/generate-full-sitemap.js"
   },
   "dependencies": {
     "@floating-ui/core": "^1.7.3",

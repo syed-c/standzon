@@ -1,8 +1,6 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://standszone.com/api/sitemap
-
 # Prevent crawling of admin pages
 Disallow: /admin/
 
@@ -14,3 +12,5 @@ Disallow: /auth/
 
 # Prevent crawling of debug pages
 Disallow: /debug/
+
+Sitemap: https://standszone.com/sitemap.xml

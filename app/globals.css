@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './light-theme.css';
+@import './theme-transitions.css';
+
 /* ✅ PERFORMANCE: Critical CSS for above-the-fold content */
 @layer base {
   /* Optimize font loading */
@@ -138,33 +141,42 @@
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
+  --background: 222.2 84% 4.9%; /* #0D1424 */
+  --foreground: 210 40% 98%; /* #FFFFFF */
 
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%; /* #131B2F */
+  --card-foreground: 210 40% 98%; /* #FFFFFF */
 
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%; /* #0D1424 */
+  --popover-foreground: 210 40% 98%; /* #FFFFFF */
 
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
+  --primary: 222.2 47.4% 11.2%; /* #3C4A6B */
+  --primary-foreground: 210 40% 98%; /* #FFFFFF */
 
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
+  --secondary: 217.2 32.6% 17.5%; /* #29344D */
+  --secondary-foreground: 210 40% 98%; /* #FFFFFF */
 
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
+  --muted: 217.2 32.6% 17.5%; /* #29344D */
+  --muted-foreground: 215 20.2% 65.1%; /* #AAB4C5 */
 
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
+  --accent: 217.2 32.6% 17.5%; /* #29344D */
+  --accent-foreground: 210 40% 98%; /* #FFFFFF */
 
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive: 0 84.2% 60.2%; /* #FF5C5C */
+  --destructive-foreground: 210 40% 98%; /* #FFFFFF */
 
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  --border: 217.2 32.6% 17.5%; /* rgba(255,255,255,0.09) */
+  --input: 217.2 32.6% 17.5%; /* #1E293B with opacity */
+  --ring: 222.2 47.4% 11.2%; /* #3C4A6B with opacity */
+
+  /* Text colors */
+  --text-primary: 210 40% 98%; /* #FFFFFF */
+  --text-secondary: 215 20.2% 65.1%; /* #AAB4C5 */
+  --text-muted: 215.4 16.3% 46.9%; /* #6B7280 */
+  --text-title: 210 40% 98%; /* #FFFFFF */
+  --text-warning: 40 100% 60%; /* #FFB020 */
+  --text-danger: 0 84.2% 60.2%; /* #FF5C5C */
+  --text-success: 142 76.2% 60.2%; /* #4ADE80 */
 }
 
 * {
@@ -307,12 +319,12 @@ button {
 
 /* ✅ FIXED: Default button styling for buttons without explicit colors */
 button:not([class*="bg-"]):not([class*="text-"]):not([class*="gradient"]) {
-  color: #374151 !important; /* Default gray-700 for visibility */
+  color: #fff !important; /* Default gray-700 for visibility */
 }
 
 /* ✅ FIXED: Ensure outline buttons always have visible text */
 button[class*="outline"]:not([class*="text-white"]) {
-  color: #374151 !important;
+  color: #fff !important;
 }
 
 /* ✅ FIXED: Exception for hero section buttons - preserve white text */
@@ -466,73 +478,12 @@ button[class*="outline"][class*="text-white"] span {
   color: #374151 !important;
 }
 
-/* ✅ CRITICAL FIX: Override all conflicting rules for location page buttons */
+/* ✅ CRITICAL FIX: Override all conflicting rules for white buttons */
 button[class*="hover:text-gray-900"] {
   color: #374151 !important;
 }
 button[class*="hover:text-gray-900"] span {
   color: #374151 !important;
-}
-
-/* ✅ FIXED: Emergency fallback - ensure all buttons have visible text */
-button:not([class*="text-transparent"]):not([class*="text-white"]) {
-  color: #374151 !important; /* gray-700 as fallback */
-}
-button[class*="text-white"] {
-  color: white !important;
-}
-
-/* ✅ CRITICAL FIX: Ensure white buttons with text are always visible */
-button[class*="bg-white"] {
-  background-color: white !important;
-  color: #374151 !important; /* gray-700 for visibility */
-}
-button[class*="bg-white"] span {
-  color: #374151 !important;
-}
-
-/* ✅ CRITICAL FIX: Override any conflicting rules for white buttons */
-button[class*="bg-white"][class*="text-"] {
-  background-color: white !important;
-}
-
-/* ✅ CRITICAL FIX: Specific rules for white buttons with blue text */
-button[class*="bg-white"][class*="text-blue-primary"] {
-  background-color: white !important;
-  color: #1d4ed8 !important; /* Darker blue for better contrast */
-}
-button[class*="bg-white"][class*="text-blue-primary"] span {
-  color: #1d4ed8 !important;
-}
-
-/* ✅ FIXED: Ensure small form buttons have better visibility */
-button[class*="text-xs"] {
-  border-width: 2px !important;
-  border-color: #d1d5db !important; /* gray-300 */
-}
-
-/* ✅ FIXED: Ensure green buttons maintain visibility */
-button[class*="text-green"] {
-  color: #059669 !important; /* green-600 for better contrast */
-}
-
-/* ✅ CRITICAL FIX: Ensure all navigation text is visible */
-nav button,
-nav a,
-.navigation button,
-.navigation a {
-  color: inherit !important;
-}
-
-/* ✅ CRITICAL FIX: Ensure dropdown menu text is visible */
-.dropdown-menu a,
-.dropdown-menu button {
-  color: #e5e7eb !important; /* Light gray for dark backgrounds */
-}
-
-.dropdown-menu a,
-.dropdown-menu button {
-  color: #f472b6 !important; /* Pink on hover - but we're removing hover */
 }
 
 /* ✅ CRITICAL FIX: Ensure all text elements have proper contrast */
@@ -860,4 +811,151 @@ a:focus {
 /* Fix double scroll specifically for homepage */
 .homepage-container {
   min-height: auto !important;
+}
+
+/* Admin Dashboard Dark Mode Styles */
+.dark .admin-dashboard {
+  @apply bg-[#0D1424] text-[#FFFFFF];
+}
+
+.dark .admin-dashboard .card {
+  @apply bg-[#131B2F] border border-[rgba(255,255,255,0.09)] rounded-xl shadow-[0_4px_14px_rgba(0,0,0,0.45)] transition-all duration-300;
+}
+
+.dark .admin-dashboard .card-header {
+  @apply border-b border-[rgba(255,255,255,0.09)] pb-4;
+}
+
+.dark .admin-dashboard .card-title {
+  @apply text-xl font-bold text-[#FFFFFF];
+}
+
+.dark .admin-dashboard .stat-card {
+  @apply bg-[#131B2F] border border-[rgba(255,255,255,0.09)] rounded-xl p-6 shadow-[0_4px_14px_rgba(0,0,0,0.45)] transition-all duration-300;
+}
+
+.dark .admin-dashboard .stat-value {
+  @apply text-3xl font-bold text-[#FFFFFF];
+}
+
+.dark .admin-dashboard .stat-label {
+  @apply text-[#AAB4C5] text-sm mt-1;
+}
+
+.dark .admin-dashboard .table-container {
+  @apply bg-[#131B2F] border border-[rgba(255,255,255,0.09)] rounded-xl shadow-[0_4px_14px_rgba(0,0,0,0.45)] overflow-hidden transition-all duration-300;
+}
+
+.dark .admin-dashboard table {
+  @apply w-full;
+}
+
+.dark .admin-dashboard th {
+  @apply text-left py-3 px-4 text-[#FFFFFF] font-semibold border-b border-[rgba(255,255,255,0.09)];
+}
+
+.dark .admin-dashboard td {
+  @apply py-3 px-4 border-b border-[rgba(255,255,255,0.09)];
+}
+
+.dark .admin-dashboard tr:last-child td {
+  @apply border-b-0;
+}
+
+.dark .admin-dashboard tr:hover td {
+  @apply bg-[#29344D];
+}
+
+.dark .admin-dashboard .button-primary {
+  @apply bg-[#3C4A6B] text-[#FFFFFF] font-medium rounded-lg px-4 py-2 transition-all duration-300 shadow-md hover:shadow-lg hover:bg-[#55689A];
+}
+
+.dark .admin-dashboard .button-secondary {
+  @apply bg-[#29344D] text-[#FFFFFF] font-medium rounded-lg px-4 py-2 transition-all duration-300 border border-[rgba(255,255,255,0.25)] hover:bg-[#3C4A6B] hover:border-[rgba(255,255,255,0.5)];
+}
+
+.dark .admin-dashboard .input-field {
+  @apply bg-[#1E293B] border border-[rgba(255,255,255,0.15)] rounded-lg px-4 py-2 text-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#3C4A6B] focus:border-transparent transition-all duration-300;
+}
+
+.dark .admin-dashboard .sidebar {
+  @apply bg-[#0D1424] border-r border-[rgba(255,255,255,0.12)];
+}
+
+.dark .admin-dashboard .sidebar-section-title {
+  @apply px-4 pb-2 text-xs tracking-wide font-semibold text-[#E2E8F0] uppercase;
+}
+
+.dark .admin-dashboard .sidebar-link {
+  @apply flex items-center justify-between px-4 py-3 rounded-lg text-sm text-[#E2E8F0] hover:bg-[#29344D] hover:text-[#FFFFFF] transition-all duration-300;
+}
+
+.dark .admin-dashboard .sidebar-link.active {
+  @apply bg-[#29344D] text-[#FFFFFF] border-l-4 border-[#3C4A6B];
+}
+
+.dark .admin-dashboard .topbar {
+  @apply bg-[#0D1424] border-b border-[rgba(255,255,255,0.12)];
+}
+
+.dark .admin-dashboard .topbar-button {
+  @apply px-4 py-2 rounded-lg text-sm bg-[#29344D] text-[#FFFFFF] hover:bg-[#3C4A6B] hover:text-[#FFFFFF] transition-all duration-300 border border-[rgba(255,255,255,0.25)];
+}
+
+/* Premium Dashboard Enhancements */
+.dark .admin-dashboard .glass-card {
+  @apply bg-[#131B2F] border border-[rgba(255,255,255,0.09)] rounded-2xl shadow-[0_4px_14px_rgba(0,0,0,0.45)] transition-all duration-300;
+}
+
+.dark .admin-dashboard .neon-accent {
+  @apply shadow-[0_0_15px_rgba(60,74,107,0.5)] transition-all duration-300;
+}
+
+.dark .admin-dashboard .smooth-shadow {
+  @apply shadow-[0_4px_12px_rgba(0,0,0,0.3)] transition-all duration-300;
+}
+
+.dark .admin-dashboard .hover-lift {
+  @apply hover:-translate-y-1 hover:shadow-xl transition-all duration-300;
+}
+
+.dark .admin-dashboard .pulse-animation {
+  @apply animate-pulse;
+}
+
+.dark .admin-dashboard .gradient-text {
+  @apply bg-gradient-to-r from-[#FFFFFF] to-[#AAB4C5] bg-clip-text text-transparent;
+}
+
+.dark .admin-dashboard .neon-border {
+  @apply border border-[rgba(255,255,255,0.09)] hover:border-[#3C4A6B]/70 transition-all duration-300;
+}
+
+/* Premium Dark Dashboard Enhancements */
+.dark .premium-dark-bg {
+  @apply bg-gradient-to-br from-[#0D1424] via-[#0D1424] to-[#0D1424];
+}
+
+.dark .premium-glass-card {
+  @apply bg-[#131B2F] border border-[rgba(255,255,255,0.09)] rounded-2xl shadow-[0_4px_14px_rgba(0,0,0,0.45)] transition-all duration-300;
+}
+
+.dark .premium-neon-border {
+  @apply border border-[rgba(255,255,255,0.09)] hover:border-[#3C4A6B]/80 transition-all duration-300;
+}
+
+.dark .premium-gradient-button {
+  @apply bg-[#3C4A6B] text-[#FFFFFF] font-medium rounded-xl px-6 py-3 transition-all duration-300 shadow-lg hover:shadow-xl hover:bg-[#55689A];
+}
+
+.dark .premium-icon-button {
+  @apply p-3 rounded-xl bg-[#29344D] border border-[rgba(255,255,255,0.09)] text-[#E2E8F0] hover:text-[#FFFFFF] hover:bg-[#3C4A6B] transition-all duration-300 shadow-md hover:shadow-lg;
+}
+
+.dark .premium-stat-card {
+  @apply bg-[#131B2F] border border-[rgba(255,255,255,0.09)] rounded-2xl p-6 shadow-[0_4px_14px_rgba(0,0,0,0.45)] transition-all duration-300;
+}
+
+.dark .premium-chart-container {
+  @apply bg-[#131B2F] border border-[rgba(255,255,255,0.09)] rounded-2xl p-6 shadow-[0_4px_14px_rgba(0,0,0,0.45)] transition-all duration-300;
 }
