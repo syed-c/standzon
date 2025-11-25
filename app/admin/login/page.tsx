@@ -131,7 +131,7 @@ export default function AdminLoginPage() {
     setError("");
     try {
       const allowedEmail = "sadiqzaidi123456@gmail.com";
-      const allowedPassword = "aDMIN@8899";
+      const allowedPassword = "superadmin@8899";
       if (email.trim().toLowerCase() === allowedEmail && password === allowedPassword) {
         const user = { id: "super-admin", email: allowedEmail, role: "super_admin" } as const;
         localStorage.setItem("currentUser", JSON.stringify({ ...user, isLoggedIn: true, loginMethod: "password" }));
