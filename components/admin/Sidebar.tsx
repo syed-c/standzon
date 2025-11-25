@@ -122,7 +122,7 @@ const sections: Section[] = [
     title: 'BUILDER MANAGEMENT',
     items: [
       { label: 'Smart Builders', href: '/admin/builders', icon: itemIcons['Smart Builders'] },
-      { label: 'Builder Analytics', href: '/admin/advanced/analytics', icon: itemIcons['Builder Analytics'] },
+      { label: 'Builder Analytics', href: '/admin/quote-matching-analytics', icon: itemIcons['Builder Analytics'] },
       { label: 'Claims & Builder Status', href: '/admin/profile-claims', icon: itemIcons['Claims & Builder Status'] },
       { label: 'Leads Management', href: '/admin/leads', icon: itemIcons['Leads Management'] },
     ],

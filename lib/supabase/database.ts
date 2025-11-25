@@ -5,56 +5,7 @@
  * and provides a unified interface to Supabase as the single source of truth.
  */
 
-import { createClient } from '@supabase/supabase-js';
 import { supabase, supabaseAdmin } from '@/lib/supabase/client';
-
-// Create Supabase clients
-export function createSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
-  
-  if (!url || !anonKey) {
-    console.error('Missing Supabase environment variables:');
-    console.error('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-    console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-    console.error('SUPABASE_URL:', process.env.SUPABASE_URL);
-    console.error('SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY);
-    throw new Error('Missing Supabase environment variables');
-  }
-  
-  return createClient(url, anonKey);
-}
-
-export function createSupabaseServiceClient() {
-  const url = process.env.SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  
-  if (!url || !serviceKey) {
-    // Log warning instead of error and return null
-    console.warn('Missing Supabase service role environment variables. Some admin features may not work.');
-    return null;
-  }
-  
-  return createClient(url, serviceKey);
-}
-
-// Export default client (only create if environment variables are available)
-let supabaseClient: any = null;
-let supabaseAdminClient: any = null;
-
-try {
-  supabaseClient = createSupabaseClient();
-} catch (error) {
-  console.warn('Supabase client not initialized:', error);
-}
-
-try {
-  supabaseAdminClient = createSupabaseServiceClient();
-} catch (error) {
-  console.warn('Supabase admin client not initialized:', error);
-}
-
-export { supabaseClient as supabase, supabaseAdminClient as supabaseAdmin };
 
 // Database service class
 export class DatabaseService {
@@ -62,7 +13,7 @@ export class DatabaseService {
 
   constructor() {
     // Use admin client if available (bypasses RLS), otherwise use regular client
-    this.client = supabaseAdmin || supabaseClient || supabaseAdminClient;
+    this.client = supabaseAdmin || supabase;
     if (!this.client) {
       console.warn('Supabase admin client not available, some admin features may not work properly.');
     }

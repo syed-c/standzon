@@ -403,7 +403,28 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   
   // Skip non-GET requests (except for background sync handling)
-  if (request.method !== 'GET' && request.method !== 'POST') {
+  if (request.method !== 'GET') {
+    // For POST requests, queue for background sync but don't try to cache them
+    if (request.method === 'POST') {
+      event.respondWith(
+        (async () => {
+          try {
+            const response = await fetch(request);
+            return response;
+          } catch (error) {
+            // Queue for background sync when offline
+            await queueForSync(request);
+            return new Response(JSON.stringify({ 
+              message: 'Request queued for background sync', 
+              queued: true 
+            }), {
+              status: 202,
+              headers: { 'Content-Type': 'application/json' }
+            });
+          }
+        })()
+      );
+    }
     return;
   }
   
@@ -444,18 +465,6 @@ self.addEventListener('fetch', (event) => {
         // Return offline page for navigation requests
         if (request.mode === 'navigate') {
           return caches.match('/offline.html');
-        }
-        
-        // For POST requests, queue for background sync
-        if (request.method === 'POST') {
-          await queueForSync(request);
-          return new Response(JSON.stringify({ 
-            message: 'Request queued for background sync', 
-            queued: true 
-          }), {
-            status: 202,
-            headers: { 'Content-Type': 'application/json' }
-          });
         }
         
         // Return a basic response for other requests

@@ -1,14 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-
-// Import the actual data from the CMS
-const { GLOBAL_EXHIBITION_DATA } = require('../lib/data/globalCities.ts');
+import { NextResponse } from 'next/server';
+import { GLOBAL_EXHIBITION_DATA } from '@/lib/data/globalCities';
 
 // Define the base URL for the site
 const BASE_URL = 'https://standszone.com';
 
 // Helper function to generate XML sitemap
-function generateSitemapXml() {
+function generateSitemapXml(): string {
   // Start with XML declaration and opening urlset tag
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -44,17 +41,17 @@ function generateSitemapXml() {
 `;
   });
 
-  // Add country pages from the actual CMS data
+  // Add ALL country pages from the CMS
   GLOBAL_EXHIBITION_DATA.countries.forEach(country => {
     xml += `  <url>
     <loc>${BASE_URL}/exhibition-stands/${country.slug}</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
 `;
   });
 
-  // Add city pages from the actual CMS data
+  // Add ALL city pages from the CMS
   GLOBAL_EXHIBITION_DATA.cities.forEach(city => {
     // Find the country slug for this city
     const country = GLOBAL_EXHIBITION_DATA.countries.find(c => c.name === city.country);
@@ -62,7 +59,7 @@ function generateSitemapXml() {
       xml += `  <url>
     <loc>${BASE_URL}/exhibition-stands/${country.slug}/${city.slug}</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 `;
     }
@@ -74,10 +71,13 @@ function generateSitemapXml() {
   return xml;
 }
 
-// Generate and save the sitemap
-const sitemapXml = generateSitemapXml();
-const sitemapPath = path.join(__dirname, '..', 'public', 'sitemap.xml');
+// GET handler for the sitemap
+export async function GET() {
+  const sitemapXml = generateSitemapXml();
 
-fs.writeFileSync(sitemapPath, sitemapXml);
-console.log(`Sitemap generated successfully at ${sitemapPath}`);
-console.log(`Total URLs: ${16 + GLOBAL_EXHIBITION_DATA.countries.length + GLOBAL_EXHIBITION_DATA.cities.length}`);
+  return new NextResponse(sitemapXml, {
+    headers: {
+      'Content-Type': 'application/xml',
+    },
+  });
+}

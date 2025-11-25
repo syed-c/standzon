@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { getServerSupabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,17 +33,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Initialize Supabase client
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabase = getServerSupabase();
     
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!supabase) {
       return NextResponse.json(
         { success: false, error: 'Supabase configuration missing' },
         { status: 500 }
       );
     }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Create unique filename
     const timestamp = Date.now();

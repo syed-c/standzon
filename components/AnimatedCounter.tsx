@@ -24,8 +24,6 @@ export default function AnimatedCounter({
   const isInView = useInView(ref, { once: true });
   
   useEffect(() => {
-    console.log("AnimatedCounter: Starting animation for", end);
-    
     if (isInView) {
       let startTime: number;
       const startValue = 0;

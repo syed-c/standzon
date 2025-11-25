@@ -2,23 +2,40 @@
  * Supabase Client - Simple client-side access
  * 
  * This provides a simple way to access Supabase from client-side components
+ * Uses singleton pattern to prevent multiple GoTrueClient instances
  */
 
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
+
+// Singleton instances
+let supabaseInstance: SupabaseClient | null = null;
+let supabaseAdminInstance: SupabaseClient | null = null;
 
 // Regular client for frontend operations (respects RLS)
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+export function getSupabaseClient(): SupabaseClient {
+  if (!supabaseInstance) {
+    supabaseInstance = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+  }
+  return supabaseInstance;
+}
 
 // Admin client for backend/admin operations (bypasses RLS)
-export const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY 
-  ? createClient(
+export function getSupabaseAdminClient(): SupabaseClient | null {
+  if (!supabaseAdminInstance && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    supabaseAdminInstance = createClient(
       process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
-  : null
+    );
+  }
+  return supabaseAdminInstance || null;
+}
+
+// Export the singleton instances
+export const supabase = getSupabaseClient();
+export const supabaseAdmin = getSupabaseAdminClient();
 
 // Helper function to check if Supabase is configured
 export function isSupabaseConfigured(): boolean {
@@ -33,7 +50,8 @@ export async function getCountries() {
     throw new Error('Supabase not configured');
   }
   
-  const { data, error } = await supabase
+  const client = getSupabaseClient();
+  const { data, error } = await client
     .from('countries')
     .select('*')
     .eq('active', true)
@@ -48,7 +66,8 @@ export async function getCitiesByCountry(countryCode: string) {
     throw new Error('Supabase not configured');
   }
   
-  const { data, error } = await supabase
+  const client = getSupabaseClient();
+  const { data, error } = await client
     .from('cities')
     .select('*')
     .eq('country_code', countryCode)
@@ -69,7 +88,7 @@ export async function getBuilders() {
     console.log('Fetching builders from Supabase...');
     
     // Use admin client if available (bypasses RLS)
-    const client = supabaseAdmin || supabase;
+    const client = getSupabaseAdminClient() || getSupabaseClient();
     
     // Try 'builder_profiles' table first
     const { data: data1, error: error1 } = await client
@@ -112,7 +131,8 @@ export async function getBuilderBySlug(slug: string) {
     throw new Error('Supabase not configured');
   }
   
-  const { data, error } = await supabase
+  const client = getSupabaseClient();
+  const { data, error } = await client
     .from('builder_profiles')
     .select('*')
     .eq('slug', slug)
@@ -127,7 +147,8 @@ export async function getExhibitions() {
     throw new Error('Supabase not configured');
   }
   
-  const { data, error } = await supabase
+  const client = getSupabaseClient();
+  const { data, error } = await client
     .from('exhibitions')
     .select('*')
     .eq('active', true)
@@ -142,7 +163,8 @@ export async function getExhibitionBySlug(slug: string) {
     throw new Error('Supabase not configured');
   }
   
-  const { data, error } = await supabase
+  const client = getSupabaseClient();
+  const { data, error } = await client
     .from('exhibitions')
     .select('*')
     .eq('slug', slug)
@@ -157,7 +179,8 @@ export async function getSiteSettings() {
     throw new Error('Supabase not configured');
   }
   
-  const { data, error } = await supabase
+  const client = getSupabaseClient();
+  const { data, error } = await client
     .from('site_settings')
     .select('*')
     .order('key');
@@ -171,7 +194,8 @@ export async function getSiteSetting(key: string) {
     throw new Error('Supabase not configured');
   }
   
-  const { data, error } = await supabase
+  const client = getSupabaseClient();
+  const { data, error } = await client
     .from('site_settings')
     .select('*')
     .eq('key', key)

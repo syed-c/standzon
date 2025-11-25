@@ -19,7 +19,6 @@ export default function AnimatedBackground() {
   const animationRef = useRef<number>(0);
 
   useEffect(() => {
-    console.log("AnimatedBackground: Initializing particles");
     const canvas = canvasRef.current;
     if (!canvas) return;
 

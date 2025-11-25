@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { getServerSupabase } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    // Create a Supabase client
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+    // Use the server-side Supabase client
+    const supabase = getServerSupabase();
     
-    console.log('Supabase URL:', supabaseUrl ? 'SET' : 'NOT SET');
-    console.log('Supabase Key:', supabaseKey ? 'SET' : 'NOT SET');
-    
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    if (!supabase) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Supabase client not configured' 
+      }, { status: 500 });
+    }
     
     // Try to fetch builders from builder_profiles table
     console.log('Attempting to fetch from builder_profiles...');
