@@ -70,27 +70,43 @@ export default function AddBuilderForm({ onSuccess, onCancel }: AddBuilderFormPr
     try {
       setLoading(true);
       
+      // Prepare data for submission by converting types appropriately
+      // We need to create a new object that matches the Builder interface
+      const submissionData: any = {};
+      
+      // Copy all fields first
+      Object.keys(formData).forEach(key => {
+        (submissionData as any)[key] = (formData as any)[key];
+      });
+      
       // Convert string numbers to actual numbers
-      const numericFields = ['team_size', 'projects_completed', 'rating', 'basic_stand_min', 'basic_stand_max', 'custom_stand_min', 'custom_stand_max', 'premium_stand_min', 'premium_stand_max', 'average_project'];
-      const processedData = { ...formData };
+      const numericFields = [
+        'team_size', 'projects_completed', 'rating', 
+        'basic_stand_min', 'basic_stand_max', 
+        'custom_stand_min', 'custom_stand_max', 
+        'premium_stand_min', 'premium_stand_max', 
+        'average_project'
+      ];
       
       numericFields.forEach(field => {
-        if (processedData[field as keyof typeof processedData]) {
-          const value = processedData[field as keyof typeof processedData] as string;
-          if (value.trim()) {
-            (processedData as any)[field] = parseFloat(value);
-          } else {
-            (processedData as any)[field] = null;
-          }
+        const value = (formData as any)[field];
+        if (typeof value === 'string' && value.trim()) {
+          (submissionData as any)[field] = parseFloat(value);
+        } else if (typeof value === 'string' && !value.trim()) {
+          (submissionData as any)[field] = null;
+        } else {
+          (submissionData as any)[field] = value;
         }
       });
 
       // Convert languages string to array
-      if (processedData.languages) {
-        processedData.languages = processedData.languages.split(',').map(lang => lang.trim()).filter(lang => lang);
+      if (formData.languages) {
+        submissionData.languages = formData.languages.split(',').map(lang => lang.trim()).filter(lang => lang);
+      } else {
+        submissionData.languages = [];
       }
 
-      await addBuilder(processedData);
+      await addBuilder(submissionData);
       
       toast({
         title: "Success",

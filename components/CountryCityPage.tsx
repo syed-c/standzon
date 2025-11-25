@@ -1208,7 +1208,7 @@ export function CountryCityPage({
                 )}
                 {paragraph && (
                   <div
-                    className="prose max-w-none leading-relaxed"
+                    className="prose max-w-none leading-relaxed text-gray-900"
                     dangerouslySetInnerHTML={{
                       __html: paragraph.replace(/\r?\n/g, "<br/>"),
                     }}
@@ -1255,7 +1255,7 @@ export function CountryCityPage({
                 )}
                 {paragraph && (
                   <div
-                    className="prose max-w-none leading-relaxed"
+                    className="prose max-w-none leading-relaxed text-gray-900"
                     dangerouslySetInnerHTML={{
                       __html: paragraph.replace(/\r?\n/g, "<br/>"),
                     }}
@@ -1352,7 +1352,7 @@ export function CountryCityPage({
                 </h2>
                 <p className="text-xl text-slate-300 mb-8">{paragraph}</p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button className="text-lg px-8 py-4">{buttonText}</Button>
+                  <Button className="text-lg px-8 py-4 text-black">{buttonText}</Button>
                   <Button
                     variant="outline"
                     size="lg"

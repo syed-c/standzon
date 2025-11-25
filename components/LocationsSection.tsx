@@ -237,7 +237,7 @@ export default function LocationsSection({
         {
           name: 'Oman',
           flag: '🇴🇲',
-          cities: ['Muscat', 'Salalah', 'Sohar'],
+          cities: ['Mascat', 'Salalah', 'Sohar'],
           builders: 28,
           rating: 4.4,
           projects: 90,
@@ -305,10 +305,10 @@ export default function LocationsSection({
             <button
               key={continent}
               onClick={() => setActiveTab(continent)}
-              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-black ${
                 activeTab === continent
                   ? `bg-gradient-to-r ${data.color} text-white shadow-lg transform scale-105`
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-pink-300'
+                  : 'bg-white text-black hover:bg-gray-50 border border-gray-200 hover:border-pink-300'
               } touch-active no-tap-highlight`}
             >
               <span className="text-xl">{data.icon}</span>
@@ -325,7 +325,7 @@ export default function LocationsSection({
                 <CardContent className="p-8">
                   {/* Country Header with Flag */}
                   <div className="text-center mb-6">
-                    <div className="text-6xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                    <div className="text-6xl mb-4 transform group-hover:scale-110 transition-transform duration-300 text-gray-900">
                       {country.flag}
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{country.name}</h3>

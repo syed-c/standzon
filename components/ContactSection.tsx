@@ -145,7 +145,7 @@ export default function ContactSection() {
           </div>
 
           {/* Contact Form */}
-          <Card className="lg:col-span-2 border-0 shadow-2xl">
+          <Card className="lg:col-span-2 border-0 shadow-2xl bg-white">
             <CardContent className="p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -204,14 +204,14 @@ export default function ContactSection() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-2">
+                    <label className="block text-sm font-medium text-gray-900 mb-2 bg-white">
                       Service Needed
                     </label>
                     <Select onValueChange={(value) => handleInputChange('service', value)}>
-                      <SelectTrigger className="border-gray-300 focus:border-pink-600 focus:ring-pink-600">
+                      <SelectTrigger className="border-gray-300 focus:border-pink-600 focus:ring-pink-600 bg-white">
                         <SelectValue placeholder="Select a service" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className='bg-white text-gray-900'>
                         <SelectItem value="custom-design">Custom Stand Design</SelectItem>
                         <SelectItem value="build-installation">Build & Installation</SelectItem>
                         <SelectItem value="global-services">Global Services</SelectItem>

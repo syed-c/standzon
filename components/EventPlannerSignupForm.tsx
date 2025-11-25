@@ -446,7 +446,7 @@ export default function EventPlannerSignupForm() {
           {currentStep === 1 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-xl font-semibold mb-4">Company Information</h2>
+                <h2 className="text-xl font-semibold mb-4 text-gray-900">Company Information</h2>
                 <p className="text-gray-600 mb-6">Tell us about your event planning company</p>
               </div>
 

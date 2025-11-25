@@ -451,7 +451,7 @@ export function EnhancedLocationPage({
                      index === 1 ? <Clock className="w-8 h-8 text-green-600" /> :
                      <DollarSign className="w-8 h-8 text-purple-600" />}
                   </div>
-                  <h3 className="text-xl font-semibold mb-4">{card.title}</h3>
+                  <h3 className="text-xl font-semibold mb-4 text-gray-900">{card.title}</h3>
                   <p className="text-gray-600">{card.text}</p>
                 </div>
               ))}
