@@ -159,14 +159,9 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
       
       // Filter builders for this country (with variations)
       builders = data.data.builders.filter((builder: any) => {
-        const servesCountry = builder.serviceLocations?.some((loc: any) =>
-          countryVariations.includes(loc.country)
-        );
-        const headquartersMatch = countryVariations.includes(
-          builder.headquarters?.country
-        );
-        
-        return servesCountry || headquartersMatch;
+        const headquartersCountry = builder.headquarters_country;
+        const headquartersMatch = countryVariations.includes(headquartersCountry);
+        return headquartersMatch;
       });
       
       // Deduplicate builders by ID

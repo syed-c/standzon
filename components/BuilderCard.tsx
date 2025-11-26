@@ -45,6 +45,9 @@ interface Builder {
     country: string;
     cities: string[];
   }>;
+  // Add flat fields for compatibility with Supabase data
+  headquarters_city?: string;
+  headquarters_country?: string;
 }
 
 interface BuilderCardProps {
@@ -160,7 +163,7 @@ function BuilderContactControls({ builder, location }: { builder: Builder; locat
       {/* Primary CTA - Request Quote */}
       <PublicQuoteRequest 
         builderId={builder.id}
-        location={`${builder.headquarters.city}, ${builder.headquarters.country}`}
+        location={`${builder.headquarters?.city || builder.headquarters_city || 'Unknown City'}, ${builder.headquarters?.country || builder.headquarters_country || 'Unknown Country'}`}
         buttonText="Request Quote"
         className="w-full bg-gradient-to-r from-pink-600 via-rose-600 to-pink-700 hover:from-pink-700 hover:via-rose-700 hover:to-pink-800 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl min-h-[44px] touch-active no-touch-hover"
       />
@@ -261,7 +264,10 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
                   </span>
                 ))
               ) : (
-                <span>{builder.headquarters.city}, {builder.headquarters.country}</span>
+                <span>
+                  {builder.headquarters?.city || builder.headquarters_city || 'Unknown City'}, 
+                  {builder.headquarters?.country || builder.headquarters_country || 'Unknown Country'}
+                </span>
               )}
             </div>
           </div>

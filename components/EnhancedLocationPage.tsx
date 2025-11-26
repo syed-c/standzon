@@ -117,11 +117,15 @@ export function EnhancedLocationPage({
             const cityMatch = builder.headquarters?.city?.toLowerCase() === city.toLowerCase() ||
               builder.serviceLocations?.some((loc: any) => 
                 loc.city?.toLowerCase() === city.toLowerCase()
-              );
+              ) ||
+              builder.headquarters_city?.toLowerCase() === city.toLowerCase(); // Handle flat structure
+              
             const countryMatch = builder.headquarters?.country?.toLowerCase() === country?.toLowerCase() ||
               builder.serviceLocations?.some((loc: any) => 
                 loc.country?.toLowerCase() === country?.toLowerCase()
-              );
+              ) ||
+              builder.headquarters_country?.toLowerCase() === country?.toLowerCase(); // Handle flat structure
+              
             return cityMatch && countryMatch;
           }
           
@@ -130,19 +134,54 @@ export function EnhancedLocationPage({
             return builder.headquarters?.country?.toLowerCase() === country.toLowerCase() ||
               builder.serviceLocations?.some((loc: any) => 
                 loc.country?.toLowerCase() === country.toLowerCase()
-              );
+              ) ||
+              builder.headquarters_country?.toLowerCase() === country?.toLowerCase(); // Handle flat structure
           }
           
           return false;
         });
         
+        // Transform builders to match expected interface
+        const transformedBuilders = locationBuilders.map((builder: any) => {
+          // If builder already has the nested headquarters structure, return as is
+          if (builder.headquarters && typeof builder.headquarters === 'object') {
+            return builder;
+          }
+          
+          // Otherwise, create the nested structure from flat fields
+          return {
+            ...builder,
+            headquarters: {
+              city: builder.headquarters_city || 'Unknown City',
+              country: builder.headquarters_country || 'Unknown Country'
+            }
+          };
+        });
+        
         if (isMounted) {
-          setFilteredBuilders(locationBuilders);
+          setFilteredBuilders(transformedBuilders);
         }
       } catch (error) {
         // Fallback to passed builders
         if (isMounted) {
-          setFilteredBuilders(finalBuilders);
+          // Transform the fallback builders as well
+          const transformedBuilders = finalBuilders.map((builder: any) => {
+            // If builder already has the nested headquarters structure, return as is
+            if (builder.headquarters && typeof builder.headquarters === 'object') {
+              return builder;
+            }
+            
+            // Otherwise, create the nested structure from flat fields
+            return {
+              ...builder,
+              headquarters: {
+                city: builder.headquarters_city || 'Unknown City',
+                country: builder.headquarters_country || 'Unknown Country'
+              }
+            };
+          });
+          
+          setFilteredBuilders(transformedBuilders);
         }
       }
     };

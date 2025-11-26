@@ -329,19 +329,15 @@ export default async function CityPage({ params }: CityPageProps) {
       
       // Filter builders for this city and country
       builders = data.data.builders.filter((builder: any) => {
-        // Check if builder serves this city and country
-        const servesCity = builder.serviceLocations?.some(
-          (loc: any) =>
-            countryVariations.includes(loc.country) &&
-            ((loc.cities && Array.isArray(loc.cities) && loc.cities.some((c: string) => c.toLowerCase().trim() === cityName.toLowerCase().trim())) ||
-             (loc.city && loc.city.toLowerCase().trim() === cityName.toLowerCase().trim()))
-        );
+        const headquartersCountry = builder.headquarters_country;
+        const headquartersCity = builder.headquarters_city;
+        
         const headquartersMatch =
-          countryVariations.includes(builder.headquarters?.country) &&
-          builder.headquarters?.city &&
-          builder.headquarters?.city.toLowerCase().trim() === cityName.toLowerCase().trim();
+          countryVariations.includes(headquartersCountry) &&
+          headquartersCity &&
+          headquartersCity.toLowerCase().trim() === cityName.toLowerCase().trim();
 
-        return servesCity || headquartersMatch;
+        return headquartersMatch;
       });
       
       // Deduplicate builders by ID

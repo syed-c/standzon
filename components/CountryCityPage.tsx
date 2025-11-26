@@ -130,17 +130,29 @@ export function CountryCityPage({
   showQuoteForm = false,
   hideCitiesSection = false,
 }: CountryCityPageProps) {
-  const [builders, setBuilders] = useState<Builder[]>(initialBuilders);
+  // Transform initial builders to ensure they have the correct structure
+  const transformedInitialBuilders = initialBuilders.map((builder: any) => {
+    // If builder already has the nested headquarters structure, return as is
+    if (builder.headquarters && typeof builder.headquarters === 'object') {
+      return builder;
+    }
+    
+    // Otherwise, create the nested structure from flat fields
+    return {
+      ...builder,
+      headquarters: {
+        city: builder.headquarters_city || builder.headquarters?.city || 'Unknown City',
+        country: builder.headquarters_country || builder.headquarters?.country || 'Unknown Country'
+      }
+    };
+  });
+  
+  const [builders, setBuilders] = useState<Builder[]>(transformedInitialBuilders);
   const [filteredBuilders, setFilteredBuilders] =
-    useState<Builder[]>(initialBuilders);
+    useState<Builder[]>(transformedInitialBuilders);
   
   // Debug logging
   console.log('🔍 CountryCityPage received initialBuilders:', initialBuilders.length);
-  console.log('🔍 CountryCityPage initialBuilders details:', initialBuilders.map(b => ({
-    companyName: b.companyName,
-    headquarters: b.headquarters,
-    verified: b.verified
-  })));
   const [cities, setCities] = useState<any[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>(city || "");
   const [currentPage, setCurrentPage] = useState(1);
