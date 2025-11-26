@@ -201,20 +201,8 @@ export default function BuilderProfileTemplate({ builder, isGmbImported, display
                           <p className="text-gray-700">{builder.teamSize} employees</p>
                         </div>
                       )}
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Email</h4>
-                        <p className="text-gray-700">{builder.contactInfo?.primaryEmail || 'Not provided'}</p>
-                      </div>
                     </div>
                     <div className="space-y-4">
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Phone</h4>
-                        <p className="text-gray-700">{builder.contactInfo?.phone || 'Not provided'}</p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Website</h4>
-                        <p className="text-gray-700">{builder.contactInfo?.website || 'Not provided'}</p>
-                      </div>
                       {builder.projectsCompleted && builder.projectsCompleted > 0 && (
                         <div>
                           <h4 className="font-medium text-gray-900 mb-2">Projects Completed</h4>

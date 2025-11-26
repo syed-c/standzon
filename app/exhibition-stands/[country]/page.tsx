@@ -99,8 +99,8 @@ async function getCountryPageContent(countrySlug: string) {
   return null;
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ country: string }> }): Promise<Metadata> {
-  const { country: countrySlug } = await params;
+export async function generateMetadata({ params }: { params: { country: string } }): Promise<Metadata> {
+  const { country: countrySlug } = params;
   const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
   
   if (!countryInfo) {
@@ -163,8 +163,8 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
   };
 }
 
-export default async function CountryPage({ params }: { params: Promise<{ country: string }> }) {
-  const { country: countrySlug } = await params;
+export default async function CountryPage({ params }: { params: { country: string } }) {
+  const { country: countrySlug } = params;
   const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
   
   if (!countryInfo) {
@@ -252,17 +252,17 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
     cities: [] // We'll populate this if needed
   };
 
-    return (
-      <div className="font-inter">
-        <Navigation />
-        <CountryCityPage
-          country={countryInfo.name}
-          initialBuilders={builders}
-          initialContent={mergedContent}
-          cmsContent={cmsContent}
-        />
-        <Footer />
-        <WhatsAppFloat />
-      </div>
-    );
-  }
+  return (
+    <div className="font-inter">
+      <Navigation />
+      <CountryCityPage
+        country={countryInfo.name}
+        initialBuilders={builders}
+        initialContent={mergedContent}
+        cmsContent={cmsContent}
+      />
+      <Footer />
+      <WhatsAppFloat />
+    </div>
+  );
+}

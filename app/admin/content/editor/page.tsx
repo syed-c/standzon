@@ -401,6 +401,7 @@ function ContentEditorClient() {
                       content: e.target.value
                     })}
                     rows={8}
+                    enableRichTools={true}
                   />
                 </div>
               </div>

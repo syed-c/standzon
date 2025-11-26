@@ -12,16 +12,23 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function AdminPortfolio() {
+  console.log(' AdminPortfolio component rendered');
+  
   // Simple client-side guard: require admin session in localStorage
   React.useEffect(() => {
+    console.log(' Checking admin authentication');
     try {
       const raw = typeof window !== 'undefined' ? localStorage.getItem('currentUser') : null;
       const user = raw ? JSON.parse(raw) : null;
       const isAdmin = !!user && (user.role === 'super_admin' || user.role === 'admin' || user.isAdmin);
       if (!isAdmin) {
+        console.log(' User is not admin, redirecting to login');
         window.location.href = '/admin/login';
+      } else {
+        console.log(' User is admin, proceeding');
       }
-    } catch {
+    } catch (error) {
+      console.log(' Error checking admin auth, redirecting to login', error);
       if (typeof window !== 'undefined') window.location.href = '/admin/login';
     }
   }, []);
@@ -31,6 +38,18 @@ export default function AdminPortfolio() {
   // Country and City options state
   const [countryOptions, setCountryOptions] = useState<Array<{ slug: string; name: string }>>([]);
   const [cityOptionsByCountry, setCityOptionsByCountry] = useState<Record<string, Array<{ slug: string; name: string }>>>({});
+  
+  // Log when country options change
+  useEffect(() => {
+    // Remove console.log statements to prevent potential infinite loops
+
+  }, [countryOptions]);
+  
+  // Log when city options change
+  useEffect(() => {
+    // Remove console.log statements to prevent potential infinite loops
+
+  }, [cityOptionsByCountry]);
   
   // Country Gallery Editors state
   const [selectedCountryForGallery, setSelectedCountryForGallery] = useState<string>('');
@@ -45,40 +64,72 @@ export default function AdminPortfolio() {
   const [loadingCityGallery, setLoadingCityGallery] = useState<boolean>(false);
   const [savingCityGallery, setSavingCityGallery] = useState<boolean>(false);
 
-  // Load country/city options
+  // Load country/city options from page_contents table
   useEffect(() => {
+    let isMounted = true;
+    
     (async () => {
       try {
-        const mod = await import('@/lib/data/globalCities');
-        // Ensure all countries are included, even those without major cities listed
-        const countries = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).map((c: any, index: number) => ({ 
-          slug: c.slug, 
-          name: c.name, 
-          index 
-        }));
+        // console.log('🔍 Attempting to fetch location data from API...');
         
-        // Build city options by country, including countries with no cities listed
-        const cities: Record<string, Array<{ slug: string; name: string }>> = {};
+        // Fetch all location data from our API endpoint
+        const response = await fetch('/api/admin/portfolio/locations');
         
-        // Initialize all countries with empty arrays
-        countries.forEach(country => {
-          cities[country.slug] = [];
-        });
-        
-        // Populate cities for countries that have them
-        (mod.GLOBAL_EXHIBITION_DATA?.cities || []).forEach((city: any) => {
-          const country = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).find((c: any) => c.name === city.country);
-          if (country && cities[country.slug]) {
-            cities[country.slug].push({ slug: city.slug, name: city.name });
+        if (!response.ok) {
+          const errorText = await response.text();
+          // console.error('❌ Error fetching location data:', errorText);
+          if (isMounted) {
+            toast({ 
+              title: 'Error', 
+              description: `Failed to fetch location data: ${response.status} ${response.statusText}`, 
+              variant: 'destructive' 
+            });
           }
-        });
+          return;
+        }
+
+        const result = await response.json();
         
-        setCountryOptions(countries);
-        setCityOptionsByCountry(cities);
-      } catch (error) {
-        console.error('Error loading country/city data:', error);
+        if (!result.success) {
+          // console.error('❌ Error in location data response:', result.error);
+          if (isMounted) {
+            toast({ 
+              title: 'Error', 
+              description: `Failed to fetch location data: ${result.error}`, 
+              variant: 'destructive' 
+            });
+          }
+          return;
+        }
+
+        // console.log(`✅ Successfully fetched location data`);
+        // console.log('📊 Countries:', result.countries.length);
+        // console.log('📊 Cities for Germany:', result.cities['germany']?.length || 0);
+        // console.log('📊 All city groups:', Object.keys(result.cities).length);
+
+        // Add a small delay to ensure state updates properly
+        setTimeout(() => {
+          if (isMounted) {
+            setCountryOptions(result.countries);
+            setCityOptionsByCountry(result.cities);
+            // console.log('✅ Country/city data loading complete');
+          }
+        }, 100);
+      } catch (error: any) {
+        // console.error('❌ Error loading country/city data:', error);
+        if (isMounted) {
+          toast({ 
+            title: 'Error', 
+            description: `Failed to load location data: ${error.message}`, 
+            variant: 'destructive' 
+          });
+        }
       }
     })();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const loadCountryGallery = async () => {
@@ -243,7 +294,26 @@ export default function AdminPortfolio() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Portfolio Management</h1>
               <p className="text-gray-600">Manage gallery images for country and city pages.</p>
+              {/* Debug info */}
+              <p className="text-sm text-gray-500 mt-1">
+                Countries: {countryOptions.length} | 
+                City Groups: {Object.keys(cityOptionsByCountry).length}
+              </p>
             </div>
+            {/* Test button to manually reload data */}
+            <Button onClick={async () => {
+              console.log(' Manually reloading location data...');
+              const response = await fetch('/api/admin/portfolio/locations');
+              const result = await response.json();
+              console.log(' Manual reload result:', result);
+              if (result.success) {
+                setCountryOptions(result.countries);
+                setCityOptionsByCountry(result.cities);
+                toast({ title: 'Success', description: 'Location data reloaded manually.' });
+              }
+            }}>
+              Reload Location Data
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -259,8 +329,8 @@ export default function AdminPortfolio() {
                   <Select value={selectedCountryForGallery} onValueChange={(v)=>setSelectedCountryForGallery(v)}>
                     <SelectTrigger className="w-full"><SelectValue placeholder="Choose a country" /></SelectTrigger>
                     <SelectContent className="max-h-80">
-                      {countryOptions.map((c, index) => (
-                        <SelectItem key={`country-${c.slug}-${index}`} value={c.slug}>{c.name}</SelectItem>
+                      {countryOptions.map((c) => (
+                        <SelectItem key={`country-${c.slug}`} value={c.slug}>{c.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -309,8 +379,8 @@ export default function AdminPortfolio() {
                   <Select value={selectedCountryForCityGallery} onValueChange={(v)=>{ setSelectedCountryForCityGallery(v); setSelectedCityForGallery(''); }}>
                     <SelectTrigger className="w-full"><SelectValue placeholder="Choose a country" /></SelectTrigger>
                     <SelectContent className="max-h-80">
-                      {countryOptions.map((c, index) => (
-                        <SelectItem key={`country-${c.slug}-${index}`} value={c.slug}>{c.name}</SelectItem>
+                      {countryOptions.map((c) => (
+                        <SelectItem key={`country-${c.slug}`} value={c.slug}>{c.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

@@ -5,13 +5,19 @@ import { cn } from '@/lib/utils';
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   disableRichTools?: boolean;
+  enableRichTools?: boolean; // New prop to explicitly enable rich tools
 }
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, disableRichTools, onChange, value, defaultValue, ...props }, ref) => {
+  ({ className, disableRichTools, enableRichTools, onChange, value, defaultValue, ...props }, ref) => {
     const innerRef = React.useRef<HTMLTextAreaElement | null>(null);
     React.useImperativeHandle(ref, () => innerRef.current as HTMLTextAreaElement);
     const [showPreview, setShowPreview] = React.useState(false);
+
+    // Determine if rich tools should be enabled
+    // By default, disable rich tools unless explicitly enabled
+    // For admin pages, we can enable them when needed
+    const shouldEnableRichTools = enableRichTools && !disableRichTools;
 
     const getCurrentValue = () => (value !== undefined ? String(value) : (innerRef.current?.value ?? String(defaultValue ?? '')));
 
@@ -49,19 +55,22 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     };
 
     const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
-        e.preventDefault();
-        onBold();
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        onLink();
+      // Only handle keyboard shortcuts if rich tools are enabled
+      if (shouldEnableRichTools) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+          e.preventDefault();
+          onBold();
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          onLink();
+        }
       }
     };
 
     return (
       <div className="w-full">
-        {!disableRichTools && (
+        {shouldEnableRichTools && (
           <div className="mb-1 flex items-center gap-2">
             <button type="button" onClick={onBold} className="px-2 py-1 text-xs rounded-button border-2 border-gray-300 hover:bg-gray-100 bg-white text-gray-700 hover:border-gray-400">Bold</button>
             <button type="button" onClick={onLink} className="px-2 py-1 text-xs rounded-button border-2 border-gray-300 hover:bg-gray-100 bg-white text-gray-700 hover:border-gray-400">Link</button>

@@ -246,8 +246,17 @@ class EnhancedFileBasedStorage {
           recoveryNeeded.push(file);
         } else {
           try {
-            const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-            if (!Array.isArray(data)) {
+            const data = fs.readFileSync(filePath, 'utf8');
+            
+            // Handle empty files
+            if (!data || data.trim() === '') {
+              console.log(`⚠️ Empty critical file: ${file}`);
+              recoveryNeeded.push(file);
+              continue;
+            }
+            
+            const parsed = JSON.parse(data);
+            if (!Array.isArray(parsed) && !(parsed._metadata && parsed.data)) {
               console.log(`⚠️ Invalid data structure in: ${file}`);
               recoveryNeeded.push(file);
             }
@@ -282,12 +291,40 @@ class EnhancedFileBasedStorage {
   private async recoverFromLatestBackup(filesToRecover: string[]) {
     try {
       const backups = fs.readdirSync(this.backupDir)
-        .filter((dir: string) => dir.startsWith('backup_'))
+        .filter((dir: string) => {
+          try {
+            const backupPath = path.join(this.backupDir, dir);
+            return dir.startsWith('backup_') && fs.existsSync(backupPath);
+          } catch {
+            return false;
+          }
+        })
         .sort()
         .reverse(); // Most recent first
 
       if (backups.length === 0) {
         console.log('⚠️ No backups available for recovery');
+        
+        // Create empty files with default structure
+        for (const file of filesToRecover) {
+          const filePath = this.getFilePath(file.replace('.json', ''));
+          try {
+            // Create empty array structure for JSON files
+            const emptyData = {
+              _metadata: {
+                timestamp: new Date().toISOString(),
+                version: '1.0',
+                checksum: this.generateChecksum(JSON.stringify([]))
+              },
+              data: []
+            };
+            fs.writeFileSync(filePath, JSON.stringify(emptyData, null, 2), 'utf8');
+            console.log(`✅ Created empty default file: ${file}`);
+          } catch (error) {
+            console.error(`❌ Failed to create default file ${file}:`, error);
+          }
+        }
+        
         return;
       }
 
@@ -302,11 +339,63 @@ class EnhancedFileBasedStorage {
         const targetFilePath = this.getFilePath(file.replace('.json', ''));
 
         if (fs.existsSync(backupFilePath)) {
-          fs.copyFileSync(backupFilePath, targetFilePath);
-          console.log(`✅ Recovered: ${file}`);
-          recoveredFiles++;
+          try {
+            // Check if backup file is valid
+            const backupData = fs.readFileSync(backupFilePath, 'utf8');
+            
+            // Handle empty backup files
+            if (!backupData || backupData.trim() === '') {
+              console.log(`⚠️ Backup file is empty: ${file}, creating default`);
+              const emptyData = {
+                _metadata: {
+                  timestamp: new Date().toISOString(),
+                  version: '1.0',
+                  checksum: this.generateChecksum(JSON.stringify([]))
+                },
+                data: []
+              };
+              fs.writeFileSync(targetFilePath, JSON.stringify(emptyData, null, 2), 'utf8');
+            } else {
+              // Validate JSON before copying
+              JSON.parse(backupData);
+              fs.copyFileSync(backupFilePath, targetFilePath);
+            }
+            
+            console.log(`✅ Recovered: ${file}`);
+            recoveredFiles++;
+          } catch (error) {
+            console.log(`⚠️ Backup file corrupted: ${file}, creating default`, error);
+            // Create empty default file
+            const emptyData = {
+              _metadata: {
+                timestamp: new Date().toISOString(),
+                version: '1.0',
+                checksum: this.generateChecksum(JSON.stringify([]))
+              },
+              data: []
+            };
+            fs.writeFileSync(targetFilePath, JSON.stringify(emptyData, null, 2), 'utf8');
+            console.log(`✅ Created empty default file: ${file}`);
+            recoveredFiles++;
+          }
         } else {
           console.log(`⚠️ Backup file not found: ${file}`);
+          // Create empty default file
+          try {
+            const emptyData = {
+              _metadata: {
+                timestamp: new Date().toISOString(),
+                version: '1.0',
+                checksum: this.generateChecksum(JSON.stringify([]))
+              },
+              data: []
+            };
+            fs.writeFileSync(targetFilePath, JSON.stringify(emptyData, null, 2), 'utf8');
+            console.log(`✅ Created empty default file: ${file}`);
+            recoveredFiles++;
+          } catch (error) {
+            console.error(`❌ Failed to create default file ${file}:`, error);
+          }
         }
       }
 
@@ -314,6 +403,26 @@ class EnhancedFileBasedStorage {
       
     } catch (error) {
       console.error('❌ Recovery from backup failed:', error);
+      
+      // Fallback: Create empty default files
+      console.log('🔄 Creating default empty files as fallback...');
+      for (const file of filesToRecover) {
+        const filePath = this.getFilePath(file.replace('.json', ''));
+        try {
+          const emptyData = {
+            _metadata: {
+              timestamp: new Date().toISOString(),
+              version: '1.0',
+              checksum: this.generateChecksum(JSON.stringify([]))
+            },
+            data: []
+          };
+          fs.writeFileSync(filePath, JSON.stringify(emptyData, null, 2), 'utf8');
+          console.log(`✅ Created empty default file: ${file}`);
+        } catch (error) {
+          console.error(`❌ Failed to create default file ${file}:`, error);
+        }
+      }
     }
   }
 
@@ -364,7 +473,7 @@ class EnhancedFileBasedStorage {
     }
   }
 
-  // ✅ ENHANCED: Read with checksum verification
+  // ✅ ENHANCED: Read with checksum verification and better empty file handling
   async readData(filename: string, defaultValue: any = null): Promise<any> {
     // ✅ Server-side only check
     if (typeof window !== 'undefined' || !fs || !path) {
@@ -381,6 +490,23 @@ class EnhancedFileBasedStorage {
       }
       
       const rawData = fs.readFileSync(filePath, 'utf8');
+      
+      // Handle empty files more robustly
+      if (!rawData || rawData.trim() === '') {
+        console.log(`📄 File ${filename}.json is empty, using default value`);
+        // Create a proper empty file with metadata to prevent future issues
+        const emptyData = {
+          _metadata: {
+            timestamp: new Date().toISOString(),
+            version: '1.0',
+            checksum: this.generateChecksum(JSON.stringify(defaultValue || []))
+          },
+          data: defaultValue || []
+        };
+        fs.writeFileSync(filePath, JSON.stringify(emptyData, null, 2), 'utf8');
+        return defaultValue || [];
+      }
+      
       const parsed = JSON.parse(rawData);
       
       // Handle both new format (with metadata) and legacy format
@@ -406,12 +532,35 @@ class EnhancedFileBasedStorage {
       if (fs && fs.existsSync(backupPath)) {
         try {
           const backupData = fs.readFileSync(backupPath, 'utf8');
+          
+          // Handle empty backup files
+          if (!backupData || backupData.trim() === '') {
+            console.log(`📄 Backup file ${filename}.json.backup is empty, using default value`);
+            return defaultValue;
+          }
+          
           const parsed = JSON.parse(backupData);
           console.log(`🔄 Restored data from backup: ${filename}.json.backup`);
           return parsed.data || parsed; // Handle both formats
         } catch (backupError) {
           console.error(`❌ Backup restore failed for ${filename}:`, backupError);
         }
+      }
+      
+      // As a last resort, create a proper empty file and return default value
+      try {
+        const emptyData = {
+          _metadata: {
+            timestamp: new Date().toISOString(),
+            version: '1.0',
+            checksum: this.generateChecksum(JSON.stringify(defaultValue || []))
+          },
+          data: defaultValue || []
+        };
+        fs.writeFileSync(filePath, JSON.stringify(emptyData, null, 2), 'utf8');
+        console.log(`✅ Created proper empty file for ${filename}.json`);
+      } catch (writeError) {
+        console.error(`❌ Failed to create empty file for ${filename}:`, writeError);
       }
       
       return defaultValue;

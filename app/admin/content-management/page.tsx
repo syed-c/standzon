@@ -488,6 +488,7 @@ export default function ContentManagementPage() {
                           })}
                           disabled={!isEditing}
                           rows={3}
+                          enableRichTools={true}
                         />
                       </div>
 
@@ -518,6 +519,7 @@ export default function ContentManagementPage() {
                               })}
                               disabled={!isEditing}
                               rows={3}
+                              enableRichTools={true}
                             />
                           </div>
                         </div>
@@ -625,6 +627,7 @@ export default function ContentManagementPage() {
                                     onChange={(e) => updateSection(selectedPage.id, section.id, { content: e.target.value })}
                                     disabled={!isEditing}
                                     rows={3}
+                                    enableRichTools={true}
                                   />
                                 </div>
                                 {isEditing && (

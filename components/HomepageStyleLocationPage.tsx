@@ -93,75 +93,71 @@ export function HomepageStyleLocationPage({
   useEffect(() => {
     const loadBuilders = async () => {
       try {
-        console.log(`🔍 Loading builders for ${city ? `${city}, ` : ''}${country}...`);
+        console.log(`🔍 Loading builders for ${city ? `${city}, ` : ''}${country} from unified platform...`);
         
-        const response = await fetch('/api/admin/builders');
-        const data = await response.json();
+        // Get all builders from unified platform (includes GMB imports, manual additions, etc.)
+        const allBuilders = unifiedPlatformAPI.getBuilders();
+        console.log(`📊 Total builders in unified platform: ${allBuilders.length}`);
         
-        if (data.success && data.data && data.data.builders) {
-          const allBuilders = data.data.builders;
-          console.log(`📊 Total builders in platform: ${allBuilders.length}`);
+        // Handle country name variations
+        const countryVariations = [country];
+        if (country === 'United Arab Emirates') {
+          countryVariations.push('UAE');
+        } else if (country === 'UAE') {
+          countryVariations.push('United Arab Emirates');
+        }
+        
+        // Filter builders for this country
+        const countryBuilders = allBuilders.filter((builder: any) => {
+          const servesCountry = builder.serviceLocations?.some((loc: any) => 
+            countryVariations.includes(loc.country)
+          );
+          const headquartersMatch = countryVariations.includes(builder.headquarters?.country);
           
-          // Handle country name variations
-          const countryVariations = [country];
-          if (country === 'United Arab Emirates') {
-            countryVariations.push('UAE');
-          } else if (country === 'UAE') {
-            countryVariations.push('United Arab Emirates');
+          return (servesCountry || headquartersMatch) && builder.status !== 'inactive';
+        });
+        
+        // Deduplicate builders by ID to ensure each builder appears only once per country
+        const builderMap = new Map();
+        countryBuilders.forEach((builder: any) => {
+          if (!builderMap.has(builder.id)) {
+            builderMap.set(builder.id, builder);
+          }
+        });
+
+        const uniqueBuilders = Array.from(builderMap.values());
+
+        // Extract cities from builders
+        const cityMap = new Map();
+        uniqueBuilders.forEach((builder: any) => {
+          // Add headquarters city
+          if (countryVariations.includes(builder.headquarters?.country) && builder.headquarters?.city) {
+            const cityName = builder.headquarters.city;
+            if (!cityMap.has(cityName)) {
+              cityMap.set(cityName, { name: cityName, slug: cityName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''), builderCount: 0 });
+            }
+            cityMap.get(cityName).builderCount++;
           }
           
-          // Filter builders for this country
-          const countryBuilders = allBuilders.filter((builder: any) => {
-            const servesCountry = builder.serviceLocations?.some((loc: any) => 
-              countryVariations.includes(loc.country)
-            );
-            const headquartersMatch = countryVariations.includes(builder.headquarters?.country);
-            
-            return servesCountry || headquartersMatch;
-          });
-          
-          // Deduplicate builders by ID to ensure each builder appears only once per country
-          const builderMap = new Map();
-          countryBuilders.forEach((builder: any) => {
-            builderMap.set(builder.id, builder);
-          });
-          
-          const uniqueBuilders = Array.from(builderMap.values());
-          
-          console.log(`📍 Found ${countryBuilders.length} total builder entries, deduplicated to ${uniqueBuilders.length} unique builders for ${country}`);
-          
-          // Extract cities for filtering
-          const citySet = new Set<string>();
-          uniqueBuilders.forEach((builder: any) => {
-            if (countryVariations.includes(builder.headquarters?.country) && builder.headquarters?.city) {
-              citySet.add(builder.headquarters.city);
-            }
-            builder.serviceLocations?.forEach((loc: any) => {
-              if (countryVariations.includes(loc.country) && loc.city) {
-                citySet.add(loc.city);
+          // Add service location cities
+          builder.serviceLocations?.forEach((loc: any) => {
+            if (countryVariations.includes(loc.country) && loc.city) {
+              const cityName = loc.city;
+              if (!cityMap.has(cityName)) {
+                cityMap.set(cityName, { name: cityName, slug: cityName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''), builderCount: 0 });
               }
-            });
+              cityMap.get(cityName).builderCount++;
+            }
           });
-          
-          const cityList = Array.from(citySet).sort().map(cityName => ({
-            name: cityName,
-            slug: cityName.toLowerCase().replace(/\s+/g, '-'),
-            builderCount: uniqueBuilders.filter((builder: any) => {
-              const servesCity = builder.serviceLocations?.some((loc: any) => 
-                countryVariations.includes(loc.country) && loc.city === cityName
-              );
-              const headquartersMatch = countryVariations.includes(builder.headquarters?.country) && 
-                                     builder.headquarters?.city === cityName;
-              return servesCity || headquartersMatch;
-            }).length
-          }));
-          
-          setCities(cityList);
-          setBuilders(uniqueBuilders);
-          setFilteredBuilders(uniqueBuilders);
-          
-          console.log(`✅ Loaded ${uniqueBuilders.length} unique builders for ${country}`);
-        }
+        });
+
+        const cityList = Array.from(cityMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+        
+        setCities(cityList);
+        setBuilders(uniqueBuilders);
+        setFilteredBuilders(uniqueBuilders);
+        
+        console.log(`✅ Loaded ${uniqueBuilders.length} unique builders for ${country}`);
       } catch (error) {
         console.error('❌ Error loading builders:', error);
       }

@@ -801,7 +801,7 @@ export default function BuildersDirectoryContent() {
                     <div className="p-6 pb-4">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center text-white font-bold">
+                          <div className="w-20 h-12 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center text-white font-bold">
                             {builder.companyName.charAt(0)}
                           </div>
                           <div>

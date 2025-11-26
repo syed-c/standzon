@@ -97,6 +97,8 @@ export default function AdminPagesEditor() {
 
   // Load country/city options once for gallery managers
   useEffect(() => {
+    let isMounted = true;
+    
     (async () => {
       try {
         const mod = await import('@/lib/data/globalCities');
@@ -118,16 +120,23 @@ export default function AdminPagesEditor() {
         // Populate cities for countries that have them
         (mod.GLOBAL_EXHIBITION_DATA?.cities || []).forEach((city: any) => {
           const country = (mod.GLOBAL_EXHIBITION_DATA?.countries || []).find((c: any) => c.name === city.country);
-          if (country && cities[country.slug]) {
+          if (isMounted && country && cities[country.slug]) {
             cities[country.slug].push({ slug: city.slug, name: city.name });
           }
         });
         
-        setCountryOptions(countries);
-        setCityOptionsByCountry(cities);
+        if (isMounted) {
+          setCountryOptions(countries);
+          setCityOptionsByCountry(cities);
+        }
       } catch (error) {
+        console.error('Error loading country/city options:', error);
       }
     })();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const loadPages = async () => {
@@ -174,24 +183,46 @@ export default function AdminPagesEditor() {
   };
 
   useEffect(() => {
-    try {
-    loadPages();
-    } catch (error) {
-    }
+    let isMounted = true;
     
-    // Load footer data
-    fetch('/api/admin/footer')
-      .then(r=>r.json())
-      .then(j=>{ if(j?.data) setFooter(j.data); })
-      .catch(()=>{});
-      
-    // Load any saved typography (kept inside sections.typography)
-    fetch('/api/admin/pages-editor?action=get-content&path=%2F')
-      .then(r=>r.json())
-      .then(j=>{
-        const t = j?.data?.sections?.typography;
-        if (t) setTypography(t);
-      }).catch(()=>{});
+    const loadAllData = async () => {
+      try {
+        // Load pages
+        if (isMounted) {
+          await loadPages();
+        }
+        
+        // Load footer data
+        if (isMounted) {
+          fetch('/api/admin/footer')
+            .then(r=>r.json())
+            .then(j=>{ 
+              if(isMounted && j?.data) setFooter(j.data); 
+            })
+            .catch(()=>{});
+        }
+        
+        // Load any saved typography (kept inside sections.typography)
+        if (isMounted) {
+          fetch('/api/admin/pages-editor?action=get-content&path=%2F')
+            .then(r=>r.json())
+            .then(j=>{
+              if (isMounted) {
+                const t = j?.data?.sections?.typography;
+                if (t) setTypography(t);
+              }
+            }).catch(()=>{});
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    };
+    
+    loadAllData();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
 
@@ -1067,7 +1098,7 @@ export default function AdminPagesEditor() {
                   </div>
                   <div className='text-black'>
                     <Label>Meta Description</Label>
-                    <Textarea rows={3} value={seoDescription} onChange={(e) => setSeoDescription(e.target.value)} placeholder="SEO Description" />
+                    <Textarea rows={3} value={seoDescription} onChange={(e) => setSeoDescription(e.target.value)} placeholder="SEO Description" enableRichTools={true} />
                   </div>
                   <div className='text-black'>
                     <Label>Meta Keywords (comma separated)</Label>
@@ -1214,7 +1245,7 @@ export default function AdminPagesEditor() {
                             <Label>Leads Section Heading</Label>
                             <Input value={sections.leadsIntro?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, leadsIntro:{ ...(s.leadsIntro||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Leads Section Paragraph</Label>
-                            <Textarea rows={3} value={sections.leadsIntro?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, leadsIntro:{ ...(s.leadsIntro||{}), paragraph:e.target.value } }))} />
+                            <Textarea rows={3} value={sections.leadsIntro?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, leadsIntro:{ ...(s.leadsIntro||{}), paragraph:e.target.value } }))} enableRichTools={true} />
                           </div>
                         </AccordionContent>
                       </AccordionItem>
@@ -1226,7 +1257,7 @@ export default function AdminPagesEditor() {
                             <Label>Leads CTA Heading</Label>
                             <Input value={sections.readyLeads?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, readyLeads:{ ...(s.readyLeads||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Leads CTA Paragraph</Label>
-                            <Textarea rows={3} value={sections.readyLeads?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, readyLeads:{ ...(s.readyLeads||{}), paragraph:e.target.value } }))} />
+                            <Textarea rows={3} value={sections.readyLeads?.paragraph||''} onChange={(e)=>setSections((s:any)=>({ ...s, readyLeads:{ ...(s.readyLeads||{}), paragraph:e.target.value } }))} enableRichTools={true} />
                             <div className="mt-2">
                               <h5 className="font-semibold mb-2 text-black">Buttons</h5>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1507,7 +1538,7 @@ export default function AdminPagesEditor() {
                             <Label>Hero H1</Label>
                             <Input value={sections.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Hero Description</Label>
-                            <Textarea rows={3} value={sections.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} />
+                            <Textarea rows={3} value={sections.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} enableRichTools={true} />
                           </div>
                         </AccordionContent>
                       </AccordionItem>
@@ -2631,6 +2662,7 @@ export default function AdminPagesEditor() {
                                           <Label className="text-sm font-medium text-gray-600">Builders Introduction</Label>
                                         <Textarea 
                                           className="mt-1"
+                                          enableRichTools={true}
                                             rows={4} 
                                             value={countryData?.buildersIntro || ''} 
                                           onChange={(e) => setSections((s: any) => ({
@@ -2723,6 +2755,7 @@ export default function AdminPagesEditor() {
                                       className="mt-1"
                                       rows={3}
                                       placeholder="Describe the exhibition stand services available in this city..."
+                                      enableRichTools={true}
                                       value={cityData?.heroDescription || ''}
                                       onChange={(e) => setSections((s: any) => ({
                                         ...s,
@@ -2779,6 +2812,7 @@ export default function AdminPagesEditor() {
                                       <Textarea
                                         className="mt-1"
                                         rows={4}
+                                        enableRichTools={true}
                                       placeholder="Introduce the local exhibition stand builders and their expertise..."
                                         value={cityData?.buildersIntro || ''}
                                         onChange={(e) => setSections((s: any) => ({
@@ -2831,6 +2865,7 @@ export default function AdminPagesEditor() {
                                       className="mt-1"
                                       rows={6}
                                       placeholder="Detail the services offered by local builders..."
+                                      enableRichTools={true}
                                       value={cityData?.servicesParagraph || ''}
                                       onChange={(e) => setSections((s: any) => ({
                                         ...s,

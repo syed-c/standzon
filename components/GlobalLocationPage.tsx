@@ -12,6 +12,8 @@ import BuilderCard from '@/components/BuilderCard';
 import LeadInquiryForm from '@/components/LeadInquiryForm';
 import GlobalLocationManager from '@/lib/utils/globalLocationManager';
 import type { ExhibitionCity, ExhibitionCountry } from '@/lib/data/globalCities';
+// Import the unified platform API to get real-time builder data
+import { unifiedPlatformAPI } from '@/lib/data/unifiedPlatformData';
 import { exhibitionBuilders } from '@/lib/data/exhibitionBuilders';
 import { 
   MapPin, Building, Calendar, Users, Award, Star,
@@ -57,55 +59,70 @@ export function GlobalLocationPage({ country, city, mode = 'global' }: GlobalLoc
   }, [country, city]);
 
   useEffect(() => {
-    // Filter builders based on location
-    let builders = exhibitionBuilders;
-    
-    if (city) {
-      // Filter by city
-      builders = builders.filter(builder => 
-        builder.headquarters.city.toLowerCase() === locationData.cityData?.name.toLowerCase() ||
-        builder.serviceLocations.some(loc => 
-          loc.city.toLowerCase() === locationData.cityData?.name.toLowerCase()
-        )
-      );
-    } else if (country) {
-      // Filter by country
-      builders = builders.filter(builder => 
-        builder.headquarters.country.toLowerCase() === locationData.countryData?.name.toLowerCase() ||
-        builder.serviceLocations.some(loc => 
-          loc.country.toLowerCase() === locationData.countryData?.name.toLowerCase()
-        )
-      );
-    }
+    // Filter builders based on location - NOW USING REAL-TIME DATA FROM UNIFIED PLATFORM
+    const loadBuilders = async () => {
+      try {
+        // Get all builders from unified platform (includes GMB imports, manual additions, etc.)
+        const allBuilders = unifiedPlatformAPI.getBuilders();
+        console.log(`📊 Found ${allBuilders.length} total builders from unified platform`);
+        
+        let builders = allBuilders;
+        
+        if (city) {
+          // Filter by city
+          builders = builders.filter(builder => 
+            (builder.headquarters?.city?.toLowerCase() === locationData.cityData?.name?.toLowerCase() ||
+            builder.serviceLocations?.some(loc => 
+              loc.city?.toLowerCase() === locationData.cityData?.name?.toLowerCase()
+            )) && builder.status !== 'inactive'
+          );
+        } else if (country) {
+          // Filter by country
+          builders = builders.filter(builder => 
+            (builder.headquarters?.country?.toLowerCase() === locationData.countryData?.name?.toLowerCase() ||
+            builder.serviceLocations?.some(loc => 
+              loc.country?.toLowerCase() === locationData.countryData?.name?.toLowerCase()
+            )) && builder.status !== 'inactive'
+          );
+        }
 
-    // Apply search filter
-    if (searchTerm) {
-      builders = builders.filter(builder =>
-        builder.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        builder.companyDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        builder.specializations.some(spec => 
-          spec.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
-    }
+        // Apply search filter
+        if (searchTerm) {
+          builders = builders.filter(builder =>
+            builder.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            builder.companyDescription?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            builder.specializations?.some(spec => 
+              spec.name?.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+          );
+        }
 
-    // Apply sorting
-    builders.sort((a, b) => {
-      switch (sortBy) {
-        case 'rating':
-          return b.rating - a.rating;
-        case 'reviews':
-          return b.reviewCount - a.reviewCount;
-        case 'projects':
-          return b.projectsCompleted - a.projectsCompleted;
-        case 'name':
-          return a.companyName.localeCompare(b.companyName);
-        default:
-          return 0;
+        // Apply sorting
+        builders.sort((a, b) => {
+          switch (sortBy) {
+            case 'rating':
+              return (b.rating || 0) - (a.rating || 0);
+            case 'reviews':
+              return (b.reviewCount || 0) - (a.reviewCount || 0);
+            case 'projects':
+              return (b.projectsCompleted || 0) - (a.projectsCompleted || 0);
+            case 'name':
+              return (a.companyName || '').localeCompare(b.companyName || '');
+            default:
+              return 0;
+          }
+        });
+
+        console.log(`📍 Found ${builders.length} builders for location: ${city || country}`);
+        setFilteredBuilders(builders);
+      } catch (error) {
+        console.error('Error loading builders:', error);
+        // Fallback to static data
+        setFilteredBuilders(exhibitionBuilders);
       }
-    });
+    };
 
-    setFilteredBuilders(builders);
+    loadBuilders();
   }, [searchTerm, sortBy, locationData, city, country]);
 
   const getPageTitle = () => {
@@ -129,9 +146,9 @@ export function GlobalLocationPage({ country, city, mode = 'global' }: GlobalLoc
   const builderStats = {
     totalBuilders: filteredBuilders.length,
     averageRating: filteredBuilders.length > 0 ? 
-      (filteredBuilders.reduce((sum, b) => sum + b.rating, 0) / filteredBuilders.length).toFixed(1) : '0',
-    totalProjects: filteredBuilders.reduce((sum, b) => sum + b.projectsCompleted, 0),
-    topRated: filteredBuilders.filter(b => b.rating >= 4.5).length
+      (filteredBuilders.reduce((sum, b) => sum + (b.rating || 0), 0) / filteredBuilders.length).toFixed(1) : '0',
+    totalProjects: filteredBuilders.reduce((sum, b) => sum + (b.projectsCompleted || 0), 0),
+    topRated: filteredBuilders.filter(b => (b.rating || 0) >= 4.5).length
   };
 
   return (
@@ -281,7 +298,7 @@ export function GlobalLocationPage({ country, city, mode = 'global' }: GlobalLoc
                       key={builder.id} 
                       builder={{
                         ...builder,
-                        planType: 'free' // Add missing planType property
+                        planType: builder.planType || 'free' // Add missing planType property
                       }}
                       currentPageLocation={{
                         country: country,
@@ -294,7 +311,7 @@ export function GlobalLocationPage({ country, city, mode = 'global' }: GlobalLoc
             </TabsContent>
 
             <TabsContent value="venues" className="space-y-6">
-              {locationData.cityData?.venues && locationData.cityData.venues.length > 0 ? (
+              {locationData.cityData?.venues && locationData.cityData?.venues.length > 0 ? (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {locationData.cityData.venues.map((venue, index) => (
                     <Card key={index}>

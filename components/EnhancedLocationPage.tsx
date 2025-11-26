@@ -14,6 +14,7 @@ import {
   TrendingUp, Award, CheckCircle, Zap, Globe,
   Calendar, DollarSign, Clock, Shield
 } from 'lucide-react';
+import { unifiedPlatformAPI } from '@/lib/data/unifiedPlatformData';
 
 interface LocationPageProps {
   country?: string;
@@ -70,6 +71,79 @@ export function EnhancedLocationPage({
   const [sortBy, setSortBy] = useState<'rating' | 'projects' | 'price'>('rating');
   const [cmsData, setCmsData] = useState<any>(null);
   const [isLoadingCms, setIsLoadingCms] = useState(false);
+  
+  // Load CMS data
+  useEffect(() => {
+    const loadCmsData = async () => {
+      if (!isEditable && !serverCmsContent) {
+        setIsLoadingCms(true);
+        try {
+          const res = await fetch(`/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(`/${isCity ? 'cities' : 'countries'}/${finalLocationName}`)}`);
+          const data = await res.json();
+          if (data?.success && data?.data) {
+            setCmsData(data.data);
+          }
+        } catch (error) {
+          console.warn('Failed to load CMS data:', error);
+        } finally {
+          setIsLoadingCms(false);
+        }
+      } else if (serverCmsContent) {
+        setCmsData(serverCmsContent);
+      }
+    };
+    
+    loadCmsData();
+  }, [isEditable, serverCmsContent, isCity, finalLocationName]);
+
+  // Load builders with real-time data
+  useEffect(() => {
+    const loadBuilders = async () => {
+      try {
+        // Get all builders from unified platform (includes GMB imports, manual additions, etc.)
+        const allBuilders = unifiedPlatformAPI.getBuilders();
+        console.log(`📊 Found ${allBuilders.length} total builders from unified platform`);
+        
+        // Filter active builders for this location
+        const locationBuilders = allBuilders.filter((builder: any) => {
+          // Skip inactive builders
+          if (builder.status === 'inactive') return false;
+          
+          // For city pages, match city and country
+          if (isCity && city) {
+            const cityMatch = builder.headquarters?.city?.toLowerCase() === city.toLowerCase() ||
+              builder.serviceLocations?.some((loc: any) => 
+                loc.city?.toLowerCase() === city.toLowerCase()
+              );
+            const countryMatch = builder.headquarters?.country?.toLowerCase() === country?.toLowerCase() ||
+              builder.serviceLocations?.some((loc: any) => 
+                loc.country?.toLowerCase() === country?.toLowerCase()
+              );
+            return cityMatch && countryMatch;
+          }
+          
+          // For country pages, match country only
+          if (country) {
+            return builder.headquarters?.country?.toLowerCase() === country.toLowerCase() ||
+              builder.serviceLocations?.some((loc: any) => 
+                loc.country?.toLowerCase() === country.toLowerCase()
+              );
+          }
+          
+          return false;
+        });
+        
+        console.log(`📍 Found ${locationBuilders.length} builders for location: ${city || country}`);
+        setFilteredBuilders(locationBuilders);
+      } catch (error) {
+        console.error('Error loading builders:', error);
+        // Fallback to passed builders
+        setFilteredBuilders(finalBuilders);
+      }
+    };
+    
+    loadBuilders();
+  }, [city, country, isCity, finalBuilders]);
 
   // Stabilize effect dependency on builders to avoid infinite update loops
   const buildersDepKey = useMemo(() => {

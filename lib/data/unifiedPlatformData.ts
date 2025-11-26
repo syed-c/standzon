@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import { v4 as uuidv4 } from 'uuid';
 
 // Unified Real-Time Platform Data System
@@ -629,47 +623,152 @@ export function getUnifiedDataManager(): UnifiedDataManager {
 export const unifiedPlatformAPI = {
   // Data access with lazy loading
   getAllData: async () => {
-    const manager = getUnifiedDataManager();
-    await manager.ensureInitialized();
-    return manager.getAllData();
+    try {
+      const manager = getUnifiedDataManager();
+      await manager.ensureInitialized();
+      return manager.getAllData();
+    } catch (error) {
+      console.error('❌ Error in getAllData:', error);
+      return { builders: [], eventPlanners: [], events: [], leads: [], quotes: [], users: [], stats: {} };
+    }
   },
   
   // ✅ FIXED: Provide both sync and async versions
   getBuilders: () => {
-    const manager = getUnifiedDataManager();
-    const builders = manager.getBuilders();
-    console.log(`📊 getBuilders() returning ${builders.length} builders synchronously`);
-    return builders;
+    try {
+      const manager = getUnifiedDataManager();
+      const builders = manager.getBuilders();
+      console.log(`📊 getBuilders() returning ${builders.length} builders synchronously`);
+      return builders;
+    } catch (error) {
+      console.error('❌ Error in getBuilders:', error);
+      return [];
+    }
   },
   
   getBuildersAsync: async () => {
-    const manager = getUnifiedDataManager();
-    await manager.ensureInitialized();
-    const builders = manager.getBuilders();
-    console.log(`📊 getBuildersAsync() returning ${builders.length} builders after initialization`);
-    return builders;
+    try {
+      const manager = getUnifiedDataManager();
+      await manager.ensureInitialized();
+      const builders = manager.getBuilders();
+      console.log(`📊 getBuildersAsync() returning ${builders.length} builders after initialization`);
+      return builders;
+    } catch (error) {
+      console.error('❌ Error in getBuildersAsync:', error);
+      return [];
+    }
   },
   
   // Data access
-  getBuilderById: (id: string) => getUnifiedDataManager().getBuilderById(id),
-  getLeads: () => getUnifiedDataManager().getLeads(),
-  getStats: () => getUnifiedDataManager().getStats(),
-  subscribe: (callback: (event: DataEvent) => void) => getUnifiedDataManager().subscribe(callback),
+  getBuilderById: (id: string) => {
+    try {
+      return getUnifiedDataManager().getBuilderById(id);
+    } catch (error) {
+      console.error('❌ Error in getBuilderById:', error);
+      return null;
+    }
+  },
+  getLeads: () => {
+    try {
+      return getUnifiedDataManager().getLeads();
+    } catch (error) {
+      console.error('❌ Error in getLeads:', error);
+      return [];
+    }
+  },
+  getStats: () => {
+    try {
+      return getUnifiedDataManager().getStats();
+    } catch (error) {
+      console.error('❌ Error in getStats:', error);
+      return {};
+    }
+  },
+  subscribe: (callback: (event: DataEvent) => void) => {
+    try {
+      return getUnifiedDataManager().subscribe(callback);
+    } catch (error) {
+      console.error('❌ Error in subscribe:', error);
+      // Return a no-op unsubscribe function
+      return () => {};
+    }
+  },
   
   // Builder operations
-  addBuilder: (builder: ExhibitionBuilder, source?: 'admin' | 'website') => getUnifiedDataManager().addBuilder(builder, source),
-  updateBuilder: (id: string, updates: Partial<ExhibitionBuilder>, source?: 'admin' | 'website') => getUnifiedDataManager().updateBuilder(id, updates, source),
-  deleteBuilder: (id: string, source?: 'admin' | 'website') => getUnifiedDataManager().deleteBuilder(id, source),
-  searchBuilders: (query: string) => getUnifiedDataManager().searchBuilders(query),
-  filterBuilders: (filters: any) => getUnifiedDataManager().filterBuilders(filters),
+  addBuilder: (builder: ExhibitionBuilder, source?: 'admin' | 'website') => {
+    try {
+      return getUnifiedDataManager().addBuilder(builder, source);
+    } catch (error) {
+      console.error('❌ Error in addBuilder:', error);
+      return { success: false, error: 'Failed to add builder' };
+    }
+  },
+  updateBuilder: (id: string, updates: Partial<ExhibitionBuilder>, source?: 'admin' | 'website') => {
+    try {
+      return getUnifiedDataManager().updateBuilder(id, updates, source);
+    } catch (error) {
+      console.error('❌ Error in updateBuilder:', error);
+      return { success: false, error: 'Failed to update builder' };
+    }
+  },
+  deleteBuilder: (id: string, source?: 'admin' | 'website') => {
+    try {
+      return getUnifiedDataManager().deleteBuilder(id, source);
+    } catch (error) {
+      console.error('❌ Error in deleteBuilder:', error);
+      return { success: false, error: 'Failed to delete builder' };
+    }
+  },
+  searchBuilders: (query: string) => {
+    try {
+      return getUnifiedDataManager().searchBuilders(query);
+    } catch (error) {
+      console.error('❌ Error in searchBuilders:', error);
+      return [];
+    }
+  },
+  filterBuilders: (filters: any) => {
+    try {
+      return getUnifiedDataManager().filterBuilders(filters);
+    } catch (error) {
+      console.error('❌ Error in filterBuilders:', error);
+      return [];
+    }
+  },
   
   // ✅ NEW: Lead operations
-  addLead: (lead: any) => getUnifiedDataManager().addLead(lead),
-  updateLead: (id: string, updates: any) => getUnifiedDataManager().updateLead(id, updates),
+  addLead: (lead: any) => {
+    try {
+      return getUnifiedDataManager().addLead(lead);
+    } catch (error) {
+      console.error('❌ Error in addLead:', error);
+      return { success: false, error: 'Failed to add lead' };
+    }
+  },
+  updateLead: (id: string, updates: any) => {
+    try {
+      return getUnifiedDataManager().updateLead(id, updates);
+    } catch (error) {
+      console.error('❌ Error in updateLead:', error);
+      return { success: false, error: 'Failed to update lead' };
+    }
+  },
   
   // Utility
-  clearAll: () => getUnifiedDataManager().clearAll(),
-  clearBuilders: () => getUnifiedDataManager().clearBuilders()
+  clearAll: () => {
+    try {
+      return getUnifiedDataManager().clearAll();
+    } catch (error) {
+      console.error('❌ Error in clearAll:', error);
+    }
+  },
+  clearBuilders: () => {
+    try {
+      return getUnifiedDataManager().clearBuilders();
+    } catch (error) {
+      console.error('❌ Error in clearBuilders:', error);
+    }
+  }
 };
 
 console.log('✅ Simplified Unified Platform Data System initialized')
