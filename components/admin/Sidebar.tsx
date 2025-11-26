@@ -100,6 +100,7 @@ const itemIcons: Record<string, React.ReactNode> = {
   // System Tools
   'System Logs': <FileText className="w-4 h-4" />,
   'Backup & Restore': <HardDrive className="w-4 h-4" />,
+  'Activities': <Activity className="w-4 h-4" />,
   
   // General
   'Pages Editor': <FileText className="w-4 h-4" />,
@@ -170,6 +171,8 @@ const sections: Section[] = [
     items: [
       { label: 'System Logs', href: '/admin/system-logs', icon: itemIcons['System Logs'] },
       { label: 'Backup & Restore', href: '/admin/backup', icon: itemIcons['Backup & Restore'] },
+      { label: 'Activities', href: '/admin/activities', icon: itemIcons['Activities'] },
+      { label: 'Test Activity Tracking', href: '/admin/test-activity', icon: <Activity className="w-4 h-4" /> },
     ],
   },
   {

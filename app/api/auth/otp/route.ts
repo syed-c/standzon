@@ -3,12 +3,13 @@ import { UserManager } from "@/lib/auth/config";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import { claimNotificationService } from "@/lib/email/emailService";
 import { v4 as uuidv4 } from 'uuid';
+import { logActivity } from '@/lib/database/activityLogAPI';
 
 // Add global type declaration
 declare global {
   var otpStorage: Map<
     string,
-    { code: string; expiry: Date; userType: string; userId?: string }
+    { code: string; epoch: number; userType: string; userId?: string }
   >;
 }
 
@@ -17,7 +18,7 @@ declare global {
 if (!global.otpStorage) {
   global.otpStorage = new Map<
     string,
-    { code: string; expiry: Date; userType: string; userId?: string }
+    { code: string; epoch: number; userType: string; userId?: string }
   >();
 }
 const otpStorage = global.otpStorage;
@@ -26,6 +27,7 @@ const otpStorage = global.otpStorage;
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const clientIp = request.headers.get('x-forwarded-for') || 'unknown';
     console.log("📧 OTP API received:", body);
 
     // Handle both old format (action) and new format (direct email/userType)
@@ -51,13 +53,13 @@ export async function POST(request: NextRequest) {
       // Generate 6-digit OTP
       const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
       console.log("Generated OTP:", otpCode);
-      const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes (increased from 5)
+      const expiry = Date.now() + 10 * 60 * 1000; // 10 minutes (increased from 5)
 
       // Store OTP
-      otpStorage.set(email, { code: otpCode, expiry, userType });
+      otpStorage.set(email, { code: otpCode, epoch: expiry, userType });
 
       console.log(
-        `🔐 Generated OTP ${otpCode} for ${email} (expires: ${expiry.toISOString()}) userType: ${userType}`
+        `🔐 Generated OTP ${otpCode} for ${email} (expires: ${new Date(expiry).toISOString()}) userType: ${userType}`
       );
 
       // ✅ DEMO MODE: Return OTP in response for testing
@@ -110,13 +112,22 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      // Log the login attempt
+      await logActivity(
+        email,
+        'login_attempt',
+        'Authentication',
+        `OTP generated for ${userType} user`,
+        request
+      );
+
       return NextResponse.json({
         success: true,
         message: isDemoMode
           ? "OTP generated successfully. Check the response for your verification code."
           : "OTP sent successfully to your email",
         data: {
-          expiresAt: expiry.toISOString(),
+          expiresAt: new Date(expiry).toISOString(),
           email,
           // ✅ DEMO: Always include OTP in development mode for testing
           ...(isDemoMode && {
@@ -148,6 +159,16 @@ export async function POST(request: NextRequest) {
 
       if (!storedData) {
         console.log("❌ No OTP found for email:", email);
+        
+        // Log failed login attempt
+        await logActivity(
+          email,
+          'failed_login',
+          'Authentication',
+          'No OTP found for email',
+          request
+        );
+        
         return NextResponse.json(
           {
             success: false,
@@ -157,15 +178,25 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      if (new Date() > storedData.expiry) {
+      if (Date.now() > storedData.epoch) {
         console.log("❌ OTP expired for email:", email);
         otpStorage.delete(email);
+        
+        // Log failed login attempt
+        await logActivity(
+          email,
+          'failed_login',
+          'Authentication',
+          'OTP expired',
+          request
+        );
+        
         return NextResponse.json(
           {
             success: false,
             error: "OTP has expired. Please request a new one.",
             debug: process.env.NODE_ENV === "development" ? {
-              expiredAt: storedData.expiry.toISOString(),
+              expiredAt: new Date(storedData.epoch).toISOString(),
               currentTime: new Date().toISOString()
             } : undefined
           },
@@ -196,189 +227,92 @@ export async function POST(request: NextRequest) {
           userType
         );
         
+        // Log failed login attempt
+        await logActivity(
+          email,
+          'failed_login',
+          'Authentication',
+          'Invalid OTP or user type',
+          request
+        );
+        
         // For debugging purposes, log the full stored data
         console.log("Stored OTP data:", {
-          ...storedData,
-          code: "REDACTED" // Don't log the actual code in production
+          code: storedData.code,
+          expiry: new Date(storedData.epoch).toISOString(),
+          userType: storedData.userType,
         });
-        
+
         return NextResponse.json(
           {
             success: false,
-            error: "Invalid OTP",
+            error: "Invalid OTP or user type",
             debug: process.env.NODE_ENV === "development" ? {
-              expectedLength: normalizedStoredOTP.length,
-              receivedLength: normalizedInputOTP.length,
-              match: normalizedStoredOTP === normalizedInputOTP
+              expectedOTP: storedData.code,
+              receivedOTP: otp,
+              expectedUserType: storedData.userType,
+              receivedUserType: userType,
             } : undefined
           },
           { status: 400 }
         );
       }
 
-      // OTP is valid - find user and authenticate
-      let user = null;
-
-      try {
-        if (userType === "admin") {
-          if (email === process.env.ADMIN_EMAIL) {
-            user = {
-              id: uuidv4(), // Changed from hardcoded string to proper UUID v4
-              email: email,
-              name: "System Administrator",
-              role: "admin",
-              verified: true,
-            };
-          }
-        } else if (userType === "builder") {
-          let builder = null;
-          
-          // First try unified platform
-          const builders = unifiedPlatformAPI.getBuilders();
-          builder = builders?.find(
-            (b) =>
-              b?.contactInfo?.primaryEmail?.toLowerCase() === email.toLowerCase()
-          );
-
-          // If not found in unified platform, check Supabase directly
-          if (!builder) {
-            try {
-              const { getServerSupabase } = await import('@/lib/supabase');
-              const sb = getServerSupabase();
-              
-              if (sb) {
-                console.log('🔍 Checking Supabase for builder with email:', email);
-                const { data: supabaseBuilder, error } = await sb
-                  .from('builder_profiles')
-                  .select('*')
-                  .eq('primary_email', email.toLowerCase())
-                  .single();
-                
-                if (error) {
-                  console.log('❌ Supabase error:', error);
-                } else if (supabaseBuilder) {
-                  builder = {
-                    id: supabaseBuilder.id,
-                    companyName: supabaseBuilder.company_name,
-                    contactInfo: {
-                      primaryEmail: supabaseBuilder.primary_email,
-                      contactPerson: supabaseBuilder.contact_person || '',
-                    },
-                    verified: supabaseBuilder.verified || false,
-                    // Add default auth data since Supabase doesn't store passwords
-                    authData: {
-                      password: 'password' // Default password for Supabase builders
-                    }
-                  };
-                  console.log('✅ Found builder in Supabase:', builder.companyName);
-                }
-              }
-            } catch (supabaseError) {
-              console.error('❌ Error checking Supabase:', supabaseError);
-            }
-          }
-
-          if (builder) {
-            user = {
-              id: builder.id,
-              email: builder.contactInfo.primaryEmail,
-              name: builder.contactInfo.contactPerson || builder.companyName,
-              role: "builder",
-              companyName: builder.companyName,
-              verified: builder.verified || false,
-            };
-          } else {
-            // Provisional user for newly registering builders
-            // Try to find the builder by email to get the correct ID
-            try {
-              const safeEmail = email || '';
-              const username = safeEmail.includes("@") ? safeEmail.split("@")[0] : safeEmail;
-              
-              // Look for the builder in the database by email
-              const { getServerSupabase } = await import('@/lib/supabase');
-              const sb = getServerSupabase();
-              
-              if (sb) {
-                const { data: builderProfile } = await sb
-                  .from('builder_profiles')
-                  .select('id, company_name')
-                  .eq('primary_email', safeEmail)
-                  .single();
-                
-                if (builderProfile) {
-                  console.log('✅ Found builder profile for OTP verification:', builderProfile);
-                  user = {
-                    id: builderProfile.id, // Use the actual builder ID from database
-                    email: safeEmail,
-                    name: builderProfile.company_name || username,
-                    role: "builder",
-                    verified: true,
-                  };
-                } else {
-                  console.log('⚠️ No builder profile found, using fallback ID');
-                  // Changed from base64 encoding to UUID v4 to comply with project specification
-                  user = {
-                    id: uuidv4(), // Generate proper UUID v4 instead of string-based ID
-                    email: safeEmail,
-                    name: username,
-                    role: "builder",
-                    verified: true,
-                  };
-                }
-              } else {
-                console.log('⚠️ Supabase not available, using fallback ID');
-                user = {
-                  id: uuidv4(), // Generate proper UUID v4 instead of string-based ID
-                  email: email || '',
-                  name: "New Builder",
-                  role: "builder",
-                  verified: true,
-                };
-              }
-            } catch (encodeError) {
-              console.error("❌ Error creating provisional user ID:", encodeError);
-              user = {
-                id: uuidv4(), // Generate proper UUID instead of string-based ID
-                email: email || '',
-                name: "New Builder",
-                role: "builder",
-                verified: true,
-              };
-            }
-          }
-        }
-      } catch (userError) {
-        console.error("❌ Error finding user:", userError);
-        return NextResponse.json(
-          {
-            success: false,
-            error: "Error processing user information",
-          },
-          { status: 500 }
-        );
-      }
-
-      if (!user) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "User not found or invalid user type",
-          },
-          { status: 404 }
-        );
-      }
-
-      // Don't delete OTP immediately - let it expire naturally
-      // This prevents issues with multiple verification attempts from frontend
+      // Successful verification
       console.log("✅ OTP verified successfully for:", email);
+      otpStorage.delete(email); // Remove used OTP
+
+      // Create user object
+      let user;
+      if (userType === "admin") {
+        // For admin users, create a simplified user object
+        user = {
+          id: `admin-${email.replace(/[^a-zA-Z0-9]/g, '-')}`,
+          email: email,
+          role: email === "sadiqzaidi123456@gmail.com" ? "super_admin" : "admin",
+          name: email.split("@")[0],
+        };
+      } else {
+        // For builder users, get from unified data system
+        const builders = unifiedPlatformAPI.getBuilders();
+        const builder = builders.find(
+          (b: any) => b.contactInfo?.primaryEmail?.toLowerCase() === email.toLowerCase()
+        );
+        
+        if (builder) {
+          user = {
+            id: builder.id,
+            email: email,
+            role: "builder",
+            name: builder.companyName || email.split("@")[0],
+            builderId: builder.id,
+          };
+        } else {
+          // Create a basic user if not found
+          user = {
+            id: `user-${email.replace(/[^a-zA-Z0-9]/g, '-')}`,
+            email: email,
+            role: "user",
+            name: email.split("@")[0],
+          };
+        }
+      }
+
+      // Log successful login
+      await logActivity(
+        email,
+        'login',
+        'Authentication',
+        `Successful ${userType} login`,
+        request
+      );
 
       return NextResponse.json({
         success: true,
         message: "OTP verified successfully",
         data: {
-          user,
-          userType,
-          email,
+          user: user,
+          token: "temp-token", // In a real app, this would be a JWT
         },
       });
     } else {
@@ -390,12 +324,13 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-  } catch (error) {
-    console.error("❌ Error in OTP API:", error);
+  } catch (error: any) {
+    console.error("❌ OTP API error:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to process OTP request",
+        error: "Internal server error",
+        details: process.env.NODE_ENV === "development" ? error.message : undefined,
       },
       { status: 500 }
     );

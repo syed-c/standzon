@@ -98,11 +98,14 @@ export function EnhancedLocationPage({
 
   // Load builders with real-time data
   useEffect(() => {
+    let isMounted = true;
+    
     const loadBuilders = async () => {
+      if (!isMounted) return;
+      
       try {
         // Get all builders from unified platform (includes GMB imports, manual additions, etc.)
         const allBuilders = unifiedPlatformAPI.getBuilders();
-        console.log(`📊 Found ${allBuilders.length} total builders from unified platform`);
         
         // Filter active builders for this location
         const locationBuilders = allBuilders.filter((builder: any) => {
@@ -133,16 +136,22 @@ export function EnhancedLocationPage({
           return false;
         });
         
-        console.log(`📍 Found ${locationBuilders.length} builders for location: ${city || country}`);
-        setFilteredBuilders(locationBuilders);
+        if (isMounted) {
+          setFilteredBuilders(locationBuilders);
+        }
       } catch (error) {
-        console.error('Error loading builders:', error);
         // Fallback to passed builders
-        setFilteredBuilders(finalBuilders);
+        if (isMounted) {
+          setFilteredBuilders(finalBuilders);
+        }
       }
     };
     
     loadBuilders();
+    
+    return () => {
+      isMounted = false;
+    };
   }, [city, country, isCity, finalBuilders]);
 
   // Stabilize effect dependency on builders to avoid infinite update loops
@@ -185,6 +194,8 @@ export function EnhancedLocationPage({
   }, [finalCountryName, finalLocationName]);
 
   useEffect(() => {
+    let isMounted = true;
+    
     // De-duplicate builders by normalized key (prefer verified, higher reviews)
     const pickPreferred = (a: any, b: any) => {
       if ((a.verified ? 1 : 0) !== (b.verified ? 1 : 0)) return (a.verified ? -1 : 1);
@@ -229,52 +240,57 @@ export function EnhancedLocationPage({
     }
 
     // Only update state when content actually changes to prevent re-render loops
-    setFilteredBuilders((prev: any[]) => {
-      if (prev === sorted) return prev;
-      if (!prev || prev.length !== sorted.length) return sorted;
-      // shallow compare by stable keys
-      let identical = true;
-      for (let i = 0; i < sorted.length; i++) {
-        const a = prev[i];
-        const b = sorted[i];
-        const aKey = a?.id || a?.slug || a?.companyName;
-        const bKey = b?.id || b?.slug || b?.companyName;
-        if (aKey !== bKey) { identical = false; break; }
-      }
-      return identical ? prev : sorted;
-    });
-  }, [sortBy, buildersDepKey]);
+    if (isMounted) {
+      setFilteredBuilders((prev: any[]) => {
+        if (prev === sorted) return prev;
+        if (!prev || prev.length !== sorted.length) return sorted;
+        // shallow compare by stable keys
+        let identical = true;
+        for (let i = 0; i < sorted.length; i++) {
+          const a = prev[i];
+          const b = sorted[i];
+          const aKey = a?.id || a?.slug || a?.companyName;
+          const bKey = b?.id || b?.slug || b?.companyName;
+          if (aKey !== bKey) { identical = false; break; }
+        }
+        return identical ? prev : sorted;
+      });
+    }
+  }, [sortBy, buildersDepKey, isCity]);
 
   // Initialize CMS data with server-side content if available
   useEffect(() => {
+    let isMounted = true;
+    
     if (serverCmsContent) {
-      console.log("✅ Using server-side CMS content:", serverCmsContent);
-      // When on a city page, prefer cityPages[country-city] if provided, else treat the payload as the city block
-      if (isCity) {
-        const slugify = (s: string) => s?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || '';
-        const citySlug = slugify(finalLocationName);
-        const cityKey = `${countrySlug}-${citySlug}`;
-        const cityBlock = (serverCmsContent as any)?.sections?.cityPages?.[cityKey] || serverCmsContent;
-        setCmsData({
-          sections: {
-            cityPages: {
-              [cityKey]: cityBlock
+      if (isMounted) {
+        // When on a city page, prefer cityPages[country-city] if provided, else treat the payload as the city block
+        if (isCity) {
+          const slugify = (s: string) => s?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || '';
+          const citySlug = slugify(finalLocationName);
+          const cityKey = `${countrySlug}-${citySlug}`;
+          const cityBlock = (serverCmsContent as any)?.sections?.cityPages?.[cityKey] || serverCmsContent;
+          setCmsData({
+            sections: {
+              cityPages: {
+                [cityKey]: cityBlock
+              }
             }
-          }
-        });
-      } else {
-        // For country pages, serverCmsContent should already be structured correctly
-        // or we need to extract the country-specific data
-        const countryData = (serverCmsContent as any)?.sections?.countryPages?.[countrySlug] || serverCmsContent;
-        setCmsData({
-          sections: {
-            countryPages: {
-              [countrySlug]: countryData
+          });
+        } else {
+          // For country pages, serverCmsContent should already be structured correctly
+          // or we need to extract the country-specific data
+          const countryData = (serverCmsContent as any)?.sections?.countryPages?.[countrySlug] || serverCmsContent;
+          setCmsData({
+            sections: {
+              countryPages: {
+                [countrySlug]: countryData
+              }
             }
-          }
-        });
+          });
+        }
+        setIsLoadingCms(false);
       }
-      setIsLoadingCms(false);
       return;
     }
 
@@ -282,43 +298,37 @@ export function EnhancedLocationPage({
     const fetchCmsData = async () => {
       if (!finalCountryName && !isCity) return; // Only fetch for country pages
       
-      setIsLoadingCms(true);
+      if (isMounted) {
+        setIsLoadingCms(true);
+      }
+      
       try {
-        console.log("🔍 Fetching CMS data for country:", countrySlug);
-        
         const res = await fetch(
           `/api/admin/pages-editor?action=get-content&path=/exhibition-stands/${countrySlug}`,
           { cache: "no-store" }
         );
         const data = await res.json();
-        console.log("📡 CMS API response:", data);
         
-        if (data?.success && data?.data) {
-          console.log("✅ Loaded CMS data for country:", countrySlug, data.data);
-          console.log("🏳️ Country pages data:", data.data?.sections?.countryPages);
-          console.log("🌍 Available country data keys:", Object.keys(data.data?.sections?.countryPages || {}));
-          
+        if (isMounted && data?.success && data?.data) {
           // Check if we have the specific country data
           const countryData = data.data?.sections?.countryPages?.[countrySlug];
-          if (countryData) {
-            console.log("✅ Found country-specific data for:", countrySlug, countryData);
-          } else {
-            console.warn("⚠️ No country-specific data found for:", countrySlug);
-            console.log("🔍 Available countries:", Object.keys(data.data?.sections?.countryPages || {}));
-          }
           
           setCmsData(data.data);
-        } else {
-          console.warn("⚠️ No CMS data found for country:", countrySlug);
         }
       } catch (error) {
-        console.error("❌ Error loading CMS data:", error);
+        // Silently handle errors
       } finally {
-        setIsLoadingCms(false);
+        if (isMounted) {
+          setIsLoadingCms(false);
+        }
       }
     };
 
     fetchCmsData();
+    
+    return () => {
+      isMounted = false;
+    };
   }, [finalCountryName, finalLocationName, isCity, serverCmsContent, countrySlug]);
 
   // Resolve CMS block depending on page type (safe for SSR)

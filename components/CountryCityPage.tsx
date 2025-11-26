@@ -399,7 +399,11 @@ export function CountryCityPage({
 
   // Load saved page content
   useEffect(() => {
+    let isMounted = true;
+    
     const loadSavedContent = async () => {
+      if (!isMounted) return;
+      
       setIsLoadingContent(true);
       try {
         const countrySlug = country
@@ -413,8 +417,6 @@ export function CountryCityPage({
               .replace(/[^a-z0-9-]/g, "")}`
           : `/exhibition-stands/${countrySlug}`;
 
-        console.log("🔍 Loading saved content for path:", path);
-        
         // Special handling for Jordan, Lebanon, and Israel
         const isSpecialCountry = ['jordan', 'lebanon', 'israel'].includes(countrySlug);
         
@@ -433,15 +435,11 @@ export function CountryCityPage({
         );
         const data = await response.json();
 
-        if (data.success && data.data) {
-          console.log("✅ Found saved content for path:", path);
+        if (isMounted && data.success && data.data) {
           setSavedPageContent(data.data);
-        } else {
-          console.log("ℹ️ No saved content found for path:", path);
-          
+        } else if (isMounted) {
           // For special countries, try an alternative API endpoint if the first one fails
           if (isSpecialCountry) {
-            console.log("🔄 Trying alternative content source for special country:", countrySlug);
             try {
               const altResponse = await fetch(
                 `/api/admin/global-pages?action=get-content&id=${countrySlug}${city ? `-${city.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")}` : ''}`,
@@ -449,33 +447,42 @@ export function CountryCityPage({
               );
               const altData = await altResponse.json();
               
-              if (altData.success && altData.data) {
-                console.log("✅ Found content from alternative source");
+              if (isMounted && altData.success && altData.data) {
                 setSavedPageContent(altData.data);
               }
             } catch (altError) {
-              console.error("❌ Error with alternative content source:", altError);
+              // Silently handle alternative content source errors
             }
           }
         }
       } catch (error) {
-        console.error("❌ Error loading saved content:", error);
+        // Silently handle errors to prevent infinite loops
       } finally {
-        setIsLoadingContent(false);
+        if (isMounted) {
+          setIsLoadingContent(false);
+        }
       }
     };
 
     loadSavedContent();
+    
+    return () => {
+      isMounted = false;
+    };
   }, [country, city]);
 
   // Listen for admin updates and refetch saved content in real-time
   useEffect(() => {
+    let isMounted = true;
+    
     // Add safety check for window object
     if (typeof window === 'undefined') {
       return;
     }
     
     const handler = (e: Event) => {
+      if (!isMounted) return;
+      
       try {
         const detail = (e as CustomEvent)?.detail as
           | { path?: string }
@@ -493,19 +500,25 @@ export function CountryCityPage({
         if (!detail?.path || detail.path === currentPath) {
           // Re-run saved content fetch
           (async () => {
+            if (!isMounted) return;
+            
             try {
               const resp = await fetch(
                 `/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(currentPath)}`,
                 { cache: "no-store" }
               );
               const data = await resp.json();
-              if (data.success && data.data) {
+              if (isMounted && data.success && data.data) {
                 setSavedPageContent(data.data);
               }
-            } catch {}
+            } catch {
+              // Silently handle errors
+            }
           })();
         }
-      } catch {}
+      } catch {
+        // Silently handle errors
+      }
     };
     
     // Add safety check for event listener methods
@@ -514,6 +527,7 @@ export function CountryCityPage({
     }
     
     return () => {
+      isMounted = false;
       // Add safety check for event listener methods
       if (window?.removeEventListener) {
         window.removeEventListener(
@@ -525,7 +539,11 @@ export function CountryCityPage({
   }, [country, city]);
 
   useEffect(() => {
+    let isMounted = true;
+    
     const loadBuilders = async () => {
+      if (!isMounted) return;
+      
       try {
         // Load from unified platform API (includes all builders: GMB imports, manual additions, etc.)
         // Add safety check to prevent "Cannot read properties of undefined" error
@@ -533,8 +551,10 @@ export function CountryCityPage({
         
         // If we have initialBuilders from server-side, prioritize them
         if (initialBuilders.length > 0) {
-          setBuilders(initialBuilders);
-          setFilteredBuilders(initialBuilders);
+          if (isMounted) {
+            setBuilders(initialBuilders);
+            setFilteredBuilders(initialBuilders);
+          }
           return;
         }
 
@@ -625,17 +645,7 @@ export function CountryCityPage({
 
             return matches;
           });
-
-          // Remove console.log statement to prevent potential infinite loops
-          // console.log(
-          //   `🏙️ Found ${finalBuilders.length} builders serving ${city}`
-          // );
         }
-
-        // Remove console.log statement to prevent potential infinite loops
-        // console.log(
-        //   `🔧 FIXED: Found ${countryBuilders.length} total builder entries, deduplicated to ${uniqueBuilders.length} unique builders for ${country}${city ? `, filtered to ${finalBuilders.length} for ${city}` : ""}`
-        // );
 
         // Extract cities from builders (for country page display)
         const citySet = new Set<string>();
@@ -733,13 +743,12 @@ export function CountryCityPage({
             })
             .sort((a, b) => a.name.localeCompare(b.name));
 
-          console.log(`Found ${cityList.length} cities for ${country}`);
         } catch (error) {
-          console.error("Error merging cities:", error);
+          // Silently handle errors
         }
 
         // Update state with the final data
-        if (cityList.length > 0 || finalBuilders.length > 0) {
+        if (isMounted && (cityList.length > 0 || finalBuilders.length > 0)) {
           setCities(cityList);
           
           // Only update builders if we have data from unified platform
@@ -751,36 +760,34 @@ export function CountryCityPage({
             setBuilders(initialBuilders);
             setFilteredBuilders(initialBuilders);
           }
-
-          console.log(
-            `✅ Updated builders list for ${city || country} with ${cityList.length} cities and ${finalBuilders.length} builders`
-          );
-        } else {
-          console.log(
-            "ℹ️ No builders found in unified platform, using initial data"
-          );
+        } else if (isMounted) {
           // Always use initialBuilders if available, even if unified platform is empty
-          if (initialBuilders.length > 0) {
-            console.log(`✅ Using ${initialBuilders.length} server-side builders (unified platform empty)`);
-          }
           setBuilders(initialBuilders);
           setFilteredBuilders(initialBuilders);
           setCities([]);
         }
       } catch (error) {
-        console.error("❌ Error loading builders:", error);
-        setBuilders(initialBuilders);
-        setFilteredBuilders(initialBuilders);
+        if (isMounted) {
+          setBuilders(initialBuilders);
+          setFilteredBuilders(initialBuilders);
+        }
       }
     };
 
     loadBuilders();
 
     // Set up real-time updates by polling every 30 seconds
-    const interval = setInterval(loadBuilders, 30000);
+    const interval = setInterval(() => {
+      if (isMounted) {
+        loadBuilders();
+      }
+    }, 30000);
 
-    return () => clearInterval(interval);
-  }, [country, city]);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [country, city, initialBuilders]);
 
   useEffect(() => {
     // Filter and sort builders (only for search and sorting, not for city filtering)

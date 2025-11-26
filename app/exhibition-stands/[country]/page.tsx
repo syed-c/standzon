@@ -1,106 +1,61 @@
-import { Metadata } from 'next';
-// import { preloadQuery } from "convex/nextjs";
-// import { api } from "@/convex/_generated/api";
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
-import { CountryCityPage } from '@/components/CountryCityPage';
-import { getServerSupabase } from '@/lib/supabase';
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
+import { CountryCityPage } from "@/components/CountryCityPage";
+import { GLOBAL_EXHIBITION_DATA } from "@/lib/data/globalCities";
+import { getServerSupabase } from "@/lib/supabase";
 
-// Country data mapping
-const COUNTRY_DATA = {
-  'united-kingdom': { name: 'United Kingdom', flag: '🇬🇧', code: 'GB' },
-  'france': { name: 'France', flag: '🇫🇷', code: 'FR' },
-  'germany': { name: 'Germany', flag: '🇩🇪', code: 'DE' },
-  'italy': { name: 'Italy', flag: '🇮🇹', code: 'IT' },
-  'spain': { name: 'Spain', flag: '🇪🇸', code: 'ES' },
-  'belgium': { name: 'Belgium', flag: '🇧🇪', code: 'BE' },
-  'netherlands': { name: 'Netherlands', flag: '🇳🇱', code: 'NL' },
-  'greece': { name: 'Greece', flag: '🇬🇷', code: 'GR' },
-  'hungary': { name: 'Hungary', flag: '🇭🇺', code: 'HU' },
-  'poland': { name: 'Poland', flag: '🇵🇱', code: 'PL' },
-  'romania': { name: 'Romania', flag: '🇷🇴', code: 'RO' },
-  'united-states': { name: 'United States', flag: '🇺🇸', code: 'US' },
-  'canada': { name: 'Canada', flag: '🇨🇦', code: 'CA' },
-  'brazil': { name: 'Brazil', flag: '🇧🇷', code: 'BR' },
-  'argentina': { name: 'Argentina', flag: '🇦🇷', code: 'AR' },
-  'colombia': { name: 'Colombia', flag: '🇨🇴', code: 'CO' },
-  'chile': { name: 'Chile', flag: '🇨🇱', code: 'CL' },
-  'peru': { name: 'Peru', flag: '🇵🇪', code: 'PE' },
-  'united-arab-emirates': { name: 'United Arab Emirates', flag: '🇦🇪', code: 'AE' },
-  'saudi-arabia': { name: 'Saudi Arabia', flag: '🇸🇦', code: 'SA' },
-  'oman': { name: 'Oman', flag: '🇴🇲', code: 'OM' },
-  'bahrain': { name: 'Bahrain', flag: '🇧🇭', code: 'BH' },
-  'egypt': { name: 'Egypt', flag: '🇪🇬', code: 'EG' },
-  'japan': { name: 'Japan', flag: '🇯🇵', code: 'JP' },
-  'south-korea': { name: 'South Korea', flag: '🇰🇷', code: 'KR' },
-  'turkey': { name: 'Turkey', flag: '🇹🇷', code: 'TR' },
-  'singapore': { name: 'Singapore', flag: '🇸🇬', code: 'SG' },
-  'china': { name: 'China', flag: '🇨🇳', code: 'CN' },
-  'pakistan': { name: 'Pakistan', flag: '🇵🇰', code: 'PK' },
-  'bangladesh': { name: 'Bangladesh', flag: '🇧🇩', code: 'BD' },
-  'indonesia': { name: 'Indonesia', flag: '🇮🇩', code: 'ID' },
-  'malaysia': { name: 'Malaysia', flag: '🇲🇾', code: 'MY' },
-  'south-africa': { name: 'South Africa', flag: '🇿🇦', code: 'ZA' },
-  'kenya': { name: 'Kenya', flag: '🇰🇪', code: 'KE' },
-  'nigeria': { name: 'Nigeria', flag: '🇳🇬', code: 'NG' },
-  'morocco': { name: 'Morocco', flag: '🇲🇦', code: 'MA' },
-  'vietnam': { name: 'Vietnam', flag: '🇻🇳', code: 'VN' },
-  'sweden': { name: 'Sweden', flag: '🇸🇪', code: 'SE' },
-  'norway': { name: 'Norway', flag: '🇳🇴', code: 'NO' },
-  'denmark': { name: 'Denmark', flag: '🇩🇰', code: 'DK' },
-  'finland': { name: 'Finland', flag: '🇫🇮', code: 'FI' },
-  'australia': { name: 'Australia', flag: '🇦🇺', code: 'AU' },
-  'switzerland': { name: 'Switzerland', flag: '🇨🇭', code: 'CH' },
-  'austria': { name: 'Austria', flag: '🇦🇹', code: 'AT' },
-  'czech-republic': { name: 'Czech Republic', flag: '🇨🇿', code: 'CZ' },
-  'mexico': { name: 'Mexico', flag: '🇲🇽', code: 'MX' },
-  'hong-kong': { name: 'Hong Kong', flag: '🇭🇰', code: 'HK' },
-  'portugal': { name: 'Portugal', flag: '🇵🇹', code: 'PT' },
-  'costa-rica': { name: 'Costa Rica', flag: '🇨🇷', code: 'CR' },
-  'panama': { name: 'Panama', flag: '🇵🇦', code: 'PA' },
-  'guatemala': { name: 'Guatemala', flag: '🇬🇹', code: 'GT' },
-  'ecuador': { name: 'Ecuador', flag: '🇪🇨', code: 'EC' },
-  'thailand': { name: 'Thailand', flag: '🇹🇭', code: 'TH' },
-  'philippines': { name: 'Philippines', flag: '🇵🇭', code: 'PH' },
-  'iraq': { name: 'Iraq', flag: '🇮🇶', code: 'IQ' },
-  'iran': { name: 'Iran', flag: '🇮🇷', code: 'IR' },
-  'qatar': { name: 'Qatar', flag: '🇶🇦', code: 'QA' },
-  'kuwait': { name: 'Kuwait', flag: '🇰🇼', code: 'KW' }
-};
+// Create a map for easy lookup
+const COUNTRY_DATA: Record<string, any> = {};
+GLOBAL_EXHIBITION_DATA.countries.forEach(country => {
+  COUNTRY_DATA[country.slug] = {
+    name: country.name,
+    code: country.countryCode,
+    flag: '🏳️' // Placeholder flag
+  };
+});
+
+interface CountryPageProps {
+  params: Promise<{
+    country: string;
+  }>;
+}
 
 // Fetch CMS content for the country page
 async function getCountryPageContent(countrySlug: string) {
   try {
     const sb = getServerSupabase();
     if (sb) {
-      console.log(`🔍 Server-side: Fetching CMS data for ${countrySlug}...`);
+      console.log("🔍 Server-side: Fetching CMS data for country:", countrySlug);
       
-        const result = await sb
-          .from('page_contents')
-          .select('content')
-          .eq('id', countrySlug)
-          .single();
-          
+      const result = await sb
+        .from("page_contents")
+        .select("content")
+        .eq("id", countrySlug)
+        .single();
+
       if (result.error) {
-        console.log('❌ Server-side: Supabase error:', result.error);
+        console.log("❌ Server-side: Supabase error:", result.error);
         return null;
       }
-      
+
       if (result.data?.content) {
-        console.log(`✅ Server-side: Found CMS data for ${countrySlug}`);
+        console.log("✅ Server-side: Found CMS data for country:", countrySlug);
         return result.data.content;
       }
     }
+
+    return null;
   } catch (error) {
-    console.error('❌ Server-side: Error fetching CMS data:', error);
+    console.error("❌ Error fetching country page content:", error);
+    return null;
   }
-  
-  return null;
 }
 
-export async function generateMetadata({ params }: { params: { country: string } }): Promise<Metadata> {
-  const { country: countrySlug } = params;
+export async function generateMetadata({ params }: { params: Promise<{ country: string }> }): Promise<Metadata> {
+  const { country: countrySlug } = await params;
   const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
   
   if (!countryInfo) {
@@ -163,8 +118,8 @@ export async function generateMetadata({ params }: { params: { country: string }
   };
 }
 
-export default async function CountryPage({ params }: { params: { country: string } }) {
-  const { country: countrySlug } = params;
+export default async function CountryPage({ params }: { params: Promise<{ country: string }> }) {
+  const { country: countrySlug } = await params;
   const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
   
   if (!countryInfo) {

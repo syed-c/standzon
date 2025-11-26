@@ -114,6 +114,33 @@ export default function AdminLoginPage() {
           document.cookie = `admin_auth=1; path=/; max-age=${60*60*8}`;
         } catch {}
 
+        // Create session tracking
+        try {
+          const sessionResponse = await fetch("/api/admin/activities", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              action: "create-session",
+              data: {
+                userId: data.data.user.id,
+                user: data.data.user.email,
+                ip: "unknown", // Would be set by server in real implementation
+                userAgent: navigator.userAgent,
+              }
+            }),
+          });
+          
+          const sessionData = await sessionResponse.json();
+          if (sessionData.success && sessionData.data) {
+            // Store session ID in localStorage for tracking
+            localStorage.setItem("adminSessionId", sessionData.data.id);
+          }
+        } catch (sessionError) {
+          console.error("Failed to create session:", sessionError);
+        }
+
         // Redirect to admin dashboard
         router.push("/admin/dashboard");
       } else {
@@ -136,6 +163,34 @@ export default function AdminLoginPage() {
         const user = { id: "super-admin", email: allowedEmail, role: "super_admin" } as const;
         localStorage.setItem("currentUser", JSON.stringify({ ...user, isLoggedIn: true, loginMethod: "password" }));
         try { document.cookie = `admin_auth=1; path=/; max-age=${60*60*8}`; } catch {}
+        
+        // Create session tracking
+        try {
+          const sessionResponse = await fetch("/api/admin/activities", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              action: "create-session",
+              data: {
+                userId: user.id,
+                user: user.email,
+                ip: "unknown", // Would be set by server in real implementation
+                userAgent: navigator.userAgent,
+              }
+            }),
+          });
+          
+          const sessionData = await sessionResponse.json();
+          if (sessionData.success && sessionData.data) {
+            // Store session ID in localStorage for tracking
+            localStorage.setItem("adminSessionId", sessionData.data.id);
+          }
+        } catch (sessionError) {
+          console.error("Failed to create session:", sessionError);
+        }
+        
         router.push("/admin/dashboard");
       } else {
         setError("Invalid email or password");

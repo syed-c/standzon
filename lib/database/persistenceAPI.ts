@@ -434,7 +434,7 @@ class EnhancedFileBasedStorage {
     return path.join(this.dataDir, `${filename}.json`);
   }
 
-  // ✅ ENHANCED: Atomic write with multiple safeguards
+  // ✅ ENHANCED: Atomic write with multiple safeguards and database change tracking
   async writeData(filename: string, data: any): Promise<void> {
     // ✅ Server-side only check
     if (typeof window !== 'undefined' || !fs || !path) {
@@ -442,13 +442,71 @@ class EnhancedFileBasedStorage {
       return;
     }
 
+    // Skip tracking for activity logs and user sessions to prevent infinite loops
+    if (filename === 'activity_logs' || filename === 'user_sessions') {
+      const filePath = this.getFilePath(filename);
+      const backupPath = `${filePath}.backup`;
+      
+      try {
+        // Create backup of existing file
+        if (fs.existsSync(filePath)) {
+          fs.copyFileSync(filePath, backupPath);
+        }
+        
+        // Add metadata to data
+        const dataWithMeta = {
+          _metadata: {
+            timestamp: new Date().toISOString(),
+            version: '1.0',
+            checksum: this.generateChecksum(JSON.stringify(data))
+          },
+          data: data
+        };
+        
+        // Write new data atomically
+        const tempPath = `${filePath}.tmp`;
+        fs.writeFileSync(tempPath, JSON.stringify(dataWithMeta, null, 2), 'utf8');
+        fs.renameSync(tempPath, filePath);
+        
+        console.log(`💾 Data saved to ${filename}.json with checksum (tracking skipped)`);
+        return;
+      } catch (error) {
+        console.error(`❌ Error writing data to ${filename}:`, error);
+        throw error;
+      }
+    }
+
     const filePath = this.getFilePath(filename);
     const backupPath = `${filePath}.backup`;
     
     try {
-      // Create backup of existing file
+      // Read existing data to determine what changed
+      let existingData: any = null;
+      let operation: 'CREATE' | 'UPDATE' | 'DELETE' = 'UPDATE';
+      
       if (fs.existsSync(filePath)) {
+        // Create backup of existing file
         fs.copyFileSync(filePath, backupPath);
+        
+        // Read existing data to compare
+        try {
+          const rawData = fs.readFileSync(filePath, 'utf8');
+          if (rawData && rawData.trim() !== '') {
+            const parsed = JSON.parse(rawData);
+            existingData = parsed.data || parsed;
+          }
+        } catch (readError) {
+          console.warn(`⚠️ Could not read existing data for change tracking: ${filename}`, readError);
+        }
+      } else {
+        operation = 'CREATE';
+      }
+      
+      // Determine operation type based on data
+      if (data === null || (Array.isArray(data) && data.length === 0)) {
+        operation = 'DELETE';
+      } else if (!existingData) {
+        operation = 'CREATE';
       }
       
       // Add metadata to data
@@ -465,6 +523,30 @@ class EnhancedFileBasedStorage {
       const tempPath = `${filePath}.tmp`;
       fs.writeFileSync(tempPath, JSON.stringify(dataWithMeta, null, 2), 'utf8');
       fs.renameSync(tempPath, filePath);
+      
+      // Log database change
+      try {
+        // Get current user from environment or default to system
+        const currentUser = process.env.CURRENT_USER || 'system';
+        
+        // Dynamically import activityLogAPI to avoid circular dependency
+        const { activityLogAPI } = await import('./activityLogAPI');
+        
+        // Log the database change
+        await activityLogAPI.logDatabaseChange(
+          currentUser,
+          filename,
+          operation,
+          undefined, // recordId not applicable for file-based storage
+          {
+            newDataSize: Array.isArray(data) ? data.length : typeof data,
+            oldDataSize: existingData ? (Array.isArray(existingData) ? existingData.length : typeof existingData) : undefined
+          },
+          `File ${operation.toLowerCase()} operation on ${filename}.json`
+        );
+      } catch (logError) {
+        console.warn('⚠️ Failed to log database change:', logError);
+      }
       
       console.log(`💾 Data saved to ${filename}.json with checksum`);
     } catch (error) {

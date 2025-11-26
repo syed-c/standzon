@@ -1,0 +1,24 @@
+{
+  "_metadata": {
+    "timestamp": "2025-11-26T14:31:24.985Z",
+    "version": "1.0",
+    "checksum": "-1e221c44"
+  },
+  "data": [
+    {
+      "id": "c8b4810f-5aea-4457-9779-ed5228d1cd4b",
+      "loginTime": "2025-11-26T14:30:08.811Z",
+      "lastActivityTime": "2025-11-26T14:31:24.971Z",
+      "isActive": false,
+      "pagesVisited": [
+        {
+          "url": "/admin/dashboard",
+          "timestamp": "2025-11-26T14:31:10.401Z"
+        }
+      ],
+      "userId": "test-user",
+      "user": "test@example.com",
+      "logoutTime": "2025-11-26T14:31:24.971Z"
+    }
+  ]
+}

@@ -3,11 +3,46 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useTheme } from '@/components/ThemeProvider';
 import { Bell, Search, Settings, User, Menu, ChevronDown, Moon, Sun } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function Topbar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      // Get session ID from localStorage
+      const sessionId = typeof window !== 'undefined' ? localStorage.getItem('adminSessionId') : null;
+      
+      // Call logout API
+      const response = await fetch('/api/admin/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sessionId }),
+      });
+      
+      // Clear local storage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('adminSessionId');
+      }
+      
+      // Redirect to login page
+      router.push('/admin/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still redirect to login page even if API call fails
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('adminSessionId');
+      }
+      router.push('/admin/login');
+    }
+  };
 
   return (
     <div className="h-16 flex items-center justify-between px-4 lg:px-6 bg-[#0D1424] backdrop-blur-lg border-b border-[rgba(255,255,255,0.12)]">
@@ -126,9 +161,12 @@ export default function Topbar() {
                 </a>
               </div>
               <div className="border-t border-[rgba(255,255,255,0.12)] py-2">
-                <a href="/admin/logout" className="block px-4 py-2 text-sm text-[#FF5C5C] hover:bg-[#202A40] hover:text-[#FFFFFF] transition-all duration-300">
+                <button 
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-sm text-[#FF5C5C] hover:bg-[#202A40] hover:text-[#FFFFFF] transition-all duration-300"
+                >
                   Logout
-                </a>
+                </button>
               </div>
             </div>
           )}
