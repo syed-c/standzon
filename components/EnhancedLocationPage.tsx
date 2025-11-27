@@ -62,7 +62,8 @@ export function EnhancedLocationPage({
   const onSearchTermChange: ((value: string) => void) | undefined = props.onSearchTermChange;
   const suppressPostBuildersContent: boolean = Boolean(props.suppressPostBuildersContent);
   // Use new props if available, fallback to legacy props
-  const finalBuilders = initialBuilders.length > 0 ? initialBuilders : builders;
+  // Use initialBuilders as the primary source, fallback to builders if needed
+  const finalBuilders = initialBuilders.length > 0 ? initialBuilders : (builders.length > 0 ? builders : []);
   const finalLocationName = locationName || city || country || 'Unknown Location';
   const finalCountryName = countryName || (city ? country : undefined);
   const isCity = locationType === 'city' || !!city;
@@ -109,63 +110,90 @@ export function EnhancedLocationPage({
         // Get all builders from unified platform (includes GMB imports, manual additions, etc.)
         const allBuilders = unifiedPlatformAPI.getBuilders();
         
-        // Filter active builders for this location
-        const locationBuilders = allBuilders.filter((builder: any) => {
-          // Skip inactive builders
-          if (builder.status === 'inactive') return false;
-          
-          // For city pages, match city and country
-          if (isCity && city) {
-            const cityMatch = builder.headquarters?.city?.toLowerCase() === city.toLowerCase() ||
-              builder.serviceLocations?.some((loc: any) => 
-                loc.city?.toLowerCase() === city.toLowerCase()
-              ) ||
-              builder.headquarters_city?.toLowerCase() === city.toLowerCase(); // Handle flat structure
-              
-            const countryMatch = builder.headquarters?.country?.toLowerCase() === country?.toLowerCase() ||
-              builder.serviceLocations?.some((loc: any) => 
-                loc.country?.toLowerCase() === country?.toLowerCase()
-              ) ||
-              builder.headquarters_country?.toLowerCase() === country?.toLowerCase(); // Handle flat structure
-              
-            return cityMatch && countryMatch;
-          }
-          
-          // For country pages, match country only
-          if (country) {
-            return builder.headquarters?.country?.toLowerCase() === country.toLowerCase() ||
-              builder.serviceLocations?.some((loc: any) => 
-                loc.country?.toLowerCase() === country.toLowerCase()
-              ) ||
-              builder.headquarters_country?.toLowerCase() === country?.toLowerCase(); // Handle flat structure
-          }
-          
-          return false;
-        });
-        
-        // Transform builders to match expected interface
-        const transformedBuilders = locationBuilders.map((builder: any) => {
-          // If builder already has the nested headquarters structure, return as is
-          if (builder.headquarters && typeof builder.headquarters === 'object') {
-            return builder;
-          }
-          
-          // Otherwise, create the nested structure from flat fields
-          return {
-            ...builder,
-            headquarters: {
-              city: builder.headquarters_city || 'Unknown City',
-              country: builder.headquarters_country || 'Unknown Country'
+        // Only filter and update if we have builders from unified platform
+        // Otherwise, keep the initialBuilders passed from parent
+        if (allBuilders.length > 0) {
+          // Filter active builders for this location
+          const locationBuilders = allBuilders.filter((builder: any) => {
+            // Skip inactive builders
+            if (builder.status === 'inactive') return false;
+            
+            // For city pages, match city and country
+            if (isCity && city) {
+              const cityMatch = builder.headquarters?.city?.toLowerCase() === city.toLowerCase() ||
+                builder.serviceLocations?.some((loc: any) => 
+                  loc.city?.toLowerCase() === city.toLowerCase()
+                ) ||
+                builder.headquarters_city?.toLowerCase() === city.toLowerCase(); // Handle flat structure
+                
+              const countryMatch = builder.headquarters?.country?.toLowerCase() === country?.toLowerCase() ||
+                builder.serviceLocations?.some((loc: any) => 
+                  loc.country?.toLowerCase() === country?.toLowerCase()
+                ) ||
+                builder.headquarters_country?.toLowerCase() === country?.toLowerCase(); // Handle flat structure
+                
+              return cityMatch && countryMatch;
             }
-          };
-        });
-        
-        if (isMounted) {
-          // Only update if we have data, otherwise keep existing builders
-          if (transformedBuilders.length > 0) {
-            setFilteredBuilders(transformedBuilders);
+            
+            // For country pages, match country only
+            if (country) {
+              return builder.headquarters?.country?.toLowerCase() === country.toLowerCase() ||
+                builder.serviceLocations?.some((loc: any) => 
+                  loc.country?.toLowerCase() === country.toLowerCase()
+                ) ||
+                builder.headquarters_country?.toLowerCase() === country?.toLowerCase(); // Handle flat structure
+            }
+            
+            return false;
+          });
+          
+          // Transform builders to match expected interface
+          const transformedBuilders = locationBuilders.map((builder: any) => {
+            // If builder already has the nested headquarters structure, return as is
+            if (builder.headquarters && typeof builder.headquarters === 'object') {
+              return builder;
+            }
+            
+            // Otherwise, create the nested structure from flat fields
+            return {
+              ...builder,
+              headquarters: {
+                city: builder.headquarters_city || 'Unknown City',
+                country: builder.headquarters_country || 'Unknown Country'
+              }
+            };
+          });
+          
+          if (isMounted) {
+            // Only update if we have data, otherwise keep existing builders
+            if (transformedBuilders.length > 0) {
+              setFilteredBuilders(transformedBuilders);
+            }
+            setIsLoadingBuilders(false);
           }
-          setIsLoadingBuilders(false);
+        } else {
+          // If no builders from unified platform, use the initial builders passed from parent
+          if (isMounted) {
+            // Transform the initial builders as well
+            const transformedBuilders = finalBuilders.map((builder: any) => {
+              // If builder already has the nested headquarters structure, return as is
+              if (builder.headquarters && typeof builder.headquarters === 'object') {
+                return builder;
+              }
+              
+              // Otherwise, create the nested structure from flat fields
+              return {
+                ...builder,
+                headquarters: {
+                  city: builder.headquarters_city || 'Unknown City',
+                  country: builder.headquarters_country || 'Unknown Country'
+                }
+              };
+            });
+            
+            setFilteredBuilders(transformedBuilders);
+            setIsLoadingBuilders(false);
+          }
         }
       } catch (error) {
         // Fallback to passed builders
