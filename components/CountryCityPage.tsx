@@ -150,6 +150,7 @@ export function CountryCityPage({
   const [builders, setBuilders] = useState<Builder[]>(transformedInitialBuilders);
   const [filteredBuilders, setFilteredBuilders] =
     useState<Builder[]>(transformedInitialBuilders);
+  const [isLoading, setIsLoading] = useState(false);
   
   // Debug logging
   console.log('🔍 CountryCityPage received initialBuilders:', initialBuilders.length);
@@ -557,6 +558,7 @@ export function CountryCityPage({
       if (!isMounted) return;
       
       try {
+        setIsLoading(true);
         // Load from unified platform API (includes all builders: GMB imports, manual additions, etc.)
         // Add safety check to prevent "Cannot read properties of undefined" error
         const allBuilders = unifiedPlatformAPI?.getBuilders?.() || [];
@@ -566,6 +568,7 @@ export function CountryCityPage({
           if (isMounted) {
             setBuilders(initialBuilders);
             setFilteredBuilders(initialBuilders);
+            setIsLoading(false);
           }
           return;
         }
@@ -760,40 +763,38 @@ export function CountryCityPage({
         }
 
         // Update state with the final data
-        if (isMounted && (cityList.length > 0 || finalBuilders.length > 0)) {
+        if (isMounted) {
           setCities(cityList);
           
           // Only update builders if we have data from unified platform
+          // Always fallback to initial builders if unified platform returns empty results
           if (finalBuilders.length > 0) {
             setBuilders(finalBuilders);
             setFilteredBuilders(finalBuilders);
           } else {
             // Fallback to initial builders if needed
-            setBuilders(initialBuilders);
-            setFilteredBuilders(initialBuilders);
+            setBuilders(transformedInitialBuilders);
+            setFilteredBuilders(transformedInitialBuilders);
+            setIsLoading(false);
           }
-        } else if (isMounted) {
-          // Always use initialBuilders if available, even if unified platform is empty
-          setBuilders(initialBuilders);
-          setFilteredBuilders(initialBuilders);
-          setCities([]);
         }
       } catch (error) {
         if (isMounted) {
           setBuilders(initialBuilders);
           setFilteredBuilders(initialBuilders);
+          setIsLoading(false);
         }
       }
     };
 
     loadBuilders();
 
-    // Set up real-time updates by polling every 30 seconds
+    // Set up real-time updates by polling every 2 minutes (reduced from 30 seconds to prevent flickering)
     const interval = setInterval(() => {
       if (isMounted) {
         loadBuilders();
       }
-    }, 30000);
+    }, 120000);
 
     return () => {
       isMounted = false;

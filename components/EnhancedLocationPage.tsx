@@ -71,6 +71,7 @@ export function EnhancedLocationPage({
   const [sortBy, setSortBy] = useState<'rating' | 'projects' | 'price'>('rating');
   const [cmsData, setCmsData] = useState<any>(null);
   const [isLoadingCms, setIsLoadingCms] = useState(false);
+  const [isLoadingBuilders, setIsLoadingBuilders] = useState(false);
   
   // Load CMS data
   useEffect(() => {
@@ -104,6 +105,7 @@ export function EnhancedLocationPage({
       if (!isMounted) return;
       
       try {
+        setIsLoadingBuilders(true);
         // Get all builders from unified platform (includes GMB imports, manual additions, etc.)
         const allBuilders = unifiedPlatformAPI.getBuilders();
         
@@ -159,7 +161,11 @@ export function EnhancedLocationPage({
         });
         
         if (isMounted) {
-          setFilteredBuilders(transformedBuilders);
+          // Only update if we have data, otherwise keep existing builders
+          if (transformedBuilders.length > 0) {
+            setFilteredBuilders(transformedBuilders);
+          }
+          setIsLoadingBuilders(false);
         }
       } catch (error) {
         // Fallback to passed builders
@@ -182,14 +188,23 @@ export function EnhancedLocationPage({
           });
           
           setFilteredBuilders(transformedBuilders);
+          setIsLoadingBuilders(false);
         }
       }
     };
     
     loadBuilders();
     
+    // Set up real-time updates by polling every 2 minutes (reduced from 30 seconds to prevent flickering)
+    const interval = setInterval(() => {
+      if (isMounted) {
+        loadBuilders();
+      }
+    }, 120000);
+    
     return () => {
       isMounted = false;
+      clearInterval(interval);
     };
   }, [city, country, isCity, finalBuilders]);
 
