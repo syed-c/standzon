@@ -110,9 +110,9 @@ export function EnhancedLocationPage({
         // Get all builders from unified platform (includes GMB imports, manual additions, etc.)
         const allBuilders = unifiedPlatformAPI.getBuilders();
         
-        // Only filter and update if we have builders from unified platform
+        // Only filter and update if we have builders from unified platform AND we don't already have initial builders
         // Otherwise, keep the initialBuilders passed from parent
-        if (allBuilders.length > 0) {
+        if (allBuilders.length > 0 && finalBuilders.length === 0) {
           // Filter active builders for this location
           const locationBuilders = allBuilders.filter((builder: any) => {
             // Skip inactive builders
@@ -172,7 +172,7 @@ export function EnhancedLocationPage({
             setIsLoadingBuilders(false);
           }
         } else {
-          // If no builders from unified platform, use the initial builders passed from parent
+          // If we already have initial builders or no builders from unified platform, use the initial builders passed from parent
           if (isMounted) {
             // Transform the initial builders as well
             const transformedBuilders = finalBuilders.map((builder: any) => {

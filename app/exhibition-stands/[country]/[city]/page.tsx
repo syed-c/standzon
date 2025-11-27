@@ -332,12 +332,21 @@ export default async function CityPage({ params }: CityPageProps) {
         const headquartersCountry = builder.headquarters_country;
         const headquartersCity = builder.headquarters_city;
         
+        // Check headquarters match
         const headquartersMatch =
           countryVariations.includes(headquartersCountry) &&
           headquartersCity &&
           headquartersCity.toLowerCase().trim() === cityName.toLowerCase().trim();
+          
+        // Check service locations match
+        const serviceLocations = builder.service_locations || [];
+        const serviceLocationMatch = serviceLocations.some((loc: any) => 
+          countryVariations.includes(loc.country) &&
+          loc.city &&
+          loc.city.toLowerCase().trim() === cityName.toLowerCase().trim()
+        );
 
-        return headquartersMatch;
+        return headquartersMatch || serviceLocationMatch;
       });
       
       // Deduplicate builders by ID

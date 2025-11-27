@@ -563,7 +563,7 @@ export function CountryCityPage({
         // Add safety check to prevent "Cannot read properties of undefined" error
         const allBuilders = unifiedPlatformAPI?.getBuilders?.() || [];
         
-        // If we have initialBuilders from server-side, prioritize them
+        // If we have initialBuilders from server-side, prioritize them and don't override with unified platform data
         if (initialBuilders.length > 0) {
           if (isMounted) {
             setBuilders(initialBuilders);
