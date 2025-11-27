@@ -38,12 +38,12 @@ export default function TradeStyleBanner({
 					<div className="inline-flex items-center px-4 py-2 bg-[#2c3e55] rounded-full text-sm font-medium mb-6">
 						{badgeText}
 					</div>
-					<h1 className="text-4xl md:text-6xl font-bold mb-6">
+					<h1 className="text-3xl md:text-4xl font-bold mb-6">
 						{mainHeading}
 						<span className="block" style={{ color: '#2ec4b6' }}>{highlightHeading}</span>
 					</h1>
                     <p
-                        className="text-xl md:text-2xl text-[#cfd8e3] mb-8 max-w-3xl mx-auto"
+                        className="text-lg md:text-xl text-[#cfd8e3] mb-8 max-w-3xl mx-auto"
                         dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
                     />
 
