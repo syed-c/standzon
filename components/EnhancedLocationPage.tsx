@@ -238,17 +238,25 @@ export function EnhancedLocationPage({
     loadBuilders();
     
     // Set up real-time updates by polling every 2 minutes (reduced from 30 seconds to prevent flickering)
-    const interval = setInterval(() => {
-      if (isMounted) {
-        loadBuilders();
-      }
-    }, 120000);
-    
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, [city, country, isCity, finalBuilders]);
+    // Only poll if we're using unified platform data, not if we have initial builders
+    if (finalBuilders.length === 0) {
+      const interval = setInterval(() => {
+        if (isMounted) {
+          loadBuilders();
+        }
+      }, 120000);
+      
+      return () => {
+        isMounted = false;
+        clearInterval(interval);
+      };
+    } else {
+      // Clean up function for when we have initial builders
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, [city, country, isCity]); // Removed finalBuilders from dependencies to prevent infinite loop
 
   // Stabilize effect dependency on builders to avoid infinite update loops
   const buildersDepKey = useMemo(() => {

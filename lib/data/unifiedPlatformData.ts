@@ -86,9 +86,31 @@ class UnifiedDataManager {
       return; // Already initialized
     }
     
+    // If already initializing, wait for the existing promise
+    if (isInitializing && initializationPromise) {
+      console.log('🔄 Waiting for existing initialization to complete...');
+      await initializationPromise;
+      return;
+    }
+    
     console.log('🔄 Performing one-time initialization...');
-    await this.initialize();
-    this.initialized = true;
+    isInitializing = true;
+    initializationPromise = this.initialize();
+    
+    try {
+      await initializationPromise;
+      this.initialized = true;
+      console.log('✅ Initialization completed successfully');
+    } catch (error) {
+      console.error('❌ Initialization failed:', error);
+      // Reset initialization state so it can be retried
+      isInitializing = false;
+      initializationPromise = null;
+      throw error;
+    }
+    
+    isInitializing = false;
+    initializationPromise = null;
   }
 
   // ✅ SIMPLIFIED: Basic initialization
@@ -754,7 +776,14 @@ export const unifiedPlatformAPI = {
       const manager = getUnifiedDataManager();
       // Ensure initialization has happened
       if (!manager.isInitialized) {
-        console.log('⚠️ Unified platform not initialized yet, returning empty array');
+        console.log('⚠️ Unified platform not initialized yet, attempting to initialize...');
+        // In production environments, we should trigger initialization if not already done
+        if (typeof window !== 'undefined') {
+          // Client-side: trigger initialization
+          manager.ensureInitialized().catch(err => {
+            console.error('❌ Error initializing unified platform:', err);
+          });
+        }
       }
       const builders = manager.getBuilders();
       console.log(`📊 getBuilders() returning ${builders.length} builders synchronously`);

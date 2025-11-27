@@ -776,6 +776,23 @@ export function CountryCityPage({
           // Silently handle errors
         }
 
+        // Transform initial builders to ensure consistent structure
+        const transformedInitialBuilders = initialBuilders.map((builder: any) => {
+          // If builder already has the nested headquarters structure, return as is
+          if (builder.headquarters && typeof builder.headquarters === 'object') {
+            return builder;
+          }
+          
+          // Otherwise, create the nested structure from flat fields
+          return {
+            ...builder,
+            headquarters: {
+              city: builder.headquarters_city || 'Unknown City',
+              country: builder.headquarters_country || 'Unknown Country'
+            }
+          };
+        });
+
         // Update state with the final data
         if (isMounted) {
           setCities(cityList);
@@ -789,8 +806,8 @@ export function CountryCityPage({
             // Fallback to initial builders if needed
             setBuilders(transformedInitialBuilders);
             setFilteredBuilders(transformedInitialBuilders);
-            setIsLoading(false);
           }
+          setIsLoading(false);
         }
       } catch (error) {
         if (isMounted) {
@@ -804,17 +821,25 @@ export function CountryCityPage({
     loadBuilders();
 
     // Set up real-time updates by polling every 2 minutes (reduced from 30 seconds to prevent flickering)
-    const interval = setInterval(() => {
-      if (isMounted) {
-        loadBuilders();
-      }
-    }, 120000);
+    // Only poll if we don't have initial builders (meaning we're relying on unified platform)
+    if (initialBuilders.length === 0) {
+      const interval = setInterval(() => {
+        if (isMounted) {
+          loadBuilders();
+        }
+      }, 120000);
 
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, [country, city, initialBuilders]);
+      return () => {
+        isMounted = false;
+        clearInterval(interval);
+      };
+    } else {
+      // Clean up function for when we have initial builders
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, [country, city]); // Removed initialBuilders from dependencies to prevent infinite loop
 
   useEffect(() => {
     // Filter and sort builders (only for search and sorting, not for city filtering)

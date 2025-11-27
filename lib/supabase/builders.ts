@@ -8,6 +8,7 @@ export async function getAllBuilders() {
   
   try {
     // Try 'builders' table first (it has more data according to our test)
+    console.log('🔍 Querying builders table...');
     const { data: data1, error: error1 } = await client
       .from('builders')
       .select('*')
@@ -22,6 +23,7 @@ export async function getAllBuilders() {
     if (error1) console.log('Builders table error (if any):', error1.message);
     
     // Fallback to 'builder_profiles' table
+    console.log('🔍 Querying builder_profiles table...');
     const { data: data2, error: error2 } = await client
       .from('builder_profiles')
       .select('*')
