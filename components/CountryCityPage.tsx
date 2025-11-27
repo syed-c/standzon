@@ -563,6 +563,20 @@ export function CountryCityPage({
         // Add safety check to prevent "Cannot read properties of undefined" error
         const allBuilders = unifiedPlatformAPI?.getBuilders?.() || [];
         
+        // If we don't have initial builders and unified platform returned empty, try async version
+        if (initialBuilders.length === 0 && allBuilders.length === 0) {
+          console.log('🔄 Trying async version of getBuilders to ensure proper initialization');
+          // Check if unified platform is initialized
+          const isInitialized = unifiedPlatformAPI.isInitialized();
+          console.log(`📊 Unified platform initialized: ${isInitialized}`);
+          const asyncBuilders = await unifiedPlatformAPI.getBuildersAsync();
+          console.log(`📊 Async getBuilders returned ${asyncBuilders.length} builders`);
+          // Use async builders if we got data
+          if (asyncBuilders.length > 0) {
+            allBuilders.push(...asyncBuilders);
+          }
+        }
+        
         // If we have initialBuilders from server-side, prioritize them and don't override with unified platform data
         if (initialBuilders.length > 0) {
           if (isMounted) {

@@ -54,6 +54,11 @@ class UnifiedDataManager {
   private data: PlatformData;
   private subscribers: ((event: DataEvent) => void)[] = [];
   private initialized: boolean = false;
+  
+  // Public getter for initialization status
+  get isInitialized(): boolean {
+    return this.initialized;
+  }
 
   constructor() {
     console.log('🚀 UnifiedDataManager: Lightweight constructor started...');
@@ -120,6 +125,11 @@ class UnifiedDataManager {
       
       const supabaseBuilders = await getAllBuilders();
       console.log(`📊 Loaded ${supabaseBuilders.length} builders from Supabase`);
+      
+      // Log if no builders were found
+      if (supabaseBuilders.length === 0) {
+        console.warn('⚠️ No builders found in Supabase. Check Supabase connection and data.');
+      }
       
       // Convert Supabase builders to ExhibitionBuilder format
       const convertedBuilders = supabaseBuilders.map((builder: any) => ({
@@ -213,6 +223,10 @@ class UnifiedDataManager {
       
     } catch (error) {
       console.error('❌ Error loading initial data from Supabase:', error);
+      // Also log the error stack trace for debugging
+      if (error instanceof Error) {
+        console.error('❌ Error stack:', error.stack);
+      }
     }
   }
 
@@ -738,6 +752,10 @@ export const unifiedPlatformAPI = {
   getBuilders: () => {
     try {
       const manager = getUnifiedDataManager();
+      // Ensure initialization has happened
+      if (!manager.isInitialized) {
+        console.log('⚠️ Unified platform not initialized yet, returning empty array');
+      }
       const builders = manager.getBuilders();
       console.log(`📊 getBuilders() returning ${builders.length} builders synchronously`);
       return builders;
@@ -757,6 +775,16 @@ export const unifiedPlatformAPI = {
     } catch (error) {
       console.error('❌ Error in getBuildersAsync:', error);
       return [];
+    }
+  },
+  
+  isInitialized: () => {
+    try {
+      const manager = getUnifiedDataManager();
+      return manager.isInitialized;
+    } catch (error) {
+      console.error('❌ Error in isInitialized:', error);
+      return false;
     }
   },
   

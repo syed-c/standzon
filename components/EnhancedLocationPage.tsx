@@ -108,7 +108,21 @@ export function EnhancedLocationPage({
       try {
         setIsLoadingBuilders(true);
         // Get all builders from unified platform (includes GMB imports, manual additions, etc.)
-        const allBuilders = unifiedPlatformAPI.getBuilders();
+        let allBuilders = unifiedPlatformAPI.getBuilders();
+        
+        // If we don't have initial builders and unified platform returned empty, try async version
+        if (finalBuilders.length === 0 && allBuilders.length === 0) {
+          console.log('🔄 Trying async version of getBuilders in EnhancedLocationPage');
+          // Check if unified platform is initialized
+          const isInitialized = unifiedPlatformAPI.isInitialized();
+          console.log(`📊 Unified platform initialized: ${isInitialized}`);
+          const asyncBuilders = await unifiedPlatformAPI.getBuildersAsync();
+          console.log(`📊 EnhancedLocationPage async getBuilders returned ${asyncBuilders.length} builders`);
+          // Use async builders if we got data
+          if (asyncBuilders.length > 0) {
+            allBuilders = asyncBuilders;
+          }
+        }
         
         // Only filter and update if we have builders from unified platform AND we don't already have initial builders
         // Otherwise, keep the initialBuilders passed from parent

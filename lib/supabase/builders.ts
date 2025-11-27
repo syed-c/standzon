@@ -6,37 +6,45 @@ const client = supabaseAdmin || supabase;
 export async function getAllBuilders() {
   console.log('Fetching all builders from Supabase...');
   
-  // Try 'builders' table first (it has more data according to our test)
-  const { data: data1, error: error1 } = await client
-    .from('builders')
-    .select('*')
-    .order('created_at', { ascending: false });
-  
-  if (!error1 && data1 && data1.length > 0) {
-    console.log('Found builders in builders table:', data1.length);
-    return data1;
+  try {
+    // Try 'builders' table first (it has more data according to our test)
+    const { data: data1, error: error1 } = await client
+      .from('builders')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (!error1 && data1 && data1.length > 0) {
+      console.log('Found builders in builders table:', data1.length);
+      return data1;
+    }
+    
+    console.log('No data in builders table or error occurred, trying builder_profiles table...');
+    if (error1) console.log('Builders table error (if any):', error1.message);
+    
+    // Fallback to 'builder_profiles' table
+    const { data: data2, error: error2 } = await client
+      .from('builder_profiles')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (!error2 && data2) {
+      console.log('Found builders in builder_profiles:', data2.length);
+      return data2;
+    }
+    
+    console.log('No builders found in either table');
+    if (error1) console.error('Error from builders:', error1.message);
+    if (error2) console.error('Error from builder_profiles:', error2.message);
+    
+    // Return empty array if no data found in either table
+    return [];
+  } catch (error) {
+    console.error('❌ Unexpected error in getAllBuilders:', error);
+    if (error instanceof Error) {
+      console.error('❌ Error stack:', error.stack);
+    }
+    return [];
   }
-  
-  console.log('No data in builders table or error occurred, trying builder_profiles table...');
-  console.log('Builders table error (if any):', error1?.message);
-  
-  // Fallback to 'builder_profiles' table
-  const { data: data2, error: error2 } = await client
-    .from('builder_profiles')
-    .select('*')
-    .order('created_at', { ascending: false });
-  
-  if (!error2 && data2) {
-    console.log('Found builders in builder_profiles:', data2.length);
-    return data2;
-  }
-  
-  console.log('No builders found in either table');
-  if (error1) console.error('Error from builders:', error1.message);
-  if (error2) console.error('Error from builder_profiles:', error2.message);
-  
-  // Return empty array if no data found in either table
-  return [];
 }
 
 export async function getBuilderBySlug(slug: string) {
