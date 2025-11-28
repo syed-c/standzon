@@ -26,7 +26,7 @@ export default function Navigation() {
   useEffect(() => {
     console.log("Navigation: Setting up scroll listener");
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 10);
     };
 
     // Check for logged in user
@@ -172,7 +172,7 @@ export default function Navigation() {
   const handleMouseLeave = () => {
     const timeout = setTimeout(() => {
       setActiveDropdown(null);
-    }, 600);
+    }, 300);
     setDropdownTimeout(timeout);
   };
 
@@ -196,29 +196,29 @@ export default function Navigation() {
   return (
     <nav className={`fixed top-0 left-0 right-0 w-full z-[100] transition-all duration-300 ${ 
       isScrolled 
-        ? '!bg-slate-900/98 backdrop-blur-xl shadow-xl border-b border-slate-700/50' 
-        : '!bg-slate-900/95 backdrop-blur-lg shadow-md border-b border-slate-700/30'
-    }`} style={{ backgroundColor: isScrolled ? 'rgba(15, 23, 42, 0.98)' : 'rgba(15, 23, 42, 0.95)' }}>
+        ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-md border-b border-gray-200/30 dark:border-slate-700/30' 
+        : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-sm border-b border-gray-100/20 dark:border-slate-700/20'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 lg:h-18 flex-wrap">
-          {/* Logo */}
-          <div className="flex-shrink-0">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo - Left */}
+          <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="group flex items-center">
               <Image 
                 src={logoImg} 
                 alt="StandsZone" 
-                width={120} 
-                height={30} 
+                width={110} 
+                height={28} 
                 priority 
-                className="h-6 w-auto md:h-8 transition-transform duration-300 group-hover:scale-105" 
+                className="h-7 w-auto transition-transform duration-300 group-hover:scale-105" 
               />
               <span className="sr-only">StandsZone</span>
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center justify-center flex-1 mx-6 min-w-0">
-            <div className="flex flex-wrap items-center gap-1 md:gap-2 justify-center w-full">
+          {/* Desktop Navigation - Center */}
+          <div className="hidden lg:flex items-center justify-center flex-1 px-4">
+            <div className="flex items-center gap-6 justify-center">
               {mainNavItems.map((item) => (
                 <div key={item.label} className="relative group">
                   {item.submenu ? (
@@ -228,18 +228,17 @@ export default function Navigation() {
                       className="relative"
                     >
                       <button
-                        className="flex items-center space-x-1 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 !text-white hover:text-pink-400 hover:bg-slate-800/60 whitespace-normal text-center"
+                        className="flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 whitespace-nowrap"
                         onClick={() => handleDropdownClick(item.label)}
                       >
-                        <span className="truncate max-w-[120px] md:max-w-none">{item.label}</span>
+                        <span>{item.label}</span>
                         <SafeIcon IconComponent={FiChevronDown} className={`w-3 h-3 transition-transform duration-200 flex-shrink-0 ${
                           activeDropdown === item.label ? 'rotate-180' : ''
                         }`} />
                       </button>
                       {activeDropdown === item.label && (
                         <div 
-                          className="absolute top-full left-0 mt-1 w-56 !bg-slate-800 backdrop-blur-xl rounded-xl shadow-2xl border border-slate-700 py-1 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
-                          style={{ backgroundColor: 'rgb(30, 41, 59)' }}
+                          className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-56 bg-white dark:bg-slate-800 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
                           onMouseEnter={handleDropdownMouseEnter}
                           onMouseLeave={handleDropdownMouseLeave}
                         >
@@ -247,7 +246,7 @@ export default function Navigation() {
                             <Link
                               key={subItem.label}
                               href={subItem.href}
-                              className="block px-4 py-2.5 text-sm !text-white hover:bg-slate-700/80 hover:text-pink-400 transition-all duration-150"
+                              className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100/50 dark:hover:bg-slate-700/80 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-150"
                               onClick={() => setActiveDropdown(null)}
                             >
                               {subItem.label}
@@ -259,9 +258,9 @@ export default function Navigation() {
                   ) : (
                     <Link
                       href={item.href}
-                      className="px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 !text-white hover:text-pink-400 hover:bg-slate-800/60 whitespace-normal text-center"
+                      className="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 whitespace-nowrap"
                     >
-                      <span className="truncate max-w-[120px] md:max-w-none block">{item.label}</span>
+                      {item.label}
                     </Link>
                   )}
                 </div>
@@ -269,23 +268,21 @@ export default function Navigation() {
             </div>
           </div>
 
-          {/* Right Side - Account & CTA with improved contrast */}
-          <div className="hidden lg:flex items-center space-x-2 md:space-x-3">
+          {/* Right Side - Account & CTA */}
+          <div className="hidden lg:flex items-center space-x-2">
             {/* Login/Register or Account Dropdown */}
             {!currentUser ? (
-              <div className="flex items-center space-x-1 md:space-x-2">
+              <div className="flex items-center space-x-1">
                 <Link href="/auth/login?type=builder">
-                  <Button variant="ghost" size="sm" className="text-white text-xs md:text-sm px-2 py-1 md:px-3 md:py-2">
-                    <SafeIcon IconComponent={FiUser} className="w-3 h-3 mr-1 md:w-4 md:h-4 md:mr-1.5" />
-                    <span className="hidden md:inline">Builder Login</span>
-                    <span className="md:hidden">Login</span>
+                  <Button variant="ghost" size="sm" className="text-gray-700 dark:text-gray-200 text-xs px-3 py-1.5 rounded-lg hover:bg-gray-100/50 dark:hover:bg-slate-800/50">
+                    <SafeIcon IconComponent={FiUser} className="w-3.5 h-3.5 mr-1.5" />
+                    <span>Builder Login</span>
                   </Button>
                 </Link>
-                <span className="text-slate-600 hidden md:inline">|</span>
+                <span className="text-gray-300 dark:text-slate-600">|</span>
                 <Link href="/builder/register">
-                  <Button variant="ghost" size="sm" className="text-white text-xs md:text-sm px-2 py-1 md:px-3 md:py-2">
-                    <span className="hidden md:inline">Join as Builder</span>
-                    <span className="md:hidden">Join</span>
+                  <Button variant="ghost" size="sm" className="text-gray-700 dark:text-gray-200 text-xs px-3 py-1.5 rounded-lg hover:bg-gray-100/50 dark:hover:bg-slate-800/50">
+                    Join as Builder
                   </Button>
                 </Link>
               </div>
@@ -296,19 +293,18 @@ export default function Navigation() {
                 onMouseLeave={handleMouseLeave}
               >
                 <button
-                  className="flex items-center space-x-1 px-2 py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 !text-white hover:text-pink-400 hover:bg-slate-800/60 whitespace-nowrap"
+                  className="flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50"
                   onClick={() => handleDropdownClick('Account')}
                 >
-                  <SafeIcon IconComponent={FiUser} className="w-3 h-3 md:w-4 md:h-4" />
-                  <span className="hidden lg:inline">Account</span>
-                  <SafeIcon IconComponent={FiChevronDown} className={`w-2 h-2 md:w-3 md:h-3 transition-transform duration-200 ${
+                  <SafeIcon IconComponent={FiUser} className="w-3.5 h-3.5" />
+                  <span>Account</span>
+                  <SafeIcon IconComponent={FiChevronDown} className={`w-3 h-3 transition-transform duration-200 ${
                     activeDropdown === 'Account' ? 'rotate-180' : ''
                   }`} />
                 </button>
                 {activeDropdown === 'Account' && (
                   <div 
-                    className="absolute top-full right-0 mt-1 w-48 md:w-56 !bg-slate-800 backdrop-blur-xl rounded-xl shadow-2xl border border-slate-700 py-1 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
-                    style={{ backgroundColor: 'rgb(30, 41, 59)' }}
+                    className="absolute top-full right-0 mt-2 w-52 bg-white dark:bg-slate-800 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
                     onMouseEnter={handleDropdownMouseEnter}
                     onMouseLeave={handleDropdownMouseLeave}
                   >
@@ -316,23 +312,22 @@ export default function Navigation() {
                       accountItem.isGreeting ? (
                         <div
                           key={accountItem.label}
-                          className="px-3 py-2 md:px-4 md:py-2.5 text-slate-400 border-b border-slate-700/50 bg-slate-900/50"
+                          className="px-4 py-2.5 text-gray-500 dark:text-slate-400 border-b border-gray-100 dark:border-slate-700/50 bg-gray-50/50 dark:bg-slate-900/50"
                         >
-                          <span className="text-xs md:text-sm font-medium truncate block">{accountItem.label}</span>
+                          <span className="text-xs font-medium truncate block">{accountItem.label}</span>
                           {currentUser && (
-                            <div className="text-xs text-slate-500 mt-0.5">
+                            <div className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
                               {currentUser.role === 'admin' && '🔧 Administrator'}
                               {currentUser.role === 'builder' && '🏗️ Builder Account'}
                               {currentUser.role === 'client' && '👤 Client Account'}
                             </div>
-                          )
-                        }
-                      </div>
+                          )}
+                        </div>
                       ) : (
                         <Link
                           key={accountItem.label}
                           href={accountItem.href}
-                          className="block px-3 py-2 md:px-4 md:py-2.5 text-xs md:text-sm !text-white hover:bg-slate-700/80 hover:text-pink-400 transition-all duration-150"
+                          className="block px-4 py-2.5 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100/50 dark:hover:bg-slate-700/80 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-150"
                           onClick={() => setActiveDropdown(null)}
                         >
                           {accountItem.label}
@@ -346,28 +341,27 @@ export default function Navigation() {
 
             {/* Get Free Quote CTA Button */}
             <Link href="/quote">
-              <Button className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-3 py-2 md:px-5 md:py-2 font-semibold text-xs md:text-sm rounded-lg shadow-lg transition-all duration-200 whitespace-nowrap">
-                <SafeIcon IconComponent={FiZap} className="w-3 h-3 mr-1 md:w-4 md:h-4 md:mr-1.5" />
-                <span className="hidden sm:inline">Get Free Quote</span>
-                <span className="sm:hidden">Quote</span>
+              <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-4 py-1.5 text-xs rounded-lg shadow-md transition-all duration-200 whitespace-nowrap hover:shadow-lg">
+                <SafeIcon IconComponent={FiZap} className="w-3.5 h-3.5 mr-1.5" />
+                <span>Get Free Quote</span>
               </Button>
             </Link>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="lg:hidden flex items-center space-x-1">
+          {/* Mobile menu button - Right */}
+          <div className="lg:hidden flex items-center space-x-2">
             <Link href="/quote">
-              <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-3 py-2 rounded-lg shadow-lg text-xs font-semibold min-h-[40px]">
+              <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-3 py-1.5 rounded-lg shadow text-xs font-medium min-h-[36px]">
                 <SafeIcon IconComponent={FiZap} className="w-3 h-3 mr-1" />
                 Quote
               </Button>
             </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg transition-all duration-200 text-white hover:text-pink-400 hover:bg-slate-800/60 min-h-[40px] min-w-[40px] flex items-center justify-center touch-active no-tap-highlight"
+              className="p-2 rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 min-h-[36px] min-w-[36px] flex items-center justify-center touch-active no-tap-highlight"
               aria-label="Toggle menu"
             >
-              {isOpen ? <SafeIcon IconComponent={FiX} className="w-5 h-5" /> : <SafeIcon IconComponent={FiMenu} className="w-5 h-5" />}
+              {isOpen ? <SafeIcon IconComponent={FiX} className="w-4 h-4" /> : <SafeIcon IconComponent={FiMenu} className="w-4 h-4" />}
             </button>
           </div>
         </div>
@@ -375,16 +369,16 @@ export default function Navigation() {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="lg:hidden fixed inset-0 w-screen h-screen bg-slate-900/98 backdrop-blur-lg shadow-2xl z-[9998] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden">
+        <div className="lg:hidden fixed inset-0 w-screen h-screen bg-white dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl z-[9998] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden">
           {/* Header spacer */}
-          <div className="h-16 flex-shrink-0 bg-slate-900 border-b border-slate-700"></div>
+          <div className="h-16 flex-shrink-0 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-700"></div>
           
           {/* Scrollable content area */}
-          <div className="flex-1 px-3 sm:px-4 pt-4 pb-6 space-y-3 overflow-y-auto">
+          <div className="flex-1 px-4 pt-4 pb-6 space-y-3 overflow-y-auto">
             {/* Mobile Get Quote at Top */}
             <div className="mb-4">
               <Link href="/quote" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 rounded-lg shadow-lg font-semibold text-sm min-h-[48px]">
+                <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-2.5 rounded-lg shadow-lg font-medium text-sm min-h-[44px]">
                   <SafeIcon IconComponent={FiZap} className="w-4 h-4 mr-2" />
                   Get Free Quote
                 </Button>
@@ -393,21 +387,21 @@ export default function Navigation() {
 
             {/* Main Navigation */}
             {mainNavItems.map((item) => (
-              <div key={item.label} className="space-y-2">
+              <div key={item.label} className="space-y-1">
                 <Link
                   href={item.href}
-                  className="block px-3 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium text-base"
+                  className="block px-3 py-3 text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base"
                   onClick={() => setIsOpen(false)}
                 >
                   {item.label}
                 </Link>
                 {item.submenu && (
-                  <div className="ml-3 space-y-1 bg-slate-800/40 rounded-lg p-2">
+                  <div className="ml-3 space-y-1 bg-gray-50 dark:bg-slate-800/40 rounded-lg p-2">
                     {item.submenu.map((subItem) => (
                       <Link
                         key={subItem.label}
                         href={subItem.href}
-                        className="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/60 transition-all duration-150 rounded-md"
+                        className="block px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-700/60 transition-all duration-150 rounded-md"
                         onClick={() => setIsOpen(false)}
                       >
                         {subItem.label}
@@ -419,27 +413,27 @@ export default function Navigation() {
             ))}
 
             {/* Account section for mobile */}
-            <div className="mt-6 pt-4 border-t border-slate-700">
-              <h3 className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Account</h3>
+            <div className="mt-6 pt-4 border-t border-gray-100 dark:border-slate-700">
+              <h3 className="px-3 text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-3">Account</h3>
               {!currentUser ? (
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <Link
                     href="/auth/login?type=builder"
-                    className="block px-3 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium text-base"
+                    className="block px-3 py-3 text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base"
                     onClick={() => setIsOpen(false)}
                   >
                     🔐 Builder Login
                   </Link>
                   <Link
                     href="/builder/register"
-                    className="block px-3 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium text-base"
+                    className="block px-3 py-3 text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base"
                     onClick={() => setIsOpen(false)}
                   >
                     🏢 Builder Registration
                   </Link>
                   <Link
                     href="/auth/login?type=admin"
-                    className="block px-3 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium text-base"
+                    className="block px-3 py-3 text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base"
                     onClick={() => setIsOpen(false)}
                   >
                     ⚡ Admin Portal
@@ -451,7 +445,7 @@ export default function Navigation() {
                     <Link
                       key={accountItem.label}
                       href={accountItem.href}
-                      className="block px-3 py-3 text-white hover:text-pink-400 hover:bg-slate-800/60 transition-all duration-150 rounded-lg font-medium text-base"
+                      className="block px-3 py-3 text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base"
                       onClick={() => setIsOpen(false)}
                     >
                       {accountItem.label}
