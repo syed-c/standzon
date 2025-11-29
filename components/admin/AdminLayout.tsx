@@ -1,14 +1,18 @@
 "use client";
 import React from 'react';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { Sidebar, SidebarBody, SidebarLinks } from '@/components/admin/SidebarComponents';
+import { useSidebar } from '@/components/admin/SidebarComponents';
 
 type AdminLayoutProps = {
-  sidebar: React.ReactNode;
+  sidebar?: React.ReactNode;
   topbar: React.ReactNode;
   children: React.ReactNode;
 };
 
 export default function AdminLayout({ sidebar, topbar, children }: AdminLayoutProps) {
+  const [open, setOpen] = React.useState(true);
+  
   return (
     <ThemeProvider>
       <div className="min-h-screen premium-dark-bg font-inter overflow-x-hidden admin-dashboard">
@@ -18,13 +22,13 @@ export default function AdminLayout({ sidebar, topbar, children }: AdminLayoutPr
         </div>
 
         {/* Body */}
-        <div className="flex">
+        <div className="flex min-h-screen">
           {/* Sidebar */}
-          <aside className="hidden lg:block" style={{ width: 260 }}>
-            <div className="h-screen sticky top-0 overflow-y-auto border-r border-[rgba(255,255,255,0.12)] bg-[#0D1424] shadow-2xl">
-              {sidebar}
-            </div>
-          </aside>
+          <Sidebar open={open} setOpen={setOpen}>
+            <SidebarBody>
+              <SidebarLinks />
+            </SidebarBody>
+          </Sidebar>
 
           {/* Main content */}
           <main className="flex-1 min-h-[calc(100vh-64px)] overflow-x-hidden">
