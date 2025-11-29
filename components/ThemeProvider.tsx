@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 type Theme = 'light' | 'dark';
 
@@ -13,20 +14,27 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark');
+  const pathname = usePathname();
 
   useEffect(() => {
+    // Check if we're on an admin page
+    const isAdminPage = pathname && pathname.startsWith('/admin');
+    
     // Check for saved theme in localStorage or system preference
     const savedTheme = localStorage.getItem('theme') as Theme | null;
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
-    if (savedTheme) {
+    // For admin pages, default to dark mode
+    if (isAdminPage) {
+      setTheme('dark');
+    } else if (savedTheme) {
       setTheme(savedTheme);
     } else if (systemPrefersDark) {
       setTheme('dark');
     } else {
       setTheme('light');
     }
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     // Apply theme to document
@@ -40,8 +48,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.classList.add('duration-300');
     }
     
-    // Save theme preference
-    localStorage.setItem('theme', theme);
+    // Save theme preference (but don't save for admin pages to keep them always dark)
+    const isAdminPage = pathname && pathname.startsWith('/admin');
+    if (!isAdminPage) {
+      localStorage.setItem('theme', theme);
+    }
     
     // Remove transition classes after animation completes
     const timer = setTimeout(() => {
@@ -50,7 +61,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }, 300);
     
     return () => clearTimeout(timer);
-  }, [theme]);
+  }, [theme, pathname]);
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
