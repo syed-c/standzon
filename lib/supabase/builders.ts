@@ -1,4 +1,4 @@
-import { supabase, supabaseAdmin } from '@/lib/supabase/client';
+import { supabase, supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase/client';
 
 // Use admin client if available (bypasses RLS), otherwise use regular client
 const client = supabaseAdmin || supabase;
@@ -6,11 +6,8 @@ const client = supabaseAdmin || supabase;
 export async function getAllBuilders() {
   console.log('🔍 Fetching all builders from Supabase...');
   
-  // Check if Supabase is configured
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  
-  if (!supabaseUrl) {
+  // Check if Supabase is configured using the proper helper function
+  if (!isSupabaseConfigured()) {
     console.warn('⚠️ Supabase not configured. Returning empty builders array.');
     console.log('Environment variables check:');
     console.log('- NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? '✓ Present' : '✗ Missing');

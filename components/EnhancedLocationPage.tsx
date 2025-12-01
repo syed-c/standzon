@@ -68,11 +68,39 @@ export function EnhancedLocationPage({
   const finalCountryName = countryName || (city ? country : undefined);
   const isCity = locationType === 'city' || !!city;
   
+  // DEBUG: Log props
+  console.log('🔍 DEBUG: EnhancedLocationPage props:', {
+    locationType,
+    locationName: finalLocationName,
+    countryName: finalCountryName,
+    initialBuildersCount: initialBuilders.length,
+    buildersCount: builders.length,
+    finalBuildersCount: finalBuilders.length,
+    isCity,
+    country,
+    city
+  });
+  
+  // DEBUG: Log first few builders if we have them
+  if (finalBuilders.length > 0) {
+    console.log('🔍 DEBUG: First builders in EnhancedLocationPage:', 
+      finalBuilders.slice(0, 3).map((b: any) => ({
+        id: b.id,
+        companyName: b.companyName,
+        headquarters: b.headquarters,
+        serviceLocations: b.serviceLocations
+      }))
+    );
+  }
+  
   const [filteredBuilders, setFilteredBuilders] = useState(finalBuilders);
   const [sortBy, setSortBy] = useState<'rating' | 'projects' | 'price'>('rating');
   const [cmsData, setCmsData] = useState<any>(null);
   const [isLoadingCms, setIsLoadingCms] = useState(false);
   const [isLoadingBuilders, setIsLoadingBuilders] = useState(false);
+  
+  // DEBUG: Log state initialization
+  console.log('🔍 DEBUG: EnhancedLocationPage state initialized with', filteredBuilders.length, 'builders');
   
   // Load CMS data
   useEffect(() => {
@@ -103,143 +131,44 @@ export function EnhancedLocationPage({
     let isMounted = true;
     
     const loadBuilders = async () => {
-      if (!isMounted) return;
+      // Only load if we don't have initial builders
+      if (finalBuilders.length > 0) {
+        console.log('🔍 DEBUG: EnhancedLocationPage - Already have builders, skipping load');
+        return;
+      }
+      
+      console.log('🔄 DEBUG: EnhancedLocationPage - Loading builders from unified platform for location:', finalLocationName);
+      setIsLoadingBuilders(true);
       
       try {
-        setIsLoadingBuilders(true);
-        // Get all builders from unified platform (includes GMB imports, manual additions, etc.)
-        let allBuilders = unifiedPlatformAPI.getBuilders();
+        // Try sync version first
+        const syncBuilders = unifiedPlatformAPI.getBuilders(finalLocationName); // Pass location for filtering
+        console.log('📊 DEBUG: EnhancedLocationPage - Sync getBuilders returned', syncBuilders.length, 'builders');
         
-        // If we don't have initial builders and unified platform returned empty, try async version
-        if (finalBuilders.length === 0 && allBuilders.length === 0) {
-          console.log('🔄 Trying async version of getBuilders in EnhancedLocationPage');
-          // Check if unified platform is initialized
-          const isInitialized = unifiedPlatformAPI.isInitialized();
-          console.log(`📊 Unified platform initialized: ${isInitialized}`);
-          const asyncBuilders = await unifiedPlatformAPI.getBuildersAsync();
-          console.log(`📊 EnhancedLocationPage async getBuilders returned ${asyncBuilders.length} builders`);
-          // Use async builders if we got data
-          if (asyncBuilders.length > 0) {
-            allBuilders = asyncBuilders;
-          }
+        if (syncBuilders.length > 0) {
+          setFilteredBuilders(syncBuilders);
+          return;
         }
         
-        // Only filter and update if we have builders from unified platform AND we don't already have initial builders
-        // Otherwise, keep the initialBuilders passed from parent
-        if (allBuilders.length > 0 && finalBuilders.length === 0) {
-          // Filter active builders for this location
-          const locationBuilders = allBuilders.filter((builder: any) => {
-            // Skip inactive builders
-            if (builder.status === 'inactive') return false;
-            
-            // For city pages, match city and country
-            if (isCity && city) {
-              const cityMatch = builder.headquarters?.city?.toLowerCase() === city.toLowerCase() ||
-                builder.serviceLocations?.some((loc: any) => 
-                  loc.city?.toLowerCase() === city.toLowerCase()
-                ) ||
-                builder.headquarters_city?.toLowerCase() === city.toLowerCase(); // Handle flat structure
-                
-              const countryMatch = builder.headquarters?.country?.toLowerCase() === country?.toLowerCase() ||
-                builder.serviceLocations?.some((loc: any) => 
-                  loc.country?.toLowerCase() === country?.toLowerCase()
-                ) ||
-                builder.headquarters_country?.toLowerCase() === country?.toLowerCase(); // Handle flat structure
-                
-              return cityMatch && countryMatch;
-            }
-            
-            // For country pages, match country only
-            if (country) {
-              return builder.headquarters?.country?.toLowerCase() === country.toLowerCase() ||
-                builder.serviceLocations?.some((loc: any) => 
-                  loc.country?.toLowerCase() === country.toLowerCase()
-                ) ||
-                builder.headquarters_country?.toLowerCase() === country?.toLowerCase(); // Handle flat structure
-            }
-            
-            return false;
-          });
-          
-          // Transform builders to match expected interface
-          const transformedBuilders = locationBuilders.map((builder: any) => {
-            // If builder already has the nested headquarters structure, return as is
-            if (builder.headquarters && typeof builder.headquarters === 'object') {
-              return builder;
-            }
-            
-            // Otherwise, create the nested structure from flat fields
-            return {
-              ...builder,
-              headquarters: {
-                city: builder.headquarters_city || 'Unknown City',
-                country: builder.headquarters_country || 'Unknown Country'
-              }
-            };
-          });
-          
-          if (isMounted) {
-            // Only update if we have data, otherwise keep existing builders
-            if (transformedBuilders.length > 0) {
-              setFilteredBuilders(transformedBuilders);
-            }
-            setIsLoadingBuilders(false);
-          }
-        } else {
-          // If we already have initial builders or no builders from unified platform, use the initial builders passed from parent
-          if (isMounted) {
-            // Transform the initial builders as well
-            const transformedBuilders = finalBuilders.map((builder: any) => {
-              // If builder already has the nested headquarters structure, return as is
-              if (builder.headquarters && typeof builder.headquarters === 'object') {
-                return builder;
-              }
-              
-              // Otherwise, create the nested structure from flat fields
-              return {
-                ...builder,
-                headquarters: {
-                  city: builder.headquarters_city || 'Unknown City',
-                  country: builder.headquarters_country || 'Unknown Country'
-                }
-              };
-            });
-            
-            setFilteredBuilders(transformedBuilders);
-            setIsLoadingBuilders(false);
-          }
-        }
+        // If sync version returns empty, try async version
+        console.log('🔄 DEBUG: EnhancedLocationPage - Trying async version');
+        const asyncBuilders = await unifiedPlatformAPI.getBuildersAsync(finalLocationName); // Pass location for filtering
+        console.log('📊 DEBUG: EnhancedLocationPage - Async getBuilders returned', asyncBuilders.length, 'builders');
+        
+        setFilteredBuilders(asyncBuilders);
       } catch (error) {
-        // Fallback to passed builders
-        if (isMounted) {
-          // Transform the fallback builders as well
-          const transformedBuilders = finalBuilders.map((builder: any) => {
-            // If builder already has the nested headquarters structure, return as is
-            if (builder.headquarters && typeof builder.headquarters === 'object') {
-              return builder;
-            }
-            
-            // Otherwise, create the nested structure from flat fields
-            return {
-              ...builder,
-              headquarters: {
-                city: builder.headquarters_city || 'Unknown City',
-                country: builder.headquarters_country || 'Unknown Country'
-              }
-            };
-          });
-          
-          setFilteredBuilders(transformedBuilders);
-          setIsLoadingBuilders(false);
-        }
+        console.error('❌ Error loading builders:', error);
+      } finally {
+        setIsLoadingBuilders(false);
       }
     };
-    
+
     loadBuilders();
     
     // Set up real-time updates by polling every 2 minutes (reduced from 30 seconds to prevent flickering)
     // Only poll if we're using unified platform data, not if we have initial builders
     if (finalBuilders.length === 0) {
+      console.log('🔍 DEBUG: Setting up polling for unified platform data');
       const interval = setInterval(() => {
         if (isMounted) {
           loadBuilders();
@@ -251,6 +180,7 @@ export function EnhancedLocationPage({
         clearInterval(interval);
       };
     } else {
+      console.log('🔍 DEBUG: Not setting up polling, using initial builders');
       // Clean up function for when we have initial builders
       return () => {
         isMounted = false;

@@ -130,6 +130,18 @@ export function CountryCityPage({
   showQuoteForm = false,
   hideCitiesSection = false,
 }: CountryCityPageProps) {
+  // DEBUG: Log incoming props
+  console.log('🔍 DEBUG: CountryCityPage props:', {
+    country,
+    city,
+    initialBuildersCount: initialBuilders.length,
+    hasInitialContent: !!initialContent,
+    isEditable,
+    hasCityData: !!cityData,
+    showComingSoon,
+    hasCmsContent: !!cmsContent
+  });
+  
   // Transform initial builders to ensure they have the correct structure
   const transformedInitialBuilders = initialBuilders.map((builder: any) => {
     // If builder already has the nested headquarters structure, return as is
@@ -561,7 +573,11 @@ export function CountryCityPage({
         setIsLoading(true);
         // Load from unified platform API (includes all builders: GMB imports, manual additions, etc.)
         // Add safety check to prevent "Cannot read properties of undefined" error
-        const allBuilders = unifiedPlatformAPI?.getBuilders?.() || [];
+        const allBuilders = unifiedPlatformAPI?.getBuilders?.(country) || []; // Pass country for filtering
+        
+        // DEBUG: Log builder data
+        console.log('🔍 DEBUG: CountryCityPage - Unified platform returned', allBuilders.length, 'builders for country:', country);
+        console.log('🔍 DEBUG: CountryCityPage - Initial builders provided', initialBuilders.length);
         
         // If we don't have initial builders and unified platform returned empty, try async version
         if (initialBuilders.length === 0 && allBuilders.length === 0) {
@@ -569,8 +585,8 @@ export function CountryCityPage({
           // Check if unified platform is initialized
           const isInitialized = unifiedPlatformAPI.isInitialized();
           console.log(`📊 Unified platform initialized: ${isInitialized}`);
-          const asyncBuilders = await unifiedPlatformAPI.getBuildersAsync();
-          console.log(`📊 Async getBuilders returned ${asyncBuilders.length} builders`);
+          const asyncBuilders = await unifiedPlatformAPI.getBuildersAsync(country); // Pass country for filtering
+          console.log(`📊 Async getBuilders returned ${asyncBuilders.length} builders for country:`, country);
           // Use async builders if we got data
           if (asyncBuilders.length > 0) {
             allBuilders.push(...asyncBuilders);
@@ -579,6 +595,7 @@ export function CountryCityPage({
         
         // If we have initialBuilders from server-side, prioritize them and don't override with unified platform data
         if (initialBuilders.length > 0) {
+          console.log('🔍 DEBUG: Using server-provided initial builders, count:', initialBuilders.length);
           if (isMounted) {
             setBuilders(initialBuilders);
             setFilteredBuilders(initialBuilders);
@@ -586,233 +603,17 @@ export function CountryCityPage({
           }
           return;
         }
-
-        // Handle country name variations (UAE vs United Arab Emirates)
-        const countryVariations = [country];
-        if (country === "United Arab Emirates") {
-          countryVariations.push("UAE");
-        } else if (country === "UAE") {
-          countryVariations.push("United Arab Emirates");
-        }
-
-        // Filter builders for this country (with variations)
-        const countryBuilders = allBuilders.filter((builder: any) => {
-          const servesCountry = builder.serviceLocations?.some((loc: any) =>
-            countryVariations.includes(loc.country)
-          );
-          const headquartersMatch = countryVariations.includes(
-            builder.headquarters?.country
-          );
-
-          return (servesCountry || headquartersMatch) && builder.status !== 'inactive';
-        });
-
-        // CRITICAL FIX: Deduplicate builders by ID to ensure each builder appears only once per country
-        const builderMap = new Map();
-        countryBuilders.forEach((builder: any) => {
-          if (!builderMap.has(builder.id)) {
-            builderMap.set(builder.id, {
-              ...builder,
-              // Track all cities they serve in this country for better display
-              allServiceCities: Array.from(
-                new Set(
-                  [
-                    ...(builder.serviceLocations
-                      ?.filter((loc: any) =>
-                        countryVariations.includes(loc.country)
-                      )
-                      .map((loc: any) => loc.city) || []),
-                    ...(countryVariations.includes(
-                      builder.headquarters?.country
-                    )
-                      ? [builder.headquarters?.city]
-                      : []),
-                  ].filter(Boolean)
-                )
-              ),
-            });
-          }
-        });
-
-        const uniqueBuilders = Array.from(builderMap.values());
-
-        // Filter for specific city if we're on a city page
-        let finalBuilders = uniqueBuilders;
-        if (city) {
-          finalBuilders = uniqueBuilders.filter((builder: any) => {
-            // More flexible city matching - handle case variations and partial matches
-            const cityLower = city.toLowerCase().trim();
-
-            const servesCity = builder.serviceLocations?.some(
-              (loc: any) =>
-                countryVariations.includes(loc.country) &&
-                ((loc.cities && Array.isArray(loc.cities) && loc.cities.some((c: string) => c.toLowerCase().trim() === cityLower)) ||
-                 (loc.city && loc.city.toLowerCase().trim() === cityLower))
-            );
-            const headquartersMatch =
-              countryVariations.includes(builder.headquarters?.country) &&
-              builder.headquarters?.city &&
-              builder.headquarters?.city.toLowerCase().trim() === cityLower;
-
-            // Also try partial matching for debugging
-            const flexibleHQMatch =
-              countryVariations.includes(builder.headquarters?.country) &&
-              builder.headquarters?.city &&
-              builder.headquarters?.city.toLowerCase().includes(cityLower);
-            const flexibleServiceMatch = builder.serviceLocations?.some(
-              (loc: any) =>
-                countryVariations.includes(loc.country) &&
-                ((loc.cities && Array.isArray(loc.cities) && loc.cities.some((c: string) => c.toLowerCase().includes(cityLower))) ||
-                 (loc.city && loc.city.toLowerCase().includes(cityLower)))
-            );
-
-            const matches =
-              servesCity ||
-              headquartersMatch ||
-              flexibleHQMatch ||
-              flexibleServiceMatch;
-
-            return matches;
-          });
-        }
-
-        // Extract cities from builders (for country page display)
-        const citySet = new Set<string>();
-        uniqueBuilders.forEach((builder: any) => {
-          if (
-            countryVariations.includes(builder.headquarters?.country) &&
-            builder.headquarters?.city
-          ) {
-            citySet.add(builder.headquarters.city);
-          }
-          builder.serviceLocations?.forEach((loc: any) => {
-            if (countryVariations.includes(loc.country) && loc.city) {
-              citySet.add(loc.city);
-            }
-          });
-        });
-
-        let cityList = Array.from(citySet)
-          .sort()
-          .map((cityName) => ({
-            name: cityName,
-            slug: cityName
-              .toLowerCase()
-              .replace(/\\s+/g, "-")
-              .replace(/[^a-z0-9-]/g, ""),
-            builderCount: uniqueBuilders.filter((builder: any) => {
-              const servesCity = builder.serviceLocations?.some(
-                (loc: any) =>
-                  countryVariations.includes(loc.country) &&
-                  loc.city === cityName
-              );
-              const headquartersMatch =
-                countryVariations.includes(builder.headquarters?.country) &&
-                builder.headquarters?.city === cityName;
-              return servesCity || headquartersMatch;
-            }).length
-          }));
-          
-        // Always pull cities from global database to ensure all cities are displayed
-        try {
-          const {
-            getCitiesByCountry,
-          } = require("@/lib/data/globalExhibitionDatabase");
-          const { locationData } = require("@/lib/data/locationData");
-
-          const countrySlug = country
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .replace(/[^a-z0-9-]/g, "");
-          const allCountryCities = getCitiesByCountry(countrySlug) || [];
-
-          // Also get cities from locationData for more comprehensive coverage
-          const locationCountry = locationData.find(
-            (c: any) => c.countrySlug === countrySlug
-          );
-          const locationCities = locationCountry?.cities || [];
-
-          // Merge cities from all sources: builders, global database, and location data
-          const allCityNames = new Set([
-            ...cityList.map((c) => c.name),
-            ...allCountryCities.map((c: any) => c.name),
-            ...locationCities.map((c: any) => c.cityName),
-          ]);
-
-          // Create maps for quick lookup
-          const existingCitiesMap = new Map(cityList.map((c) => [c.name, c]));
-          const locationCitiesMap = new Map(
-            locationCities.map((c: any) => [c.cityName, c])
-          );
-
-          // Create the final city list with merged data from all sources
-          cityList = Array.from(allCityNames)
-            .map((cityName) => {
-              const existingCity = existingCitiesMap.get(cityName);
-              const databaseCity = allCountryCities.find(
-                (c: any) => c.name === cityName
-              );
-              const locationCity = locationCitiesMap.get(cityName);
-
-              return {
-                name: cityName,
-                slug:
-                  existingCity?.slug ||
-                  databaseCity?.slug ||
-                  (locationCity as any)?.citySlug ||
-                  cityName
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")
-                    .replace(/[^a-z0-9-]/g, ""),
-                builderCount:
-                  existingCity?.builderCount ||
-                  databaseCity?.builderCount ||
-                  0,
-              };
-            })
-            .sort((a, b) => a.name.localeCompare(b.name));
-
-        } catch (error) {
-          // Silently handle errors
-        }
-
-        // Transform initial builders to ensure consistent structure
-        const transformedInitialBuilders = initialBuilders.map((builder: any) => {
-          // If builder already has the nested headquarters structure, return as is
-          if (builder.headquarters && typeof builder.headquarters === 'object') {
-            return builder;
-          }
-          
-          // Otherwise, create the nested structure from flat fields
-          return {
-            ...builder,
-            headquarters: {
-              city: builder.headquarters_city || 'Unknown City',
-              country: builder.headquarters_country || 'Unknown Country'
-            }
-          };
-        });
-
-        // Update state with the final data
+        
+        // Otherwise use unified platform data
+        console.log('🔍 DEBUG: Using unified platform data, count:', allBuilders.length);
         if (isMounted) {
-          setCities(cityList);
-          
-          // Only update builders if we have data from unified platform
-          // Always fallback to initial builders if unified platform returns empty results
-          if (finalBuilders.length > 0) {
-            setBuilders(finalBuilders);
-            setFilteredBuilders(finalBuilders);
-          } else {
-            // Fallback to initial builders if needed
-            setBuilders(transformedInitialBuilders);
-            setFilteredBuilders(transformedInitialBuilders);
-          }
-          setIsLoading(false);
+          setBuilders(allBuilders);
+          setFilteredBuilders(allBuilders);
         }
       } catch (error) {
+        console.error('❌ Error loading builders in CountryCityPage:', error);
+      } finally {
         if (isMounted) {
-          setBuilders(initialBuilders);
-          setFilteredBuilders(initialBuilders);
           setIsLoading(false);
         }
       }
@@ -820,29 +621,22 @@ export function CountryCityPage({
 
     loadBuilders();
 
-    // Set up real-time updates by polling every 2 minutes (reduced from 30 seconds to prevent flickering)
-    // Only poll if we don't have initial builders (meaning we're relying on unified platform)
-    if (initialBuilders.length === 0) {
-      const interval = setInterval(() => {
-        if (isMounted) {
-          loadBuilders();
-        }
-      }, 120000);
-
-      return () => {
-        isMounted = false;
-        clearInterval(interval);
-      };
-    } else {
-      // Clean up function for when we have initial builders
-      return () => {
-        isMounted = false;
-      };
-    }
-  }, [country, city]); // Removed initialBuilders from dependencies to prevent infinite loop
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [country, city, initialBuilders]); // Add initialBuilders back to dependencies
 
   useEffect(() => {
     // Filter and sort builders (only for search and sorting, not for city filtering)
+    // Only run this if we have builders
+    if (builders.length === 0) {
+      console.log('🔍 DEBUG: No builders to filter in secondary effect, skipping');
+      return;
+    }
+    
+    console.log('🔍 DEBUG: Running secondary filter effect with', builders.length, 'builders');
+    
     let filtered = builders.filter((builder) => {
       // Text search filter
       const search = (searchTerm || "").toLowerCase();
@@ -864,6 +658,12 @@ export function CountryCityPage({
           builder.headquarters?.city === selectedCity ||
           builder.serviceLocations?.some((loc) => loc.city === selectedCity);
       }
+      
+      console.log('🔍 DEBUG: Builder filter result for', builder.companyName, {
+        matchesSearch,
+        matchesCity,
+        finalResult: matchesSearch && matchesCity
+      });
 
       return matchesSearch && matchesCity;
     });
@@ -892,6 +692,8 @@ export function CountryCityPage({
           return b.rating - a.rating;
       }
     });
+    
+    console.log('🔍 DEBUG: Secondary filter resulted in', filtered.length, 'builders');
 
     setFilteredBuilders(filtered);
     setCurrentPage(1);
@@ -903,6 +705,24 @@ export function CountryCityPage({
     startIndex,
     startIndex + BUILDERS_PER_PAGE
   );
+  
+  // DEBUG: Log pagination info
+  console.log('🔍 DEBUG: Pagination info:', {
+    totalBuilders: filteredBuilders.length,
+    currentPage,
+    totalPages,
+    startIndex,
+    endIndex: startIndex + BUILDERS_PER_PAGE,
+    currentBuildersCount: currentBuilders.length
+  });
+  
+  // DEBUG: Log what we're passing to EnhancedLocationPage
+  console.log('🔍 DEBUG: Passing to EnhancedLocationPage:', {
+    initialBuildersCount: currentBuilders.length,
+    locationType: city ? "city" : "country",
+    locationName: city || country,
+    countryName: city ? country : undefined
+  });
 
   const featuredBuilders = filteredBuilders
     .filter((b) => (b as any).featured || false)

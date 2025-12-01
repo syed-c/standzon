@@ -123,6 +123,7 @@ import RealTimePlatformAnalytics from "@/components/RealTimePlatformAnalytics";
 import SuperAdminLocationManager from "@/components/SuperAdminLocationManager";
 import UserManagement from "@/components/UserManagement";
 import EnhancedSuperAdminControls from "@/components/EnhancedSuperAdminControls";
+import { TestLocationBuilders } from "@/components/TestLocationBuilders";
 
 interface SuperAdminDashboardProps {
   adminId: string;
@@ -717,6 +718,27 @@ export default function SuperAdminDashboard({
               </div>
             </button>
           </div>
+          
+          {/* Diagnostics Section */}
+          <div className="space-y-1 bg-gray-900 p-2 rounded-lg mt-4">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-3 bg-gray-800">
+              DIAGNOSTICS
+            </h3>
+
+            <button
+              onClick={() => setActiveTab("diagnostics")}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-left transition-colors ${
+                activeTab === "diagnostics"
+                  ? "bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-blue-400 border-l-4 border-blue-500 shadow-sm" 
+                  : "text-gray-300 hover:bg-gray-800 hover:text-gray-100 hover:shadow-sm"
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Activity className="h-5 w-5" />
+                <span className="font-medium">Diagnostics</span>
+              </div>
+            </button>
+          </div>
         </nav>
       </div>
       )}
@@ -747,6 +769,7 @@ export default function SuperAdminDashboard({
               {activeTab === "admin-management" && "Admin Management"}
               {activeTab === "logs" && "System Logs"}
               {activeTab === "backup" && "Backup & Restore"}
+              {activeTab === "diagnostics" && "Diagnostics"}
             </h1>
             <Badge className="bg-blue-500/20 text-blue-400">
               {activeTab === "overview" && "Real-time"}
@@ -769,6 +792,7 @@ export default function SuperAdminDashboard({
               {activeTab === "admin-management" && "Secure"}
               {activeTab === "logs" && "Updated"}
               {activeTab === "backup" && "Protected"}
+              {activeTab === "diagnostics" && "Testing"}
             </Badge>
           </div>
           <div className="flex items-center space-x-3">
@@ -1179,6 +1203,12 @@ export default function SuperAdminDashboard({
                 adminId={adminId} 
                 permissions={permissions} 
               />
+            </div>
+          )}
+          
+          {activeTab === "diagnostics" && (
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl shadow-lg p-6">
+              <TestLocationBuilders />
             </div>
           )}
         </div>

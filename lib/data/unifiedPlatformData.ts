@@ -142,15 +142,26 @@ class UnifiedDataManager {
     
     try {
       // Check if Supabase is configured
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      // Use NEXT_PUBLIC_* variables as primary since they're available in both server and client
+      // Only access process.env on server side to avoid client-side errors
+      let supabaseUrl, supabaseServiceKey;
+      
+      // Server-side environment variable access
+      if (typeof process !== 'undefined' && process.env) {
+        supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+        supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+      }
       
       if (!supabaseUrl || !supabaseServiceKey) {
-        console.warn('⚠️ Supabase not configured. Skipping Supabase data loading.');
-        console.log('Environment variables check:');
-        console.log('- NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? '✓ Present' : '✗ Missing');
-        console.log('- SUPABASE_URL:', process.env.SUPABASE_URL ? '✓ Present' : '✗ Missing');
-        console.log('- SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✓ Present' : '✗ Missing');
+        console.warn('⚠️ SupabASE not configured. Skipping Supabase data loading.');
+        // Only log detailed environment variable info on server side
+        if (typeof process !== 'undefined' && process.env) {
+          console.log('Environment variables check:');
+          console.log('- NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? '✓ Present' : '✗ Missing');
+          console.log('- SUPABASE_URL:', process.env.SUPABASE_URL ? '✓ Present' : '✗ Missing');
+          console.log('- SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✓ Present' : '✗ Missing');
+          console.log('- NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY ? '✓ Present' : '✗ Missing');
+        }
       } else {
         console.log('✅ Supabase is configured. Proceeding with data loading...');
         
@@ -775,6 +786,48 @@ export function getUnifiedDataManager(): UnifiedDataManager {
   return unifiedDataManager;
 }
 
+// ✅ NEW: Country-specific builder filtering
+function getBuildersByCountry(country: string): ExhibitionBuilder[] {
+  console.log("📍 getBuildersByCountry called with:", country);
+  
+  const normalized = country.toLowerCase().replace(/-/g, " ").trim();
+  
+  // Handle country variations (UAE vs United Arab Emirates)
+  const countryVariations = [normalized];
+  if (normalized.includes("united arab emirates")) {
+    countryVariations.push("uae");
+  } else if (normalized === "uae") {
+    countryVariations.push("united arab emirates");
+  }
+  
+  console.log("📍 Country variations for filtering:", countryVariations);
+  
+  const manager = getUnifiedDataManager();
+  const allBuilders = manager.getBuilders();
+  
+  console.log("📍 Total builders in system:", allBuilders.length);
+  
+  const filtered = allBuilders.filter(builder => {
+    // Normalize builder country for comparison
+    const builderCountry = (builder.headquarters?.country || '').toLowerCase().trim();
+    
+    // Check if any country variation matches
+    const match = countryVariations.some(variation => 
+      builderCountry.includes(variation)
+    );
+    
+    // Log first few builders for debugging
+    if (allBuilders.indexOf(builder) < 3) {
+      console.log(`📍 Builder ${builder.companyName}: country="${builderCountry}", match=${match}`);
+    }
+    
+    return match;
+  });
+  
+  console.log("📍 Filtered builders for country:", country, " -> ", filtered.length);
+  return filtered;
+}
+
 // ✅ SIMPLIFIED: Lightweight API
 export const unifiedPlatformAPI = {
   // Data access with lazy loading
@@ -789,8 +842,8 @@ export const unifiedPlatformAPI = {
     }
   },
   
-  // ✅ FIXED: Provide both sync and async versions
-  getBuilders: () => {
+  // ✅ FIXED: Provide both sync and async versions with location filtering
+  getBuilders: (location?: string) => {
     try {
       const manager = getUnifiedDataManager();
       // Ensure initialization has happened
@@ -804,6 +857,15 @@ export const unifiedPlatformAPI = {
           });
         }
       }
+      
+      // If location is provided, filter by country
+      if (location) {
+        const filteredBuilders = getBuildersByCountry(location);
+        console.log(`📊 getBuilders(${location}) returning ${filteredBuilders.length} builders synchronously`);
+        return filteredBuilders;
+      }
+      
+      // Otherwise return all builders
       const builders = manager.getBuilders();
       console.log(`📊 getBuilders() returning ${builders.length} builders synchronously`);
       return builders;
@@ -813,10 +875,19 @@ export const unifiedPlatformAPI = {
     }
   },
   
-  getBuildersAsync: async () => {
+  getBuildersAsync: async (location?: string) => {
     try {
       const manager = getUnifiedDataManager();
       await manager.ensureInitialized();
+      
+      // If location is provided, filter by country
+      if (location) {
+        const filteredBuilders = getBuildersByCountry(location);
+        console.log(`📊 getBuildersAsync(${location}) returning ${filteredBuilders.length} builders after initialization`);
+        return filteredBuilders;
+      }
+      
+      // Otherwise return all builders
       const builders = manager.getBuilders();
       console.log(`📊 getBuildersAsync() returning ${builders.length} builders after initialization`);
       return builders;

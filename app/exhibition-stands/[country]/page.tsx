@@ -150,22 +150,55 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
     
     if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
       // Handle country name variations (UAE vs United Arab Emirates)
-      const countryVariations = [countryInfo.name];
+      const countryVariations = [countryInfo.name.toLowerCase()];
       if (countryInfo.name === "United Arab Emirates") {
-        countryVariations.push("UAE");
+        countryVariations.push("uae");
       } else if (countryInfo.name === "UAE") {
-        countryVariations.push("United Arab Emirates");
+        countryVariations.push("united arab emirates");
       }
+      
+      console.log('🔍 DEBUG: Country variations for filtering:', countryVariations);
       
       // Filter builders for this country (with variations)
       const filteredBuilders = buildersData.data.builders.filter((builder: any) => {
-        const headquartersCountry = builder.headquarters_country;
-        const serviceLocationsCountries = builder.service_locations ? 
-          builder.service_locations.map((loc: any) => loc.country) : [];
+        // Normalize strings for comparison
+        const normalizeString = (str: string) => {
+          if (!str) return '';
+          return str.toString().toLowerCase().trim();
+        };
         
-        const headquartersMatch = countryVariations.includes(headquartersCountry);
-        const serviceLocationMatch = serviceLocationsCountries.some((country: string) => 
-          countryVariations.includes(country));
+        // Check headquarters country (handle different field names)
+        const headquartersCountry = normalizeString(
+          builder.headquarters_country || 
+          builder.headquarters?.country || 
+          builder.headquartersCountry || 
+          ''
+        );
+        
+        const headquartersMatch = countryVariations.some(variation => 
+          headquartersCountry === variation || headquartersCountry.includes(variation)
+        );
+        
+        // Check service locations
+        const serviceLocations = builder.service_locations || builder.serviceLocations || [];
+        const serviceLocationMatch = serviceLocations.some((loc: any) => {
+          const serviceCountry = normalizeString(loc.country);
+          return countryVariations.some(variation => 
+            serviceCountry === variation || serviceCountry.includes(variation)
+          );
+        });
+        
+        // Log for debugging
+        if (buildersData.data.builders.indexOf(builder) === 0) {
+          console.log('🔍 DEBUG: Server-side country filtering for first builder:', {
+            country: countryInfo.name,
+            countryVariations,
+            headquartersCountry,
+            headquartersMatch,
+            serviceLocationMatch,
+            finalResult: headquartersMatch || serviceLocationMatch
+          });
+        }
         
         return headquartersMatch || serviceLocationMatch;
       });
@@ -180,71 +213,110 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
       
       const uniqueBuilders = Array.from(builderMap.values());
       
+      // Log before transformation
+      console.log('🔍 DEBUG: Before transformation - unique builders count:', uniqueBuilders.length);
+      if (uniqueBuilders.length > 0) {
+        console.log('🔍 DEBUG: First unique builder before transformation:', {
+          id: uniqueBuilders[0].id,
+          company_name: uniqueBuilders[0].company_name,
+          headquarters_city: uniqueBuilders[0].headquarters_city,
+          headquarters_country: uniqueBuilders[0].headquarters_country
+        });
+      }
+      
       // Transform builders to match expected interface (same as in BuildersDirectoryContent)
-      builders = uniqueBuilders.map((b: any) => ({
-        id: b.id,
-        companyName: b.company_name || b.companyName || "",
-        companyDescription: (() => {
-          let desc = b.description || b.companyDescription || "";
-          // Remove SERVICE_LOCATIONS JSON from description more aggressively
-          desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
-          desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
-          desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
-          desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
-          desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
-          // Remove any remaining raw data patterns
-          desc = desc.replace(/sdfghjl.*$/g, '');
-          desc = desc.replace(/testing.*$/g, '');
-          desc = desc.replace(/sdfghj.*$/g, '');
-          desc = desc.trim();
-          return desc || "";
-        })(),
-        headquarters: {
-          city: b.headquarters_city || b.headquarters?.city || "Unknown",
-          country:
-            b.headquarters_country ||
-            b.headquartersCountry ||
-            b.headquarters?.country ||
-            "Unknown",
-          countryCode: b.headquarters?.countryCode || "XX",
-          address: b.headquarters?.address || "",
-          latitude: b.headquarters?.latitude || 0,
-          longitude: b.headquarters?.longitude || 0,
-          isHeadquarters: true,
-        },
-        serviceLocations: b.serviceLocations || b.service_locations || [],
-        keyStrengths: b.keyStrengths || [],
-        verified: b.verified || b.isVerified || false,
-        rating: b.rating || 0,
-        projectsCompleted:
-          b.projectsCompleted || b.projects_completed || 0,
-        importedFromGMB: b.importedFromGMB || b.gmbImported || false,
-        logo: b.logo || "/images/builders/default-logo.png",
-        establishedYear: b.establishedYear || b.established_year || 2020,
-        teamSize: b.teamSize || 10,
-        reviewCount: b.reviewCount || 0,
-        responseTime: b.responseTime || "Within 24 hours",
-        languages: b.languages || ["English"],
-        premiumMember: b.premiumMember || b.premium_member || false,
-        slug:
-          b.slug ||
-          (b.company_name || b.companyName || "")
-            .toLowerCase()
-            .replace(/[^a-z0-9]/g, "-"),
-        primary_email: b.primary_email || b.primaryEmail || "",
-        phone: b.phone || "",
-        website: b.website || "",
-        contact_person: b.contact_person || b.contactPerson || "",
-        position: b.position || "",
-        gmbImported:
-          b.gmbImported ||
-          b.importedFromGMB ||
-          b.source === "GMB_API" ||
-          false,
-      }));
+      builders = uniqueBuilders.map((b: any) => {
+        const transformed = {
+          id: b.id,
+          companyName: b.company_name || b.companyName || "",
+          companyDescription: (() => {
+            let desc = b.description || b.companyDescription || "";
+            // Remove SERVICE_LOCATIONS JSON from description more aggressively
+            desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
+            desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
+            desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
+            desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
+            desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
+            // Remove any remaining raw data patterns
+            desc = desc.replace(/sdfghjl.*$/g, '');
+            desc = desc.replace(/testing.*$/g, '');
+            desc = desc.replace(/sdfghj.*$/g, '');
+            desc = desc.trim();
+            return desc || "";
+          })(),
+          headquarters: {
+            city: b.headquarters_city || b.headquarters?.city || "Unknown",
+            country:
+              b.headquarters_country ||
+              b.headquartersCountry ||
+              b.headquarters?.country ||
+              "Unknown",
+            countryCode: b.headquarters?.countryCode || "XX",
+            address: b.headquarters?.address || "",
+            latitude: b.headquarters?.latitude || 0,
+            longitude: b.headquarters?.longitude || 0,
+            isHeadquarters: true,
+          },
+          serviceLocations: b.serviceLocations || b.service_locations || [],
+          keyStrengths: b.keyStrengths || [],
+          verified: b.verified || b.isVerified || false,
+          rating: b.rating || 0,
+          projectsCompleted:
+            b.projectsCompleted || b.projects_completed || 0,
+          importedFromGMB: b.importedFromGMB || b.gmbImported || false,
+          logo: b.logo || "/images/builders/default-logo.png",
+          establishedYear: b.establishedYear || b.established_year || 2020,
+          teamSize: b.teamSize || 10,
+          reviewCount: b.reviewCount || 0,
+          responseTime: b.responseTime || "Within 24 hours",
+          languages: b.languages || ["English"],
+          premiumMember: b.premiumMember || b.premium_member || false,
+          slug:
+            b.slug ||
+            (b.company_name || b.companyName || "")
+              .toLowerCase()
+              .replace(/[^a-z0-9]/g, "-"),
+          primary_email: b.primary_email || b.primaryEmail || "",
+          phone: b.phone || "",
+          website: b.website || "",
+          contact_person: b.contact_person || b.contactPerson || "",
+          position: b.position || "",
+          gmbImported:
+            b.gmbImported ||
+            b.importedFromGMB ||
+            b.source === "GMB_API" ||
+            false,
+        };
+        
+        // Log first few transformations
+        if (uniqueBuilders.indexOf(b) < 3) {
+          console.log(`🔍 DEBUG: Transformed builder ${b.company_name || b.companyName}:`, {
+            id: transformed.id,
+            companyName: transformed.companyName,
+            headquarters: transformed.headquarters
+          });
+        }
+        
+        return transformed;
+      });
+      
+      console.log('🔍 DEBUG: After transformation - builders count:', builders.length);
     }
   } catch (error) {
     console.error("❌ Error loading builders:", error);
+  }
+  
+  // DEBUG: Log builders info
+  console.log("🔍 DEBUG: Server-side builders count:", builders.length);
+  if (builders.length > 0) {
+    console.log("🔍 DEBUG: First server-side builder:", {
+      id: builders[0].id,
+      companyName: builders[0].companyName,
+      headquarters: builders[0].headquarters,
+      serviceLocations: builders[0].serviceLocations
+    });
+  } else {
+    console.log("⚠️ DEBUG: No builders to send to client component");
   }
   
   const defaultContent = {

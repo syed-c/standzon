@@ -320,32 +320,71 @@ export default async function CityPage({ params }: CityPageProps) {
     
     if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
       // Handle country name variations (UAE vs United Arab Emirates)
-      const countryVariations = [countryName];
+      const countryVariations = [countryName.toLowerCase()];
       if (countryName === "United Arab Emirates") {
-        countryVariations.push("UAE");
+        countryVariations.push("uae");
       } else if (countryName === "UAE") {
-        countryVariations.push("United Arab Emirates");
+        countryVariations.push("united arab emirates");
       }
+      
+      console.log('🔍 DEBUG: City page country variations for filtering:', countryVariations);
       
       // Filter builders for this city and country
       const filteredBuilders = buildersData.data.builders.filter((builder: any) => {
-        const headquartersCountry = builder.headquarters_country;
-        const headquartersCity = builder.headquarters_city;
+        // Normalize strings for comparison
+        const normalizeString = (str: string) => {
+          if (!str) return '';
+          return str.toString().toLowerCase().trim();
+        };
         
-        // Check headquarters match
-        const headquartersMatch =
-          countryVariations.includes(headquartersCountry) &&
-          headquartersCity &&
-          headquartersCity.toLowerCase().trim() === cityName.toLowerCase().trim();
-          
-        // Check service locations match
-        const serviceLocations = builder.service_locations || [];
-        const serviceLocationMatch = serviceLocations.some((loc: any) => 
-          countryVariations.includes(loc.country) &&
-          loc.city &&
-          loc.city.toLowerCase().trim() === cityName.toLowerCase().trim()
+        const normalizedCity = normalizeString(cityName);
+        
+        // Check headquarters (handle different field names)
+        const headquartersCity = normalizeString(
+          builder.headquarters_city || 
+          builder.headquarters?.city || 
+          ''
         );
-
+        const headquartersCountry = normalizeString(
+          builder.headquarters_country || 
+          builder.headquarters?.country || 
+          builder.headquartersCountry || 
+          ''
+        );
+        
+        const headquartersMatch = 
+          (headquartersCity === normalizedCity || headquartersCity.includes(normalizedCity)) &&
+          countryVariations.some(variation => 
+            headquartersCountry === variation || headquartersCountry.includes(variation)
+          );
+        
+        // Check service locations
+        const serviceLocations = builder.service_locations || builder.serviceLocations || [];
+        const serviceLocationMatch = serviceLocations.some((loc: any) => {
+          const serviceCity = normalizeString(loc.city);
+          const serviceCountry = normalizeString(loc.country);
+          return (
+            (serviceCity === normalizedCity || serviceCity.includes(normalizedCity)) &&
+            countryVariations.some(variation => 
+              serviceCountry === variation || serviceCountry.includes(variation)
+            )
+          );
+        });
+        
+        // Log for debugging first builder
+        if (buildersData.data.builders.indexOf(builder) === 0) {
+          console.log('🔍 DEBUG: City page filtering for first builder:', {
+            city: cityName,
+            country: countryName,
+            countryVariations,
+            headquartersCity,
+            headquartersCountry,
+            headquartersMatch,
+            serviceLocationMatch,
+            finalResult: headquartersMatch || serviceLocationMatch
+          });
+        }
+        
         return headquartersMatch || serviceLocationMatch;
       });
       
