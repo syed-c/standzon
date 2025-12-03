@@ -166,7 +166,7 @@ export async function generateMetadata({
         type: "website",
       },
       alternates: {
-        canonical: `/exhibition-stands/${countrySlug}/${citySlug}`,
+        canonical: `https://standszone.com/exhibition-stands/${countrySlug}/${citySlug}`,
       },
     };
   } catch (error) {

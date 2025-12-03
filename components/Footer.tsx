@@ -101,10 +101,10 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="bg-gray-900 text-white w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Main Footer Content */}
-        <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full">
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="mb-4">
@@ -116,33 +116,33 @@ export default function Footer() {
             
             <div className="space-y-3">
               <div className="flex items-center">
-                <FiPhone className="w-4 h-4 text-pink-400 mr-3" />
+                <FiPhone className="w-4 h-4 text-pink-400 mr-3 flex-shrink-0" />
                 {footerData?.contact?.phoneLink ? (
                   <a href={footerData.contact.phoneLink} className="text-gray-300 hover:text-pink-400 transition-colors flex items-center">
                     {footerData.contact.phone}
-                    <FiExternalLink className="w-3 h-3 ml-1 opacity-60" />
+                    <FiExternalLink className="w-3 h-3 ml-1 opacity-60 flex-shrink-0" />
                   </a>
                 ) : (
                   <span className="text-gray-300">{footerData?.contact?.phone || siteData.contact?.phone || fallbackData.contact.phone}</span>
                 )}
               </div>
               <div className="flex items-center">
-                <FiMail className="w-4 h-4 text-pink-400 mr-3" />
+                <FiMail className="w-4 h-4 text-pink-400 mr-3 flex-shrink-0" />
                 {footerData?.contact?.emailLink ? (
                   <a href={footerData.contact.emailLink} className="text-gray-300 hover:text-pink-400 transition-colors flex items-center">
                     {footerData.contact.email}
-                    <FiExternalLink className="w-3 h-3 ml-1 opacity-60" />
+                    <FiExternalLink className="w-3 h-3 ml-1 opacity-60 flex-shrink-0" />
                   </a>
                 ) : (
                   <span className="text-gray-300">{footerData?.contact?.email || siteData.contact?.email || fallbackData.contact.email}</span>
                 )}
               </div>
               <div className="flex items-center">
-                <FiMapPin className="w-4 h-4 text-pink-400 mr-3" />
+                <FiMapPin className="w-4 h-4 text-pink-400 mr-3 flex-shrink-0" />
                 {footerData?.contact?.addressLink ? (
                   <a href={footerData.contact.addressLink} className="text-gray-300 hover:text-pink-400 transition-colors flex items-center">
                     {footerData.contact.address}
-                    <FiExternalLink className="w-3 h-3 ml-1 opacity-60" />
+                    <FiExternalLink className="w-3 h-3 ml-1 opacity-60 flex-shrink-0" />
                   </a>
                 ) : (
                   <span className="text-gray-300">{footerData?.contact?.address || siteData.contact?.address || fallbackData.contact.address}</span>
@@ -157,7 +157,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {services.map((service: any, index: number) => (
                 <li key={index}>
-                  <a href={service.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight">
+                  <a href={service.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight block truncate">
                     {service.label || service}
                   </a>
                 </li>
@@ -171,7 +171,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {locations.map((location: any, index: number) => (
                 <li key={index}>
-                  <a href={location.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight">
+                  <a href={location.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight block truncate">
                     {location.label || location}
                   </a>
                 </li>
@@ -185,7 +185,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {resources.map((resource: any, index: number) => (
                 <li key={index}>
-                  <a href={resource.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight">
+                  <a href={resource.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight block truncate">
                     {resource.label || resource}
                   </a>
                 </li>
@@ -197,20 +197,20 @@ export default function Footer() {
         {/* Newsletter removed per requirements */}
 
         {/* Bottom Footer */}
-        <div className="py-8 border-t border-gray-800">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+        <div className="py-8 border-t border-gray-800 w-full">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-400 text-sm text-center md:text-left">
                 {footerData?.bottom?.copyright || `© 2024 ${siteData.companyName || fallbackData.companyName}. All rights reserved.`}
               </p>
-              <div className="flex space-x-6 text-sm">
+              <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6 text-sm">
                 {(footerData?.bottom?.links || [
                   { label: 'Privacy Policy', href: '/legal/privacy-policy' },
                   { label: 'Terms of Service', href: '/legal/terms-of-service' },
                   { label: 'Cookie Policy', href: '/legal/cookie-policy' },
                   { label: 'Sitemap', href: 'https://standszone.com/sitemap' },
                 ]).map((l: any, i: number) => (
-                  <a key={i} href={l.href} className="text-gray-400 hover:text-pink-400 transition-colors touch-active no-tap-highlight">
+                  <a key={i} href={l.href} className="text-gray-400 hover:text-pink-400 transition-colors touch-active no-tap-highlight whitespace-nowrap">
                     {l.label}
                   </a>
                 ))}

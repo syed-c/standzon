@@ -25,7 +25,18 @@ import {
   AlertCircle
 } from 'lucide-react';
 
-export const metadata: Metadata = siteMetadata['/admin/dashboard'];
+export const metadata: Metadata = siteMetadata['/admin/dashboard'] || {
+  title: 'Admin Dashboard | StandsZone',
+  description: 'Administrator dashboard for managing the StandsZone platform.',
+  openGraph: {
+    title: 'Admin Dashboard | StandsZone',
+    description: 'Administrator dashboard for managing the StandsZone platform.',
+    images: [{ url: '/og-image.jpg' }],
+  },
+  alternates: {
+    canonical: 'https://standszone.com/admin/dashboard',
+  },
+};
 
 // Mock admin session - In production, this would come from authentication
 const mockAdmin = {

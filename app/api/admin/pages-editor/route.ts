@@ -597,7 +597,7 @@ export async function PUT(request: NextRequest) {
       id: pageId,
       type: isCityPage ? 'city' : 'country',
       location: isCityPage ? { name: parts[2], country: parts[1], slug: pageId } : { name: parts[1] || pageId, slug: pageId },
-      seo: { metaTitle: '', metaDescription: '', keywords: [], canonicalUrl: path },
+      seo: { metaTitle: '', metaDescription: '', keywords: [], canonicalUrl: `https://standszone.com${path}` },
       hero: { title: '', subtitle: '', description: '', ctaText: 'Get Free Quote' },
       content: { introduction: '', whyChooseSection: '', industryOverview: '', venueInformation: '', builderAdvantages: '', conclusion: '' },
       design: { primaryColor: '#2563eb', accentColor: '#f97316', layout: 'modern', showStats: true, showMap: false },

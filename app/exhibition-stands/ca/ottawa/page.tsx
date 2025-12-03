@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in Ottawa, Canada. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/ca/ottawa`,
+      canonical: `https://standszone.com/exhibition-stands/ca/ottawa`,
     },
   };
 }

@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in Calgary, Canada. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/ca/calgary`,
+      canonical: `https://standszone.com/exhibition-stands/ca/calgary`,
     },
   };
 }

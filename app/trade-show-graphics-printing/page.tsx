@@ -10,6 +10,9 @@ export const metadata: Metadata = siteMetadata['/trade-show-graphics-printing'] 
     description: 'High-quality large-format prints, branding, and wayfinding tailored for exhibitions. Professional graphics and printing services.',
     images: [{ url: '/og-image.jpg' }],
   },
+  alternates: {
+    canonical: 'https://standszone.com/trade-show-graphics-printing',
+  },
 };
 
 export default function GraphicsPrintingPage() {

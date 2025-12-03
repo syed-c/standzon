@@ -160,8 +160,8 @@ export async function generateMetadata({ params }: TradeShowPageProps): Promise<
       description: exhibition.shortDescription,
       type: 'website',
       locale: 'en_US',
-      url: `https://exhibitbay.com/trade-shows/${resolvedParams.slug}`,
-      siteName: 'ExhibitBay'
+      url: `https://standszone.com/trade-shows/${resolvedParams.slug}`,
+      siteName: 'StandsZone'
     },
     twitter: {
       card: 'summary_large_image',
@@ -169,7 +169,7 @@ export async function generateMetadata({ params }: TradeShowPageProps): Promise<
       description: exhibition.shortDescription
     },
     alternates: {
-      canonical: `https://exhibitbay.com/trade-shows/${resolvedParams.slug}`
+      canonical: `https://standszone.com/trade-shows/${resolvedParams.slug}`
     }
   };
 }

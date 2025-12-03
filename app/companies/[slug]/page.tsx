@@ -97,6 +97,9 @@ export async function generateMetadata({ params }: Props) {
     title: `${company.name} - Exhibition Stand Builder | ExhibitBay`,
     description: `${company.description.substring(0, 160)}...`,
     keywords: `${company.name}, exhibition stands, ${company.location}, trade show displays`,
+    alternates: {
+      canonical: `https://standszone.com/companies/${slug}`,
+    },
   };
 }
 

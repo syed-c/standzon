@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in Stuttgart, Germany. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/de/stuttgart`,
+      canonical: `https://standszone.com/exhibition-stands/de/stuttgart`,
     },
   };
 }

@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in Manchester, UK. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/gb/manchester`,
+      canonical: `https://standszone.com/exhibition-stands/gb/manchester`,
     },
   };
 }

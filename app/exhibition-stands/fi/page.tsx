@@ -54,7 +54,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders across Finland. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/fi`,
+      canonical: `https://standszone.com/exhibition-stands/fi`,
     },
   };
 }

@@ -113,7 +113,7 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
       description,
     },
     alternates: {
-      canonical: `/exhibition-stands/${countrySlug}`,
+      canonical: `https://standszone.com/exhibition-stands/${countrySlug}`,
     },
   };
 }

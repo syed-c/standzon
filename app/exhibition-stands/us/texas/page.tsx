@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in Texas, USA. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/us/texas`,
+      canonical: `https://standszone.com/exhibition-stands/us/texas`,
     },
   };
 }

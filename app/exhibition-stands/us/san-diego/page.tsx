@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in San Diego, USA. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/us/san-diego`,
+      canonical: `https://standszone.com/exhibition-stands/us/san-diego`,
     },
   };
 }

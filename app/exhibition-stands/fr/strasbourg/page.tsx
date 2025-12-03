@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in Strasbourg, France. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/fr/strasbourg`,
+      canonical: `https://standszone.com/exhibition-stands/fr/strasbourg`,
     },
   };
 }

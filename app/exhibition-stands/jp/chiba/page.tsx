@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in Chiba, Japan. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/jp/chiba`,
+      canonical: `https://standszone.com/exhibition-stands/jp/chiba`,
     },
   };
 }

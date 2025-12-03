@@ -54,7 +54,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders across Spain. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/es`,
+      canonical: `https://standszone.com/exhibition-stands/es`,
     },
   };
 }

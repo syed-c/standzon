@@ -53,7 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders across Australia. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/au`,
+      canonical: `https://standszone.com/exhibition-stands/au`,
     },
   };
 }

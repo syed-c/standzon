@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in Rotterdam, Netherlands. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/nl/rotterdam`,
+      canonical: `https://standszone.com/exhibition-stands/nl/rotterdam`,
     },
   };
 }

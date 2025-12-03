@@ -6,7 +6,18 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 // Export metadata from centralized metadata.json
-export const metadata: Metadata = siteMetadata['/about'];
+export const metadata: Metadata = siteMetadata['/about'] || {
+  title: 'About StandsZone | Global Exhibition Stand Builder Network',
+  description: 'Learn about StandsZone\'s mission to connect exhibitors with top-rated exhibition stand builders worldwide. Over 40 countries, 500+ contractors, 5000+ successful projects.',
+  openGraph: {
+    title: 'About StandsZone | Global Exhibition Stand Builder Network',
+    description: 'Learn about StandsZone\'s mission to connect exhibitors with top-rated exhibition stand builders worldwide. Over 40 countries, 500+ contractors, 5000+ successful projects.',
+    images: [{ url: '/og-image.jpg' }],
+  },
+  alternates: {
+    canonical: 'https://standszone.com/about',
+  },
+};
 
 // Server component shell that renders the client component
 export default function AboutPage() {

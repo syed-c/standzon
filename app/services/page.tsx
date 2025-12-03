@@ -10,6 +10,9 @@ export const metadata: Metadata = siteMetadata['/services'] || {
     description: 'Professional exhibition stand services including custom design, construction, installation, and project management. Get quotes from verified builders worldwide.',
     images: [{ url: '/og-image.jpg' }],
   },
+  alternates: {
+    canonical: 'https://standszone.com/services',
+  },
 };
 
 export default function ServicesPage() {

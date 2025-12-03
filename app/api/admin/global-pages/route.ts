@@ -190,7 +190,7 @@ export async function PUT(request: NextRequest) {
               metaTitle: content.seo?.metaTitle || 'Exhibition Stand Builders',
               metaDescription: content.seo?.metaDescription || 'Find professional exhibition stand builders worldwide.',
               keywords: content.seo?.keywords || [],
-              canonicalUrl: content.seo?.canonicalUrl || `/exhibition-stands/${content.location?.slug || pageId}`,
+              canonicalUrl: content.seo?.canonicalUrl || `https://standszone.com/exhibition-stands/${content.location?.slug || pageId}`,
             },
             hero: {
               title: content.hero?.title || (content.location?.name || 'Exhibition Stand Builders'),

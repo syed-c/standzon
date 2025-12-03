@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in Warsaw, Poland. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/pl/warsaw`,
+      canonical: `https://standszone.com/exhibition-stands/pl/warsaw`,
     },
   };
 }

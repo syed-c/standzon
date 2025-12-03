@@ -222,8 +222,8 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
   const relevantLocation = getRelevantServiceLocation(builder, currentPageLocation);
   
   return (
-    <Card className="h-full hover:shadow-lg transition-all duration-300 border-0 shadow-md">
-      <CardHeader className="pb-4 sm:pb-6">
+    <Card className="h-full flex flex-col hover:shadow-lg transition-all duration-300 border-0 shadow-md">
+      <CardHeader className="pb-4 sm:pb-6 flex-shrink-0">
         <div className="flex items-start justify-between mb-3 sm:mb-4">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
@@ -282,8 +282,8 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0">
-        <p className="text-gray-700 text-sm mb-4 line-clamp-2 sm:line-clamp-3">
+      <CardContent className="pt-0 flex-grow flex flex-col">
+        <p className="text-gray-700 text-sm mb-4 line-clamp-2 sm:line-clamp-3 flex-grow">
           {builder.companyDescription}
         </p>
 
@@ -308,7 +308,7 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
 
         {/* Key Strengths */}
         {(builder.keyStrengths || []).length > 0 && (
-          <div className="mb-4">
+          <div className="mb-4 flex-grow">
             <h5 className="font-medium text-gray-900 text-sm mb-2">Key Strengths:</h5>
             <ul className="text-xs text-gray-600 space-y-1">
               {(builder.keyStrengths || []).slice(0, 3).map((strength, index) => (
@@ -323,7 +323,9 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
 
         {/* Contact Controls */}
         {showLeadForm && (
-          <BuilderContactControls builder={builder} location={location} />
+          <div className="mt-auto">
+            <BuilderContactControls builder={builder} location={location} />
+          </div>
         )}
       </CardContent>
     </Card>

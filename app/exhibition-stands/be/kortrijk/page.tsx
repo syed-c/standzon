@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in Kortrijk, Belgium. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/be/kortrijk`,
+      canonical: `https://standszone.com/exhibition-stands/be/kortrijk`,
     },
   };
 }

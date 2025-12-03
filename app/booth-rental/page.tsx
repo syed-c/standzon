@@ -10,6 +10,9 @@ export const metadata: Metadata = siteMetadata['/booth-rental'] || {
     description: 'Flexible, cost-effective exhibition booth rental solutions with full setup and support. Professional rental services for trade shows and exhibitions.',
     images: [{ url: '/og-image.jpg' }],
   },
+  alternates: {
+    canonical: 'https://standszone.com/booth-rental',
+  },
 };
 
 export default function BoothRentalPage() {

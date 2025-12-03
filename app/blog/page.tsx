@@ -11,6 +11,9 @@ export const metadata = {
   title: "Exhibition Industry Blog | StandsZone Insights & Trends",
   description: "Stay updated with the latest exhibition industry trends, trade show insights, and expert tips. Discover upcoming events, city guides, and design innovations from StandsZone.",
   keywords: "exhibition blog, trade show trends, exhibition industry insights, booth design tips, trade fair news",
+  alternates: {
+    canonical: "https://standszone.com/blog",
+  },
 };
 
 const featuredArticles = [

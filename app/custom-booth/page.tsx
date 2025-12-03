@@ -10,6 +10,9 @@ export const metadata: Metadata = siteMetadata['/custom-booth'] || {
     description: 'Custom exhibition booth design and construction. Bespoke trade show stands tailored to your brand, industry, and exhibition requirements.',
     images: [{ url: '/og-image.jpg' }],
   },
+  alternates: {
+    canonical: 'https://standszone.com/custom-booth',
+  },
 };
 
 export default function CustomBoothPage() {

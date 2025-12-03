@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in Berlin, Germany. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/de/berlin`,
+      canonical: `https://standszone.com/exhibition-stands/de/berlin`,
     },
   };
 }

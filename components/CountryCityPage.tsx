@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { PublicQuoteRequest } from "@/components/PublicQuoteRequest";
 import { Input } from "@/components/ui/input";
@@ -24,7 +24,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { BuilderCard } from "./BuilderCard";
-import { EnhancedLocationPage } from "./EnhancedLocationPage";
+import EnhancedLocationPage, { EnhancedLocationPageProps } from "./EnhancedLocationPage";
 import LocationPageEditor from "./LocationPageEditor";
 import { normalizeCountrySlug, normalizeCitySlug } from "@/lib/utils/slugUtils";
 import {
@@ -162,6 +162,10 @@ export function CountryCityPage({
   const [builders, setBuilders] = useState<Builder[]>(transformedInitialBuilders);
   const [filteredBuilders, setFilteredBuilders] =
     useState<Builder[]>(transformedInitialBuilders);
+  
+  // Ref to track if initialBuilders has changed to prevent infinite loops
+  const initialBuildersRef = useRef(initialBuilders);
+  const buildersRef = useRef(builders);
   const [isLoading, setIsLoading] = useState(false);
   
   // Debug logging
@@ -625,8 +629,18 @@ export function CountryCityPage({
     return () => {
       isMounted = false;
     };
-  }, [country, city, initialBuilders]); // Add initialBuilders back to dependencies
+  }, [country, city]); // Removed initialBuilders from dependencies to prevent infinite loop
 
+  // Update filteredBuilders when builders actually change
+  useEffect(() => {
+    // Check if builders have actually changed
+    const haveBuildersChanged = buildersRef.current !== builders;
+    if (haveBuildersChanged) {
+      buildersRef.current = builders;
+      setFilteredBuilders(builders);
+    }
+  }, [builders]);
+  
   useEffect(() => {
     // Filter and sort builders (only for search and sorting, not for city filtering)
     // Only run this if we have builders
@@ -697,7 +711,7 @@ export function CountryCityPage({
 
     setFilteredBuilders(filtered);
     setCurrentPage(1);
-  }, [builders, searchTerm, sortBy, selectedCity, city]);
+  }, [searchTerm, sortBy, selectedCity, city]); // Removed builders from dependencies to prevent infinite loop
 
   const totalPages = Math.ceil(filteredBuilders.length / BUILDERS_PER_PAGE);
   const startIndex = (currentPage - 1) * BUILDERS_PER_PAGE;
@@ -958,33 +972,66 @@ export function CountryCityPage({
       {totalPages > 1 && (
         <section className="py-6 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                className="text-gray-900 border-gray-300"
+                className="text-gray-900 border-gray-300 min-w-[80px]"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               >
                 Previous
               </Button>
-              {[...Array(totalPages)].map((_, i) => (
-                <Button
-                  key={i}
-                  variant={currentPage === i + 1 ? "default" : "outline"}
-                  size="sm"
-                  className={
-                    currentPage === i + 1 ? "" : "text-gray-900 border-gray-300"
+              <div className="flex flex-wrap gap-2 justify-center">
+                {[...Array(Math.min(totalPages, 10))].map((_, i) => {
+                  // Show first, last, current, and nearby pages
+                  const pageNum = i + 1;
+                  if (totalPages > 10) {
+                    if (pageNum === 1 || pageNum === totalPages || 
+                        (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
+                      return (
+                        <Button
+                          key={i}
+                          variant={currentPage === pageNum ? "default" : "outline"}
+                          size="sm"
+                          className={
+                            currentPage === pageNum 
+                              ? "min-w-[40px]" 
+                              : "text-gray-900 border-gray-300 min-w-[40px]"
+                          }
+                          onClick={() => setCurrentPage(pageNum)}
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    } else if (pageNum === 2 || pageNum === totalPages - 1) {
+                      return (
+                        <span key={i} className="px-2 py-1 text-gray-500">...</span>
+                      );
+                    }
+                    return null;
                   }
-                  onClick={() => setCurrentPage(i + 1)}
-                >
-                  {i + 1}
-                </Button>
-              ))}
+                  return (
+                    <Button
+                      key={i}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      className={
+                        currentPage === pageNum 
+                          ? "min-w-[40px]" 
+                          : "text-gray-900 border-gray-300 min-w-[40px]"
+                      }
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-gray-900 border-gray-300"
+                className="text-gray-900 border-gray-300 min-w-[80px]"
                 disabled={currentPage === totalPages}
                 onClick={() =>
                   setCurrentPage((p) => Math.min(totalPages, p + 1))
@@ -992,6 +1039,9 @@ export function CountryCityPage({
               >
                 Next
               </Button>
+            </div>
+            <div className="text-center text-sm text-gray-500 mt-2">
+              Page {currentPage} of {totalPages}
             </div>
           </div>
         </section>
@@ -1010,18 +1060,18 @@ export function CountryCityPage({
                 Browse local pages for major cities across {country}
               </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {cities.map((c, index) => {
                 // Import and use the utility function for consistent slug generation
                 const cityUrl = `/exhibition-stands/${normalizeCountrySlug(country)}/${normalizeCitySlug(c.name)}`;
                 return (
                   <a key={`${c.slug || c.name}-${index}`} href={cityUrl} className="group">
-                    <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-all">
+                    <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-all h-full">
                       <div className="flex items-center justify-between">
-                        <div className="font-semibold text-gray-900 group-hover:text-blue-700">
+                        <div className="font-semibold text-gray-900 group-hover:text-blue-700 truncate">
                           {c.name}
                         </div>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-500 whitespace-nowrap">
                           {c.builderCount || 0} builders
                         </span>
                       </div>

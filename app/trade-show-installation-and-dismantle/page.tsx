@@ -10,6 +10,9 @@ export const metadata: Metadata = siteMetadata['/trade-show-installation-and-dis
     description: 'End-to-end I&D services for a flawless show experience, from logistics to on-site execution. Professional installation and dismantle for exhibitions.',
     images: [{ url: '/og-image.jpg' }],
   },
+  alternates: {
+    canonical: 'https://standszone.com/trade-show-installation-and-dismantle',
+  },
 };
 
 export default function InstallationDismantlePage() {

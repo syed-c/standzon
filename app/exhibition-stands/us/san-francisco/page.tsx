@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: `Professional exhibition stand builders in San Francisco, USA. Custom trade show displays and booth design services.`,
     },
     alternates: {
-      canonical: `/exhibition-stands/us/san-francisco`,
+      canonical: `https://standszone.com/exhibition-stands/us/san-francisco`,
     },
   };
 }
