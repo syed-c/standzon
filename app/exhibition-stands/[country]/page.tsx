@@ -9,7 +9,7 @@ import { getServerSupabase } from "@/lib/supabase";
 
 // Create a map for easy lookup
 const COUNTRY_DATA: Record<string, any> = {};
-GLOBAL_EXHIBITION_DATA.countries.forEach(country => {
+GLOBAL_EXHIBITION_DATA.countries.forEach((country: any) => {
   COUNTRY_DATA[country.slug] = {
     name: country.name,
     code: country.countryCode,
@@ -58,7 +58,9 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
   const { country: countrySlug } = await params;
   const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
   
+  // Better error handling for missing country data
   if (!countryInfo) {
+    console.warn(`⚠️ Country metadata not found for slug: ${countrySlug}`);
     return {
       title: 'Country Not Found',
       description: 'The requested country page was not found.',
@@ -90,6 +92,7 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
     }
   } catch (error) {
     console.error('❌ Error fetching CMS metadata:', error);
+    // Continue with fallback metadata even if CMS fails
   }
 
   // Use CMS metadata if available, otherwise fall back to default
@@ -122,7 +125,12 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
   const { country: countrySlug } = await params;
   const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
   
+  // Better error handling to prevent 5xx errors
   if (!countryInfo) {
+    console.warn(`⚠️ Country not found: ${countrySlug}`);
+    // Log additional debugging information
+    console.log(`🔍 Debug info - Requested country slug: ${countrySlug}`);
+    console.log(`🔍 Debug info - Available country slugs: ${Object.keys(COUNTRY_DATA).slice(0, 10).join(', ')}...`);
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -137,16 +145,26 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
   
   const cmsContent = await getCountryPageContent(countrySlug);
   
-  // Fetch builders from Supabase API
+  // Fetch builders from Supabase API with better error handling
   let builders: any[] = [];
   try {
     // Use absolute URL for server-side fetch
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    console.log(`🔍 Fetching builders from: ${baseUrl}/api/admin/builders?limit=1000&prioritize_real=true`);
+    
     const response = await fetch(
       `${baseUrl}/api/admin/builders?limit=1000&prioritize_real=true`,
-      { cache: "no-store" }
+      { 
+        cache: "no-store"
+      }
     );
+    
+    if (!response.ok) {
+      throw new Error(`Builders API returned ${response.status}: ${response.statusText}`);
+    }
+    
     const buildersData = await response.json();
+    console.log(`✅ Builders API response received. Success: ${buildersData.success}, Builders count: ${buildersData.data?.builders?.length || 0}`);
     
     if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
       // Handle country name variations (UAE vs United Arab Emirates)
@@ -188,7 +206,7 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
           );
         });
         
-        // Log for debugging
+        // Log for debugging first builder
         if (buildersData.data.builders.indexOf(builder) === 0) {
           console.log('🔍 DEBUG: Server-side country filtering for first builder:', {
             country: countryInfo.name,
@@ -301,9 +319,17 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
       });
       
       console.log('🔍 DEBUG: After transformation - builders count:', builders.length);
+    } else {
+      console.warn('⚠️ No builders data received or invalid format:', {
+        success: buildersData.success,
+        hasData: !!buildersData.data,
+        isArray: Array.isArray(buildersData.data?.builders)
+      });
     }
   } catch (error) {
     console.error("❌ Error loading builders:", error);
+    // Don't let builder loading errors crash the page
+    builders = [];
   }
   
   // DEBUG: Log builders info
