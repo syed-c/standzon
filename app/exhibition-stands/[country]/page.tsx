@@ -6,6 +6,10 @@ import WhatsAppFloat from "@/components/WhatsAppFloat";
 import { CountryCityPage } from "@/components/CountryCityPage";
 import { GLOBAL_EXHIBITION_DATA } from "@/lib/data/globalCities";
 import { getServerSupabase } from "@/lib/supabase";
+import { getCountryCodeByName } from "@/lib/utils/countryUtils";
+import { getCitiesByCountry } from "@/lib/supabase/client";
+// Import the global database function
+import { getCitiesByCountry as getGlobalCitiesByCountry } from "@/lib/data/globalExhibitionDatabase";
 
 // Create a map for easy lookup
 const COUNTRY_DATA: Record<string, any> = {};
@@ -145,9 +149,62 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
   
   const cmsContent = await getCountryPageContent(countrySlug);
   
-  // Fetch builders from Supabase API with better error handling
-  let builders: any[] = [];
+  // Get country code for fetching cities
+  const countryCode = getCountryCodeByName(countryInfo.name);
+  console.log(`🔍 Country code for ${countryInfo.name}: ${countryCode}`);
+  
+  // Fetch cities from Supabase
+  let cities: any[] = [];
   try {
+    if (countryCode) {
+      const rawCities = await getCitiesByCountry(countryCode);
+      console.log(`✅ Fetched ${rawCities.length} cities for ${countryInfo.name} (${countryCode}) from Supabase`);
+      
+      // Transform cities data to match expected format
+      cities = rawCities.map((city: any) => ({
+        name: city.city_name,
+        slug: city.city_slug,
+        builderCount: city.builder_count || 0
+      }));
+    } else {
+      console.warn(`⚠️ Could not find country code for ${countryInfo.name}`);
+    }
+  } catch (error) {
+    console.error(`❌ Error fetching cities for ${countryInfo.name}:`, error);
+  }
+  
+  // If no cities from Supabase, fallback to global database
+  if (cities.length === 0) {
+    console.log(`🔄 Falling back to global database for cities in ${countryInfo.name}`);
+    try {
+      const globalCities = getGlobalCitiesByCountry(countrySlug);
+      console.log(`✅ Found ${globalCities.length} cities for ${countryInfo.name} in global database`);
+      
+      // Transform global cities data to match expected format and deduplicate
+      const cityMap = new Map();
+      globalCities.forEach((city: any) => {
+        // Use city name as key to deduplicate
+        if (!cityMap.has(city.name)) {
+          cityMap.set(city.name, {
+            name: city.name,
+            slug: city.slug,
+            builderCount: city.builderCount || 0
+          });
+        }
+      });
+      
+      cities = Array.from(cityMap.values());
+      console.log(`✅ Deduplicated to ${cities.length} unique cities for ${countryInfo.name}`);
+    } catch (error) {
+      console.error(`❌ Error fetching cities from global database for ${countryInfo.name}:`, error);
+    }
+  }
+  
+  // DEBUG: Log cities data to verify it's being passed correctly
+  console.log(`🔍 DEBUG: Cities data for ${countryInfo.name}:`, cities);
+  
+  // Fetch builders from Supabase API with better error handling
+  let builders: any[] = [];  try {
     // Use absolute URL for server-side fetch
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     console.log(`🔍 Fetching builders from: ${baseUrl}/api/admin/builders?limit=1000&prioritize_real=true`);
@@ -377,6 +434,9 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
         initialBuilders={builders}
         initialContent={mergedContent}
         cmsContent={cmsContent}
+        cities={cities}
+        // Explicitly set hideCitiesSection to false to ensure cities section is shown
+        hideCitiesSection={false}
       />
       <Footer />
       <WhatsAppFloat />

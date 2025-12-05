@@ -114,8 +114,9 @@ interface CountryCityPageProps {
   showQuoteForm?: boolean;
   // Flag to hide the cities section on city pages
   hideCitiesSection?: boolean;
+  // Cities data for the cities section
+  cities?: any[];
 }
-
 const BUILDERS_PER_PAGE = 6;
 
 export function CountryCityPage({
@@ -129,6 +130,7 @@ export function CountryCityPage({
   cmsContent,
   showQuoteForm = false,
   hideCitiesSection = false,
+  cities: initialCities = [],
 }: CountryCityPageProps) {
   // DEBUG: Log incoming props
   console.log('🔍 DEBUG: CountryCityPage props:', {
@@ -139,7 +141,9 @@ export function CountryCityPage({
     isEditable,
     hasCityData: !!cityData,
     showComingSoon,
-    hasCmsContent: !!cmsContent
+    hasCmsContent: !!cmsContent,
+    initialCitiesCount: initialCities?.length || 0,
+    hideCitiesSection
   });
   
   // Transform initial builders to ensure they have the correct structure
@@ -170,7 +174,7 @@ export function CountryCityPage({
   
   // Debug logging
   console.log('🔍 CountryCityPage received initialBuilders:', initialBuilders.length);
-  const [cities, setCities] = useState<any[]>([]);
+  const [cities, setCities] = useState<any[]>(initialCities || []);
   const [selectedCity, setSelectedCity] = useState<string>(city || "");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -1048,41 +1052,53 @@ export function CountryCityPage({
       )}
 
       {/* Cities Section placed after builders + pagination - hidden on city pages and specific countries */}
-      {cities && cities.length > 0 && !hideCitiesSection && 
-       !['jordan', 'lebanon', 'israel'].includes(country.toLowerCase()) && (
-        <section className="py-12 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-8 text-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                Cities in {country}
-              </h2>
-              <p className="text-gray-600 mt-2">
-                Browse local pages for major cities across {country}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {cities.map((c, index) => {
-                // Import and use the utility function for consistent slug generation
-                const cityUrl = `/exhibition-stands/${normalizeCountrySlug(country)}/${normalizeCitySlug(c.name)}`;
-                return (
-                  <a key={`${c.slug || c.name}-${index}`} href={cityUrl} className="group">
-                    <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-all h-full">
-                      <div className="flex items-center justify-between">
-                        <div className="font-semibold text-gray-900 group-hover:text-blue-700 truncate">
-                          {c.name}
+      {(() => {
+        // DEBUG: Log cities section evaluation
+        console.log('🔍 DEBUG: Cities section evaluation:', {
+          hasCities: cities && cities.length > 0,
+          citiesCount: cities?.length || 0,
+          hideCitiesSection,
+          isSpecialCountry: ['jordan', 'lebanon', 'israel'].includes(country.toLowerCase()),
+          shouldRender: cities && cities.length > 0 && !hideCitiesSection && 
+                       !['jordan', 'lebanon', 'israel'].includes(country.toLowerCase())
+        });
+        
+        return cities && cities.length > 0 && !hideCitiesSection && 
+               !['jordan', 'lebanon', 'israel'].includes(country.toLowerCase()) && (
+          <section className="py-12 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="mb-8 text-center">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                  Cities in {country}
+                </h2>
+                <p className="text-gray-600 mt-2">
+                  Browse local pages for major cities across {country}
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {cities.map((c, index) => {
+                  // Import and use the utility function for consistent slug generation
+                  const cityUrl = `/exhibition-stands/${normalizeCountrySlug(country)}/${normalizeCitySlug(c.name)}`;
+                  return (
+                    <a key={`${c.slug || c.name}-${index}`} href={cityUrl} className="group">
+                      <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-all h-full">
+                        <div className="flex items-center justify-between">
+                          <div className="font-semibold text-gray-900 group-hover:text-blue-700 truncate">
+                            {c.name}
+                          </div>
+                          <span className="text-xs text-gray-500 whitespace-nowrap">
+                            {c.builderCount || 0} builders
+                          </span>
                         </div>
-                        <span className="text-xs text-gray-500 whitespace-nowrap">
-                          {c.builderCount || 0} builders
-                        </span>
                       </div>
-                    </div>
-                  </a>
-                );
-              })}
+                    </a>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        );
+      })()}
 
       {/* Country Services Section (H2 + paragraph) sourced from CMS */}
       {!city &&
