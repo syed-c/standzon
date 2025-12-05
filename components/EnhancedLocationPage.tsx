@@ -333,10 +333,14 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
     }
     return cmsData?.sections?.countryPages?.[countrySlug] || cmsData;
   }, [cmsData, isCity, countrySlug, finalLocationName]);
-
   // --- render ---
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
+      {/*
+        DEBUG: Log the pageContent prop
+        {console.log("🔍 DEBUG: EnhancedLocationPage pageContent prop:", JSON.stringify(pageContent, null, 2))}
+      */}
+      
       {/* HERO */}
       <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white pt-24 pb-20">
         <div className="absolute inset-0 opacity-20">
@@ -358,13 +362,51 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
             </h1>
 
             <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
-              {resolvedCmsBlock?.heroDescription || resolvedCmsBlock?.hero || `Find trusted exhibition stand builders in ${displayLocation}.`}
+              {(() => {
+                // First try to get hero description from CMS
+                let heroContent = resolvedCmsBlock?.heroDescription || resolvedCmsBlock?.hero;
+                
+                // If we still don't have content, try other common fields
+                if (!heroContent && resolvedCmsBlock) {
+                  heroContent = resolvedCmsBlock.description || 
+                               resolvedCmsBlock.content?.introduction || 
+                               resolvedCmsBlock.heroContent ||
+                               resolvedCmsBlock.content?.hero?.description ||
+                               pageContent?.hero?.description ||
+                               pageContent?.content?.introduction;
+                }
+                
+                // Handle object content properly
+                const extractText = (content: any): string => {
+                  if (typeof content === 'string') return content;
+                  if (typeof content === 'object' && content !== null) {
+                    // Try common properties in order of preference
+                    return content.description || 
+                           content.text || 
+                           content.heading || 
+                           content.title || 
+                           content.content ||
+                           JSON.stringify(content);
+                  }
+                  return String(content);
+                };
+                
+                heroContent = extractText(heroContent);
+                
+                // Return the content or fallback
+                return heroContent || `Find trusted exhibition stand builders in ${displayLocation}.`;
+              })()}
             </p>
-
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <PublicQuoteRequest
                 location={displayLocation}
-                buttonText={`Get Quotes from ${displayLocation} Builders`}
+                buttonText={
+                  (() => {
+                    const content = `Get Quotes from ${displayLocation} Builders`;
+                    // This is always a string, so no need to check for object
+                    return content;
+                  })()
+                }
                 className="text-lg px-8 py-4"
               />
               <Button
@@ -413,28 +455,61 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {resolvedCmsBlock?.whyChooseHeading || `Why Choose Local Builders in ${displayLocation}?`}
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {resolvedCmsBlock?.whyChooseParagraph || `Local builders offer unique advantages including market knowledge, logistical expertise, and established vendor relationships.`}
+                {(() => {
+                  const content = resolvedCmsBlock?.whyChooseHeading;
+                  if (typeof content === 'object' && content !== null) {
+                    return content.heading || content.title || JSON.stringify(content);
+                  }
+                  return content || `Why Choose Local Builders in ${displayLocation}?`;
+                })()}
+              </h2>              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                {(() => {
+                  const content = resolvedCmsBlock?.whyChooseParagraph;
+                  if (typeof content === 'object' && content !== null) {
+                    return content.description || content.text || JSON.stringify(content);
+                  }
+                  return content || `Local builders offer unique advantages including market knowledge, logistical expertise, and established vendor relationships.`;
+                })()}
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-              {((resolvedCmsBlock?.infoCards) || [
-                {
-                  title: 'Local Market Knowledge',
-                  text: `Understand local regulations, venue requirements and cultural preferences specific to ${displayLocation}.`
-                },
-                {
-                  title: 'Faster Project Delivery',
-                  text: 'Reduced logistics time and faster response for urgent modifications.'
-                },
-                {
-                  title: 'Cost-Effective Solutions',
-                  text: 'Lower transport costs and local supplier networks.'
+              {(() => {
+                const infoCards = resolvedCmsBlock?.infoCards;
+                let cards = [
+                  {
+                    title: 'Local Market Knowledge',
+                    text: `Understand local regulations, venue requirements and cultural preferences specific to ${displayLocation}.`
+                  },
+                  {
+                    title: 'Faster Project Delivery',
+                    text: 'Reduced logistics time and faster response for urgent modifications.'
+                  },
+                  {
+                    title: 'Cost-Effective Solutions',
+                    text: 'Lower transport costs and local supplier networks.'
+                  }
+                ];
+                
+                // Handle case where infoCards is an object instead of array
+                if (Array.isArray(infoCards)) {
+                  cards = infoCards.map(card => {
+                    if (typeof card === 'object' && card !== null) {
+                      return {
+                        title: typeof card.title === 'object' ? 
+                          (card.title.heading || card.title.title || JSON.stringify(card.title)) : 
+                          card.title,
+                        text: typeof card.text === 'object' ? 
+                          (card.text.description || card.text.text || JSON.stringify(card.text)) : 
+                          card.text
+                      };
+                    }
+                    return card;
+                  });
                 }
-              ]).map((card: any, idx: number) => (
+                
+                return cards;
+              })().map((card: any, idx: number) => (
                 <div key={idx} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
                   <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${idx === 0 ? 'bg-blue-100' : idx === 1 ? 'bg-green-100' : 'bg-purple-100'}`}>
                     {idx === 0 ? <MapPin className="w-6 h-6 text-blue-600" /> : idx === 1 ? <Clock className="w-6 h-6 text-green-600" /> : <DollarSign className="w-6 h-6 text-purple-600" />}
@@ -448,13 +523,31 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
             <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-2xl p-8 text-white text-center">
               <h3 className="text-2xl font-bold mb-4">Get Quotes from {displayLocation} Experts</h3>
               <p className="text-lg mb-6 opacity-90">
-                {resolvedCmsBlock?.quotesParagraph || `Connect with verified local builders. Quotes within 24 hours.`}
+                {(() => {
+                  const content = resolvedCmsBlock?.quotesParagraph;
+                  if (typeof content === 'object' && content !== null) {
+                    return content.description || content.text || JSON.stringify(content);
+                  }
+                  return content || `Connect with verified local builders. Quotes within 24 hours.`;
+                })()}
               </p>
-              <PublicQuoteRequest location={displayLocation} buttonText="Get Local Quotes Now" className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 py-4" />
+              <PublicQuoteRequest location={displayLocation} buttonText={
+                (() => {
+                  const content = "Get Local Quotes Now";
+                  // This is always a string, so no need to check for object
+                  return content;
+                })()
+              } className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 py-4" />
             </div>
 
             <div className="mt-10">
-              <CountryGallery images={(resolvedCmsBlock?.galleryImages) || []} />
+              <CountryGallery images={(() => {
+                const galleryImages = resolvedCmsBlock?.galleryImages;
+                if (Array.isArray(galleryImages)) {
+                  return galleryImages;
+                }
+                return [];
+              })() || []} />
             </div>
           </div>
         </div>
@@ -479,7 +572,13 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                     </CardHeader>
                     <CardContent className="flex-grow">
                       <p className="text-gray-600 mb-4">{ev.venue}</p>
-                      <PublicQuoteRequest location={displayLocation} buttonText="Get Quote for This Event" className="w-full" />
+                      <PublicQuoteRequest location={displayLocation} buttonText={
+                        (() => {
+                          const content = "Get Quote for This Event";
+                          // This is always a string, so no need to check for object
+                          return content;
+                        })()
+                      } className="w-full" />
                     </CardContent>
                   </Card>
                 ))}
@@ -495,10 +594,24 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
           <div className="container mx-auto px-6">
             <div className="max-w-7xl mx-auto">
               <div className="mb-6">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">{resolvedCmsBlock?.buildersHeading || `Verified Builders in ${displayLocation}`}</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                  {(() => {
+                    const content = resolvedCmsBlock?.buildersHeading;
+                    if (typeof content === 'object' && content !== null) {
+                      return content.heading || content.title || JSON.stringify(content);
+                    }
+                    return content || `Verified Builders in ${displayLocation}`;
+                  })()}
+                </h2>
                 <div className="text-gray-600">
                   {resolvedCmsBlock?.buildersIntro ? (
-                    <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(resolvedCmsBlock?.buildersIntro) }} />
+                    <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml((() => {
+                      const content = resolvedCmsBlock?.buildersIntro;
+                      if (typeof content === 'object' && content !== null) {
+                        return content.description || content.text || JSON.stringify(content);
+                      }
+                      return content;
+                    })()) }} />
                   ) : (
                     <p>{filteredBuilders.length} professional exhibition stand builders available</p>
                   )}
@@ -548,7 +661,13 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                   <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">No builders available yet</h3>
                   <p className="text-gray-600 mb-6">We're adding builders in {displayLocation}. Get notified when they're available.</p>
-                  <PublicQuoteRequest location={displayLocation} buttonText="Get Quotes from Global Builders" className="bg-blue-600 hover:bg-blue-700" />
+                  <PublicQuoteRequest location={displayLocation} buttonText={
+                    (() => {
+                      const content = "Get Quotes from Global Builders";
+                      // This is always a string, so no need to check for object
+                      return content;
+                    })()
+                  } className="bg-blue-600 hover:bg-blue-700" />
                 </div>
               )}
             </div>
@@ -562,8 +681,22 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
           <section className="py-16 bg-white">
             <div className="container mx-auto px-6">
               <div className="max-w-4xl mx-auto prose prose-slate leading-relaxed space-y-4">
-                <h2 className="text-2xl md:text-3xl font-bold !mb-4">{resolvedCmsBlock?.servicesHeading || `Exhibition Stand Builders in ${displayLocation}: Services, Costs, and Tips`}</h2>
-                <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(resolvedCmsBlock?.servicesParagraph) }} />
+                <h2 className="text-2xl md:text-3xl font-bold !mb-4">
+                  {(() => {
+                    const content = resolvedCmsBlock?.servicesHeading;
+                    if (typeof content === 'object' && content !== null) {
+                      return content.heading || content.title || JSON.stringify(content);
+                    }
+                    return content || `Exhibition Stand Builders in ${displayLocation}: Services, Costs, and Tips`;
+                  })()}
+                </h2>
+                <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml((() => {
+                  const content = resolvedCmsBlock?.servicesParagraph;
+                  if (typeof content === 'object' && content !== null) {
+                    return content.description || content.text || JSON.stringify(content);
+                  }
+                  return content;
+                })()) }} />
               </div>
             </div>
           </section>
@@ -571,12 +704,42 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
           <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
             <div className="container mx-auto px-6 text-center">
               <div className="max-w-3xl mx-auto">
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">{resolvedCmsBlock?.finalCtaHeading || `Ready to Find Your Perfect Builder in ${displayLocation}?`}</h2>
-                <p className="text-xl text-slate-300 mb-8">{resolvedCmsBlock?.finalCtaParagraph || `Get competitive quotes from verified local builders.`}</p>
+                <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                  {(() => {
+                    const content = resolvedCmsBlock?.finalCtaHeading;
+                    if (typeof content === 'object' && content !== null) {
+                      return content.heading || content.title || JSON.stringify(content);
+                    }
+                    return content || `Ready to Find Your Perfect Builder in ${displayLocation}?`;
+                  })()}
+                </h2>
+                <p className="text-xl text-slate-300 mb-8">
+                  {(() => {
+                    const content = resolvedCmsBlock?.finalCtaParagraph;
+                    if (typeof content === 'object' && content !== null) {
+                      return content.description || content.text || JSON.stringify(content);
+                    }
+                    return content || `Get competitive quotes from verified local builders.`;
+                  })()}
+                </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <PublicQuoteRequest location={displayLocation} buttonText={resolvedCmsBlock?.finalCtaButtonText || "Start Getting Quotes"} className="text-lg px-8 py-4" />
+                  <PublicQuoteRequest location={displayLocation} buttonText={
+                    (() => {
+                      const content = resolvedCmsBlock?.finalCtaButtonText;
+                      if (typeof content === 'object' && content !== null) {
+                        return content.text || content.title || JSON.stringify(content);
+                      }
+                      return content || "Start Getting Quotes";
+                    })()
+                  } className="text-lg px-8 py-4" />
                   <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                    {resolvedCmsBlock?.backToTopButtonText || 'Back to Top'} <ArrowRight className="w-5 h-5 ml-2" />
+                    {(() => {
+                      const content = resolvedCmsBlock?.backToTopButtonText;
+                      if (typeof content === 'object' && content !== null) {
+                        return content.text || content.title || JSON.stringify(content);
+                      }
+                      return content || 'Back to Top';
+                    })()} <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </div>
               </div>

@@ -146,6 +146,12 @@ export function CountryCityPage({
     hideCitiesSection
   });
   
+  // DEBUG: Log the initialContent structure
+  console.log('🔍 DEBUG: initialContent structure:', JSON.stringify(initialContent, null, 2));
+  
+  // DEBUG: Log the cmsContent structure
+  console.log('🔍 DEBUG: cmsContent structure:', JSON.stringify(cmsContent, null, 2));
+
   // Transform initial builders to ensure they have the correct structure
   const transformedInitialBuilders = initialBuilders.map((builder: any) => {
     // If builder already has the nested headquarters structure, return as is
@@ -851,34 +857,134 @@ export function CountryCityPage({
         exhibitions={generateExhibitions(country, city)}
         venues={generateVenues(country, city)}
         pageContent={
-          savedPageContent || {
-            seo: {
-              metaTitle: pageContent.metaTitle,
-              metaDescription: pageContent.metaDescription,
-              keywords: pageContent.seoKeywords,
-            },
-            hero: {
-              title: pageContent.title,
-              subtitle: `Professional booth design and construction services`,
-              description: pageContent.description,
-              ctaText: "Get Free Quote",
-            },
-            content: {
-              introduction: pageContent.description,
-              whyChooseSection: `${city || country} offers unique advantages for exhibition projects with its strategic location and skilled local builders.`,
-              industryOverview: `${city || country}'s exhibition industry serves diverse sectors, contributing to its position as a key business destination.`,
-              venueInformation: `${city || country} offers modern exhibition facilities equipped with contemporary amenities and flexible spaces.`,
-              builderAdvantages: `Choosing local ${city || country} exhibition stand builders provides strategic advantages including knowledge of venue requirements.`,
-              conclusion: `${city || country} presents excellent opportunities for exhibition success with its growing business environment.`,
-            },
-            design: {
-              primaryColor: "#ec4899",
-              accentColor: "#f97316",
-              layout: "modern" as const,
-              showStats: true,
-              showMap: city ? true : false,
-            },
-          }
+          // Fix: Ensure we're not passing objects directly where strings are expected
+          (() => {
+            const baseContent = savedPageContent || {
+              seo: {
+                metaTitle: pageContent.metaTitle,
+                metaDescription: pageContent.metaDescription,
+                keywords: pageContent.seoKeywords,
+              },
+              hero: {
+                title: pageContent.title,
+                subtitle: `Professional booth design and construction services`,
+                description: pageContent.description,
+                ctaText: "Get Free Quote",
+              },
+              content: {
+                introduction: pageContent.description,
+                whyChooseSection: `${city || country} offers unique advantages for exhibition projects with its strategic location and skilled local builders.`,
+                industryOverview: `${city || country}'s exhibition industry serves diverse sectors, contributing to its position as a key business destination.`,
+                venueInformation: `${city || country} offers modern exhibition facilities equipped with contemporary amenities and flexible spaces.`,
+                builderAdvantages: `Choosing local ${city || country} exhibition stand builders provides strategic advantages including knowledge of venue requirements.`,
+                conclusion: `${city || country} presents excellent opportunities for exhibition success with its growing business environment.`,
+              },
+              design: {
+                primaryColor: "#ec4899",
+                accentColor: "#f97316",
+                layout: "modern" as const,
+                showStats: true,
+                showMap: city ? true : false,
+              },
+            };
+            
+            // If we have CMS content with the proper structure, use it directly
+            if (cmsContent && typeof cmsContent === 'object') {
+              // For city pages, the content might be nested in sections.cityPages
+              const cityPageContent = cmsContent?.sections?.cityPages?.[`${country.toLowerCase()}-${city?.toLowerCase()}`] || cmsContent;
+              
+              // Extract content properly from various possible structures
+              const extractText = (content: any): string => {
+                if (typeof content === 'string') return content;
+                if (typeof content === 'object' && content !== null) {
+                  // Try common properties in order of preference
+                  return content.description || 
+                         content.text || 
+                         content.heading || 
+                         content.title || 
+                         content.content ||
+                         JSON.stringify(content);
+                }
+                return String(content);
+              };
+              
+              // Extract array or return as array
+              const extractArray = (content: any): string[] => {
+                if (Array.isArray(content)) return content;
+                if (typeof content === 'string') return [content];
+                if (typeof content === 'object' && content !== null) {
+                  // If it's an object with keywords property
+                  if (Array.isArray(content.keywords)) return content.keywords;
+                  if (typeof content.keywords === 'string') return [content.keywords];
+                }
+                return [];
+              };
+              
+              return {
+                seo: {
+                  metaTitle: extractText(cityPageContent?.seo?.metaTitle) || baseContent.seo.metaTitle,
+                  metaDescription: extractText(cityPageContent?.seo?.metaDescription) || baseContent.seo.metaDescription,
+                  keywords: extractArray(cityPageContent?.seo?.keywords) || baseContent.seo.keywords,
+                },
+                hero: {
+                  title: extractText(cityPageContent?.hero?.title) || extractText(cityPageContent?.hero?.heading) || baseContent.hero.title,
+                  description: extractText(cityPageContent?.hero?.description) || extractText(cityPageContent?.hero?.text) || baseContent.hero.description,
+                  ctaText: extractText(cityPageContent?.hero?.ctaText) || baseContent.hero.ctaText,
+                  subtitle: extractText(cityPageContent?.hero?.subtitle) || baseContent.hero.subtitle,
+                },
+                content: {
+                  introduction: extractText(cityPageContent?.content?.introduction) || extractText(cityPageContent?.hero?.description) || baseContent.content.introduction,
+                  whyChooseSection: extractText(cityPageContent?.content?.whyChooseSection) || extractText(cityPageContent?.whyChooseSection) || baseContent.content.whyChooseSection,
+                  industryOverview: extractText(cityPageContent?.content?.industryOverview) || baseContent.content.industryOverview,
+                  venueInformation: extractText(cityPageContent?.content?.venueInformation) || baseContent.content.venueInformation,
+                  builderAdvantages: extractText(cityPageContent?.content?.builderAdvantages) || baseContent.content.builderAdvantages,
+                  conclusion: extractText(cityPageContent?.content?.conclusion) || baseContent.content.conclusion,
+                },
+                design: {
+                  ...baseContent.design,
+                  ...cityPageContent?.design,
+                },
+              };
+            }
+            
+            // Fallback: Ensure all content properties are strings, not objects
+            const safeExtractText = (content: any): string => {
+              if (typeof content === 'string') return content;
+              if (typeof content === 'object' && content !== null) {
+                return content.description || 
+                       content.text || 
+                       content.heading || 
+                       content.title || 
+                       JSON.stringify(content);
+              }
+              return String(content);
+            };
+            
+            return {
+              ...baseContent,
+              seo: baseContent.seo ? {
+                ...baseContent.seo,
+                metaTitle: safeExtractText(baseContent.seo.metaTitle),
+                metaDescription: safeExtractText(baseContent.seo.metaDescription),
+                keywords: Array.isArray(baseContent.seo.keywords) ? baseContent.seo.keywords : 
+                  (typeof baseContent.seo.keywords === 'string' ? [baseContent.seo.keywords] : [])
+              } : {},
+              hero: baseContent.hero ? {
+                ...baseContent.hero,
+                title: safeExtractText(baseContent.hero.title),
+                description: safeExtractText(baseContent.hero.description),
+              } : {},
+              content: baseContent.content ? {
+                ...baseContent.content,
+                introduction: safeExtractText(baseContent.content.introduction),
+                whyChooseSection: safeExtractText(baseContent.content.whyChooseSection),
+                industryOverview: safeExtractText(baseContent.content.industryOverview),
+                venueInformation: safeExtractText(baseContent.content.venueInformation),
+                builderAdvantages: safeExtractText(baseContent.content.builderAdvantages),
+                conclusion: safeExtractText(baseContent.content.conclusion),
+              } : {}
+            };
+          })()
         }
         // ✅ CRITICAL FIX: Pass calculated stats to override defaults
         locationStats={{
@@ -1109,12 +1215,18 @@ export function CountryCityPage({
             .replace(/[^a-z0-9-]/g, "");
           const servicesFromSaved = (savedPageContent as any)?.sections
             ?.countryPages?.[slug];
-          const heading =
+          
+          // Fix: Ensure we're not passing objects directly to JSX
+          const headingRaw =
             servicesFromSaved?.servicesHeading ||
             (cmsContent as any)?.servicesHeading;
-          const paragraph =
+          const paragraphRaw =
             servicesFromSaved?.servicesParagraph ||
             (cmsContent as any)?.servicesParagraph;
+          
+          // Ensure heading and paragraph are strings, not objects
+          const heading = typeof headingRaw === 'object' ? headingRaw?.heading || '' : headingRaw;
+          const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || '' : paragraphRaw;
           if (!heading && !paragraph) return null;
           return (
             <section className="py-12 bg-white">
@@ -1153,15 +1265,23 @@ export function CountryCityPage({
           const key = `${countrySlug}-${citySlug}`;
           const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
           const nested = (raw as any)?.countryPages?.[citySlug] || raw;
-          const heading =
+          
+          // Fix: Ensure we're not passing objects directly to JSX
+          const headingRaw =
             nested?.servicesHeading ||
             (cmsContent as any)?.sections?.cityPages?.[key]?.servicesHeading ||
             (cmsContent as any)?.servicesHeading;
-          const paragraph =
+          
+          const paragraphRaw =
             nested?.servicesParagraph ||
             (cmsContent as any)?.sections?.cityPages?.[key]
               ?.servicesParagraph ||
             (cmsContent as any)?.servicesParagraph;
+          
+          // Ensure heading and paragraph are strings, not objects
+          const heading = typeof headingRaw === 'object' ? headingRaw?.heading || '' : headingRaw;
+          const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || '' : paragraphRaw;
+          
           if (!heading && !paragraph) return null;
           return (
             <section className="py-12 bg-white">
@@ -1253,14 +1373,22 @@ export function CountryCityPage({
             {}
           : null;
         const block = city ? cityBlock || {} : countryBlock || {};
-        const heading =
+        
+        // Fix: Ensure we're not passing objects directly to JSX
+        const headingRaw =
           (block as any)?.finalCtaHeading ||
           `Ready to Find Your Perfect Builder in ${city || country}?`;
-        const paragraph =
+        const paragraphRaw =
           (block as any)?.finalCtaParagraph ||
           "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.";
-        const buttonText =
+        const buttonTextRaw =
           (block as any)?.finalCtaButtonText || "Start Getting Quotes";
+        
+        // Ensure values are strings, not objects
+        const heading = typeof headingRaw === 'object' ? headingRaw?.heading || headingRaw : headingRaw;
+        const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || paragraphRaw : paragraphRaw;
+        const buttonText = typeof buttonTextRaw === 'object' ? buttonTextRaw?.text || buttonTextRaw : buttonTextRaw;
+        
         return (
           <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
             <div className="container mx-auto px-6 text-center">

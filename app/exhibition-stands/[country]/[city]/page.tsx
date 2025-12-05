@@ -239,12 +239,16 @@ async function getCityPageContent(countrySlug: string, citySlug: string) {
       }
 
       if (data?.content) {
+        // Extract the specific city content from the nested structure
         const key = cityPageId;
         const fromCityPages = (data.content as any)?.sections?.cityPages?.[key];
+        
         console.log(
           "✅ Server-side: Found CMS data for city page, cityPages hit:",
           Boolean(fromCityPages)
         );
+        
+        // Return the specific city content if available, otherwise return the main content
         return fromCityPages || data.content;
       }
     }
@@ -254,6 +258,57 @@ async function getCityPageContent(countrySlug: string, citySlug: string) {
     console.error("❌ Error fetching city page content:", error);
     return null;
   }
+}
+
+// New function to extract and format CMS content properly
+function formatCmsContent(cmsContent: any, countrySlug: string, citySlug: string, countryName: string, cityName: string) {
+  if (!cmsContent) return null;
+  
+  console.log("🔍 Formatting CMS content for:", countrySlug, citySlug);
+  
+  // Extract the specific city content if it's nested
+  const cityPageId = `${countrySlug}-${citySlug}`;
+  const citySpecificContent = cmsContent?.sections?.cityPages?.[cityPageId] || cmsContent;
+  
+  // Ensure we have the right structure
+  const formattedContent = {
+    id: `${countrySlug}-${citySlug}`,
+    title: citySpecificContent?.hero?.title || citySpecificContent?.hero?.heading || `Exhibition Stand Builders in ${cityName}, ${countryName}`,
+    metaTitle: citySpecificContent?.seo?.metaTitle || `${cityName} Exhibition Stand Builders | ${countryName}`,
+    metaDescription: citySpecificContent?.seo?.metaDescription || `Professional exhibition stand builders in ${cityName}, ${countryName}. Get custom trade show displays and booth design services.`,
+    description: citySpecificContent?.content?.introduction || citySpecificContent?.hero?.description || citySpecificContent?.heroDescription || `Discover professional exhibition stand builders in ${cityName}, ${countryName}.`,
+    heroContent: citySpecificContent?.hero?.description || citySpecificContent?.heroDescription || `Connect with ${cityName}'s leading exhibition stand builders for your next trade show project.`,
+    seoKeywords: citySpecificContent?.seo?.keywords || [`${cityName} exhibition stands`, `${cityName} trade show builders`, `${cityName} booth design`],
+    seo: {
+      metaTitle: citySpecificContent?.seo?.metaTitle || `${cityName} Exhibition Stand Builders | ${countryName}`,
+      metaDescription: citySpecificContent?.seo?.metaDescription || `Professional exhibition stand builders in ${cityName}, ${countryName}. Get custom trade show displays and booth design services.`,
+      keywords: citySpecificContent?.seo?.keywords || [`${cityName} exhibition stands`, `${cityName} trade show builders`, `${cityName} booth design`],
+    },
+    hero: {
+      title: citySpecificContent?.hero?.title || citySpecificContent?.hero?.heading || `Exhibition Stand Builders in ${cityName}, ${countryName}`,
+      description: citySpecificContent?.hero?.description || citySpecificContent?.hero?.text || citySpecificContent?.heroDescription || `Find trusted exhibition stand builders in ${cityName}.`,
+      ctaText: citySpecificContent?.hero?.ctaText || "Get Free Quote",
+      subtitle: citySpecificContent?.hero?.subtitle || `Professional booth design and construction services in ${cityName}`,
+    },
+    content: {
+      introduction: citySpecificContent?.content?.introduction || citySpecificContent?.hero?.description || citySpecificContent?.heroDescription || `Discover professional exhibition stand builders in ${cityName}, ${countryName}.`,
+      whyChooseSection: citySpecificContent?.content?.whyChooseSection || citySpecificContent?.whyChooseSection || `Why Choose Local Builders in ${cityName}?`,
+      industryOverview: citySpecificContent?.content?.industryOverview || `Industry overview for ${cityName}`,
+      venueInformation: citySpecificContent?.content?.venueInformation || `Venue information for ${cityName}`,
+      builderAdvantages: citySpecificContent?.content?.builderAdvantages || `Builder advantages in ${cityName}`,
+      conclusion: citySpecificContent?.content?.conclusion || `Conclusion for ${cityName}`,
+    },
+    design: {
+      primaryColor: citySpecificContent?.design?.primaryColor || "#ec4899",
+      accentColor: citySpecificContent?.design?.accentColor || "#f97316",
+      layout: citySpecificContent?.design?.layout || "modern",
+      showStats: citySpecificContent?.design?.showStats !== undefined ? citySpecificContent?.design?.showStats : true,
+      showMap: citySpecificContent?.design?.showMap !== undefined ? citySpecificContent?.design?.showMap : true,
+    },
+  };
+  
+  console.log("✅ Formatted CMS content:", JSON.stringify(formattedContent, null, 2));
+  return formattedContent;
 }
 
 export default async function CityPage({ params }: CityPageProps) {
@@ -307,6 +362,28 @@ export default async function CityPage({ params }: CityPageProps) {
   // Try to get CMS content
   const cmsContent = await getCityPageContent(countrySlug, citySlug);
   
+  // Create default content structure similar to country pages
+  const defaultContent = {
+    id: `${countrySlug}-${citySlug}`,
+    title: `Exhibition Stand Builders in ${cityName}, ${countryName}`,
+    metaTitle: `${cityName} Exhibition Stand Builders | ${countryName}`,
+    metaDescription: `Professional exhibition stand builders in ${cityName}, ${countryName}. Get custom trade show displays and booth design services.`,
+    description: `Discover professional exhibition stand builders in ${cityName}, ${countryName}. Our verified contractors specialize in custom trade show displays, booth design, and comprehensive exhibition services.`,
+    heroContent: `Connect with ${cityName}'s leading exhibition stand builders for your next trade show project.`,
+    seoKeywords: [
+      `${cityName} exhibition stands`,
+      `${cityName} trade show builders`,
+      `${cityName} booth design`,
+    ]
+  };
+  
+  // Merge CMS content with default content (similar to country page approach)
+  const cityBlock = cmsContent?.sections?.cityPages?.[`${countrySlug}-${citySlug}`] || cmsContent || null;
+  const mergedContent = {
+    ...defaultContent,
+    ...(cityBlock || {})
+  };
+
   // Fetch builders from Supabase API
   let builders: any[] = [];
   try {
@@ -465,10 +542,6 @@ export default async function CityPage({ params }: CityPageProps) {
     console.error("❌ Error loading builders:", error);
   }
 
-  // Use default content if no CMS content is available
-  const defaultContent = getDefaultCityContent(cityName, countryName);
-  const pageContent = cmsContent || defaultContent;
-
   return (
     <div className="font-inter">
       <Navigation />
@@ -477,7 +550,8 @@ export default async function CityPage({ params }: CityPageProps) {
         city={cityName}
         initialBuilders={builders}
         cityData={cityData}
-        cmsContent={pageContent}
+        initialContent={mergedContent}
+        cmsContent={cmsContent}
         showQuoteForm={true}
         hideCitiesSection={true}
       />
