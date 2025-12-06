@@ -329,7 +329,38 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
     if (isCity) {
       const citySlug = slugify(finalLocationName);
       const key = `${countrySlug}-${citySlug}`;
-      return cmsData?.sections?.cityPages?.[key] || cmsData;
+      
+      // Try multiple paths to find the city content
+      let cityContent = cmsData?.sections?.cityPages?.[key] || cmsData;
+      
+      // If we have a direct match, use it
+      if (cmsData?.sections?.cityPages?.[key]) {
+        return cityContent;
+      }
+      
+      // Otherwise, try to find content in nested structures
+      if (cmsData?.sections?.cityPages) {
+        // Look for any city content that might match our location
+        const cityPages = cmsData.sections.cityPages;
+        for (const pageKey of Object.keys(cityPages)) {
+          if (pageKey.includes(countrySlug) && pageKey.includes(citySlug)) {
+            return cityPages[pageKey];
+          }
+        }
+      }
+      
+      // Try another approach - look for nested countryPages within cityPages
+      if (cmsData?.sections?.cityPages) {
+        const cityPages = cmsData.sections.cityPages;
+        for (const pageKey of Object.keys(cityPages)) {
+          // Check if this city page has nested countryPages with our city
+          if (cityPages[pageKey]?.countryPages?.[citySlug]) {
+            return cityPages[pageKey].countryPages[citySlug];
+          }
+        }
+      }
+      
+      return cityContent;
     }
     return cmsData?.sections?.countryPages?.[countrySlug] || cmsData;
   }, [cmsData, isCity, countrySlug, finalLocationName]);
@@ -374,6 +405,44 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                                resolvedCmsBlock.content?.hero?.description ||
                                pageContent?.hero?.description ||
                                pageContent?.content?.introduction;
+                }
+                
+                // Handle case where content might be in nested structure
+                if (!heroContent && resolvedCmsBlock?.countryPages) {
+                  // Try to find hero content in nested country pages
+                  const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                  for (const key of countryPageKeys) {
+                    const countryPage = resolvedCmsBlock.countryPages[key];
+                    if (countryPage) {
+                      heroContent = countryPage.heroDescription || 
+                                   countryPage.hero || 
+                                   countryPage.description || 
+                                   countryPage.content?.introduction;
+                      if (heroContent) break;
+                    }
+                  }
+                }
+                
+                // Handle even deeper nested structure
+                if (!heroContent && resolvedCmsBlock?.countryPages) {
+                  const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                  for (const key of countryPageKeys) {
+                    const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                    if (nestedCountryPages) {
+                      const nestedKeys = Object.keys(nestedCountryPages);
+                      for (const nestedKey of nestedKeys) {
+                        const nestedPage = nestedCountryPages[nestedKey];
+                        if (nestedPage) {
+                          heroContent = nestedPage.heroDescription || 
+                                       nestedPage.hero || 
+                                       nestedPage.description || 
+                                       nestedPage.content?.introduction;
+                          if (heroContent) break;
+                        }
+                      }
+                      if (heroContent) break;
+                    }
+                  }
                 }
                 
                 // Handle object content properly
@@ -456,7 +525,37 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 {(() => {
-                  const content = resolvedCmsBlock?.whyChooseHeading;
+                  let content = resolvedCmsBlock?.whyChooseHeading;
+                  
+                  // Handle nested structure for whyChooseHeading
+                  if (!content && resolvedCmsBlock?.countryPages) {
+                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                    for (const key of countryPageKeys) {
+                      if (resolvedCmsBlock.countryPages[key]?.whyChooseHeading) {
+                        content = resolvedCmsBlock.countryPages[key].whyChooseHeading;
+                        break;
+                      }
+                    }
+                  }
+                  
+                  // Handle deeper nested structure
+                  if (!content && resolvedCmsBlock?.countryPages) {
+                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                    for (const key of countryPageKeys) {
+                      const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                      if (nestedCountryPages) {
+                        const nestedKeys = Object.keys(nestedCountryPages);
+                        for (const nestedKey of nestedKeys) {
+                          if (nestedCountryPages[nestedKey]?.whyChooseHeading) {
+                            content = nestedCountryPages[nestedKey].whyChooseHeading;
+                            break;
+                          }
+                        }
+                        if (content) break;
+                      }
+                    }
+                  }
+                  
                   if (typeof content === 'object' && content !== null) {
                     return content.heading || content.title || JSON.stringify(content);
                   }
@@ -464,7 +563,37 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                 })()}
               </h2>              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 {(() => {
-                  const content = resolvedCmsBlock?.whyChooseParagraph;
+                  let content = resolvedCmsBlock?.whyChooseParagraph;
+                  
+                  // Handle nested structure for whyChooseParagraph
+                  if (!content && resolvedCmsBlock?.countryPages) {
+                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                    for (const key of countryPageKeys) {
+                      if (resolvedCmsBlock.countryPages[key]?.whyChooseParagraph) {
+                        content = resolvedCmsBlock.countryPages[key].whyChooseParagraph;
+                        break;
+                      }
+                    }
+                  }
+                  
+                  // Handle deeper nested structure
+                  if (!content && resolvedCmsBlock?.countryPages) {
+                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                    for (const key of countryPageKeys) {
+                      const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                      if (nestedCountryPages) {
+                        const nestedKeys = Object.keys(nestedCountryPages);
+                        for (const nestedKey of nestedKeys) {
+                          if (nestedCountryPages[nestedKey]?.whyChooseParagraph) {
+                            content = nestedCountryPages[nestedKey].whyChooseParagraph;
+                            break;
+                          }
+                        }
+                        if (content) break;
+                      }
+                    }
+                  }
+                  
                   if (typeof content === 'object' && content !== null) {
                     return content.description || content.text || JSON.stringify(content);
                   }
@@ -475,7 +604,37 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
               {(() => {
-                const infoCards = resolvedCmsBlock?.infoCards;
+                let infoCards = resolvedCmsBlock?.infoCards;
+                
+                // Handle nested structure for infoCards
+                if (!infoCards && resolvedCmsBlock?.countryPages) {
+                  const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                  for (const key of countryPageKeys) {
+                    if (resolvedCmsBlock.countryPages[key]?.infoCards) {
+                      infoCards = resolvedCmsBlock.countryPages[key].infoCards;
+                      break;
+                    }
+                  }
+                }
+                
+                // Handle deeper nested structure
+                if (!infoCards && resolvedCmsBlock?.countryPages) {
+                  const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                  for (const key of countryPageKeys) {
+                    const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                    if (nestedCountryPages) {
+                      const nestedKeys = Object.keys(nestedCountryPages);
+                      for (const nestedKey of nestedKeys) {
+                        if (nestedCountryPages[nestedKey]?.infoCards) {
+                          infoCards = nestedCountryPages[nestedKey].infoCards;
+                          break;
+                        }
+                      }
+                      if (infoCards) break;
+                    }
+                  }
+                }
+                
                 let cards = [
                   {
                     title: 'Local Market Knowledge',
@@ -524,7 +683,37 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
               <h3 className="text-2xl font-bold mb-4">Get Quotes from {displayLocation} Experts</h3>
               <p className="text-lg mb-6 opacity-90">
                 {(() => {
-                  const content = resolvedCmsBlock?.quotesParagraph;
+                  let content = resolvedCmsBlock?.quotesParagraph;
+                  
+                  // Handle nested structure for quotesParagraph
+                  if (!content && resolvedCmsBlock?.countryPages) {
+                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                    for (const key of countryPageKeys) {
+                      if (resolvedCmsBlock.countryPages[key]?.quotesParagraph) {
+                        content = resolvedCmsBlock.countryPages[key].quotesParagraph;
+                        break;
+                      }
+                    }
+                  }
+                  
+                  // Handle deeper nested structure
+                  if (!content && resolvedCmsBlock?.countryPages) {
+                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                    for (const key of countryPageKeys) {
+                      const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                      if (nestedCountryPages) {
+                        const nestedKeys = Object.keys(nestedCountryPages);
+                        for (const nestedKey of nestedKeys) {
+                          if (nestedCountryPages[nestedKey]?.quotesParagraph) {
+                            content = nestedCountryPages[nestedKey].quotesParagraph;
+                            break;
+                          }
+                        }
+                        if (content) break;
+                      }
+                    }
+                  }
+                  
                   if (typeof content === 'object' && content !== null) {
                     return content.description || content.text || JSON.stringify(content);
                   }
@@ -542,7 +731,41 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
 
             <div className="mt-10">
               <CountryGallery images={(() => {
-                const galleryImages = resolvedCmsBlock?.galleryImages;
+                // First try to get gallery images from the resolved CMS block directly
+                let galleryImages = resolvedCmsBlock?.galleryImages;
+                
+                // If not found, check for nested structure (common in city pages)
+                if (!galleryImages && resolvedCmsBlock?.countryPages) {
+                  // Try to find gallery images in any country page nested content
+                  const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                  for (const key of countryPageKeys) {
+                    if (resolvedCmsBlock.countryPages[key]?.galleryImages) {
+                      galleryImages = resolvedCmsBlock.countryPages[key].galleryImages;
+                      break;
+                    }
+                  }
+                }
+                
+                // If still not found, check for deeper nested structure
+                if (!galleryImages && resolvedCmsBlock?.countryPages) {
+                  // Check for cityPages -> countryPages -> city -> galleryImages structure
+                  const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                  for (const key of countryPageKeys) {
+                    const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                    if (nestedCountryPages) {
+                      const nestedKeys = Object.keys(nestedCountryPages);
+                      for (const nestedKey of nestedKeys) {
+                        if (nestedCountryPages[nestedKey]?.galleryImages) {
+                          galleryImages = nestedCountryPages[nestedKey].galleryImages;
+                          break;
+                        }
+                      }
+                      if (galleryImages) break;
+                    }
+                  }
+                }
+                
+                // Ensure we return an array
                 if (Array.isArray(galleryImages)) {
                   return galleryImages;
                 }
@@ -596,7 +819,37 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">
                   {(() => {
-                    const content = resolvedCmsBlock?.buildersHeading;
+                    let content = resolvedCmsBlock?.buildersHeading;
+                    
+                    // Handle nested structure for buildersHeading
+                    if (!content && resolvedCmsBlock?.countryPages) {
+                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                      for (const key of countryPageKeys) {
+                        if (resolvedCmsBlock.countryPages[key]?.buildersHeading) {
+                          content = resolvedCmsBlock.countryPages[key].buildersHeading;
+                          break;
+                        }
+                      }
+                    }
+                    
+                    // Handle deeper nested structure
+                    if (!content && resolvedCmsBlock?.countryPages) {
+                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                      for (const key of countryPageKeys) {
+                        const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                        if (nestedCountryPages) {
+                          const nestedKeys = Object.keys(nestedCountryPages);
+                          for (const nestedKey of nestedKeys) {
+                            if (nestedCountryPages[nestedKey]?.buildersHeading) {
+                              content = nestedCountryPages[nestedKey].buildersHeading;
+                              break;
+                            }
+                          }
+                          if (content) break;
+                        }
+                      }
+                    }
+                    
                     if (typeof content === 'object' && content !== null) {
                       return content.heading || content.title || JSON.stringify(content);
                     }
@@ -606,7 +859,37 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                 <div className="text-gray-600">
                   {resolvedCmsBlock?.buildersIntro ? (
                     <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml((() => {
-                      const content = resolvedCmsBlock?.buildersIntro;
+                      let content = resolvedCmsBlock?.buildersIntro;
+                      
+                      // Handle nested structure for buildersIntro
+                      if (!content && resolvedCmsBlock?.countryPages) {
+                        const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                        for (const key of countryPageKeys) {
+                          if (resolvedCmsBlock.countryPages[key]?.buildersIntro) {
+                            content = resolvedCmsBlock.countryPages[key].buildersIntro;
+                            break;
+                          }
+                        }
+                      }
+                      
+                      // Handle deeper nested structure
+                      if (!content && resolvedCmsBlock?.countryPages) {
+                        const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                        for (const key of countryPageKeys) {
+                          const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                          if (nestedCountryPages) {
+                            const nestedKeys = Object.keys(nestedCountryPages);
+                            for (const nestedKey of nestedKeys) {
+                              if (nestedCountryPages[nestedKey]?.buildersIntro) {
+                                content = nestedCountryPages[nestedKey].buildersIntro;
+                                break;
+                              }
+                            }
+                            if (content) break;
+                          }
+                        }
+                      }
+                      
                       if (typeof content === 'object' && content !== null) {
                         return content.description || content.text || JSON.stringify(content);
                       }
@@ -683,7 +966,37 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
               <div className="max-w-4xl mx-auto prose prose-slate leading-relaxed space-y-4">
                 <h2 className="text-2xl md:text-3xl font-bold !mb-4">
                   {(() => {
-                    const content = resolvedCmsBlock?.servicesHeading;
+                    let content = resolvedCmsBlock?.servicesHeading;
+                    
+                    // Handle nested structure for servicesHeading
+                    if (!content && resolvedCmsBlock?.countryPages) {
+                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                      for (const key of countryPageKeys) {
+                        if (resolvedCmsBlock.countryPages[key]?.servicesHeading) {
+                          content = resolvedCmsBlock.countryPages[key].servicesHeading;
+                          break;
+                        }
+                      }
+                    }
+                    
+                    // Handle deeper nested structure
+                    if (!content && resolvedCmsBlock?.countryPages) {
+                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                      for (const key of countryPageKeys) {
+                        const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                        if (nestedCountryPages) {
+                          const nestedKeys = Object.keys(nestedCountryPages);
+                          for (const nestedKey of nestedKeys) {
+                            if (nestedCountryPages[nestedKey]?.servicesHeading) {
+                              content = nestedCountryPages[nestedKey].servicesHeading;
+                              break;
+                            }
+                          }
+                          if (content) break;
+                        }
+                      }
+                    }
+                    
                     if (typeof content === 'object' && content !== null) {
                       return content.heading || content.title || JSON.stringify(content);
                     }
@@ -691,7 +1004,37 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                   })()}
                 </h2>
                 <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml((() => {
-                  const content = resolvedCmsBlock?.servicesParagraph;
+                  let content = resolvedCmsBlock?.servicesParagraph;
+                  
+                  // Handle nested structure for servicesParagraph
+                  if (!content && resolvedCmsBlock?.countryPages) {
+                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                    for (const key of countryPageKeys) {
+                      if (resolvedCmsBlock.countryPages[key]?.servicesParagraph) {
+                        content = resolvedCmsBlock.countryPages[key].servicesParagraph;
+                        break;
+                      }
+                    }
+                  }
+                  
+                  // Handle deeper nested structure
+                  if (!content && resolvedCmsBlock?.countryPages) {
+                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                    for (const key of countryPageKeys) {
+                      const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                      if (nestedCountryPages) {
+                        const nestedKeys = Object.keys(nestedCountryPages);
+                        for (const nestedKey of nestedKeys) {
+                          if (nestedCountryPages[nestedKey]?.servicesParagraph) {
+                            content = nestedCountryPages[nestedKey].servicesParagraph;
+                            break;
+                          }
+                        }
+                        if (content) break;
+                      }
+                    }
+                  }
+                  
                   if (typeof content === 'object' && content !== null) {
                     return content.description || content.text || JSON.stringify(content);
                   }
@@ -706,7 +1049,37 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
               <div className="max-w-3xl mx-auto">
                 <h2 className="text-3xl md:text-4xl font-bold mb-6">
                   {(() => {
-                    const content = resolvedCmsBlock?.finalCtaHeading;
+                    let content = resolvedCmsBlock?.finalCtaHeading;
+                    
+                    // Handle nested structure for finalCtaHeading
+                    if (!content && resolvedCmsBlock?.countryPages) {
+                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                      for (const key of countryPageKeys) {
+                        if (resolvedCmsBlock.countryPages[key]?.finalCtaHeading) {
+                          content = resolvedCmsBlock.countryPages[key].finalCtaHeading;
+                          break;
+                        }
+                      }
+                    }
+                    
+                    // Handle deeper nested structure
+                    if (!content && resolvedCmsBlock?.countryPages) {
+                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                      for (const key of countryPageKeys) {
+                        const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                        if (nestedCountryPages) {
+                          const nestedKeys = Object.keys(nestedCountryPages);
+                          for (const nestedKey of nestedKeys) {
+                            if (nestedCountryPages[nestedKey]?.finalCtaHeading) {
+                              content = nestedCountryPages[nestedKey].finalCtaHeading;
+                              break;
+                            }
+                          }
+                          if (content) break;
+                        }
+                      }
+                    }
+                    
                     if (typeof content === 'object' && content !== null) {
                       return content.heading || content.title || JSON.stringify(content);
                     }
@@ -715,7 +1088,37 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                 </h2>
                 <p className="text-xl text-slate-300 mb-8">
                   {(() => {
-                    const content = resolvedCmsBlock?.finalCtaParagraph;
+                    let content = resolvedCmsBlock?.finalCtaParagraph;
+                    
+                    // Handle nested structure for finalCtaParagraph
+                    if (!content && resolvedCmsBlock?.countryPages) {
+                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                      for (const key of countryPageKeys) {
+                        if (resolvedCmsBlock.countryPages[key]?.finalCtaParagraph) {
+                          content = resolvedCmsBlock.countryPages[key].finalCtaParagraph;
+                          break;
+                        }
+                      }
+                    }
+                    
+                    // Handle deeper nested structure
+                    if (!content && resolvedCmsBlock?.countryPages) {
+                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                      for (const key of countryPageKeys) {
+                        const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                        if (nestedCountryPages) {
+                          const nestedKeys = Object.keys(nestedCountryPages);
+                          for (const nestedKey of nestedKeys) {
+                            if (nestedCountryPages[nestedKey]?.finalCtaParagraph) {
+                              content = nestedCountryPages[nestedKey].finalCtaParagraph;
+                              break;
+                            }
+                          }
+                          if (content) break;
+                        }
+                      }
+                    }
+                    
                     if (typeof content === 'object' && content !== null) {
                       return content.description || content.text || JSON.stringify(content);
                     }
@@ -725,7 +1128,37 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <PublicQuoteRequest location={displayLocation} buttonText={
                     (() => {
-                      const content = resolvedCmsBlock?.finalCtaButtonText;
+                      let content = resolvedCmsBlock?.finalCtaButtonText;
+                      
+                      // Handle nested structure for finalCtaButtonText
+                      if (!content && resolvedCmsBlock?.countryPages) {
+                        const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                        for (const key of countryPageKeys) {
+                          if (resolvedCmsBlock.countryPages[key]?.finalCtaButtonText) {
+                            content = resolvedCmsBlock.countryPages[key].finalCtaButtonText;
+                            break;
+                          }
+                        }
+                      }
+                      
+                      // Handle deeper nested structure
+                      if (!content && resolvedCmsBlock?.countryPages) {
+                        const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                        for (const key of countryPageKeys) {
+                          const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                          if (nestedCountryPages) {
+                            const nestedKeys = Object.keys(nestedCountryPages);
+                            for (const nestedKey of nestedKeys) {
+                              if (nestedCountryPages[nestedKey]?.finalCtaButtonText) {
+                                content = nestedCountryPages[nestedKey].finalCtaButtonText;
+                                break;
+                              }
+                            }
+                            if (content) break;
+                          }
+                        }
+                      }
+                      
                       if (typeof content === 'object' && content !== null) {
                         return content.text || content.title || JSON.stringify(content);
                       }
@@ -734,7 +1167,37 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                   } className="text-lg px-8 py-4" />
                   <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                     {(() => {
-                      const content = resolvedCmsBlock?.backToTopButtonText;
+                      let content = resolvedCmsBlock?.backToTopButtonText;
+                      
+                      // Handle nested structure for backToTopButtonText
+                      if (!content && resolvedCmsBlock?.countryPages) {
+                        const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                        for (const key of countryPageKeys) {
+                          if (resolvedCmsBlock.countryPages[key]?.backToTopButtonText) {
+                            content = resolvedCmsBlock.countryPages[key].backToTopButtonText;
+                            break;
+                          }
+                        }
+                      }
+                      
+                      // Handle deeper nested structure
+                      if (!content && resolvedCmsBlock?.countryPages) {
+                        const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                        for (const key of countryPageKeys) {
+                          const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
+                          if (nestedCountryPages) {
+                            const nestedKeys = Object.keys(nestedCountryPages);
+                            for (const nestedKey of nestedKeys) {
+                              if (nestedCountryPages[nestedKey]?.backToTopButtonText) {
+                                content = nestedCountryPages[nestedKey].backToTopButtonText;
+                                break;
+                              }
+                            }
+                            if (content) break;
+                          }
+                        }
+                      }
+                      
                       if (typeof content === 'object' && content !== null) {
                         return content.text || content.title || JSON.stringify(content);
                       }

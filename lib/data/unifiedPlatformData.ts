@@ -180,6 +180,34 @@ class UnifiedDataManager {
           console.log('2. Incorrect Supabase configuration');
           console.log('3. Database connection issues');
           console.log('4. Row Level Security (RLS) restrictions');
+          
+          // Try to diagnose the issue
+          try {
+            console.log('🔍 Attempting to diagnose Supabase connection...');
+            const { getServerSupabase } = await import('@/lib/supabase');
+            const sb = getServerSupabase();
+            
+            if (sb) {
+              console.log('✅ Supabase client initialized successfully');
+              
+              // Try a simple query to test connection
+              console.log('🔍 Testing connection with a simple query...');
+              const { data: testData, error: testError } = await sb
+                .from('page_contents')
+                .select('id')
+                .limit(1);
+                
+              if (testError) {
+                console.log('❌ Connection test failed:', testError.message);
+              } else {
+                console.log('✅ Connection test successful. Found', testData?.length || 0, 'records in page_contents');
+              }
+            } else {
+              console.log('❌ Failed to initialize Supabase client');
+            }
+          } catch (diagError) {
+            console.log('❌ Diagnostic failed:', diagError);
+          }
         }
         
         // Convert Supabase builders to ExhibitionBuilder format
@@ -790,42 +818,52 @@ export function getUnifiedDataManager(): UnifiedDataManager {
 function getBuildersByCountry(country: string): ExhibitionBuilder[] {
   console.log("📍 getBuildersByCountry called with:", country);
   
-  const normalized = country.toLowerCase().replace(/-/g, " ").trim();
-  
-  // Handle country variations (UAE vs United Arab Emirates)
-  const countryVariations = [normalized];
-  if (normalized.includes("united arab emirates")) {
-    countryVariations.push("uae");
-  } else if (normalized === "uae") {
-    countryVariations.push("united arab emirates");
-  }
-  
-  console.log("📍 Country variations for filtering:", countryVariations);
-  
-  const manager = getUnifiedDataManager();
-  const allBuilders = manager.getBuilders();
-  
-  console.log("📍 Total builders in system:", allBuilders.length);
-  
-  const filtered = allBuilders.filter(builder => {
-    // Normalize builder country for comparison
-    const builderCountry = (builder.headquarters?.country || '').toLowerCase().trim();
+  try {
+    const normalized = country.toLowerCase().replace(/-/g, " ").trim();
     
-    // Check if any country variation matches
-    const match = countryVariations.some(variation => 
-      builderCountry.includes(variation)
-    );
-    
-    // Log first few builders for debugging
-    if (allBuilders.indexOf(builder) < 3) {
-      console.log(`📍 Builder ${builder.companyName}: country="${builderCountry}", match=${match}`);
+    // Handle country variations (UAE vs United Arab Emirates)
+    const countryVariations = [normalized];
+    if (normalized.includes("united arab emirates")) {
+      countryVariations.push("uae");
+    } else if (normalized === "uae") {
+      countryVariations.push("united arab emirates");
     }
     
-    return match;
-  });
-  
-  console.log("📍 Filtered builders for country:", country, " -> ", filtered.length);
-  return filtered;
+    console.log("📍 Country variations for filtering:", countryVariations);
+    
+    const manager = getUnifiedDataManager();
+    const allBuilders = manager.getBuilders();
+    
+    console.log("📍 Total builders in system:", allBuilders.length);
+    
+    const filtered = allBuilders.filter(builder => {
+      try {
+        // Normalize builder country for comparison
+        const builderCountry = (builder.headquarters?.country || '').toLowerCase().trim();
+        
+        // Check if any country variation matches
+        const match = countryVariations.some(variation => 
+          builderCountry.includes(variation)
+        );
+        
+        // Log first few builders for debugging
+        if (allBuilders.indexOf(builder) < 3) {
+          console.log("📍 Builder " + builder.companyName + ": country=\"" + builderCountry + "\", match=" + match);
+        }
+        
+        return match;
+      } catch (filterError) {
+        console.error("❌ Error filtering builder:", builder.companyName, filterError);
+        return false;
+      }
+    });
+    
+    console.log("📍 Filtered builders for country:", country, " -> ", filtered.length);
+    return filtered;
+  } catch (error) {
+    console.error("❌ Error in getBuildersByCountry:", error);
+    return [];
+  }
 }
 
 // ✅ SIMPLIFIED: Lightweight API
@@ -861,13 +899,13 @@ export const unifiedPlatformAPI = {
       // If location is provided, filter by country
       if (location) {
         const filteredBuilders = getBuildersByCountry(location);
-        console.log(`📊 getBuilders(${location}) returning ${filteredBuilders.length} builders synchronously`);
+        console.log("📊 getBuilders(" + location + ") returning " + filteredBuilders.length + " builders synchronously");
         return filteredBuilders;
       }
       
       // Otherwise return all builders
       const builders = manager.getBuilders();
-      console.log(`📊 getBuilders() returning ${builders.length} builders synchronously`);
+      console.log("📊 getBuilders() returning " + builders.length + " builders synchronously");
       return builders;
     } catch (error) {
       console.error('❌ Error in getBuilders:', error);
@@ -883,13 +921,13 @@ export const unifiedPlatformAPI = {
       // If location is provided, filter by country
       if (location) {
         const filteredBuilders = getBuildersByCountry(location);
-        console.log(`📊 getBuildersAsync(${location}) returning ${filteredBuilders.length} builders after initialization`);
+        console.log("📊 getBuildersAsync(" + location + ") returning " + filteredBuilders.length + " builders after initialization");
         return filteredBuilders;
       }
       
       // Otherwise return all builders
       const builders = manager.getBuilders();
-      console.log(`📊 getBuildersAsync() returning ${builders.length} builders after initialization`);
+      console.log("📊 getBuildersAsync() returning " + builders.length + " builders after initialization");
       return builders;
     } catch (error) {
       console.error('❌ Error in getBuildersAsync:', error);

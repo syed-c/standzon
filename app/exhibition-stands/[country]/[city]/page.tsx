@@ -14,6 +14,10 @@ import {
 } from "@/lib/data/comprehensiveLocationData";
 import { getServerSupabase } from "@/lib/supabase";
 import SimpleQuoteRequestForm from "@/components/SimpleQuoteRequestForm";
+import { getCountryCodeByName } from "@/lib/utils/countryUtils";
+import { getCitiesByCountry } from "@/lib/supabase/client";
+// Import the global database function
+import { getCitiesByCountry as getGlobalCitiesByCountry } from "@/lib/data/globalExhibitionDatabase";
 
 interface CityPageProps {
   params: Promise<{
@@ -95,48 +99,14 @@ export async function generateMetadata({
       if (sb) {
         const cityPageId = `${countrySlug}-${citySlug}`;
         
-        // Special handling for Jordan, Lebanon, Israel, and Oman cities
-        const isSpecialCountry = ['jordan', 'lebanon', 'israel', 'oman'].includes(countrySlug);
-        
-        let data, error;
-        
-        if (isSpecialCountry) {
-          // Try multiple query patterns for special countries
-          const result = await sb
-            .from("page_contents")
-            .select("content")
-            .or(`id.eq.${cityPageId},id.eq.city-${cityPageId}`)
-            .order('created_at', { ascending: false })
-            .limit(1);
-            
-          if (result.data?.[0]) {
-            data = result.data[0];
-            error = null;
-          } else {
-            // Fallback to exact match if no results from OR query
-            const exactResult = await sb
-              .from("page_contents")
-              .select("content")
-              .eq("id", cityPageId)
-              .single();
-              
-            data = exactResult.data;
-            error = exactResult.error;
-          }
-        } else {
-          // Standard query for other countries
-          const result = await sb
-            .from("page_contents")
-            .select("content")
-            .eq("id", cityPageId)
-            .single();
-            
-          data = result.data;
-          error = result.error;
-        }
-
-        if (!error && data?.content) {
-          const content = data.content;
+        const result = await sb
+          .from("page_contents")
+          .select("content")
+          .eq("id", cityPageId)
+          .single();
+          
+        if (!result.error && result.data?.content) {
+          const content = result.data.content;
           const seo = content.seo || {};
           const hero = content.hero || {};
           
@@ -183,73 +153,24 @@ async function getCityPageContent(countrySlug: string, citySlug: string) {
   try {
     const sb = getServerSupabase();
     if (sb) {
-      console.log(
-        "🔍 Server-side: Fetching CMS data for city:",
-        citySlug,
-        "in country:",
-        countrySlug
-      );
-
-      // Special handling for Jordan, Lebanon, Israel, and Oman cities
-      const isSpecialCountry = ['jordan', 'lebanon', 'israel', 'oman'].includes(countrySlug);
+      console.log("🔍 Server-side: Fetching CMS data for city:", citySlug, "in country:", countrySlug);
+      
       const cityPageId = `${countrySlug}-${citySlug}`;
       
-      let data, error;
-      
-      if (isSpecialCountry) {
-        console.log('🔍 Special country city detected, using enhanced query strategy:', cityPageId);
-        
-        // Try multiple query patterns for special countries
-        const result = await sb
-          .from("page_contents")
-          .select("content")
-          .or(`id.eq.${cityPageId},id.eq.city-${cityPageId}`)
-          .order('created_at', { ascending: false })
-          .limit(1);
-          
-        if (result.data?.[0]) {
-          data = result.data[0];
-          error = null;
-        } else {
-          // Fallback to exact match if no results from OR query
-          const exactResult = await sb
-            .from("page_contents")
-            .select("content")
-            .eq("id", cityPageId)
-            .single();
-            
-          data = exactResult.data;
-          error = exactResult.error;
-        }
-      } else {
-        // Standard query for other countries
-        const result = await sb
-          .from("page_contents")
-          .select("content")
-          .eq("id", cityPageId)
-          .single();
-          
-        data = result.data;
-        error = result.error;
-      }
+      const result = await sb
+        .from("page_contents")
+        .select("content")
+        .eq("id", cityPageId)
+        .single();
 
-      if (error) {
-        console.log("❌ Server-side: Supabase error:", error);
+      if (result.error) {
+        console.log("❌ Server-side: Supabase error:", result.error);
         return null;
       }
 
-      if (data?.content) {
-        // Extract the specific city content from the nested structure
-        const key = cityPageId;
-        const fromCityPages = (data.content as any)?.sections?.cityPages?.[key];
-        
-        console.log(
-          "✅ Server-side: Found CMS data for city page, cityPages hit:",
-          Boolean(fromCityPages)
-        );
-        
-        // Return the specific city content if available, otherwise return the main content
-        return fromCityPages || data.content;
+      if (result.data?.content) {
+        console.log("✅ Server-side: Found CMS data for city:", citySlug);
+        return result.data.content;
       }
     }
 
@@ -307,6 +228,49 @@ function formatCmsContent(cmsContent: any, countrySlug: string, citySlug: string
     },
   };
   
+  // Ensure all content fields are strings, not objects
+  const safeExtractText = (content: any): string => {
+    if (typeof content === 'string') return content;
+    if (typeof content === 'object' && content !== null) {
+      // Try common properties in order of preference
+      return content.description || 
+             content.text || 
+             content.heading || 
+             content.title || 
+             content.content ||
+             JSON.stringify(content);
+    }
+    return String(content);
+  };
+  
+  // Safely extract all content fields
+  formattedContent.title = safeExtractText(formattedContent.title);
+  formattedContent.metaTitle = safeExtractText(formattedContent.metaTitle);
+  formattedContent.metaDescription = safeExtractText(formattedContent.metaDescription);
+  formattedContent.description = safeExtractText(formattedContent.description);
+  formattedContent.heroContent = safeExtractText(formattedContent.heroContent);
+  
+  // Ensure SEO keywords is an array of strings
+  if (!Array.isArray(formattedContent.seoKeywords)) {
+    formattedContent.seoKeywords = [safeExtractText(formattedContent.seoKeywords)];
+  } else {
+    formattedContent.seoKeywords = formattedContent.seoKeywords.map(keyword => safeExtractText(keyword));
+  }
+  
+  // Ensure hero fields are strings
+  formattedContent.hero.title = safeExtractText(formattedContent.hero.title);
+  formattedContent.hero.description = safeExtractText(formattedContent.hero.description);
+  formattedContent.hero.ctaText = safeExtractText(formattedContent.hero.ctaText);
+  formattedContent.hero.subtitle = safeExtractText(formattedContent.hero.subtitle);
+  
+  // Ensure content fields are strings
+  formattedContent.content.introduction = safeExtractText(formattedContent.content.introduction);
+  formattedContent.content.whyChooseSection = safeExtractText(formattedContent.content.whyChooseSection);
+  formattedContent.content.industryOverview = safeExtractText(formattedContent.content.industryOverview);
+  formattedContent.content.venueInformation = safeExtractText(formattedContent.content.venueInformation);
+  formattedContent.content.builderAdvantages = safeExtractText(formattedContent.content.builderAdvantages);
+  formattedContent.content.conclusion = safeExtractText(formattedContent.content.conclusion);
+  
   console.log("✅ Formatted CMS content:", JSON.stringify(formattedContent, null, 2));
   return formattedContent;
 }
@@ -362,6 +326,57 @@ export default async function CityPage({ params }: CityPageProps) {
   // Try to get CMS content
   const cmsContent = await getCityPageContent(countrySlug, citySlug);
   
+  // Get country code for fetching cities (same as country pages)
+  const countryCode = getCountryCodeByName(countryName);
+  console.log(`🔍 Country code for ${countryName}: ${countryCode}`);
+  
+  // Fetch cities from Supabase (same approach as country pages)
+  let cities: any[] = [];
+  try {
+    if (countryCode) {
+      const rawCities = await getCitiesByCountry(countryCode);
+      console.log(`✅ Fetched ${rawCities.length} cities for ${countryName} (${countryCode}) from Supabase`);
+      
+      // Transform cities data to match expected format
+      cities = rawCities.map((city: any) => ({
+        name: city.city_name,
+        slug: city.city_slug,
+        builderCount: city.builder_count || 0
+      }));
+    } else {
+      console.warn(`⚠️ Could not find country code for ${countryName}`);
+    }
+  } catch (error) {
+    console.error(`❌ Error fetching cities for ${countryName}:`, error);
+  }
+  
+  // If no cities from Supabase, fallback to global database
+  if (cities.length === 0) {
+    console.log(`🔄 Falling back to global database for cities in ${countryName}`);
+    try {
+      const globalCities = getGlobalCitiesByCountry(countrySlug);
+      console.log(`✅ Found ${globalCities.length} cities for ${countryName} in global database`);
+      
+      // Transform global cities data to match expected format and deduplicate
+      const cityMap = new Map();
+      globalCities.forEach((city: any) => {
+        // Use city name as key to deduplicate
+        if (!cityMap.has(city.name)) {
+          cityMap.set(city.name, {
+            name: city.name,
+            slug: city.slug,
+            builderCount: city.builderCount || 0
+          });
+        }
+      });
+      
+      cities = Array.from(cityMap.values());
+      console.log(`✅ Deduplicated to ${cities.length} unique cities for ${countryName}`);
+    } catch (error) {
+      console.error(`❌ Error fetching cities from global database for ${countryName}:`, error);
+    }
+  }
+  
   // Create default content structure similar to country pages
   const defaultContent = {
     id: `${countrySlug}-${citySlug}`,
@@ -377,23 +392,35 @@ export default async function CityPage({ params }: CityPageProps) {
     ]
   };
   
+  // Format CMS content properly
+  const formattedCmsContent = formatCmsContent(cmsContent, countrySlug, citySlug, countryName, cityName);
+  
   // Merge CMS content with default content (similar to country page approach)
-  const cityBlock = cmsContent?.sections?.cityPages?.[`${countrySlug}-${citySlug}`] || cmsContent || null;
   const mergedContent = {
     ...defaultContent,
-    ...(cityBlock || {})
+    ...(formattedCmsContent || {})
   };
 
-  // Fetch builders from Supabase API
+  // Fetch builders from Supabase API with better error handling (similar to country pages)
   let builders: any[] = [];
   try {
     // Use absolute URL for server-side fetch
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    console.log(`🔍 Fetching builders from: ${baseUrl}/api/admin/builders?limit=1000&prioritize_real=true`);
+    
     const response = await fetch(
       `${baseUrl}/api/admin/builders?limit=1000&prioritize_real=true`,
-      { cache: "no-store" }
+      { 
+        cache: "no-store"
+      }
     );
+    
+    if (!response.ok) {
+      throw new Error(`Builders API returned ${response.status}: ${response.statusText}`);
+    }
+    
     const buildersData = await response.json();
+    console.log(`✅ Builders API response received. Success: ${buildersData.success}, Builders count: ${buildersData.data?.builders?.length || 0}`);
     
     if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
       // Handle country name variations (UAE vs United Arab Emirates)
@@ -475,71 +502,105 @@ export default async function CityPage({ params }: CityPageProps) {
       
       const uniqueBuilders = Array.from(builderMap.values());
       
+      // Log before transformation
+      console.log('🔍 DEBUG: Before transformation - unique builders count:', uniqueBuilders.length);
+      if (uniqueBuilders.length > 0) {
+        console.log('🔍 DEBUG: First unique builder before transformation:', {
+          id: uniqueBuilders[0].id,
+          companyName: uniqueBuilders[0].company_name,
+          headquarters_city: uniqueBuilders[0].headquarters_city,
+          headquarters_country: uniqueBuilders[0].headquarters_country
+        });
+      }
+      
       // Transform builders to match expected interface (same as in BuildersDirectoryContent)
-      builders = uniqueBuilders.map((b: any) => ({
-        id: b.id,
-        companyName: b.company_name || b.companyName || "",
-        companyDescription: (() => {
-          let desc = b.description || b.companyDescription || "";
-          // Remove SERVICE_LOCATIONS JSON from description more aggressively
-          desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
-          desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
-          desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
-          desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
-          desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
-          // Remove any remaining raw data patterns
-          desc = desc.replace(/sdfghjl.*$/g, '');
-          desc = desc.replace(/testing.*$/g, '');
-          desc = desc.replace(/sdfghj.*$/g, '');
-          desc = desc.trim();
-          return desc || "";
-        })(),
-        headquarters: {
-          city: b.headquarters_city || b.headquarters?.city || "Unknown",
-          country:
-            b.headquarters_country ||
-            b.headquartersCountry ||
-            b.headquarters?.country ||
-            "Unknown",
-          countryCode: b.headquarters?.countryCode || "XX",
-          address: b.headquarters?.address || "",
-          latitude: b.headquarters?.latitude || 0,
-          longitude: b.headquarters?.longitude || 0,
-          isHeadquarters: true,
-        },
-        serviceLocations: b.serviceLocations || b.service_locations || [],
-        keyStrengths: b.keyStrengths || [],
-        verified: b.verified || b.isVerified || false,
-        rating: b.rating || 0,
-        projectsCompleted:
-          b.projectsCompleted || b.projects_completed || 0,
-        importedFromGMB: b.importedFromGMB || b.gmbImported || false,
-        logo: b.logo || "/images/builders/default-logo.png",
-        establishedYear: b.establishedYear || b.established_year || 2020,
-        teamSize: b.teamSize || 10,
-        reviewCount: b.reviewCount || 0,
-        responseTime: b.responseTime || "Within 24 hours",
-        languages: b.languages || ["English"],
-        premiumMember: b.premiumMember || b.premium_member || false,
-        slug:
-          b.slug ||
-          (b.company_name || b.companyName || "")
-            .toLowerCase()
-            .replace(/[^a-z0-9]/g, "-"),
-        primary_email: b.primary_email || b.primaryEmail || "",
-        phone: b.phone || "",
-        website: b.website || "",
-        contact_person: b.contact_person || b.contactPerson || "",
-        position: b.position || "",
-        gmbImported:
-          b.gmbImported ||
-          b.importedFromGMB ||
-          b.source === "GMB_API" ||
-          false,
-      }));
+      builders = uniqueBuilders.map((b: any) => {
+        const transformed = {
+          id: b.id,
+          companyName: b.company_name || b.companyName || "",
+          companyDescription: (() => {
+            let desc = b.description || b.companyDescription || "";
+            // Remove SERVICE_LOCATIONS JSON from description more aggressively
+            desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
+            desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
+            desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
+            desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
+            desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
+            // Remove any remaining raw data patterns
+            desc = desc.replace(/sdfghjl.*$/g, '');
+            desc = desc.replace(/testing.*$/g, '');
+            desc = desc.replace(/sdfghj.*$/g, '');
+            desc = desc.trim();
+            return desc || "";
+          })(),
+          headquarters: {
+            city: b.headquarters_city || b.headquarters?.city || "Unknown",
+            country:
+              b.headquarters_country ||
+              b.headquartersCountry ||
+              b.headquarters?.country ||
+              "Unknown",
+            countryCode: b.headquarters?.countryCode || "XX",
+            address: b.headquarters?.address || "",
+            latitude: b.headquarters?.latitude || 0,
+            longitude: b.headquarters?.longitude || 0,
+            isHeadquarters: true,
+          },
+          serviceLocations: b.serviceLocations || b.service_locations || [],
+          keyStrengths: b.keyStrengths || [],
+          verified: b.verified || b.isVerified || false,
+          rating: b.rating || 0,
+          projectsCompleted:
+            b.projectsCompleted || b.projects_completed || 0,
+          importedFromGMB: b.importedFromGMB || b.gmbImported || false,
+          logo: b.logo || "/images/builders/default-logo.png",
+          establishedYear: b.establishedYear || b.established_year || 2020,
+          teamSize: b.teamSize || 10,
+          reviewCount: b.reviewCount || 0,
+          responseTime: b.responseTime || "Within 24 hours",
+          languages: b.languages || ["English"],
+          premiumMember: b.premiumMember || b.premium_member || false,
+          slug:
+            b.slug ||
+            (b.company_name || b.companyName || "")
+              .toLowerCase()
+              .replace(/[^a-z0-9]/g, "-"),
+          primary_email: b.primary_email || b.primaryEmail || "",
+          phone: b.phone || "",
+          website: b.website || "",
+          contact_person: b.contact_person || b.contactPerson || "",
+          position: b.position || "",
+          gmbImported:
+            b.gmbImported ||
+            b.importedFromGMB ||
+            b.source === "GMB_API" ||
+            false,
+        };
+        
+        // Log first few transformations
+        if (uniqueBuilders.indexOf(b) < 3) {
+          console.log(`🔍 DEBUG: Transformed builder ${b.company_name || b.companyName}:`, {
+            id: transformed.id,
+            companyName: transformed.companyName,
+            headquarters: transformed.headquarters
+          });
+        }
+        
+        return transformed;
+      });
+      
+      console.log('🔍 DEBUG: After transformation - builders count:', builders.length);
+    } else {
+      console.warn('⚠️ No builders data received or invalid format:', {
+        success: buildersData.success,
+        hasData: !!buildersData.data,
+        isArray: Array.isArray(buildersData.data?.builders)
+      });
     }
   } catch (error) {
     console.error("❌ Error loading builders:", error);
+    // Don't let builder loading errors crash the page
+    builders = [];
   }
 
   return (
@@ -553,7 +614,8 @@ export default async function CityPage({ params }: CityPageProps) {
         initialContent={mergedContent}
         cmsContent={cmsContent}
         showQuoteForm={true}
-        hideCitiesSection={true}
+        hideCitiesSection={false}
+        cities={cities}
       />
       <Footer />
       <WhatsAppFloat />
