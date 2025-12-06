@@ -1169,8 +1169,12 @@ export function CountryCityPage({
                        !['jordan', 'lebanon', 'israel'].includes(country.toLowerCase())
         });
         
-        return cities && cities.length > 0 && !hideCitiesSection && 
-               !['jordan', 'lebanon', 'israel'].includes(country.toLowerCase()) && (
+        // For city pages, we want to hide the cities section completely
+        // For country pages, show the cities section as usual
+        const shouldShowCitiesSection = !city && cities && cities.length > 0 && !hideCitiesSection && 
+               !['jordan', 'lebanon', 'israel'].includes(country.toLowerCase());
+               
+        return shouldShowCitiesSection && (
           <section className="py-12 bg-gray-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="mb-8 text-center">
@@ -1205,7 +1209,6 @@ export function CountryCityPage({
           </section>
         );
       })()}
-
       {/* Country Services Section (H2 + paragraph) sourced from CMS */}
       {!city &&
         (() => {
