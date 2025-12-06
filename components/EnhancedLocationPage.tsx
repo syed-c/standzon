@@ -285,19 +285,25 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
   useEffect(() => {
     let cancelled = false;
     if (serverCmsContent) {
+      console.log('🔍 DEBUG: Using serverCmsContent');
+      console.log('🔍 DEBUG: serverCmsContent keys:', serverCmsContent ? Object.keys(serverCmsContent) : 'null');
       setCmsData(serverCmsContent);
       setIsLoadingCms(false);
       return;
     }
 
+    console.log('🔍 DEBUG: Fetching CMS data from API');
     const fetchCms = async () => {
       if (!countrySlug) return;
       setIsLoadingCms(true);
       try {
         const url = `/api/admin/pages-editor?action=get-content&path=/exhibition-stands/${encodeURIComponent(countrySlug)}`;
+        console.log('🔍 DEBUG: Fetching CMS from URL:', url);
         const res = await fetch(url, { cache: 'no-store' });
         const data = await res.json();
+        console.log('🔍 DEBUG: CMS fetch response:', data);
         if (!cancelled && data?.success && data?.data) {
+          console.log('🔍 DEBUG: Setting CMS data from API');
           setCmsData(data.data);
         }
       } catch (err) {
@@ -330,11 +336,15 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
       const citySlug = slugify(finalLocationName);
       const key = `${countrySlug}-${citySlug}`;
       
+      // Debug log to see the structure
+      console.log('🔍 DEBUG: CMS Data structure:', JSON.stringify(cmsData, null, 2));
+      
       // Try multiple paths to find the city content
       let cityContent = cmsData?.sections?.cityPages?.[key] || cmsData;
       
       // If we have a direct match, use it
       if (cmsData?.sections?.cityPages?.[key]) {
+        console.log('✅ Found direct city content match for key:', key);
         return cityContent;
       }
       
@@ -344,6 +354,7 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
         const cityPages = cmsData.sections.cityPages;
         for (const pageKey of Object.keys(cityPages)) {
           if (pageKey.includes(countrySlug) && pageKey.includes(citySlug)) {
+            console.log('✅ Found city content by pattern matching:', pageKey);
             return cityPages[pageKey];
           }
         }
@@ -355,11 +366,54 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
         for (const pageKey of Object.keys(cityPages)) {
           // Check if this city page has nested countryPages with our city
           if (cityPages[pageKey]?.countryPages?.[citySlug]) {
+            console.log('✅ Found nested countryPages content:', pageKey, citySlug);
             return cityPages[pageKey].countryPages[citySlug];
+          }
+          
+          // Check for deeper nesting: cityPages -> cityPages -> countryPages
+          if (cityPages[pageKey]?.cityPages?.[key]?.countryPages?.[citySlug]) {
+            console.log('✅ Found deeply nested content:', pageKey, key, citySlug);
+            return cityPages[pageKey].cityPages[key].countryPages[citySlug];
           }
         }
       }
       
+      // Handle the specific structure we identified:
+      // content.sections.cityPages[country-city].countryPages.city
+      if (cmsData?.sections?.cityPages) {
+        const cityPageKeys = Object.keys(cmsData.sections.cityPages);
+        for (const pageKey of cityPageKeys) {
+          const countryPages = cmsData.sections.cityPages[pageKey]?.countryPages;
+          if (countryPages && countryPages[citySlug]) {
+            console.log('✅ Found specific nested structure content:', pageKey, citySlug);
+            return countryPages[citySlug];
+          }
+        }
+      }
+      
+      // Debug: Check if we can find hero description in the nested structure
+      console.log('🔍 DEBUG: Looking for hero description in nested structure');
+      if (cmsData?.sections?.cityPages) {
+        const cityPageKeys = Object.keys(cmsData.sections.cityPages);
+        console.log('🔍 DEBUG: City page keys:', cityPageKeys);
+        for (const pageKey of cityPageKeys) {
+          const countryPages = cmsData.sections.cityPages[pageKey]?.countryPages;
+          if (countryPages) {
+            const countryPageKeys = Object.keys(countryPages);
+            console.log('🔍 DEBUG: Country page keys:', countryPageKeys);
+            for (const countryKey of countryPageKeys) {
+              const countryPage = countryPages[countryKey];
+              if (countryPage && countryPage.heroDescription) {
+                console.log('✅ DEBUG: Found hero description in nested structure');
+                // Return the country page content which contains the hero description
+                return countryPage;
+              }
+            }
+          }
+        }
+      }
+      
+      console.log('ℹ️ Returning default city content');
       return cityContent;
     }
     return cmsData?.sections?.countryPages?.[countrySlug] || cmsData;
@@ -394,6 +448,10 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
 
             <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
               {(() => {
+                // Debug log to see what resolvedCmsBlock contains
+                console.log('🔍 DEBUG: resolvedCmsBlock keys:', resolvedCmsBlock ? Object.keys(resolvedCmsBlock) : 'null');
+                console.log('🔍 DEBUG: resolvedCmsBlock.heroDescription:', resolvedCmsBlock?.heroDescription);
+                
                 // First try to get hero description from CMS
                 let heroContent = resolvedCmsBlock?.heroDescription || resolvedCmsBlock?.hero;
                 
@@ -405,6 +463,47 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                                resolvedCmsBlock.content?.hero?.description ||
                                pageContent?.hero?.description ||
                                pageContent?.content?.introduction;
+                }
+                
+                // Handle nested structure for hero description
+                // content.countryPages.city.heroDescription
+                if (!heroContent && resolvedCmsBlock?.countryPages) {
+                  console.log('🔍 DEBUG: Checking countryPages for heroDescription');
+                  console.log('🔍 DEBUG: countryPages keys:', Object.keys(resolvedCmsBlock.countryPages));
+                  // Try to find hero description in nested country pages
+                  const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
+                  for (const key of countryPageKeys) {
+                    console.log('🔍 DEBUG: Checking countryPage key:', key);
+                    const countryPage = resolvedCmsBlock.countryPages[key];
+                    console.log('🔍 DEBUG: countryPage keys:', countryPage ? Object.keys(countryPage) : 'null');
+                    console.log('🔍 DEBUG: countryPage.heroDescription:', countryPage?.heroDescription);
+                    if (countryPage && countryPage.heroDescription) {
+                      heroContent = countryPage.heroDescription;
+                      console.log('✅ DEBUG: Found heroDescription in countryPages');
+                      break;
+                    }
+                  }
+                }
+                
+                // Handle the specific nested structure for hero description
+                // Check if we have serverCmsContent with the nested structure
+                if (!heroContent && cmsData?.sections?.cityPages) {
+                  const cityPageKeys = Object.keys(cmsData.sections.cityPages);
+                  for (const pageKey of cityPageKeys) {
+                    const countryPages = cmsData.sections.cityPages[pageKey]?.countryPages;
+                    if (countryPages) {
+                      const countryPageKeys = Object.keys(countryPages);
+                      for (const countryKey of countryPageKeys) {
+                        const countryPage = countryPages[countryKey];
+                        if (countryPage && countryPage.heroDescription) {
+                          heroContent = countryPage.heroDescription;
+                          console.log('✅ DEBUG: Found heroDescription in deeply nested structure');
+                          break;
+                        }
+                      }
+                      if (heroContent) break;
+                    }
+                  }
                 }
                 
                 // Handle case where content might be in nested structure
@@ -438,6 +537,50 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                                        nestedPage.description || 
                                        nestedPage.content?.introduction;
                           if (heroContent) break;
+                        }
+                      }
+                      if (heroContent) break;
+                    }
+                  }
+                }
+                
+                // Handle the specific structure we saw in the logs:
+                // sections.cityPages[country-city].cityPages[country-city].countryPages.city
+                if (!heroContent && resolvedCmsBlock?.cityPages) {
+                  const cityPageKeys = Object.keys(resolvedCmsBlock.cityPages);
+                  for (const key of cityPageKeys) {
+                    const nestedCityPages = resolvedCmsBlock.cityPages[key]?.countryPages;
+                    if (nestedCityPages) {
+                      const nestedKeys = Object.keys(nestedCityPages);
+                      for (const nestedKey of nestedKeys) {
+                        const nestedPage = nestedCityPages[nestedKey];
+                        if (nestedPage) {
+                          heroContent = nestedPage.heroDescription || 
+                                       nestedPage.hero || 
+                                       nestedPage.description || 
+                                       nestedPage.content?.introduction;
+                          if (heroContent) break;
+                        }
+                      }
+                      if (heroContent) break;
+                    }
+                  }
+                }
+                
+                // Handle even more specific nested structure for hero description
+                // content.sections.cityPages[country-city].countryPages.city.heroDescription
+                if (!heroContent && cmsData?.sections?.cityPages) {
+                  const cityPageKeys = Object.keys(cmsData.sections.cityPages);
+                  for (const key of cityPageKeys) {
+                    const countryPages = cmsData.sections.cityPages[key]?.countryPages;
+                    if (countryPages) {
+                      const countryPageKeys = Object.keys(countryPages);
+                      for (const countryKey of countryPageKeys) {
+                        const countryPage = countryPages[countryKey];
+                        if (countryPage && countryPage.heroDescription) {
+                          heroContent = countryPage.heroDescription;
+                          console.log('✅ DEBUG: Found heroDescription in deeply nested structure');
+                          break;
                         }
                       }
                       if (heroContent) break;
