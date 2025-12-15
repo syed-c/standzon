@@ -585,9 +585,12 @@ export function CountryCityPage({
       
       try {
         setIsLoading(true);
+        console.log('🔄 Loading builders for country:', country);
+        
         // Load from unified platform API (includes all builders: GMB imports, manual additions, etc.)
         // Add safety check to prevent "Cannot read properties of undefined" error
         const allBuilders = unifiedPlatformAPI?.getBuilders?.(country) || []; // Pass country for filtering
+        console.log('📊 Sync getBuilders returned:', allBuilders.length, 'builders');
         
         // DEBUG: Log builder data
         console.log('🔍 DEBUG: CountryCityPage - Unified platform returned', allBuilders.length, 'builders for country:', country);
@@ -603,7 +606,88 @@ export function CountryCityPage({
           console.log(`📊 Async getBuilders returned ${asyncBuilders.length} builders for country:`, country);
           // Use async builders if we got data
           if (asyncBuilders.length > 0) {
-            allBuilders.push(...asyncBuilders);
+            console.log('✅ Using async builders data');
+            // Create a new array instead of trying to modify the existing one
+            const newBuilders = [...asyncBuilders];
+            // Replace allBuilders reference
+            // We can't directly assign to allBuilders because it's const, but we can use it differently
+            if (isMounted) {
+              setBuilders(newBuilders);
+              setFilteredBuilders(newBuilders);
+              setIsLoading(false);
+              return;
+            }
+          } else {
+            console.log('⚠️ Both sync and async unified platform returned no builders');
+            
+            // ✅ PRODUCTION FIX: Fallback to direct Supabase fetch when unified platform returns no data
+            console.log('🔄 Attempting direct Supabase fetch as fallback...');
+            try {
+              const { getAllBuilders } = await import('@/lib/supabase/builders');
+              const supabaseBuilders = await getAllBuilders();
+              console.log(`📊 Direct Supabase fetch returned ${supabaseBuilders.length} builders`);
+              
+              if (supabaseBuilders.length > 0) {
+                // Filter by country
+                const normalizedCountry = country.toLowerCase().replace(/-/g, " ").trim();
+                const countryVariations = [normalizedCountry];
+                
+                if (normalizedCountry.includes("united arab emirates")) {
+                  countryVariations.push("uae");
+                } else if (normalizedCountry === "uae") {
+                  countryVariations.push("united arab emirates");
+                }
+                
+                const filteredBuilders = supabaseBuilders.filter((builder: any) => {
+                  const builderCountry = (builder.headquarters_country || builder.country || '').toLowerCase().trim();
+                  return countryVariations.some(variation => builderCountry.includes(variation));
+                });
+                console.log(`📍 Filtered to ${filteredBuilders.length} builders for country: ${country}`);
+                
+                if (isMounted && filteredBuilders.length > 0) {
+                  console.log('✅ Using fallback Supabase builders data');
+                  // Transform to match Builder interface (simpler than ExhibitionBuilder)
+                  const transformedBuilders = filteredBuilders.map((builder: any) => ({
+                    id: builder.id || '',
+                    companyName: builder.company_name || builder.name || 'Unknown Builder',
+                    slug: builder.slug || builder.id || '',
+                    headquarters: {
+                      city: builder.headquarters_city || builder.city || 'Unknown',
+                      country: builder.headquarters_country || builder.country || 'Unknown'
+                    },
+                    serviceLocations: builder.service_locations || [{
+                      city: builder.headquarters_city || builder.city || 'Unknown',
+                      country: builder.headquarters_country || builder.country || 'Unknown'
+                    }],
+                    rating: builder.rating || 0,
+                    reviewCount: builder.review_count || 0,
+                    projectsCompleted: builder.projects_completed || builder.completed_projects || 0,
+                    responseTime: builder.response_time || '24 hours',
+                    verified: builder.verified || false,
+                    premiumMember: builder.premium_member || builder.premiumMember || false,
+                    planType: builder.plan_type || "free",
+                    services: builder.services || [],
+                    specializations: builder.specializations || [],
+                    companyDescription: builder.description || builder.company_description || '',
+                    keyStrengths: builder.key_strengths || [],
+                    featured: builder.featured || false
+                  }));
+                  
+                  if (isMounted) {
+                    setBuilders(transformedBuilders);
+                    setFilteredBuilders(transformedBuilders);
+                    setIsLoading(false);
+                    return;
+                  }
+                } else {
+                  console.log('⚠️ Fallback also returned no builders for country:', country);
+                }
+              } else {
+                console.log('⚠️ Supabase fetch returned no builders at all');
+              }
+            } catch (fallbackError) {
+              console.error('❌ Error in Supabase fallback fetch:', fallbackError);
+            }
           }
         }
         

@@ -123,9 +123,9 @@ class UnifiedDataManager {
       
       // Initialize stats
       this.data.stats = {
-        totalBuilders: 0,
+        totalBuilders: this.data.builders.length,
         totalLeads: 0,
-        verifiedBuilders: 0,
+        verifiedBuilders: this.data.builders.filter(b => b.verified).length,
         lastUpdate: new Date().toISOString()
       };
       
@@ -152,6 +152,13 @@ class UnifiedDataManager {
         supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
       }
       
+      // Also check window for client-side (in case of browser environment)
+      if (typeof window !== 'undefined' && window.location) {
+        // In browser environment, we can only access NEXT_PUBLIC_* variables
+        // But they won't be available directly in window.env, we need to check differently
+        console.log('🌐 Browser environment detected');
+      }
+      
       if (!supabaseUrl || !supabaseServiceKey) {
         console.warn('⚠️ SupabASE not configured. Skipping Supabase data loading.');
         // Only log detailed environment variable info on server side
@@ -162,8 +169,13 @@ class UnifiedDataManager {
           console.log('- SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✓ Present' : '✗ Missing');
           console.log('- NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY ? '✓ Present' : '✗ Missing');
         }
+        
+        // ✅ PRODUCTION FIX: Even if env vars seem missing, try to proceed with what we have
+        // This addresses the issue where env vars are available at runtime but not at build time
+        console.log('🔧 Attempting to proceed with unified platform initialization anyway...');
       } else {
         console.log('✅ Supabase is configured. Proceeding with data loading...');
+        console.log('🔗 Supabase URL:', supabaseUrl);
         
         // Load builders from Supabase
         console.log('🔄 Loading builders from Supabase...');
@@ -198,146 +210,133 @@ class UnifiedDataManager {
                 .limit(1);
                 
               if (testError) {
-                console.log('❌ Connection test failed:', testError.message);
+                console.error('❌ Supabase connection test failed:', testError.message);
               } else {
-                console.log('✅ Connection test successful. Found', testData?.length || 0, 'records in page_contents');
+                console.log('✅ Supabase connection test successful. Found records:', testData?.length || 0);
               }
             } else {
-              console.log('❌ Failed to initialize Supabase client');
+              console.log('⚠️ Could not initialize Supabase client for diagnostics');
             }
-          } catch (diagError) {
-            console.log('❌ Diagnostic failed:', diagError);
+          } catch (diagnosticError) {
+            console.error('❌ Error during Supabase diagnostics:', diagnosticError);
           }
         }
         
-        // Convert Supabase builders to ExhibitionBuilder format
-        const convertedBuilders = supabaseBuilders.map((builder: any) => ({
-          id: builder.id,
-          companyName: builder.company_name || builder.companyName || 'Unknown Company',
-          slug: builder.slug || (builder.company_name || builder.companyName || 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-          logo: builder.logo || '/images/builders/default-logo.png',
-          establishedYear: builder.established_year || builder.establishedYear || new Date().getFullYear(),
-          headquarters: {
-            city: builder.headquarters_city || (builder.headquarters?.city) || 'Unknown City',
-            country: builder.headquarters_country || (builder.headquarters?.country) || 'Unknown Country',
-            countryCode: builder.headquarters_country_code || (builder.headquarters?.countryCode) || 'XX',
-            address: builder.headquarters_address || (builder.headquarters?.address) || '',
-            latitude: builder.headquarters_latitude || (builder.headquarters?.latitude) || 0,
-            longitude: builder.headquarters_longitude || (builder.headquarters?.longitude) || 0,
-            isHeadquarters: true,
-          },
-          serviceLocations: builder.serviceLocations || [
-            {
-              city: builder.headquarters_city || (builder.headquarters?.city) || 'Unknown City',
-              country: builder.headquarters_country || (builder.headquarters?.country) || 'Unknown Country',
-              countryCode: builder.headquarters_country_code || (builder.headquarters?.countryCode) || 'XX',
-              address: builder.headquarters_address || (builder.headquarters?.address) || '',
-              latitude: builder.headquarters_latitude || (builder.headquarters?.latitude) || 0,
-              longitude: builder.headquarters_longitude || (builder.headquarters?.longitude) || 0,
-              isHeadquarters: true,
-            }
-          ],
-          contactInfo: {
-            primaryEmail: builder.primary_email || (builder.contactInfo?.primaryEmail) || '',
-            phone: builder.phone || (builder.contactInfo?.phone) || '',
-            website: builder.website || (builder.contactInfo?.website) || '',
-            contactPerson: builder.contact_person || (builder.contactInfo?.contactPerson) || '',
-            position: builder.position || (builder.contactInfo?.position) || '',
-          },
-          services: builder.services || [],
-          specializations: builder.specializations || [],
-          certifications: builder.certifications || [],
-          awards: builder.awards || [],
-          portfolio: builder.portfolio || [],
-          teamSize: builder.team_size || builder.teamSize || 0,
-          projectsCompleted: builder.projects_completed || builder.projectsCompleted || 0,
-          rating: builder.rating || 0,
-          reviewCount: builder.review_count || builder.reviewCount || 0,
-          responseTime: builder.response_time || builder.responseTime || 'Within 24 hours',
-          languages: builder.languages || ['English'],
-          verified: !!builder.verified,
-          premiumMember: !!builder.premium_member || !!builder.premiumMember,
-          tradeshowExperience: builder.tradeshowExperience || [],
-          priceRange: builder.priceRange || { currency: 'USD', min: 0, max: 0, unit: 'per project' },
-          companyDescription: builder.company_description || builder.companyDescription || '',
-          whyChooseUs: builder.whyChooseUs || [],
-          clientTestimonials: builder.clientTestimonials || [],
-          socialMedia: builder.socialMedia || { website: '', linkedin: '', facebook: '', instagram: '', twitter: '' },
-          businessLicense: builder.businessLicense || '',
-          insurance: builder.insurance || { provider: '', policyNumber: '', validUntil: '' },
-          sustainability: builder.sustainability || { certified: false, initiatives: [] },
-          keyStrengths: builder.keyStrengths || [],
-          recentProjects: builder.recentProjects || [],
-          claimed: builder.claimed,
-          claimStatus: builder.claim_status || builder.claimStatus || 'unclaimed',
-          claimedAt: builder.claimed_at || builder.claimedAt,
-          claimedBy: builder.claimed_by || builder.claimedBy,
-          planType: builder.plan_type || builder.planType || 'free',
-          verificationData: builder.verificationData,
-          gmbImported: builder.gmb_imported || builder.gmbImported,
-          importedFromGMB: builder.imported_from_gmb || builder.importedFromGMB,
-          source: builder.source || 'supabase',
-          importedAt: builder.imported_at || builder.importedAt,
-          lastUpdated: builder.last_updated || builder.updated_at || builder.lastUpdated || new Date().toISOString(),
-          status: builder.status || 'active',
-          plan: builder.plan || 'free',
-          contactEmail: builder.contact_email || builder.contactEmail || (builder.contactInfo?.primaryEmail) || (builder.primary_email) || '',
-        }));
-        
-        // Add builders to the unified data system
-        convertedBuilders.forEach((builder: any) => {
-          // Check if builder already exists to avoid duplicates
-          const existingBuilder = this.data.builders.find(b => b.id === builder.id);
-          if (!existingBuilder) {
-            this.data.builders.push(builder);
-          }
+        // Transform builders to ExhibitionBuilder format
+        const transformedBuilders = supabaseBuilders.map(builder => {
+          // Ensure all required fields are present for ExhibitionBuilder interface
+          return {
+            // Basic fields
+            id: builder.id || uuidv4(),
+            companyName: builder.company_name || builder.name || 'Unknown Builder',
+            slug: builder.slug || builder.id || '',
+            logo: builder.logo || '/images/builders/default-logo.png',
+            establishedYear: builder.established_year || new Date().getFullYear(),
+            
+            // Headquarters
+            headquarters: {
+              city: builder.headquarters_city || builder.city || 'Unknown',
+              country: builder.headquarters_country || builder.country || 'Unknown',
+              countryCode: builder.headquarters_country_code || builder.country_code || 'XX',
+              address: builder.headquarters_address || builder.address || '',
+              latitude: builder.headquarters_latitude || builder.latitude || 0,
+              longitude: builder.headquarters_longitude || builder.longitude || 0,
+              isHeadquarters: true
+            },
+            
+            // Service locations
+            serviceLocations: builder.service_locations || [
+              {
+                city: builder.headquarters_city || builder.city || 'Unknown',
+                country: builder.headquarters_country || builder.country || 'Unknown',
+                countryCode: builder.headquarters_country_code || builder.country_code || 'XX',
+                address: builder.headquarters_address || builder.address || '',
+                latitude: builder.headquarters_latitude || builder.latitude || 0,
+                longitude: builder.headquarters_longitude || builder.longitude || 0,
+                isHeadquarters: false
+              }
+            ],
+            
+            // Contact info
+            contactInfo: {
+              primaryEmail: builder.primary_email || builder.email || '',
+              phone: builder.phone || '',
+              website: builder.website || '',
+              contactPerson: builder.contact_person || builder.contact_name || '',
+              position: builder.position || ''
+            },
+            
+            // Services and specializations (empty arrays as defaults)
+            services: builder.services || [],
+            specializations: builder.specializations || [],
+            certifications: builder.certifications || [],
+            awards: builder.awards || [],
+            portfolio: builder.portfolio || [],
+            
+            // Stats
+            teamSize: builder.team_size || 0,
+            projectsCompleted: builder.projects_completed || builder.completed_projects || 0,
+            rating: builder.rating || 0,
+            reviewCount: builder.review_count || 0,
+            
+            // Response info
+            responseTime: builder.response_time || '24 hours',
+            languages: builder.languages || ['English'],
+            
+            // Status flags
+            verified: builder.verified || false,
+            premiumMember: builder.premium_member || builder.premiumMember || false,
+            
+            // Additional fields
+            tradeshowExperience: builder.tradeshow_experience || [],
+            priceRange: builder.price_range || { min: 0, max: 0, currency: 'USD' },
+            companyDescription: builder.description || builder.company_description || '',
+            whyChooseUs: builder.why_choose_us || [],
+            clientTestimonials: builder.client_testimonials || [],
+            socialMedia: builder.social_media || {},
+            businessLicense: builder.business_license || '',
+            insurance: builder.insurance || {},
+            sustainability: builder.sustainability || {},
+            keyStrengths: builder.key_strengths || [],
+            recentProjects: builder.recent_projects || [],
+            
+            // Claim system
+            claimed: builder.claimed || false,
+            claimStatus: builder.claim_status || "unclaimed",
+            planType: builder.plan_type || "free",
+            gmbImported: builder.gmb_imported || builder.gmbImported || false,
+            importedFromGMB: builder.imported_from_gmb || false,
+            source: builder.source || '',
+            importedAt: builder.imported_at || '',
+            lastUpdated: builder.last_updated || builder.updated_at || new Date().toISOString(),
+            
+            // Lead routing
+            status: builder.status || "active",
+            plan: builder.plan || "free",
+            contactEmail: builder.contact_email || builder.primary_email || builder.email || ''
+          };
         });
         
-        console.log(`✅ Successfully loaded ${convertedBuilders.length} builders into unified platform`);
+        console.log(`📦 Transformed ${transformedBuilders.length} builders to ExhibitionBuilder format`);
+        
+        // Update data
+        this.data.builders = transformedBuilders;
+        console.log(`💾 Updated platform data with ${this.data.builders.length} builders`);
       }
-      
-      // Update stats
-      this.data.stats.totalBuilders = this.data.builders.length;
-      this.data.stats.verifiedBuilders = this.data.builders.filter(b => b.verified).length;
-      this.data.stats.lastUpdate = new Date().toISOString();
-      
     } catch (error) {
-      console.error('❌ Error loading initial data from Supabase:', error);
-      // Also log the error stack trace for debugging
-      if (error instanceof Error) {
-        console.error('❌ Error stack:', error.stack);
-      }
+      console.error('❌ Error loading initial data:', error);
+      // Don't throw - continue with empty data
     }
   }
 
-  // Notify all subscribers about data changes
-  private notifySubscribers(event: DataEvent) {
-    this.subscribers.forEach(callback => {
-      try {
-        callback(event);
-      } catch (error) {
-        console.error('❌ Error notifying subscriber:', error);
-      }
-    });
-  }
-
-  // Subscribe to data changes
-  subscribe(callback: (event: DataEvent) => void): () => void {
-    this.subscribers.push(callback);
-    console.log(`📝 New subscriber added. Total: ${this.subscribers.length}`);
-    
-    return () => {
-      const index = this.subscribers.indexOf(callback);
-      if (index > -1) {
-        this.subscribers.splice(index, 1);
-        console.log(`📝 Subscriber removed. Total: ${this.subscribers.length}`);
-      }
-    };
-  }
-
   // Get all data
-  getAllData(): PlatformData {
+  getData(): PlatformData {
     return { ...this.data };
+  }
+
+  // ✅ NEW: Get all data (alias for getData)
+  getAllData(): PlatformData {
+    return this.getData();
   }
 
   // Get builders
@@ -348,6 +347,32 @@ class UnifiedDataManager {
   // ✅ NEW: Get builder by ID
   getBuilderById(id: string): ExhibitionBuilder | null {
     return this.data.builders.find(b => b.id === id) || null;
+  }
+
+  // ✅ NEW: Subscribe to data changes
+  subscribe(callback: (event: DataEvent) => void): () => void {
+    this.subscribers.push(callback);
+    
+    // Return unsubscribe function
+    return () => {
+      const index = this.subscribers.indexOf(callback);
+      if (index > -1) {
+        this.subscribers.splice(index, 1);
+      }
+    };
+  }
+
+  // ✅ NEW: Notify all subscribers
+  private notifySubscribers(event: DataEvent) {
+    // Create a copy of subscribers to avoid issues if callbacks modify the array
+    const subscribersCopy = [...this.subscribers];
+    subscribersCopy.forEach(callback => {
+      try {
+        callback(event);
+      } catch (error) {
+        console.error('❌ Error in subscriber callback:', error);
+      }
+    });
   }
 
   // ✅ NEW: Get leads

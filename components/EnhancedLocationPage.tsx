@@ -218,19 +218,166 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
 
       setIsLoadingBuilders(true);
       try {
+        console.log('🔄 Loading builders for location:', displayLocation);
+        
         // sync attempt
         const sync = typeof unifiedPlatformAPI?.getBuilders === 'function'
           ? unifiedPlatformAPI.getBuilders(displayLocation)
           : [];
+        console.log('📊 Sync getBuilders returned:', sync.length, 'builders');
+        
         if (Array.isArray(sync) && sync.length > 0) {
+          console.log('✅ Using sync builders data');
           if (!cancelled) setFilteredBuilders(normalizeBuilders(sync, sortBy));
         } else {
+          console.log('🔄 Trying async version of getBuilders to ensure proper initialization');
+          // Check if unified platform is initialized
+          const isInitialized = unifiedPlatformAPI.isInitialized();
+          console.log(`📊 Unified platform initialized: ${isInitialized}`);
+          
           // async attempt
           const asyncResult = typeof unifiedPlatformAPI?.getBuildersAsync === 'function'
             ? await unifiedPlatformAPI.getBuildersAsync(displayLocation)
             : [];
-          if (!cancelled && Array.isArray(asyncResult)) {
+          console.log('📊 Async getBuilders returned:', asyncResult.length, 'builders');
+          
+          if (!cancelled && Array.isArray(asyncResult) && asyncResult.length > 0) {
+            console.log('✅ Using async builders data');
             setFilteredBuilders(normalizeBuilders(asyncResult, sortBy));
+          } else {
+            console.log('⚠️ Both sync and async unified platform returned no builders');
+            
+            // ✅ PRODUCTION FIX: Fallback to direct Supabase fetch when unified platform returns no data
+            console.log('🔄 Attempting direct Supabase fetch as fallback...');
+            try {
+              const { getAllBuilders } = await import('@/lib/supabase/builders');
+              const supabaseBuilders = await getAllBuilders();
+              console.log(`📊 Direct Supabase fetch returned ${supabaseBuilders.length} builders`);
+              
+              if (supabaseBuilders.length > 0) {
+                // Filter by location if provided
+                let filteredBuilders = supabaseBuilders;
+                if (displayLocation) {
+                  const normalizedLocation = displayLocation.toLowerCase().replace(/-/g, " ").trim();
+                  const locationVariations = [normalizedLocation];
+                  
+                  if (normalizedLocation.includes("united arab emirates")) {
+                    locationVariations.push("uae");
+                  } else if (normalizedLocation === "uae") {
+                    locationVariations.push("united arab emirates");
+                  }
+                  
+                  filteredBuilders = supabaseBuilders.filter((builder: any) => {
+                    const builderCountry = (builder.headquarters_country || builder.country || '').toLowerCase().trim();
+                    return locationVariations.some(variation => builderCountry.includes(variation));
+                  });
+                  console.log(`📍 Filtered to ${filteredBuilders.length} builders for location: ${displayLocation}`);
+                }
+                
+                if (!cancelled && filteredBuilders.length > 0) {
+                  console.log('✅ Using fallback Supabase builders data');
+                  // Transform to match ExhibitionBuilder interface like in unifiedPlatformData
+                  const transformedBuilders = filteredBuilders.map((builder: any) => ({
+                    // Basic fields
+                    id: builder.id || '',
+                    companyName: builder.company_name || builder.name || 'Unknown Builder',
+                    slug: builder.slug || builder.id || '',
+                    logo: builder.logo || '/images/builders/default-logo.png',
+                    establishedYear: builder.established_year || new Date().getFullYear(),
+                    
+                    // Headquarters
+                    headquarters: {
+                      city: builder.headquarters_city || builder.city || 'Unknown',
+                      country: builder.headquarters_country || builder.country || 'Unknown',
+                      countryCode: builder.headquarters_country_code || builder.country_code || 'XX',
+                      address: builder.headquarters_address || builder.address || '',
+                      latitude: builder.headquarters_latitude || builder.latitude || 0,
+                      longitude: builder.headquarters_longitude || builder.longitude || 0,
+                      isHeadquarters: true
+                    },
+                    
+                    // Service locations
+                    serviceLocations: builder.service_locations || [
+                      {
+                        city: builder.headquarters_city || builder.city || 'Unknown',
+                        country: builder.headquarters_country || builder.country || 'Unknown',
+                        countryCode: builder.headquarters_country_code || builder.country_code || 'XX',
+                        address: builder.headquarters_address || builder.address || '',
+                        latitude: builder.headquarters_latitude || builder.latitude || 0,
+                        longitude: builder.headquarters_longitude || builder.longitude || 0,
+                        isHeadquarters: false
+                      }
+                    ],
+                    
+                    // Contact info
+                    contactInfo: {
+                      primaryEmail: builder.primary_email || builder.email || '',
+                      phone: builder.phone || '',
+                      website: builder.website || '',
+                      contactPerson: builder.contact_person || builder.contact_name || '',
+                      position: builder.position || ''
+                    },
+                    
+                    // Services and specializations (empty arrays as defaults)
+                    services: builder.services || [],
+                    specializations: builder.specializations || [],
+                    certifications: builder.certifications || [],
+                    awards: builder.awards || [],
+                    portfolio: builder.portfolio || [],
+                    
+                    // Stats
+                    teamSize: builder.team_size || 0,
+                    projectsCompleted: builder.projects_completed || builder.completed_projects || 0,
+                    rating: builder.rating || 0,
+                    reviewCount: builder.review_count || 0,
+                    
+                    // Response info
+                    responseTime: builder.response_time || '24 hours',
+                    languages: builder.languages || ['English'],
+                    
+                    // Status flags
+                    verified: builder.verified || false,
+                    premiumMember: builder.premium_member || builder.premiumMember || false,
+                    
+                    // Additional fields
+                    tradeshowExperience: builder.tradeshow_experience || [],
+                    priceRange: builder.price_range || { min: 0, max: 0, currency: 'USD' },
+                    companyDescription: builder.description || builder.company_description || '',
+                    whyChooseUs: builder.why_choose_us || [],
+                    clientTestimonials: builder.client_testimonials || [],
+                    socialMedia: builder.social_media || {},
+                    businessLicense: builder.business_license || '',
+                    insurance: builder.insurance || {},
+                    sustainability: builder.sustainability || {},
+                    keyStrengths: builder.key_strengths || [],
+                    recentProjects: builder.recent_projects || [],
+                    
+                    // Claim system
+                    claimed: builder.claimed || false,
+                    claimStatus: builder.claim_status || "unclaimed",
+                    planType: builder.plan_type || "free",
+                    gmbImported: builder.gmb_imported || builder.gmbImported || false,
+                    importedFromGMB: builder.imported_from_gmb || false,
+                    source: builder.source || '',
+                    importedAt: builder.imported_at || '',
+                    lastUpdated: builder.last_updated || builder.updated_at || new Date().toISOString(),
+                    
+                    // Lead routing
+                    status: builder.status || "active",
+                    plan: builder.plan || "free",
+                    contactEmail: builder.contact_email || builder.primary_email || builder.email || ''
+                  }));
+                  
+                  if (!cancelled) setFilteredBuilders(normalizeBuilders(transformedBuilders, sortBy));
+                } else {
+                  console.log('⚠️ Fallback also returned no builders for location:', displayLocation);
+                }
+              } else {
+                console.log('⚠️ Supabase fetch returned no builders at all');
+              }
+            } catch (fallbackError) {
+              console.error('❌ Error in Supabase fallback fetch:', fallbackError);
+            }
           }
         }
       } catch (err) {
