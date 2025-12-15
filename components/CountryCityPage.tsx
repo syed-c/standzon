@@ -638,9 +638,37 @@ export function CountryCityPage({
                   countryVariations.push("united arab emirates");
                 }
                 
+                console.log('🔍 DEBUG: Filtering builders for country variations:', countryVariations);
+                
                 const filteredBuilders = supabaseBuilders.filter((builder: any) => {
-                  const builderCountry = (builder.headquarters_country || builder.country || '').toLowerCase().trim();
-                  return countryVariations.some(variation => builderCountry.includes(variation));
+                  // Check headquarters country
+                  const headquartersCountry = (builder.headquarters_country || builder.country || '').toLowerCase().trim();
+                  const countryMatch = countryVariations.some(variation => 
+                    headquartersCountry.includes(variation)
+                  );
+                  
+                  // Check service locations
+                  const serviceLocations = builder.service_locations || builder.serviceLocations || [];
+                  const serviceLocationMatch = serviceLocations.some((loc: any) => {
+                    const serviceCountry = (loc.country || '').toLowerCase().trim();
+                    return countryVariations.some(variation => 
+                      serviceCountry.includes(variation)
+                    );
+                  });
+                  
+                  const match = countryMatch || serviceLocationMatch;
+                  
+                  // Log first few builders for debugging
+                  if (supabaseBuilders.indexOf(builder) < 3) {
+                    console.log('🔍 DEBUG: Builder filtering for', builder.company_name || builder.name, {
+                      headquartersCountry,
+                      countryMatch,
+                      serviceLocationMatch,
+                      finalMatch: match
+                    });
+                  }
+                  
+                  return match;
                 });
                 console.log(`📍 Filtered to ${filteredBuilders.length} builders for country: ${country}`);
                 

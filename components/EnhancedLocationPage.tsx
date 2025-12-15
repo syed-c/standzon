@@ -208,6 +208,7 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
       if (!mountedRef.current || cancelled) return;
       // if we already have initial builders passed from server, keep them
       if (initial && initial.length > 0) {
+        console.log('🔍 DEBUG: EnhancedLocationPage - Using initial builders, count:', initial.length);
         setFilteredBuilders(prev => {
           // only update if different
           if (prev.length === initial.length && prev[0] === initial[0]) return prev;
@@ -216,6 +217,7 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
         return;
       }
 
+      console.log('🔍 DEBUG: EnhancedLocationPage - Loading builders for displayLocation:', displayLocation);
       setIsLoadingBuilders(true);
       try {
         console.log('🔄 Loading builders for location:', displayLocation);
@@ -267,9 +269,44 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                     locationVariations.push("united arab emirates");
                   }
                   
+                  console.log('🔍 DEBUG: Filtering builders for location variations:', locationVariations);
+                  
                   filteredBuilders = supabaseBuilders.filter((builder: any) => {
-                    const builderCountry = (builder.headquarters_country || builder.country || '').toLowerCase().trim();
-                    return locationVariations.some(variation => builderCountry.includes(variation));
+                    // Check headquarters country
+                    const headquartersCountry = (builder.headquarters_country || builder.country || '').toLowerCase().trim();
+                    const countryMatch = locationVariations.some(variation => 
+                      headquartersCountry.includes(variation)
+                    );
+                    
+                    // Check headquarters city
+                    const headquartersCity = (builder.headquarters_city || builder.city || '').toLowerCase().trim();
+                    const cityMatch = headquartersCity.includes(normalizedLocation);
+                    
+                    // Check service locations
+                    const serviceLocations = builder.service_locations || builder.serviceLocations || [];
+                    const serviceLocationMatch = serviceLocations.some((loc: any) => {
+                      const serviceCountry = (loc.country || '').toLowerCase().trim();
+                      const serviceCity = (loc.city || '').toLowerCase().trim();
+                      return locationVariations.some(variation => 
+                        serviceCountry.includes(variation)
+                      ) || serviceCity.includes(normalizedLocation);
+                    });
+                    
+                    const match = countryMatch || cityMatch || serviceLocationMatch;
+                    
+                    // Log first few builders for debugging
+                    if (supabaseBuilders.indexOf(builder) < 3) {
+                      console.log('🔍 DEBUG: Builder filtering for', builder.company_name || builder.name, {
+                        headquartersCountry,
+                        headquartersCity,
+                        countryMatch,
+                        cityMatch,
+                        serviceLocationMatch,
+                        finalMatch: match
+                      });
+                    }
+                    
+                    return match;
                   });
                   console.log(`📍 Filtered to ${filteredBuilders.length} builders for location: ${displayLocation}`);
                 }
