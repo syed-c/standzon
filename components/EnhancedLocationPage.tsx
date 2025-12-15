@@ -588,6 +588,35 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                   }
                 }
                 
+                // NEW: Handle the specific structure we identified in the test script
+                // sections.cityPages["united-arab-emirates-dubai"].countryPages.dubai.heroDescription
+                if (!heroContent && cmsData?.sections?.cityPages) {
+                  const cityPageKeys = Object.keys(cmsData.sections.cityPages);
+                  console.log('🔍 DEBUG: Looking for heroDescription in cityPages structure');
+                  console.log('🔍 DEBUG: cityPageKeys:', cityPageKeys);
+                  
+                  for (const pageKey of cityPageKeys) {
+                    console.log('🔍 DEBUG: Checking pageKey:', pageKey);
+                    const countryPages = cmsData.sections.cityPages[pageKey]?.countryPages;
+                    if (countryPages) {
+                      console.log('🔍 DEBUG: Found countryPages in:', pageKey);
+                      const countryPageKeys = Object.keys(countryPages);
+                      console.log('🔍 DEBUG: countryPageKeys:', countryPageKeys);
+                      
+                      for (const countryKey of countryPageKeys) {
+                        console.log('🔍 DEBUG: Checking countryKey:', countryKey);
+                        const countryPage = countryPages[countryKey];
+                        if (countryPage && countryPage.heroDescription) {
+                          heroContent = countryPage.heroDescription;
+                          console.log('✅ DEBUG: Found heroDescription in specific structure:', pageKey, countryKey);
+                          break;
+                        }
+                      }
+                      if (heroContent) break;
+                    }
+                  }
+                }
+                
                 // Handle object content properly
                 const extractText = (content: any): string => {
                   if (typeof content === 'string') return content;

@@ -868,7 +868,7 @@ export function CountryCityPage({
               hero: {
                 title: pageContent.title,
                 subtitle: `Professional booth design and construction services`,
-                description: pageContent.description,
+                description: pageContent.heroContent || pageContent.description,
                 ctaText: "Get Free Quote",
               },
               content: {
@@ -928,12 +928,12 @@ export function CountryCityPage({
                 },
                 hero: {
                   title: extractText(cityPageContent?.hero?.title) || extractText(cityPageContent?.hero?.heading) || baseContent.hero.title,
-                  description: extractText(cityPageContent?.hero?.description) || extractText(cityPageContent?.hero?.text) || baseContent.hero.description,
+                  description: extractText(cityPageContent?.heroContent) || extractText(cityPageContent?.hero?.description) || extractText(cityPageContent?.hero?.text) || baseContent.hero.description,
                   ctaText: extractText(cityPageContent?.hero?.ctaText) || baseContent.hero.ctaText,
                   subtitle: extractText(cityPageContent?.hero?.subtitle) || baseContent.hero.subtitle,
                 },
                 content: {
-                  introduction: extractText(cityPageContent?.content?.introduction) || extractText(cityPageContent?.hero?.description) || baseContent.content.introduction,
+                  introduction: extractText(cityPageContent?.heroContent) || extractText(cityPageContent?.content?.introduction) || extractText(cityPageContent?.hero?.description) || baseContent.content.introduction,
                   whyChooseSection: extractText(cityPageContent?.content?.whyChooseSection) || extractText(cityPageContent?.whyChooseSection) || baseContent.content.whyChooseSection,
                   industryOverview: extractText(cityPageContent?.content?.industryOverview) || baseContent.content.industryOverview,
                   venueInformation: extractText(cityPageContent?.content?.venueInformation) || baseContent.content.venueInformation,
@@ -972,11 +972,11 @@ export function CountryCityPage({
               hero: baseContent.hero ? {
                 ...baseContent.hero,
                 title: safeExtractText(baseContent.hero.title),
-                description: safeExtractText(baseContent.hero.description),
+                description: safeExtractText(pageContent?.heroContent) || safeExtractText(baseContent.hero.description),
               } : {},
               content: baseContent.content ? {
                 ...baseContent.content,
-                introduction: safeExtractText(baseContent.content.introduction),
+                introduction: safeExtractText(pageContent?.heroContent) || safeExtractText(baseContent.content.introduction),
                 whyChooseSection: safeExtractText(baseContent.content.whyChooseSection),
                 industryOverview: safeExtractText(baseContent.content.industryOverview),
                 venueInformation: safeExtractText(baseContent.content.venueInformation),
