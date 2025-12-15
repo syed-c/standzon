@@ -82,9 +82,6 @@ const nextConfig = {
     return config;
   },
   experimental: {
-    turbo: {
-      moduleIdStrategy: 'deterministic',
-    },
     // ✅ PERFORMANCE: Enable modern features
     optimizeCss: true,
     optimizePackageImports: ['lucide-react', 'recharts'],
