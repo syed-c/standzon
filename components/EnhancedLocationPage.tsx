@@ -345,6 +345,24 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
       // If we have a direct match, use it
       if (cmsData?.sections?.cityPages?.[key]) {
         console.log('✅ Found direct city content match for key:', key);
+        // Try to find hero description in the nested structure
+        if (cmsData?.sections?.cityPages) {
+          const cityPageKeys = Object.keys(cmsData.sections.cityPages);
+          for (const pageKey of cityPageKeys) {
+            const countryPages = cmsData.sections.cityPages[pageKey]?.countryPages;
+            if (countryPages) {
+              const countryPageKeys = Object.keys(countryPages);
+              for (const countryKey of countryPageKeys) {
+                const countryPage = countryPages[countryKey];
+                if (countryPage && countryPage.heroDescription) {
+                  console.log('✅ Found hero description in nested structure');
+                  // Return the country page content which contains the hero description
+                  return countryPage;
+                }
+              }
+            }
+          }
+        }
         return cityContent;
       }
       
@@ -452,8 +470,10 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                 console.log('🔍 DEBUG: resolvedCmsBlock keys:', resolvedCmsBlock ? Object.keys(resolvedCmsBlock) : 'null');
                 console.log('🔍 DEBUG: resolvedCmsBlock.heroDescription:', resolvedCmsBlock?.heroDescription);
                 
-                // First try to get hero description from CMS
-                let heroContent = resolvedCmsBlock?.heroDescription || resolvedCmsBlock?.hero;
+                // First try to get hero description from CMS - prioritize heroDescription field over hero.description
+                let heroContent = resolvedCmsBlock?.heroDescription || 
+                                 resolvedCmsBlock?.hero?.description || 
+                                 resolvedCmsBlock?.hero;
                 
                 // If we still don't have content, try other common fields
                 if (!heroContent && resolvedCmsBlock) {

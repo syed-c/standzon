@@ -189,7 +189,17 @@ function formatCmsContent(cmsContent: any, countrySlug: string, citySlug: string
   
   // Extract the specific city content if it's nested
   const cityPageId = `${countrySlug}-${citySlug}`;
-  const citySpecificContent = cmsContent?.sections?.cityPages?.[cityPageId] || cmsContent;
+  let citySpecificContent = cmsContent?.sections?.cityPages?.[cityPageId] || cmsContent;
+  
+  // NEW: Handle the specific nested structure for hero description
+  // sections.cityPages["united-arab-emirates-dubai"].countryPages.dubai.heroDescription
+  if (cmsContent?.sections?.cityPages?.[cityPageId]?.countryPages?.[citySlug]?.heroDescription) {
+    console.log("✅ Found heroDescription in nested structure");
+    citySpecificContent = {
+      ...citySpecificContent,
+      heroDescription: cmsContent.sections.cityPages[cityPageId].countryPages[citySlug].heroDescription
+    };
+  }
   
   // Ensure we have the right structure
   const formattedContent = {
