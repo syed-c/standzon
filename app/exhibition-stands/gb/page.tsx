@@ -38,20 +38,54 @@ async function getUnitedKingdomPageContent() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
+  // Try to fetch CMS content for metadata
+  let cmsMetadata = null;
+  try {
+    const cmsContent = await getUnitedKingdomPageContent();
+    if (cmsContent) {
+      const seo = cmsContent.seo || {};
+      const hero = cmsContent.hero || {};
+      
+      cmsMetadata = {
+        title: seo.metaTitle || hero.title || `Exhibition Stand Builders in United Kingdom | Professional Trade Show Displays`,
+        description: seo.metaDescription || `Find professional exhibition stand builders across United Kingdom. Custom trade show displays, booth design, and comprehensive exhibition services.`,
+        keywords: seo.keywords || [`exhibition stands United Kingdom`, `booth builders United Kingdom`, `trade show displays United Kingdom`, `United Kingdom exhibition builders`, `United Kingdom booth design`, `United Kingdom exhibition stands`],
+      };
+    }
+  } catch (error) {
+    console.error('❌ Error fetching CMS metadata:', error);
+  }
+  
+  // Use CMS metadata if available, otherwise fall back to default
+  const title = cmsMetadata?.title || `Exhibition Stand Builders in United Kingdom | Professional Trade Show Displays`;
+  const description = cmsMetadata?.description || `Find professional exhibition stand builders across United Kingdom. Custom trade show displays, booth design, and comprehensive exhibition services.`;
+  const keywords = cmsMetadata?.keywords || [`exhibition stands United Kingdom`, `booth builders United Kingdom`, `trade show displays United Kingdom`, `United Kingdom exhibition builders`, `United Kingdom booth design`, `United Kingdom exhibition stands`];
+  
   return {
-    title: `Exhibition Stand Builders in United Kingdom | Professional Trade Show Displays`,
-    description: `Find professional exhibition stand builders across United Kingdom. Custom trade show displays, booth design, and comprehensive exhibition services.`,
-    keywords: [`exhibition stands United Kingdom`, `booth builders United Kingdom`, `trade show displays United Kingdom`, `United Kingdom exhibition builders`, `United Kingdom booth design`, `United Kingdom exhibition stands`],
+    title,
+    description,
+    keywords,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     openGraph: {
-      title: `Exhibition Stand Builders in United Kingdom`,
-      description: `Professional exhibition stand builders across United Kingdom. Custom trade show displays and booth design services.`,
+      title,
+      description,
       type: 'website',
       locale: 'en_US',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Exhibition Stand Builders in United Kingdom`,
-      description: `Professional exhibition stand builders across United Kingdom. Custom trade show displays and booth design services.`,
+      title,
+      description,
     },
     alternates: {
       canonical: `https://standszone.com/exhibition-stands/gb`,

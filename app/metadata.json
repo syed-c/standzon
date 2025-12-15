@@ -4,37 +4,43 @@
     "description": "Leading exhibition stand builders network covering 22+ countries and 80+ major cities worldwide. Professional booth design, construction & installation services across Europe, Asia, Americas, and Oceania. Get your free quote today.",
     "keywords": "exhibition stands, trade show displays, booth builders, exhibition contractors, custom displays, trade show services, global exhibition network, Stands Zone",
     "robots": "index, follow, max-image-preview:large, max-video-preview:-1, max-snippet:-1",
-    "ogImage": "/og-image-home.png"
+    "ogImage": "/og-image-home.png",
+    "alternates": { "canonical": "https://standszone.com/" }
   },
   "/services": {
     "title": "Exhibition Stand Services - Custom Design & Construction | StandsZone",
     "description": "Professional exhibition stand services including custom design, construction, installation, and project management. Get quotes from verified builders worldwide.",
     "keywords": "exhibition stand services, custom design, construction, installation, project management, trade show services",
-    "ogImage": "/og-image-services.png"
+    "ogImage": "/og-image-services.png",
+    "alternates": { "canonical": "https://standszone.com/services" }
   },
   "/about": {
     "title": "About StandsZone | Global Exhibition Stand Builder Network",
     "description": "Learn about StandsZone's mission to connect exhibitors with top-rated exhibition stand builders worldwide. Over 40 countries, 500+ contractors, 5000+ successful projects.",
     "keywords": "about StandsZone, exhibition stand network, global contractors, trade show services, exhibition builders",
-    "ogImage": "/og-image-about.png"
+    "ogImage": "/og-image-about.png",
+    "alternates": { "canonical": "https://standszone.com/about" }
   },
   "/contact": {
     "title": "Get Free Exhibition Stand Quotes | Contact StandsZone",
     "description": "Get free quotes from pre-vetted exhibition stand builders. Connect with up to 5 contractors for your trade show project. 24-hour response guaranteed.",
     "keywords": "exhibition stand quotes, free quotes, trade show contractors, exhibition builders contact",
-    "ogImage": "/og-image-contact.png"
+    "ogImage": "/og-image-contact.png",
+    "alternates": { "canonical": "https://standszone.com/contact" }
   },
   "/builders": {
     "title": "Exhibition Stand Builders Directory | Verified Contractors",
     "description": "Browse our directory of verified exhibition stand builders worldwide. Find top-rated contractors with proven track records for your trade show project.",
     "keywords": "exhibition stand builders, trade show contractors, verified builders, exhibition contractors directory",
-    "ogImage": "/og-image-builders.png"
+    "ogImage": "/og-image-builders.png",
+    "alternates": { "canonical": "https://standszone.com/builders" }
   },
   "/exhibition-stands": {
     "title": "Exhibition Stands Worldwide | 21+ Countries & 104+ Cities | Global Directory",
     "description": "Comprehensive global directory of exhibition stand builders covering 21+ countries and 104+ major cities. Professional trade show services across Europe, Asia, Americas, Africa, and Oceania. Custom stands, modular systems, and full-service solutions.",
     "keywords": "exhibition stands worldwide, global trade show services, international exhibition builders, custom stands, exhibition stands by country, trade show contractors worldwide",
-    "ogImage": "/og-image-locations.png"
+    "ogImage": "/og-image-locations.png",
+    "alternates": { "canonical": "https://standszone.com/exhibition-stands" }
   },
   "/exhibition-stands/united-states": {
     "title": "Exhibition Stand Builders United States | Trade Show Contractors",
@@ -130,13 +136,15 @@
     "title": "Get Free Exhibition Stand Quote | Instant Quote Request",
     "description": "Get instant free quotes from verified exhibition stand builders. Compare prices, services, and find the perfect contractor for your trade show project.",
     "keywords": "exhibition stand quote, free quote, trade show quote, exhibition builder prices, instant quote",
-    "ogImage": "/og-image-quote.png"
+    "ogImage": "/og-image-quote.png",
+    "alternates": { "canonical": "https://standszone.com/quote" }
   },
   "/custom-booth": {
     "title": "Custom Exhibition Booths | Bespoke Trade Show Stands",
     "description": "Custom exhibition booth design and construction. Bespoke trade show stands tailored to your brand, industry, and exhibition requirements.",
     "keywords": "custom exhibition booths, bespoke trade show stands, custom booth design, tailored exhibition stands",
-    "ogImage": "/og-image-custom-booth.png"
+    "ogImage": "/og-image-custom-booth.png",
+    "alternates": { "canonical": "https://standszone.com/custom-booth" }
   },
   "/platform": {
     "title": "StandsZone Platform | Exhibition Builder Network",
@@ -154,7 +162,8 @@
     "title": "Subscription Plans | StandsZone Premium Services",
     "description": "Choose the perfect subscription plan for your exhibition needs. Premium features, priority support, and enhanced visibility for your projects.",
     "keywords": "subscription plans, premium services, exhibition services, StandsZone premium, trade show subscriptions",
-    "ogImage": "/og-image-subscription.png"
+    "ogImage": "/og-image-subscription.png",
+    "alternates": { "canonical": "https://standszone.com/subscription" }
   },
   "/legal/privacy-policy": {
     "title": "Privacy Policy | StandsZone Data Protection",
@@ -1112,31 +1121,36 @@
     "title": "Booth Rental Services | Exhibition Stand Rental | StandsZone",
     "description": "Flexible, cost-effective exhibition booth rental solutions with full setup and support. Professional rental services for trade shows and exhibitions.",
     "keywords": "booth rental, exhibition stand rental, trade show booth rental, modular booth rental, booth rental services",
-    "ogImage": "/og-image.jpg"
+    "ogImage": "/og-image.jpg",
+    "alternates": { "canonical": "https://standszone.com/booth-rental" }
   },
   "/3d-rendering-and-concept-development": {
     "title": "3D Rendering & Concept Development | Exhibition Stand Visualization | StandsZone",
     "description": "Photorealistic 3D visuals and rapid concept iterations to align stakeholders and accelerate approvals for exhibition stands.",
     "keywords": "3D rendering, concept development, exhibition visualization, 3D booth design, trade show concepts",
-    "ogImage": "/og-image.jpg"
+    "ogImage": "/og-image.jpg",
+    "alternates": { "canonical": "https://standszone.com/3d-rendering-and-concept-development" }
   },
   "/trade-show-installation-and-dismantle": {
     "title": "Trade Show Installation & Dismantle | Professional I&D Services | StandsZone",
     "description": "End-to-end I&D services for a flawless show experience, from logistics to on-site execution.",
     "keywords": "installation dismantle, trade show setup, booth installation, exhibition dismantle, I&D services",
-    "ogImage": "/og-image.jpg"
+    "ogImage": "/og-image.jpg",
+    "alternates": { "canonical": "https://standszone.com/trade-show-installation-and-dismantle" }
   },
   "/trade-show-project-management": {
     "title": "Trade Show Project Management | Professional Coordination | StandsZone",
     "description": "End-to-end PM including vendor coordination, timelines, and on-site supervision.",
     "keywords": "project management, trade show coordination, exhibition PM, vendor management, timeline management",
-    "ogImage": "/og-image.jpg"
+    "ogImage": "/og-image.jpg",
+    "alternates": { "canonical": "https://standszone.com/trade-show-project-management" }
   },
   "/trade-show-graphics-printing": {
     "title": "Trade Show Graphics & Printing | Professional Branding | StandsZone",
     "description": "High-quality large-format prints, branding, and wayfinding tailored for exhibitions.",
     "keywords": "graphics printing, trade show branding, exhibition graphics, large format printing, booth graphics",
-    "ogImage": "/og-image.jpg"
+    "ogImage": "/og-image.jpg",
+    "alternates": { "canonical": "https://standszone.com/trade-show-graphics-printing" }
   },
   "/exhibition-stands/costa-rica": {
     "title": "Exhibition Stand Builders Costa Rica | Professional Stand Design & Construction",
