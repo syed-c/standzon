@@ -208,7 +208,7 @@ export default function Footer() {
                   { label: 'Privacy Policy', href: '/legal/privacy-policy' },
                   { label: 'Terms of Service', href: '/legal/terms-of-service' },
                   { label: 'Cookie Policy', href: '/legal/cookie-policy' },
-                  { label: 'Sitemap', href: 'https://standszone.com/sitemap' },
+                  { label: 'Sitemap', href: 'https://standszone.com/sitemap.xml' },
                 ]).map((l: any, i: number) => (
                   <a key={i} href={l.href} className="text-gray-400 hover:text-pink-400 transition-colors touch-active no-tap-highlight whitespace-nowrap">
                     {l.label}

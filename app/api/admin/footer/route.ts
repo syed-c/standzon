@@ -55,7 +55,7 @@ const DEFAULT_FOOTER_SETTINGS = {
       { label: "Privacy Policy", href: "/legal/privacy-policy" },
       { label: "Terms of Service", href: "/legal/terms-of-service" },
       { label: "Cookie Policy", href: "/legal/cookie-policy" },
-      { label: "Sitemap", href: "https://standszone.com/sitemap" }
+      { label: "Sitemap", href: "https://standszone.com/sitemap.xml" }
     ]
   },
   social: [
@@ -81,7 +81,7 @@ export async function GET() {
     if (data && data.bottom && Array.isArray(data.bottom.links)) {
       // Check if sitemap link already exists
       const hasSitemap = data.bottom.links.some((link: any) => 
-        link.label === 'Sitemap' || link.href === 'https://standszone.com/sitemap'
+        link.label === 'Sitemap' || link.href === 'https://standszone.com/sitemap.xml'
       );
       
       // If sitemap link doesn't exist, add it after "Cookie Policy"
@@ -94,13 +94,13 @@ export async function GET() {
           // Insert sitemap link after Cookie Policy
           data.bottom.links.splice(cookiePolicyIndex + 1, 0, {
             label: 'Sitemap',
-            href: 'https://standszone.com/sitemap'
+            href: 'https://standszone.com/sitemap.xml'
           });
         } else {
           // If Cookie Policy doesn't exist, add sitemap at the end
           data.bottom.links.push({
             label: 'Sitemap',
-            href: 'https://standszone.com/sitemap'
+            href: 'https://standszone.com/sitemap.xml'
           });
         }
       }
@@ -127,12 +127,12 @@ export async function PUT(request: NextRequest) {
       { label: "Privacy Policy", href: "/legal/privacy-policy" },
       { label: "Terms of Service", href: "/legal/terms-of-service" },
       { label: "Cookie Policy", href: "/legal/cookie-policy" },
-      { label: "Sitemap", href: "https://standszone.com/sitemap" },
+      { label: "Sitemap", href: "https://standszone.com/sitemap.xml" },
     ];
     
     // Check if sitemap link already exists in the provided links
     const hasSitemap = bottomLinks.some((link: any) => 
-      link.label === 'Sitemap' || link.href === 'https://standszone.com/sitemap'
+      link.label === 'Sitemap' || link.href === 'https://standszone.com/sitemap.xml'
     );
     
     // If sitemap link doesn't exist, add it after "Cookie Policy"
@@ -145,13 +145,13 @@ export async function PUT(request: NextRequest) {
         // Insert sitemap link after Cookie Policy
         bottomLinks.splice(cookiePolicyIndex + 1, 0, {
           label: 'Sitemap',
-          href: 'https://standszone.com/sitemap'
+          href: 'https://standszone.com/sitemap.xml'
         });
       } else {
         // If Cookie Policy doesn't exist, add sitemap at the end
         bottomLinks.push({
           label: 'Sitemap',
-          href: 'https://standszone.com/sitemap'
+          href: 'https://standszone.com/sitemap.xml'
         });
       }
     }
