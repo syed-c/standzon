@@ -14,6 +14,7 @@ import {
   Calendar, DollarSign, Clock, Shield
 } from 'lucide-react';
 import { unifiedPlatformAPI } from '@/lib/data/unifiedPlatformData';
+import { forcePlatformInitialization } from '@/lib/utils/platformInitializer';
 
 const CountryGallery = dynamic(() => import('@/components/CountryGallery'), { ssr: false });
 
@@ -193,7 +194,31 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
     return arr;
   };
 
-  // --- load builders (sync first, then async); poll if no initial builders ---
+  // ✅ PRODUCTION FIX: Force initialization on component mount
+  useEffect(() => {
+    console.log('🔄 EnhancedLocationPage mounted, checking unified platform initialization...');
+    
+    // Force initialization check
+    const checkInitialization = async () => {
+      try {
+        const isInitialized = unifiedPlatformAPI.isInitialized();
+        console.log('📊 Unified platform initialized status:', isInitialized);
+        
+        if (!isInitialized) {
+          console.log('🔄 Forcing unified platform initialization...');
+          // Try to trigger initialization with retries
+          const success = await forcePlatformInitialization(3);
+          console.log('📊 Initialization result:', success ? 'Success' : 'Failed');
+        }
+      } catch (initError) {
+        console.error('❌ Error during initialization check:', initError);
+      }
+    };
+    
+    checkInitialization();
+  }, []);
+
+  // Main effect for loading builders
   useEffect(() => {
     let intervalId: number | undefined;
     let cancelled = false;

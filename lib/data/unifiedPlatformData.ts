@@ -989,6 +989,9 @@ export function getUnifiedDataManager(): UnifiedDataManager {
   return unifiedDataManager;
 }
 
+// ✅ NEW: Force initialization on first access if not already initialized
+let forceInitializationAttempted = false;
+
 // ✅ NEW: Country-specific builder filtering
 function getBuildersByCountry(country: string): ExhibitionBuilder[] {
   console.log("📍 getBuildersByCountry called with:", country);
@@ -1059,15 +1062,20 @@ export const unifiedPlatformAPI = {
   getBuilders: (location?: string) => {
     try {
       const manager = getUnifiedDataManager();
-      // Ensure initialization has happened
-      if (!manager.isInitialized) {
-        console.log('⚠️ Unified platform not initialized yet, attempting to initialize...');
-        // In production environments, we should trigger initialization if not already done
-        if (typeof window !== 'undefined') {
-          // Client-side: trigger initialization
+      
+      // ✅ PRODUCTION FIX: Force initialization if not already done
+      if (!manager.isInitialized && !forceInitializationAttempted) {
+        console.log('⚠️ Unified platform not initialized, forcing initialization...');
+        forceInitializationAttempted = true;
+        
+        // Try to initialize synchronously first
+        try {
+          // This might not work in all cases, but worth trying
           manager.ensureInitialized().catch(err => {
-            console.error('❌ Error initializing unified platform:', err);
+            console.error('❌ Error in forced sync initialization:', err);
           });
+        } catch (syncInitError) {
+          console.log('⚠️ Sync initialization failed, will try async');
         }
       }
       
@@ -1109,7 +1117,7 @@ export const unifiedPlatformAPI = {
       return [];
     }
   },
-  
+
   isInitialized: () => {
     try {
       const manager = getUnifiedDataManager();

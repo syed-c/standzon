@@ -24,7 +24,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { BuilderCard } from "./BuilderCard";
-import EnhancedLocationPage, { EnhancedLocationPageProps } from "./EnhancedLocationPage";
+import EnhancedLocationPage from "./EnhancedLocationPage";
 import LocationPageEditor from "./LocationPageEditor";
 import { normalizeCountrySlug, normalizeCitySlug } from "@/lib/utils/slugUtils";
 import {
@@ -51,6 +51,7 @@ import {
   Building,
 } from "lucide-react";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
+import { forcePlatformInitialization } from "@/lib/utils/platformInitializer";
 import {
   storageAPI,
   PageContent as SavedPageContent,
@@ -106,476 +107,64 @@ interface CountryCityPageProps {
   initialBuilders: Builder[];
   initialContent?: LocalPageContent;
   isEditable?: boolean;
-  cityData?: any;
-  showComingSoon?: boolean;
-  // Add CMS content prop for server-side rendered content
-  cmsContent?: any;
-  // Flag to indicate if the quote form should be shown separately
-  showQuoteForm?: boolean;
-  // Flag to hide the cities section on city pages
+  onContentUpdate?: (content: any) => void;
   hideCitiesSection?: boolean;
-  // Cities data for the cities section
   cities?: any[];
+  showQuoteForm?: boolean;
+  cmsContent?: any;
 }
+
 const BUILDERS_PER_PAGE = 6;
 
-export function CountryCityPage({
+const CountryCityPage: React.FC<CountryCityPageProps> = ({
   country,
   city,
   initialBuilders = [],
   initialContent,
   isEditable = false,
-  cityData,
-  showComingSoon = false,
-  cmsContent,
-  showQuoteForm = false,
+  onContentUpdate,
   hideCitiesSection = false,
-  cities: initialCities = [],
-}: CountryCityPageProps) {
-  // DEBUG: Log incoming props
-  console.log('🔍 DEBUG: CountryCityPage props:', {
-    country,
-    city,
-    initialBuildersCount: initialBuilders.length,
-    hasInitialContent: !!initialContent,
-    isEditable,
-    hasCityData: !!cityData,
-    showComingSoon,
-    hasCmsContent: !!cmsContent,
-    initialCitiesCount: initialCities?.length || 0,
-    hideCitiesSection
-  });
-  
-  // DEBUG: Log the initialContent structure
-  console.log('🔍 DEBUG: initialContent structure:', JSON.stringify(initialContent, null, 2));
-  
-  // DEBUG: Log the cmsContent structure
-  console.log('🔍 DEBUG: cmsContent structure:', JSON.stringify(cmsContent, null, 2));
-
-  // Transform initial builders to ensure they have the correct structure
-  const transformedInitialBuilders = initialBuilders.map((builder: any) => {
-    // If builder already has the nested headquarters structure, return as is
-    if (builder.headquarters && typeof builder.headquarters === 'object') {
-      return builder;
-    }
-    
-    // Otherwise, create the nested structure from flat fields
-    return {
-      ...builder,
-      headquarters: {
-        city: builder.headquarters_city || builder.headquarters?.city || 'Unknown City',
-        country: builder.headquarters_country || builder.headquarters?.country || 'Unknown Country'
-      }
-    };
-  });
-  
-  const [builders, setBuilders] = useState<Builder[]>(transformedInitialBuilders);
-  const [filteredBuilders, setFilteredBuilders] =
-    useState<Builder[]>(transformedInitialBuilders);
-  
-  // Ref to track if initialBuilders has changed to prevent infinite loops
-  const initialBuildersRef = useRef(initialBuilders);
-  const buildersRef = useRef(builders);
+  cities = [],
+  showQuoteForm = true,
+  cmsContent,
+}) => {
+  const [builders, setBuilders] = useState<Builder[]>(initialBuilders);
+  const [filteredBuilders, setFilteredBuilders] = useState<Builder[]>(initialBuilders);
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Debug logging
-  console.log('🔍 CountryCityPage received initialBuilders:', initialBuilders.length);
-  const [cities, setCities] = useState<any[]>(initialCities || []);
-  const [selectedCity, setSelectedCity] = useState<string>(city || "");
-  const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("rating");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [isEditingContent, setIsEditingContent] = useState(false);
-  const [savedPageContent, setSavedPageContent] =
-    useState<SavedPageContent | null>(null);
+  const [sortBy, setSortBy] = useState<"rating" | "projects" | "name" | "plan">("rating");
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageContent, setPageContent] = useState<any>(initialContent || {});
+  const [savedPageContent, setSavedPageContent] = useState<any>(null);
   const [isLoadingContent, setIsLoadingContent] = useState(false);
-  const [pageContent, setPageContent] = useState<LocalPageContent>(
-    initialContent || {
-      id: `${country}-${city || "main"}`,
-      title: city
-        ? `Exhibition Stand Builders in ${city}, ${country}`
-        : `Exhibition Stand Builders in ${country}`,
-      metaTitle: city
-        ? `${city} Exhibition Stand Builders | ${country}`
-        : `${country} Exhibition Stand Builders`,
-      metaDescription: city
-        ? `Professional exhibition stand builders in ${city}, ${country}. Get custom trade show displays and booth design services.`
-        : `Leading exhibition stand builders across ${country}. Custom trade show displays and professional booth construction.`,
-      description: city
-        ? `Discover professional exhibition stand builders in ${city}, ${country}. Our verified contractors specialize in custom trade show displays, booth design, and comprehensive exhibition services.`
-        : `Find the best exhibition stand builders across ${country}. Connect with experienced professionals who create stunning custom displays for trade shows and exhibitions.`,
-      heroContent: city
-        ? `Connect with ${city}'s leading exhibition stand builders for your next trade show project.`
-        : `Discover ${country}'s premier exhibition stand builders and booth designers.`,
-      seoKeywords: city
-        ? [
-            `${city} exhibition stands`,
-            `${city} trade show builders`,
-            `${city} booth design`,
-          ]
-        : [
-            `${country} exhibition stands`,
-            `${country} trade show builders`,
-            `${country} booth design`,
-          ],
-    }
-  );
-
+  const [isEditingContent, setIsEditingContent] = useState(false);
+  const buildersRef = useRef<Builder[]>(initialBuilders);
   const { toast } = useToast();
 
-  // If showComingSoon is true, render the coming soon state
-  if (showComingSoon) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                Exhibition Stand Builders in {city}, {country}
-              </h1>
-              <p className="text-xl md:text-2xl mb-8 text-blue-100">
-                Professional booth design and construction services
-              </p>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 max-w-2xl mx-auto">
-                <div className="flex items-center justify-center mb-4">
-                  <Building className="h-12 w-12 text-yellow-300 mr-3" />
-                  <span className="text-2xl font-semibold">Coming Soon</span>
-                </div>
-                <p className="text-lg text-blue-100">
-                  We're expanding our network to {city}! Exhibition stand
-                  builders will be available here soon.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* City Information Section */}
-        <div className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              {/* City Overview */}
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                  About {city}, {country}
-                </h2>
-                <div className="prose prose-lg text-gray-600">
-                  <p>
-                    {cityData?.seoContent?.introduction ||
-                      `${city} stands as a key exhibition destination in ${country}, hosting dynamic trade shows and business events. The city offers excellent opportunities for exhibition success with its growing business environment and professional infrastructure.`}
-                  </p>
-                </div>
-
-                {/* City Stats */}
-                <div className="grid grid-cols-2 gap-6 mt-8">
-                  <div className="bg-white rounded-lg p-6 shadow-sm border">
-                    <div className="flex items-center">
-                      <Users className="h-8 w-8 text-blue-600 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-500">Population</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {cityData?.population || "2.5M+"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-lg p-6 shadow-sm border">
-                    <div className="flex items-center">
-                      <Calendar className="h-8 w-8 text-green-600 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-500">Annual Events</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {cityData?.statistics?.annualEvents || "200+"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Key Industries */}
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                  Key Industries
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {(
-                    cityData?.keyIndustries || [
-                      "Technology",
-                      "Healthcare",
-                      "Manufacturing",
-                      "Finance",
-                      "Tourism",
-                      "Construction",
-                    ]
-                  ).map((industry: string, index: number) => (
-                    <div
-                      key={index}
-                      className="bg-white rounded-lg p-4 shadow-sm border"
-                    >
-                      <div className="flex items-center">
-                        <Tag className="h-5 w-5 text-purple-600 mr-2" />
-                        <span className="font-medium text-gray-900">
-                          {industry}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Major Venues */}
-                <div className="mt-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    Major Venues
-                  </h3>
-                  <div className="space-y-4">
-                    {(cityData?.majorVenues || [])
-                      .slice(0, 3)
-                      .map((venue: any, index: number) => (
-                        <div
-                          key={index}
-                          className="bg-white rounded-lg p-4 shadow-sm border"
-                        >
-                          <div className="flex items-start">
-                            <Building2 className="h-6 w-6 text-blue-600 mr-3 mt-1" />
-                            <div>
-                              <h4 className="font-semibold text-gray-900">
-                                {venue.name}
-                              </h4>
-                              <p className="text-sm text-gray-600 mt-1">
-                                {venue.description}
-                              </p>
-                              <p className="text-sm text-blue-600 mt-2">
-                                {venue.size}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Call to Action */}
-        <div className="bg-gradient-to-r from-purple-600 to-blue-600 py-16">
-          <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white mb-6">
-              Get Notified When We Launch in {city}
-            </h2>
-            <p className="text-xl text-purple-100 mb-8">
-              Be the first to know when exhibition stand builders become
-              available in {city}.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/70"
-              />
-              <Button className="bg-white text-purple-600 font-semibold shadow-lg">
-                Notify Me
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Alternative Locations */}
-        <div className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-              Available in Other {country} Cities
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Show other cities in the same country */}
-              {getOtherCitiesInCountry(country, city).map(
-                (otherCity: any, index: number) => (
-                  <Card
-                    key={index}
-                    className="hover:shadow-lg transition-shadow"
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex items-center mb-4">
-                        <MapPin className="h-6 w-6 text-blue-600 mr-2" />
-                        <h3 className="text-xl font-semibold">
-                          {otherCity.name}
-                        </h3>
-                      </div>
-                      <p className="text-gray-600 mb-4">
-                        {otherCity.builderCount || 0} builders available
-                      </p>
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => {
-                          const countrySlug = country
-                            .toLowerCase()
-                            .replace(/\s+/g, "-")
-                            .replace(/[^a-z0-9-]/g, "");
-                          const citySlug = otherCity.name
-                            .toLowerCase()
-                            .replace(/\s+/g, "-")
-                            .replace(/[^a-z0-9-]/g, "");
-                          window.location.href = `/exhibition-stands/${countrySlug}/${citySlug}`;
-                        }}
-                      >
-                        View Builders
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Load saved page content
+  // ✅ PRODUCTION FIX: Force initialization on component mount (removed duplicate)
   useEffect(() => {
-    let isMounted = true;
+    console.log('🔄 CountryCityPage mounted, checking unified platform initialization...');
     
-    const loadSavedContent = async () => {
-      if (!isMounted) return;
-      
-      setIsLoadingContent(true);
+    // Force initialization check
+    const checkInitialization = async () => {
       try {
-        const countrySlug = country
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "");
-        const path = city
-          ? `/exhibition-stands/${countrySlug}/${city
-              .toLowerCase()
-              .replace(/\s+/g, "-")
-              .replace(/[^a-z0-9-]/g, "")}`
-          : `/exhibition-stands/${countrySlug}`;
-
-        // Special handling for Jordan, Lebanon, and Israel
-        const isSpecialCountry = ['jordan', 'lebanon', 'israel'].includes(countrySlug);
+        const isInitialized = unifiedPlatformAPI.isInitialized();
+        console.log('📊 Unified platform initialized status:', isInitialized);
         
-        // Add cache-busting parameter for special countries to ensure fresh content
-        const cacheBuster = isSpecialCountry ? `&_t=${Date.now()}` : '';
-        
-        const response = await fetch(
-          `/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(path)}${cacheBuster}`,
-          { 
-            cache: "no-store",
-            headers: {
-              'Pragma': 'no-cache',
-              'Cache-Control': 'no-cache, no-store, must-revalidate'
-            }
-          }
-        );
-        const data = await response.json();
-
-        if (isMounted && data.success && data.data) {
-          setSavedPageContent(data.data);
-        } else if (isMounted) {
-          // For special countries, try an alternative API endpoint if the first one fails
-          if (isSpecialCountry) {
-            try {
-              const altResponse = await fetch(
-                `/api/admin/global-pages?action=get-content&id=${countrySlug}${city ? `-${city.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")}` : ''}`,
-                { cache: "no-store" }
-              );
-              const altData = await altResponse.json();
-              
-              if (isMounted && altData.success && altData.data) {
-                setSavedPageContent(altData.data);
-              }
-            } catch (altError) {
-              // Silently handle alternative content source errors
-            }
-          }
+        if (!isInitialized) {
+          console.log('🔄 Forcing unified platform initialization...');
+          // Try to trigger initialization with retries
+          const success = await forcePlatformInitialization(3);
+          console.log('📊 Initialization result:', success ? 'Success' : 'Failed');
         }
-      } catch (error) {
-        // Silently handle errors to prevent infinite loops
-      } finally {
-        if (isMounted) {
-          setIsLoadingContent(false);
-        }
-      }
-    };
-
-    loadSavedContent();
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [country, city]);
-
-  // Listen for admin updates and refetch saved content in real-time
-  useEffect(() => {
-    let isMounted = true;
-    
-    // Add safety check for window object
-    if (typeof window === 'undefined') {
-      return;
-    }
-    
-    const handler = (e: Event) => {
-      if (!isMounted) return;
-      
-      try {
-        const detail = (e as CustomEvent)?.detail as
-          | { path?: string }
-          | undefined;
-        const countrySlug = country
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "");
-        const currentPath = city
-          ? `/exhibition-stands/${countrySlug}/${city
-              .toLowerCase()
-              .replace(/\s+/g, "-")
-              .replace(/[^a-z0-9-]/g, "")}`
-          : `/exhibition-stands/${countrySlug}`;
-        if (!detail?.path || detail.path === currentPath) {
-          // Re-run saved content fetch
-          (async () => {
-            if (!isMounted) return;
-            
-            try {
-              const resp = await fetch(
-                `/api/admin/pages-editor?action=get-content&path=${encodeURIComponent(currentPath)}`,
-                { cache: "no-store" }
-              );
-              const data = await resp.json();
-              if (isMounted && data.success && data.data) {
-                setSavedPageContent(data.data);
-              }
-            } catch {
-              // Silently handle errors
-            }
-          })();
-        }
-      } catch {
-        // Silently handle errors
+      } catch (initError) {
+        console.error('❌ Error during initialization check:', initError);
       }
     };
     
-    // Add safety check for event listener methods
-    if (window?.addEventListener) {
-      window.addEventListener("global-pages:updated", handler as EventListener);
-    }
-    
-    return () => {
-      isMounted = false;
-      // Add safety check for event listener methods
-      if (window?.removeEventListener) {
-        window.removeEventListener(
-          "global-pages:updated",
-          handler as EventListener
-        );
-      }
-    };
-  }, [country, city]);
+    checkInitialization();
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -813,17 +402,6 @@ export function CountryCityPage({
           return b.projectsCompleted - a.projectsCompleted;
         case "name":
           return a.companyName.localeCompare(b.companyName);
-        case "plan":
-          const planOrder = {
-            enterprise: 4,
-            professional: 3,
-            basic: 2,
-            free: 1,
-          };
-          return (
-            (planOrder[b.planType || "free"] || 1) -
-            (planOrder[a.planType || "free"] || 1)
-          );
         default:
           return b.rating - a.rating;
       }
@@ -942,6 +520,109 @@ export function CountryCityPage({
         .filter((c) => c.name !== currentCity)
         .slice(0, 3);
     }
+  }
+
+  // Helper functions to generate sample data
+  function generateExhibitions(country: string, city?: string) {
+    const locationName = city || country;
+
+    if (country === "United Arab Emirates" && city === "Dubai") {
+      return [
+        {
+          id: "1",
+          name: "GITEX Technology Week",
+          date: "Oct 2024",
+          category: "Technology",
+          venue: "Dubai World Trade Centre",
+        },
+        {
+          id: "2",
+          name: "Arab Health",
+          date: "Jan 2024",
+          category: "Healthcare",
+          venue: "Dubai World Trade Centre",
+        },
+        {
+          id: "3",
+          name: "ADIPEC",
+          date: "Nov 2024",
+          category: "Energy",
+          venue: "ADNEC Abu Dhabi",
+        },
+        {
+          id: "4",
+          name: "Big 5 Global",
+          date: "Nov 2024",
+          category: "Construction",
+          venue: "Dubai World Trade Centre",
+        },
+      ];
+    }
+
+    return [
+      {
+        id: "1",
+        name: `${locationName} Trade Expo`,
+        date: "Upcoming",
+        category: "General Trade",
+        venue: `${locationName} Exhibition Center`,
+      },
+      {
+        id: "2",
+        name: `${locationName} Business Summit`,
+        date: "Upcoming",
+        category: "Business",
+        venue: `${locationName} Convention Center`,
+      },
+    ];
+  }
+
+  function generateVenues(country: string, city?: string) {
+    const locationName = city || country;
+
+    if (country === "United Arab Emirates" && city === "Dubai") {
+      return [
+        {
+          id: "1",
+          name: "Dubai World Trade Centre (DWTC)",
+          size: "1M+ sqft",
+          location: "Dubai",
+          website: "https://dwtc.com",
+          description:
+            "The Middle East's premier exhibition and convention centre hosting 500+ events annually",
+          specialties: ["Technology", "Healthcare", "Energy"],
+        },
+        {
+          id: "2",
+          name: "Dubai International Convention Centre",
+          size: "500K sqft",
+          location: "Dubai",
+          website: "https://dicec.ae",
+          description:
+            "State-of-the-art facility in the heart of Dubai's business district",
+          specialties: ["Business", "Finance", "Trade"],
+        },
+      ];
+    }
+
+    return [
+      {
+        id: "1",
+        name: `${locationName} Exhibition Centre`,
+        size: "500K+ sqft",
+        location: locationName,
+        description: `Premier exhibition venue in ${locationName}, hosting major trade shows and international events`,
+        specialties: ["Trade Shows", "Conferences", "Events"],
+      },
+      {
+        id: "2",
+        name: `${locationName} Convention Center`,
+        size: "300K+ sqft",
+        location: locationName,
+        description: `Modern convention facilities in the heart of ${locationName}'s business district`,
+        specialties: ["Business", "Technology", "Innovation"],
+      },
+    ];
   }
 
   return (
@@ -1122,14 +803,14 @@ export function CountryCityPage({
           const pageId = city
             ? `${country
                 .toLowerCase()
-                .replace(/\\s+/g, "-")
+                .replace(/\s+/g, "-")
                 .replace(/[^a-z0-9-]/g, "")}-${city
                 .toLowerCase()
-                .replace(/\\s+/g, "-")
+                .replace(/\s+/g, "-")
                 .replace(/[^a-z0-9-]/g, "")}`
             : `${country
                 .toLowerCase()
-                .replace(/\\s+/g, "-")
+                .replace(/\s+/g, "-")
                 .replace(/[^a-z0-9-]/g, "")}`;
 
           console.log("💾 Saving page content for:", pageId, content);
@@ -1534,109 +1215,6 @@ export function CountryCityPage({
       {/* Cities section was moved to top */}
     </>
   );
-
-  // Helper functions to generate sample data
-  function generateExhibitions(country: string, city?: string) {
-    const locationName = city || country;
-
-    if (country === "United Arab Emirates" && city === "Dubai") {
-      return [
-        {
-          id: "1",
-          name: "GITEX Technology Week",
-          date: "Oct 2024",
-          category: "Technology",
-          venue: "Dubai World Trade Centre",
-        },
-        {
-          id: "2",
-          name: "Arab Health",
-          date: "Jan 2024",
-          category: "Healthcare",
-          venue: "Dubai World Trade Centre",
-        },
-        {
-          id: "3",
-          name: "ADIPEC",
-          date: "Nov 2024",
-          category: "Energy",
-          venue: "ADNEC Abu Dhabi",
-        },
-        {
-          id: "4",
-          name: "Big 5 Global",
-          date: "Nov 2024",
-          category: "Construction",
-          venue: "Dubai World Trade Centre",
-        },
-      ];
-    }
-
-    return [
-      {
-        id: "1",
-        name: `${locationName} Trade Expo`,
-        date: "Upcoming",
-        category: "General Trade",
-        venue: `${locationName} Exhibition Center`,
-      },
-      {
-        id: "2",
-        name: `${locationName} Business Summit`,
-        date: "Upcoming",
-        category: "Business",
-        venue: `${locationName} Convention Center`,
-      },
-    ];
-  }
-
-  function generateVenues(country: string, city?: string) {
-    const locationName = city || country;
-
-    if (country === "United Arab Emirates" && city === "Dubai") {
-      return [
-        {
-          id: "1",
-          name: "Dubai World Trade Centre (DWTC)",
-          size: "1M+ sqft",
-          location: "Dubai",
-          website: "https://dwtc.com",
-          description:
-            "The Middle East's premier exhibition and convention centre hosting 500+ events annually",
-          specialties: ["Technology", "Healthcare", "Energy"],
-        },
-        {
-          id: "2",
-          name: "Dubai International Convention Centre",
-          size: "500K sqft",
-          location: "Dubai",
-          website: "https://dicec.ae",
-          description:
-            "State-of-the-art facility in the heart of Dubai's business district",
-          specialties: ["Business", "Finance", "Trade"],
-        },
-      ];
-    }
-
-    return [
-      {
-        id: "1",
-        name: `${locationName} Exhibition Centre`,
-        size: "500K+ sqft",
-        location: locationName,
-        description: `Premier exhibition venue in ${locationName}, hosting major trade shows and international events`,
-        specialties: ["Trade Shows", "Conferences", "Events"],
-      },
-      {
-        id: "2",
-        name: `${locationName} Convention Center`,
-        size: "300K+ sqft",
-        location: locationName,
-        description: `Modern convention facilities in the heart of ${locationName}'s business district`,
-        specialties: ["Business", "Technology", "Innovation"],
-      },
-    ];
-  }
-}
+};
 
 export default CountryCityPage;
