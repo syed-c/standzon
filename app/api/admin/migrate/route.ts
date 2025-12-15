@@ -1,70 +1,66 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServiceClient } from "@/lib/supabase/database";
+import { DatabaseService } from "@/lib/supabase/database";
 import fs from 'fs';
 import path from 'path';
 
 export async function POST(request: NextRequest) {
   console.log('🔧 Running Supabase migration...');
   
-  const supabaseAdmin = createSupabaseServiceClient();
-  
-  if (!supabaseAdmin) {
-    return NextResponse.json(
-      { success: false, error: 'Supabase admin client not available' },
-      { status: 500 }
-    );
-  }
+  const dbService = new DatabaseService();
   
   try {
-    // Read the migration file
-    const migrationPath = path.join(process.cwd(), 'supabase', 'migrations', '005_add_lead_context_fields.sql');
-    const migrationSQL = fs.readFileSync(migrationPath, 'utf-8');
+    // Read migration files
+    const migrationsDir = path.join(process.cwd(), 'supabase', 'migrations');
+    const files = fs.readdirSync(migrationsDir);
+    const sqlFiles = files.filter(f => f.endsWith('.sql')).sort();
     
-    console.log('📄 Migration SQL:', migrationSQL.substring(0, 200) + '...');
+    console.log(`Found ${sqlFiles.length} migration files`);
     
-    // Execute the migration
-    const { data, error } = await supabaseAdmin.rpc('exec_sql', { 
-      sql: migrationSQL 
-    });
-    
-    if (error) {
-      // If RPC doesn't exist, try executing directly (this might not work on all Supabase versions)
-      console.log('⚠️ RPC method not available, trying direct execution...');
+    // Execute each migration
+    for (const file of sqlFiles) {
+      const filePath = path.join(migrationsDir, file);
+      const sql = fs.readFileSync(filePath, 'utf8');
       
-      // Split into individual statements and execute
-      const statements = migrationSQL
-        .split(';')
-        .map(s => s.trim())
-        .filter(s => s && !s.startsWith('--') && !s.startsWith('COMMENT'));
+      console.log(`Executing migration: ${file}`);
       
-      for (const statement of statements) {
-        if (statement) {
-          console.log('Executing:', statement.substring(0, 100) + '...');
-          const { error: execError } = await supabaseAdmin.from('_migrations').select('*').limit(0);
-          
-          if (execError) {
-            console.error('Statement error:', execError);
-            throw new Error(`Failed to execute: ${statement.substring(0, 100)}... - ${execError.message}`);
-          }
-        }
+      // Execute SQL using RPC
+      const { data, error } = await dbService.rpc('exec_sql', { 
+        sql: sql 
+      });
+      
+      if (error) {
+        console.error(`Error executing migration ${file}:`, error);
+        return NextResponse.json({ 
+          success: false, 
+          error: `Migration failed: ${file} - ${error.message}` 
+        });
       }
+      
+      console.log(`Successfully executed migration: ${file}`);
     }
     
-    return NextResponse.json({
-      success: true,
-      message: 'Migration completed successfully',
-      data
+    // Test connection by querying a table
+    try {
+      const { error: execError } = await dbService.from('_migrations').select('*').limit(0);
+      if (execError) {
+        console.warn('Warning: Could not verify database connection:', execError);
+      } else {
+        console.log('✅ Database connection verified successfully');
+      }
+    } catch (verifyError) {
+      console.warn('Warning: Could not verify database connection:', verifyError);
+    }
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: `Successfully executed ${sqlFiles.length} migrations` 
     });
     
   } catch (error: any) {
-    console.error('❌ Migration error:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message,
-        details: 'Please run this SQL manually in your Supabase dashboard SQL editor'
-      },
-      { status: 500 }
-    );
+    console.error('Migration error:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: error.message || 'Unknown error occurred during migration' 
+    });
   }
 }

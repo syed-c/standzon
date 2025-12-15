@@ -19,6 +19,20 @@ export class DatabaseService {
     }
   }
 
+  // Getter for accessing the underlying Supabase client
+  getClient() {
+    return this.client;
+  }
+
+  // Proxy methods for common Supabase operations
+  from(table: string) {
+    return this.client.from(table);
+  }
+
+  rpc(functionName: string, params?: any) {
+    return this.client.rpc(functionName, params);
+  }
+
   // Users
   async getUsers() {
     if (!this.client) {

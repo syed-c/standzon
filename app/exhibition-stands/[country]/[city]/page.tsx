@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
-import { CountryCityPage } from "@/components/CountryCityPage";
+import CountryCityPage from "@/components/CountryCityPage";
 import {
   getCityBySlug as getGlobalCityBySlug,
   getCountryBySlug as getGlobalCountryBySlug,
@@ -642,7 +642,6 @@ export default async function CityPage({ params }: CityPageProps) {
         country={countryName}
         city={cityName}
         initialBuilders={builders}
-        cityData={cityData}
         initialContent={mergedContent}
         cmsContent={cmsContent}
         showQuoteForm={true}

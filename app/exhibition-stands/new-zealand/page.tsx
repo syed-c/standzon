@@ -4,7 +4,7 @@ import { api } from "@/convex/_generated/api";
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
-import { CountryCityPage } from '@/components/CountryCityPage';
+import CountryCityPage from '@/components/CountryCityPage';
 import { getServerSupabase } from '@/lib/supabase';
 
 // Fetch CMS content for the New Zealand page

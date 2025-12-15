@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CountryCityPage } from '@/components/CountryCityPage';
-import { EnhancedLocationPage } from '@/components/EnhancedLocationPage';
+import CountryCityPage from '@/components/CountryCityPage';
+import EnhancedLocationPage from '@/components/EnhancedLocationPage';
 
 export default function ComponentTest() {
   const [testType, setTestType] = useState<'country' | 'city'>('country');

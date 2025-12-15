@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
-import { CountryCityPage } from "@/components/CountryCityPage";
+import CountryCityPage from "@/components/CountryCityPage";
 import { GLOBAL_EXHIBITION_DATA } from "@/lib/data/globalCities";
 import { getServerSupabase } from "@/lib/supabase";
 import { getCountryCodeByName } from "@/lib/utils/countryUtils";
