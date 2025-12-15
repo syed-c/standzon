@@ -1,44 +1,10 @@
 {
   "_metadata": {
-    "timestamp": "2025-12-15T11:31:26.907Z",
+    "timestamp": "2025-12-15T12:11:10.146Z",
     "version": "1.0",
-    "checksum": "55fb0bd8"
+    "checksum": "-260bce"
   },
   "data": [
-    {
-      "id": "b0adc89b-e7b8-49e8-a6a8-af693325253e",
-      "timestamp": "2025-11-26T14:20:23.253Z",
-      "user": "system",
-      "action": "db_change",
-      "resource": "activity_logs",
-      "details": "File update operation on activity_logs.json",
-      "severity": "info",
-      "dbChange": {
-        "table": "activity_logs",
-        "operation": "UPDATE",
-        "changes": {
-          "newDataSize": 2001,
-          "oldDataSize": 2000
-        }
-      }
-    },
-    {
-      "id": "e181a433-dffc-438f-9a5b-e27960ac63ed",
-      "timestamp": "2025-11-26T14:20:23.277Z",
-      "user": "system",
-      "action": "db_change",
-      "resource": "activity_logs",
-      "details": "File update operation on activity_logs.json",
-      "severity": "info",
-      "dbChange": {
-        "table": "activity_logs",
-        "operation": "UPDATE",
-        "changes": {
-          "newDataSize": 2000,
-          "oldDataSize": 2000
-        }
-      }
-    },
     {
       "id": "a17bfd6e-ffdc-4e69-8fbf-e5f19c4f7753",
       "timestamp": "2025-11-26T14:20:23.303Z",
@@ -33979,6 +33945,40 @@
     {
       "id": "c10e6d45-55ee-4f84-990a-ba03a7dfa7d8",
       "timestamp": "2025-12-15T11:31:26.899Z",
+      "user": "system",
+      "action": "db_change",
+      "resource": "_recovery_log",
+      "details": "File update operation on _recovery_log.json",
+      "severity": "info",
+      "dbChange": {
+        "table": "_recovery_log",
+        "operation": "UPDATE",
+        "changes": {
+          "newDataSize": "object",
+          "oldDataSize": "object"
+        }
+      }
+    },
+    {
+      "id": "323eaf75-1d37-4ec2-bb14-63e012b05b13",
+      "timestamp": "2025-12-15T12:10:55.970Z",
+      "user": "system",
+      "action": "db_change",
+      "resource": "_recovery_log",
+      "details": "File update operation on _recovery_log.json",
+      "severity": "info",
+      "dbChange": {
+        "table": "_recovery_log",
+        "operation": "UPDATE",
+        "changes": {
+          "newDataSize": "object",
+          "oldDataSize": "object"
+        }
+      }
+    },
+    {
+      "id": "5aa194c3-a720-4f12-8273-f68178b40f8e",
+      "timestamp": "2025-12-15T12:11:10.139Z",
       "user": "system",
       "action": "db_change",
       "resource": "_recovery_log",

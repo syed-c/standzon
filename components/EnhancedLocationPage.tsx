@@ -1127,7 +1127,7 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                   // This is always a string, so no need to check for object
                   return content;
                 })()
-              } className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 py-4" />
+              } className="bg-white text-black hover:bg-gray-100 text-lg px-8 py-4" />
             </div>
 
             <div className="mt-10">
