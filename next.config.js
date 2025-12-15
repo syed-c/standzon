@@ -104,6 +104,10 @@ const nextConfig = {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
           },
+          {
+            key: 'X-Robots-Tag',
+            value: 'index, follow, max-image-preview:large, max-video-preview:-1, max-snippet:-1',
+          },
         ],
       },
       {

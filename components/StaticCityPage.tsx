@@ -77,7 +77,7 @@ export function StaticCityPage({
             </p>
             
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 text-white">
               <Button size="lg" className="bg-white text-blue-600">
                 Get Quotes from {cityName} Builders
               </Button>
@@ -335,7 +335,7 @@ export function StaticCityPage({
         </section>
 
         {/* CTA Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white text-center">
+        <section className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white text-center text-white">
           <h2 className="text-3xl font-bold mb-4">
             Need a Custom Exhibition Stand in {cityName}?
           </h2>

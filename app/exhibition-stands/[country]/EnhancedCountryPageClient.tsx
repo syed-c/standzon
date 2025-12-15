@@ -75,7 +75,7 @@ export default function EnhancedCountryPageClient({
               experts who understand your market.
             </p>
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 text-white">
               <PublicQuoteRequest
                 location={countryData.countryName}
                 countryCode={countryData.countryCode}
@@ -347,7 +347,7 @@ export default function EnhancedCountryPageClient({
           <h2 className="text-3xl font-bold mb-4">
             Need a Custom Exhibition Stand in {countryData.countryName}?
           </h2>
-          <p className="text-xl mb-8 opacity-90">
+          <p className="text-xl mb-8 opacity-90 text-white">
             Get quotes from multiple verified builders and compare prices
             instantly
           </p>

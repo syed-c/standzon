@@ -94,7 +94,7 @@ export function EnhancedCityPage({
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 text-white">
               <PublicQuoteRequest 
                 location={`${cityName}, ${countryName}`}
                 buttonText={`Get Quotes from ${cityName} Builders`}

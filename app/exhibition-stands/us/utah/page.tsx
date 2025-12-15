@@ -11,6 +11,17 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `Exhibition Stand Builders in Utah | Professional Trade Show Displays`,
     description: `Find professional exhibition stand builders in Utah, USA. Custom trade show displays, booth design, and comprehensive exhibition services.`,
     keywords: [`exhibition stands Utah`, `booth builders Utah`, `trade show displays Utah`, `Utah exhibition builders`, `Utah booth design`, `Utah exhibition stands`],
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     openGraph: {
       title: `Exhibition Stand Builders in Utah`,
       description: `Professional exhibition stand builders in Utah, USA. Custom trade show displays and booth design services.`,

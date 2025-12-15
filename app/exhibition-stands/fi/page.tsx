@@ -42,6 +42,17 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `Exhibition Stand Builders in Finland | Professional Trade Show Displays`,
     description: `Find professional exhibition stand builders across Finland. Custom trade show displays, booth design, and comprehensive exhibition services.`,
     keywords: [`exhibition stands Finland`, `booth builders Finland`, `trade show displays Finland`, `Finland exhibition builders`, `Finland booth design`, `Finland exhibition stands`],
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     openGraph: {
       title: `Exhibition Stand Builders in Finland`,
       description: `Professional exhibition stand builders across Finland. Custom trade show displays and booth design services.`,

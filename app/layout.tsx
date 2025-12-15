@@ -56,6 +56,18 @@ const redHatDisplay = Red_Hat_Display({
 // Use centralized metadata for the root layout
 export const metadata: Metadata = {
   ...siteMetadata['/'],
+  // ✅ SEO: Add robots meta tag
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   // ✅ PERFORMANCE: Add performance hints
   other: {
     'x-dns-prefetch-control': 'on',
@@ -91,6 +103,9 @@ export default function RootLayout({
           
           {/* ✅ RESPONSIVE: Add viewport meta tag */}
           <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+          
+          {/* ✅ SEO: Add robots meta tag */}
+          <meta name="robots" content="index, follow, max-image-preview:large, max-video-preview:-1, max-snippet:-1" />
           
           {/* ✅ PERFORMANCE: Critical resource optimization */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />

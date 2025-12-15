@@ -658,7 +658,7 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                 return heroContent || `Find trusted exhibition stand builders in ${displayLocation}.`;
               })()}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 text-white">
               <PublicQuoteRequest
                 location={displayLocation}
                 buttonText={
@@ -1133,7 +1133,7 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                 </div>
               ) : (
                 <div className="text-center py-16">
-                  <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <Building className="w-16 h-16 text-gray-400 mx-auto mb-4 text-white" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">No builders available yet</h3>
                   <p className="text-gray-600 mb-6">We're adding builders in {displayLocation}. Get notified when they're available.</p>
                   <PublicQuoteRequest location={displayLocation} buttonText={

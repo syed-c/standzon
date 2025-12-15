@@ -11,6 +11,17 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `Exhibition Stand Builders in Khon Kaen | Professional Trade Show Displays`,
     description: `Find professional exhibition stand builders in Khon Kaen, Thailand. Custom trade show displays, booth design, and comprehensive exhibition services.`,
     keywords: [`exhibition stands Khon Kaen`, `booth builders Khon Kaen`, `trade show displays Khon Kaen`, `Khon Kaen exhibition builders`, `Khon Kaen booth design`, `Khon Kaen exhibition stands`],
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     openGraph: {
       title: `Exhibition Stand Builders in Khon Kaen`,
       description: `Professional exhibition stand builders in Khon Kaen, Thailand. Custom trade show displays and booth design services.`,

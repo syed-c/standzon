@@ -3,6 +3,7 @@
     "title": "Stands Zone - Global Exhibition Stand Builders Network | 22+ Countries",
     "description": "Leading exhibition stand builders network covering 22+ countries and 80+ major cities worldwide. Professional booth design, construction & installation services across Europe, Asia, Americas, and Oceania. Get your free quote today.",
     "keywords": "exhibition stands, trade show displays, booth builders, exhibition contractors, custom displays, trade show services, global exhibition network, Stands Zone",
+    "robots": "index, follow, max-image-preview:large, max-video-preview:-1, max-snippet:-1",
     "ogImage": "/og-image-home.png"
   },
   "/services": {

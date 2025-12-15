@@ -68,6 +68,17 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
     return {
       title: 'Country Not Found',
       description: 'The requested country page was not found.',
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
+      },
     };
   }
 
@@ -108,6 +119,17 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
     title,
     description,
     keywords,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     openGraph: {
       title,
       description,
