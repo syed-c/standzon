@@ -250,13 +250,14 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
     
     if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
       // Handle country name variations (UAE vs United Arab Emirates)
-      const countryVariations = [countryInfo.name.toLowerCase()];
-      if (countryInfo.name === "United Arab Emirates") {
+      const normalizedCountryName = countryInfo.name.toLowerCase();
+      const countryVariations = [normalizedCountryName];
+      if (normalizedCountryName.includes("united arab emirates")) {
         countryVariations.push("uae");
-      } else if (countryInfo.name === "UAE") {
+      } else if (normalizedCountryName === "uae") {
         countryVariations.push("united arab emirates");
       }
-      
+
       console.log('🔍 DEBUG: Country variations for filtering:', countryVariations);
       
       // Filter builders for this country (with variations)

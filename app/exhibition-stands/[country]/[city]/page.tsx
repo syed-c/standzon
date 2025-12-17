@@ -459,13 +459,14 @@ export default async function CityPage({ params }: CityPageProps) {
     
     if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
       // Handle country name variations (UAE vs United Arab Emirates)
-      const countryVariations = [countryName.toLowerCase()];
-      if (countryName === "United Arab Emirates") {
+      const normalizedCountryName = countryName.toLowerCase();
+      const countryVariations = [normalizedCountryName];
+      if (normalizedCountryName.includes("united arab emirates")) {
         countryVariations.push("uae");
-      } else if (countryName === "UAE") {
+      } else if (normalizedCountryName === "uae") {
         countryVariations.push("united arab emirates");
       }
-      
+
       console.log('🔍 DEBUG: City page country variations for filtering:', countryVariations);
       
       // Filter builders for this city and country
