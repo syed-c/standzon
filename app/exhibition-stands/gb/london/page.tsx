@@ -7,6 +7,9 @@ import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage  from '@/components/CountryCityPage';
 import { getServerSupabase } from '@/lib/supabase';
 
+// ✅ FIX #1: Force dynamic rendering to prevent build-time evaluation
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   // Try to fetch CMS content for metadata
   let cmsMetadata = null;

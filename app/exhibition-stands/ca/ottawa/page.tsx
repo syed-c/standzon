@@ -1,5 +1,8 @@
 import { Metadata } from 'next';
-// import { preloadQuery } from "convex/nextjs";
+
+
+// ✅ FIX: Force dynamic rendering to prevent build-time evaluation
+export const dynamic = 'force-dynamic';// import { preloadQuery } from "convex/nextjs";
 // import { api } from "@/convex/_generated/api";
 import { notFound } from 'next/navigation';
 import Navigation from '@/components/Navigation';

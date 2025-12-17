@@ -6,6 +6,9 @@ import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage from '@/components/CountryCityPage';
 
+// ✅ FIX #1: Force dynamic rendering to prevent build-time evaluation
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `Exhibition Stand Builders in Berlin | Professional Trade Show Displays`,

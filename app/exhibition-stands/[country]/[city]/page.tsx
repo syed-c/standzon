@@ -19,6 +19,9 @@ import { getCitiesByCountry } from "@/lib/supabase/client";
 // Import the global database function
 import { getCitiesByCountry as getGlobalCitiesByCountry } from "@/lib/data/globalExhibitionDatabase";
 
+// ✅ FIX #1: Force dynamic rendering to prevent build-time evaluation
+export const dynamic = 'force-dynamic';
+
 interface CityPageProps {
   params: Promise<{
     country: string;

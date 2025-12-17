@@ -6,7 +6,10 @@ import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage from '@/components/CountryCityPage';
 
-export async function generateMetadata(): Promise<Metadata> {
+
+
+// ✅ FIX: Force dynamic rendering to prevent build-time evaluation
+export const dynamic = 'force-dynamic';export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `Exhibition Stand Builders in Michigan | Professional Trade Show Displays`,
     description: `Find professional exhibition stand builders in Michigan, USA. Custom trade show displays, booth design, and comprehensive exhibition services.`,

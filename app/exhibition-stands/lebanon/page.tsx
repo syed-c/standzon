@@ -7,7 +7,10 @@ import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage from '@/components/CountryCityPage';
 import { getServerSupabase } from '@/lib/supabase';
 
-// Fetch CMS content for the Lebanon page
+
+
+// ✅ FIX: Force dynamic rendering to prevent build-time evaluation
+export const dynamic = 'force-dynamic';// Fetch CMS content for the Lebanon page
 async function getLebanonPageContent() {
   try {
     const sb = getServerSupabase();
