@@ -4,7 +4,7 @@ import React from 'react';
 import CountryCityPage from '@/components/CountryCityPage';
 
 export default function TestLocationContent() {
-  // Sample builder data
+  // Sample builder data with proper structure matching the common pattern in the codebase
   const sampleBuilders = [
     {
       id: '1',
@@ -27,8 +27,10 @@ export default function TestLocationContent() {
       services: [{ name: 'Custom Booth Design', description: 'Unique booth designs' }],
       specializations: [{ id: '1', name: 'Trade Shows', icon: '🎪', color: 'blue' }],
       companyDescription: 'Leading exhibition stand builder in Germany',
-      keyStrengths: ['Quality Craftsmanship', 'Timely Delivery', 'Creative Designs']
-    }  ];
+      keyStrengths: ['Quality Craftsmanship', 'Timely Delivery', 'Creative Designs'],
+      planType: 'professional' as const
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">

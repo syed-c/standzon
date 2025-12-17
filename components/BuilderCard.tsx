@@ -194,6 +194,20 @@ function BuilderContactControls({ builder, location }: { builder: Builder; locat
   );
 }
 
+// Function to safely get city names from service location data
+function getServiceLocationCities(location: any): string[] {
+  // Handle the cities array format
+  if (location.cities && Array.isArray(location.cities)) {
+    return location.cities;
+  }
+  // Handle the individual city object format
+  if (location.city) {
+    return [location.city];
+  }
+  // Fallback
+  return [];
+}
+
 // Function to get the relevant service location for the current page
 function getRelevantServiceLocation(builder: Builder, currentPageLocation?: { country: string; city?: string }) {
   if (!currentPageLocation || !builder.serviceLocations) {
@@ -206,7 +220,8 @@ function getRelevantServiceLocation(builder: Builder, currentPageLocation?: { co
     
     if (currentPageLocation.city) {
       // If we're on a city page, check if the city is in this location's cities
-      return countryMatch && loc.cities.some(city => 
+      const cities = getServiceLocationCities(loc);
+      return countryMatch && cities.some(city => 
         city.toLowerCase() === currentPageLocation.city!.toLowerCase()
       );
     } else {
@@ -254,12 +269,12 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
             <div className="flex flex-wrap gap-1">
               {relevantLocation ? (
                 <span className="font-medium">
-                  {relevantLocation.country} ({relevantLocation.cities.join(', ')})
+                  {relevantLocation.country} ({getServiceLocationCities(relevantLocation).join(', ')})
                 </span>
               ) : builder.serviceLocations && builder.serviceLocations.length > 0 ? (
                 builder.serviceLocations.map((location, index) => (
                   <span key={index} className="font-medium">
-                    {location.country} ({location.cities.join(', ')})
+                    {location.country} ({getServiceLocationCities(location).join(', ')})
                     {index < (builder.serviceLocations?.length || 0) - 1 && <span>, </span>}
                   </span>
                 ))
