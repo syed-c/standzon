@@ -627,7 +627,6 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
 
   return (
     <>
-      {/* Cities section will be rendered after EnhancedLocationPage */}
       {isLoadingContent && (
         <div className="fixed top-4 right-4 z-50">
           <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
@@ -649,8 +648,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
         suppressPostBuildersContent
         exhibitions={generateExhibitions(country, city)}
         venues={generateVenues(country, city)}
-        pageContent={
-          // Fix: Ensure we're not passing objects directly where strings are expected
+        pageContent={          // Fix: Ensure we're not passing objects directly where strings are expected
           (() => {
             const baseContent = savedPageContent || {
               seo: {
@@ -1003,103 +1001,182 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
         );
       })()}
       {/* Country Services Section (H2 + paragraph) sourced from CMS */}
-      {!city &&
-        (() => {
-          const slug = country
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .replace(/[^a-z0-9-]/g, "");
-          const servicesFromSaved = (savedPageContent as any)?.sections
-            ?.countryPages?.[slug];
-          
-          // Fix: Ensure we're not passing objects directly to JSX
-          const headingRaw =
-            servicesFromSaved?.servicesHeading ||
-            (cmsContent as any)?.servicesHeading;
-          const paragraphRaw =
-            servicesFromSaved?.servicesParagraph ||
-            (cmsContent as any)?.servicesParagraph;
-          
-          // Ensure heading and paragraph are strings, not objects
-          const heading = typeof headingRaw === 'object' ? headingRaw?.heading || '' : headingRaw;
-          const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || '' : paragraphRaw;
-          if (!heading && !paragraph) return null;
-          return (
-            <section className="py-12 bg-white">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {heading && (
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                    {heading}
-                  </h2>
-                )}
-                {paragraph && (
-                  <div
-                    className="prose max-w-none leading-relaxed text-gray-900"
-                    dangerouslySetInnerHTML={{
-                      __html: paragraph.replace(/\r?\n/g, "<br/>"),
-                    }}
-                  />
-                )}
-              </div>
-            </section>
-          );
-        })()}
-
-      {/* Removed extra SEO content block after cities; services are rendered inside EnhancedLocationPage */}
-
-      {/* City Services Section (H2 + paragraph) sourced from CMS */}
-      {city &&
-        (() => {
-          const countrySlug = country
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .replace(/[^a-z0-9-]/g, "");
-          const citySlug = city
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .replace(/[^a-z0-9-]/g, "");
-          const key = `${countrySlug}-${citySlug}`;
-          const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
-          const nested = (raw as any)?.countryPages?.[citySlug] || raw;
-          
-          // Fix: Ensure we're not passing objects directly to JSX
-          const headingRaw =
-            nested?.servicesHeading ||
-            (cmsContent as any)?.sections?.cityPages?.[key]?.servicesHeading ||
-            (cmsContent as any)?.servicesHeading;
-          
-          const paragraphRaw =
-            nested?.servicesParagraph ||
-            (cmsContent as any)?.sections?.cityPages?.[key]
-              ?.servicesParagraph ||
-            (cmsContent as any)?.servicesParagraph;
-          
-          // Ensure heading and paragraph are strings, not objects
-          const heading = typeof headingRaw === 'object' ? headingRaw?.heading || '' : headingRaw;
-          const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || '' : paragraphRaw;
-          
-          if (!heading && !paragraph) return null;
-          return (
-            <section className="py-12 bg-white">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {heading && (
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                    {heading}
-                  </h2>
-                )}
-                {paragraph && (
-                  <div
-                    className="prose max-w-none leading-relaxed text-gray-900"
-                    dangerouslySetInnerHTML={{
-                      __html: paragraph.replace(/\r?\n/g, "<br/>"),
-                    }}
-                  />
-                )}
-              </div>
-            </section>
-          );
-        })()}
-
+      {!city && (
+        <section className="py-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+              {(() => {
+                // Extract content from CMS structure
+                let heading = `Professional Exhibition Stand Builders in ${country}`;
+                
+                // Try to get from savedPageContent first
+                if (savedPageContent) {
+                  const countrySlug = country
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "");
+                    
+                  // Check nested structure in savedPageContent
+                  if (savedPageContent?.sections?.countryPages?.[countrySlug]?.servicesHeading) {
+                    const headingRaw = savedPageContent.sections.countryPages[countrySlug].servicesHeading;
+                    heading = typeof headingRaw === 'object' ? 
+                      (headingRaw.heading || headingRaw.title || JSON.stringify(headingRaw)) : 
+                      headingRaw;
+                  }
+                }
+                
+                // Fallback to cmsContent
+                if (cmsContent && heading === `Professional Exhibition Stand Builders in ${country}`) {
+                  const countrySlug = country
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "");
+                  
+                  // Check various possible structures in cmsContent
+                  if (cmsContent?.sections?.countryPages?.[countrySlug]?.servicesHeading) {
+                    const headingRaw = cmsContent.sections.countryPages[countrySlug].servicesHeading;
+                    heading = typeof headingRaw === 'object' ? 
+                      (headingRaw.heading || headingRaw.title || JSON.stringify(headingRaw)) : 
+                      headingRaw;
+                  } else if (cmsContent?.content?.sections?.countryPages?.[countrySlug]?.servicesHeading) {
+                    const headingRaw = cmsContent.content.sections.countryPages[countrySlug].servicesHeading;
+                    heading = typeof headingRaw === 'object' ? 
+                      (headingRaw.heading || headingRaw.title || JSON.stringify(headingRaw)) : 
+                      headingRaw;
+                  } else if (cmsContent?.servicesHeading) {
+                    const headingRaw = cmsContent.servicesHeading;
+                    heading = typeof headingRaw === 'object' ? 
+                      (headingRaw.heading || headingRaw.title || JSON.stringify(headingRaw)) : 
+                      headingRaw;
+                  }
+                }
+                
+                return heading;
+              })()}
+            </h2>
+            <div
+              className="prose max-w-none leading-relaxed text-gray-900"
+              dangerouslySetInnerHTML={{
+                __html: (() => {
+                  // Extract content from CMS structure
+                  let paragraph = `<p>${country} offers exceptional exhibition stand building services with skilled craftsmen and innovative designers. Our local builders understand regional market dynamics and can create stunning displays that attract visitors and generate leads.</p>
+                     <p>With expertise in various industries including technology, healthcare, automotive, and consumer goods, ${country}'s exhibition stand builders deliver customized solutions that align with your brand identity and marketing objectives.</p>`;
+                  
+                  // Try to get from savedPageContent first
+                  if (savedPageContent) {
+                    const countrySlug = country
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")
+                      .replace(/[^a-z0-9-]/g, "");
+                      
+                    // Check nested structure in savedPageContent
+                    if (savedPageContent?.sections?.countryPages?.[countrySlug]?.servicesParagraph) {
+                      const paragraphRaw = savedPageContent.sections.countryPages[countrySlug].servicesParagraph;
+                      paragraph = typeof paragraphRaw === 'object' ? 
+                        (paragraphRaw.description || paragraphRaw.text || JSON.stringify(paragraphRaw)) : 
+                        paragraphRaw;
+                    }
+                  }
+                  
+                  // Fallback to cmsContent
+                  if (cmsContent && paragraph === `<p>${country} offers exceptional exhibition stand building services with skilled craftsmen and innovative designers. Our local builders understand regional market dynamics and can create stunning displays that attract visitors and generate leads.</p>
+                     <p>With expertise in various industries including technology, healthcare, automotive, and consumer goods, ${country}'s exhibition stand builders deliver customized solutions that align with your brand identity and marketing objectives.</p>`) {
+                    const countrySlug = country
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")
+                      .replace(/[^a-z0-9-]/g, "");
+                    
+                    // Check various possible structures in cmsContent
+                    if (cmsContent?.sections?.countryPages?.[countrySlug]?.servicesParagraph) {
+                      const paragraphRaw = cmsContent.sections.countryPages[countrySlug].servicesParagraph;
+                      paragraph = typeof paragraphRaw === 'object' ? 
+                        (paragraphRaw.description || paragraphRaw.text || JSON.stringify(paragraphRaw)) : 
+                        paragraphRaw;
+                    } else if (cmsContent?.content?.sections?.countryPages?.[countrySlug]?.servicesParagraph) {
+                      const paragraphRaw = cmsContent.content.sections.countryPages[countrySlug].servicesParagraph;
+                      paragraph = typeof paragraphRaw === 'object' ? 
+                        (paragraphRaw.description || paragraphRaw.text || JSON.stringify(paragraphRaw)) : 
+                        paragraphRaw;
+                    } else if (cmsContent?.servicesParagraph) {
+                      const paragraphRaw = cmsContent.servicesParagraph;
+                      paragraph = typeof paragraphRaw === 'object' ? 
+                        (paragraphRaw.description || paragraphRaw.text || JSON.stringify(paragraphRaw)) : 
+                        paragraphRaw;
+                    }
+                  }
+                  
+                  return paragraph.replace(/\r?\n/g, "<br/>");
+                })()
+              }}
+            />
+          </div>
+        </section>
+      )}      {/* City Services Section (H2 + paragraph) sourced from CMS */}
+      {city && (
+        <section className="py-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+              {(() => {
+                const countrySlug = country
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^a-z0-9-]/g, "");
+                const citySlug = city
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^a-z0-9-]/g, "");
+                const key = `${countrySlug}-${citySlug}`;
+                const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
+                const nested = (raw as any)?.countryPages?.[citySlug] || raw;
+                
+                // Fix: Ensure we're not passing objects directly to JSX
+                const headingRaw =
+                  nested?.servicesHeading ||
+                  (cmsContent as any)?.sections?.cityPages?.[key]?.servicesHeading ||
+                  (cmsContent as any)?.servicesHeading;
+                
+                // Ensure heading is a string, not an object
+                const heading = typeof headingRaw === 'object' ? headingRaw?.heading || `Expert Exhibition Stand Builders in ${city}, ${country}` : headingRaw || `Expert Exhibition Stand Builders in ${city}, ${country}`;
+                return heading;
+              })()}
+            </h2>
+            <div
+              className="prose max-w-none leading-relaxed text-gray-900"
+              dangerouslySetInnerHTML={{
+                __html: (() => {
+                  const countrySlug = country
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "");
+                  const citySlug = city
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "");
+                  const key = `${countrySlug}-${citySlug}`;
+                  const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
+                  const nested = (raw as any)?.countryPages?.[citySlug] || raw;
+                  
+                  // Fix: Ensure we're not passing objects directly to JSX
+                  const paragraphRaw =
+                    nested?.servicesParagraph ||
+                    (cmsContent as any)?.sections?.cityPages?.[key]
+                      ?.servicesParagraph ||
+                    (cmsContent as any)?.servicesParagraph;
+                  
+                  // Ensure paragraph is a string, not an object
+                  const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || 
+                    `<p>${city}, ${country} provides access to top-tier exhibition stand builders who specialize in creating impactful displays for trade shows and exhibitions. Our local experts combine creativity with technical excellence to deliver solutions that exceed expectations.</p>
+                     <p>Whether you need a modular booth, custom island display, or specialty activation, ${city}'s exhibition stand builders offer comprehensive services from concept to installation, ensuring your brand stands out in competitive environments.</p>` 
+                    : paragraphRaw || 
+                    `<p>${city}, ${country} provides access to top-tier exhibition stand builders who specialize in creating impactful displays for trade shows and exhibitions. Our local experts combine creativity with technical excellence to deliver solutions that exceed expectations.</p>
+                     <p>Whether you need a modular booth, custom island display, or specialty activation, ${city}'s exhibition stand builders offer comprehensive services from concept to installation, ensuring your brand stands out in competitive environments.</p>`;
+                  return paragraph.replace(/\r?\n/g, "<br/>");
+                })()
+              }}
+            />
+          </div>
+        </section>
+      )}
       {/* Quote Request Form placed just above the final CTA (only for city pages) */}
       {Boolean(city) && (
         <section className="py-12 bg-gray-50">
@@ -1137,81 +1214,150 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
           </div>
         </section>
       )}
-
       {/* Bottom CTA moved to the very bottom - now sourced from CMS/Supabase */}
-      {(() => {
-        const countrySlug = country
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "");
-        const citySlug = city
-          ? city
-              .toLowerCase()
-              .replace(/\s+/g, "-")
-              .replace(/[^a-z0-9-]/g, "")
-          : "";
-        const key = city ? `${countrySlug}-${citySlug}` : "";
-        const countryBlock =
-          (savedPageContent as any)?.sections?.countryPages?.[countrySlug] ||
-          (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
-          (cmsContent as any) ||
-          {};
-        const rawCity = city
-          ? (savedPageContent as any)?.sections?.cityPages?.[key]
-          : null;
-        const nestedCity = city
-          ? (rawCity as any)?.countryPages?.[citySlug] || rawCity
-          : null;
-        const cityBlock = city
-          ? nestedCity ||
-            (cmsContent as any)?.sections?.cityPages?.[key] ||
-            (cmsContent as any) ||
-            {}
-          : null;
-        const block = city ? cityBlock || {} : countryBlock || {};
-        
-        // Fix: Ensure we're not passing objects directly to JSX
-        const headingRaw =
-          (block as any)?.finalCtaHeading ||
-          `Ready to Find Your Perfect Builder in ${city || country}?`;
-        const paragraphRaw =
-          (block as any)?.finalCtaParagraph ||
-          "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.";
-        const buttonTextRaw =
-          (block as any)?.finalCtaButtonText || "Start Getting Quotes";
-        
-        // Ensure values are strings, not objects
-        const heading = typeof headingRaw === 'object' ? headingRaw?.heading || headingRaw : headingRaw;
-        const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || paragraphRaw : paragraphRaw;
-        const buttonText = typeof buttonTextRaw === 'object' ? buttonTextRaw?.text || buttonTextRaw : buttonTextRaw;
-        
-        return (
-          <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
-            <div className="container mx-auto px-6 text-center">
-              <div className="max-w-3xl mx-auto">
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                  {heading}
-                </h2>
-                <p className="text-xl text-slate-300 mb-8">{paragraph}</p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button className="text-lg px-8 py-4 text-black">{buttonText}</Button>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg"
-                    onClick={() =>
-                      window.scrollTo({ top: 0, behavior: "smooth" })
-                    }
-                  >
-                    Back to Top
-                  </Button>
-                </div>
-              </div>
+      <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
+        <div className="container mx-auto px-6 text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              {(() => {
+                const countrySlug = country
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^a-z0-9-]/g, "");
+                const citySlug = city
+                  ? city
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")
+                      .replace(/[^a-z0-9-]/g, "")
+                  : "";
+                const key = city ? `${countrySlug}-${citySlug}` : "";
+                const countryBlock =
+                  (savedPageContent as any)?.sections?.countryPages?.[countrySlug] ||
+                  (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
+                  (cmsContent as any) ||
+                  {};
+                const rawCity = city
+                  ? (savedPageContent as any)?.sections?.cityPages?.[key]
+                  : null;
+                const nestedCity = city
+                  ? (rawCity as any)?.countryPages?.[citySlug] || rawCity
+                  : null;
+                const cityBlock = city
+                  ? nestedCity ||
+                    (cmsContent as any)?.sections?.cityPages?.[key] ||
+                    (cmsContent as any) ||
+                    {}
+                  : null;
+                const block = city ? cityBlock || {} : countryBlock || {};
+                
+                // Fix: Ensure we're not passing objects directly to JSX
+                const headingRaw =
+                  (block as any)?.finalCtaHeading ||
+                  `Ready to Find Your Perfect Builder in ${city || country}?`;
+                
+                // Ensure values are strings, not objects
+                const heading = typeof headingRaw === 'object' ? headingRaw?.heading || headingRaw : headingRaw;
+                return heading;
+              })()}
+            </h2>
+            <p className="text-xl text-slate-300 mb-8">
+              {(() => {
+                const countrySlug = country
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^a-z0-9-]/g, "");
+                const citySlug = city
+                  ? city
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")
+                      .replace(/[^a-z0-9-]/g, "")
+                  : "";
+                const key = city ? `${countrySlug}-${citySlug}` : "";
+                const countryBlock =
+                  (savedPageContent as any)?.sections?.countryPages?.[countrySlug] ||
+                  (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
+                  (cmsContent as any) ||
+                  {};
+                const rawCity = city
+                  ? (savedPageContent as any)?.sections?.cityPages?.[key]
+                  : null;
+                const nestedCity = city
+                  ? (rawCity as any)?.countryPages?.[citySlug] || rawCity
+                  : null;
+                const cityBlock = city
+                  ? nestedCity ||
+                    (cmsContent as any)?.sections?.cityPages?.[key] ||
+                    (cmsContent as any) ||
+                    {}
+                  : null;
+                const block = city ? cityBlock || {} : countryBlock || {};
+                
+                // Fix: Ensure we're not passing objects directly to JSX
+                const paragraphRaw =
+                  (block as any)?.finalCtaParagraph ||
+                  "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.";
+                
+                // Ensure values are strings, not objects
+                const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || paragraphRaw : paragraphRaw;
+                return paragraph;
+              })()}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button className="text-lg px-8 py-4 text-black">
+                {(() => {
+                  const countrySlug = country
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "");
+                  const citySlug = city
+                    ? city
+                        .toLowerCase()
+                        .replace(/\s+/g, "-")
+                        .replace(/[^a-z0-9-]/g, "")
+                    : "";
+                  const key = city ? `${countrySlug}-${citySlug}` : "";
+                  const countryBlock =
+                    (savedPageContent as any)?.sections?.countryPages?.[countrySlug] ||
+                    (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
+                    (cmsContent as any) ||
+                    {};
+                  const rawCity = city
+                    ? (savedPageContent as any)?.sections?.cityPages?.[key]
+                    : null;
+                  const nestedCity = city
+                    ? (rawCity as any)?.countryPages?.[citySlug] || rawCity
+                    : null;
+                  const cityBlock = city
+                    ? nestedCity ||
+                      (cmsContent as any)?.sections?.cityPages?.[key] ||
+                      (cmsContent as any) ||
+                      {}
+                    : null;
+                  const block = city ? cityBlock || {} : countryBlock || {};
+                  
+                  // Fix: Ensure we're not passing objects directly to JSX
+                  const buttonTextRaw =
+                    (block as any)?.finalCtaButtonText || "Start Getting Quotes";
+                  
+                  // Ensure values are strings, not objects
+                  const buttonText = typeof buttonTextRaw === 'object' ? buttonTextRaw?.text || buttonTextRaw : buttonTextRaw;
+                  return buttonText;
+                })()}
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg"
+                onClick={() =>
+                  window.scrollTo({ top: 0, behavior: "smooth" })
+                }
+              >
+                Back to Top
+              </Button>
             </div>
-          </section>
-        );
-      })()}
-
+          </div>
+        </div>
+      </section>
       {/* Cities section was moved to top */}
     </>
   );
