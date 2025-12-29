@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { FiMenu, FiX, FiChevronDown, FiUser, FiZap } from 'react-icons/fi';
 import Link from 'next/link';
@@ -21,6 +21,8 @@ export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [dropdownTimeout, setDropdownTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isDropdownHovered, setIsDropdownHovered] = useState(false);
+  const isDropdownHoveredRef = useRef(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
@@ -167,29 +169,46 @@ export default function Navigation() {
   const handleMouseEnter = (label: string) => {
     if (dropdownTimeout) clearTimeout(dropdownTimeout);
     setActiveDropdown(label);
+    setIsDropdownHovered(true);
+    isDropdownHoveredRef.current = true;
   };
 
   const handleMouseLeave = () => {
+    setIsDropdownHovered(false);
+    isDropdownHoveredRef.current = false;
     const timeout = setTimeout(() => {
-      setActiveDropdown(null);
+      if (!isDropdownHoveredRef.current) {
+        setActiveDropdown(null);
+      }
     }, 300);
     setDropdownTimeout(timeout);
   };
 
   const handleDropdownMouseEnter = () => {
     if (dropdownTimeout) clearTimeout(dropdownTimeout);
+    setIsDropdownHovered(true);
+    isDropdownHoveredRef.current = true;
   };
 
   const handleDropdownMouseLeave = () => {
-    setActiveDropdown(null);
+    setIsDropdownHovered(false);
+    isDropdownHoveredRef.current = false;
+    const timeout = setTimeout(() => {
+      if (!isDropdownHoveredRef.current) {
+        setActiveDropdown(null);
+      }
+    }, 300);
+    setDropdownTimeout(timeout);
   };
 
   // Add click handler for mobile/touch devices
   const handleDropdownClick = (label: string) => {
     if (activeDropdown === label) {
       setActiveDropdown(null);
+      isDropdownHoveredRef.current = false;
     } else {
       setActiveDropdown(label);
+      isDropdownHoveredRef.current = true;
     }
   };
 
@@ -247,7 +266,10 @@ export default function Navigation() {
                               key={subItem.label}
                               href={subItem.href}
                               className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100/50 dark:hover:bg-slate-700/80 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-150 truncate"
-                              onClick={() => setActiveDropdown(null)}
+                              onClick={() => {
+                                setActiveDropdown(null);
+                                isDropdownHoveredRef.current = false;
+                              }}
                             >
                               {subItem.label}
                             </Link>
@@ -331,7 +353,10 @@ export default function Navigation() {
                           key={accountItem.label}
                           href={accountItem.href}
                           className="block px-3 py-2 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100/50 dark:hover:bg-slate-700/80 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-150 truncate"
-                          onClick={() => setActiveDropdown(null)}
+                          onClick={() => {
+                            setActiveDropdown(null);
+                            isDropdownHoveredRef.current = false;
+                          }}
                         >
                           {accountItem.label}
                         </Link>

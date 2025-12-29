@@ -764,19 +764,21 @@ class UnifiedDataManager {
             company_name: normalized.companyName,
             slug: normalized.slug,
             primary_email: fallbackEmail,
-            phone: normalized.contactInfo.phone,
-            contact_person: normalized.contactInfo.contactPerson,
-            company_description: normalized.companyDescription,
-            headquarters_city: normalized.headquarters.city,
-            headquarters_country: normalized.headquarters.country,
-            headquarters_country_code: (normalized.headquarters as any).countryCode || null,
-            headquarters_address: normalized.headquarters.address || null,
-            verified: normalized.verified,
-            claimed: normalized.claimed,
+            phone: normalized.contactInfo.phone || '',
+            contact_person: normalized.contactInfo.contactPerson || 'Contact Person',
+            company_description: normalized.companyDescription || 'Professional exhibition services',
+            headquarters_city: normalized.headquarters.city || 'Unknown',
+            headquarters_country: normalized.headquarters.country || 'Unknown',
+            headquarters_country_code: (normalized.headquarters as any).countryCode || 'XX',
+            headquarters_address: normalized.headquarters.address || '',
+            verified: normalized.verified || false,
+            claimed: normalized.claimed || false,
             claim_status: normalized.claimStatus || 'unclaimed',
-            premium_member: normalized.premiumMember,
-            created_at: normalized.lastUpdated,
-            source: normalized.source || 'unified_platform'
+            premium_member: normalized.premiumMember || false,
+            gmb_imported: normalized.gmbImported || false,
+            imported_from_gmb: normalized.importedFromGMB || false,
+            source: normalized.source || 'unified_platform',
+            imported_at: normalized.importedAt || new Date().toISOString()
           });
           
           // Timeout for Supabase operation
@@ -784,12 +786,18 @@ class UnifiedDataManager {
             setTimeout(() => reject(new Error('Supabase insert operation timeout')), 30000);
           });
           
-          const { error: builderInsertError } = await Promise.race([insertPromise, timeoutPromise]) as any;
+          const { data: insertData, error: builderInsertError } = await Promise.race([insertPromise, timeoutPromise]) as any;
 
           if (builderInsertError) {
             console.error('❌ Failed to insert builder profile:', builderInsertError);
+            console.error('❌ Error details:', {
+              id: normalized.id,
+              company_name: normalized.companyName,
+              primary_email: fallbackEmail,
+              error: builderInsertError
+            });
           } else {
-            console.log('✅ Builder profile inserted successfully');
+            console.log('✅ Builder profile inserted successfully:', insertData?.[0]?.id);
           }
 
           // Also persist service locations if provided
@@ -844,12 +852,17 @@ class UnifiedDataManager {
                   setTimeout(() => reject(new Error('Supabase service locations insert operation timeout')), 30000);
                 });
                 
-                const { error: locationsError } = await Promise.race([locationsInsertPromise, locationsTimeoutPromise]) as any;
+                const { data: locationData, error: locationsError } = await Promise.race([locationsInsertPromise, locationsTimeoutPromise]) as any;
 
                 if (locationsError) {
                   console.error('❌ Failed to insert service locations:', locationsError);
+                  console.error('❌ Location error details:', {
+                    builder_id: normalized.id,
+                    locations_count: serviceLocationRecords.length,
+                    error: locationsError
+                  });
                 } else {
-                  console.log(`✅ Inserted ${serviceLocationRecords.length} service locations`);
+                  console.log(`✅ Inserted ${locationData?.length || serviceLocationRecords.length} service locations`);
                 }
               }
             } catch (locErr) {
