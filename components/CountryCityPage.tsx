@@ -687,17 +687,26 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
               let cityPageContent = cmsContent?.sections?.cityPages?.[cityPageId];
               
               // NEW: Handle the nested structure: sections.cityPages[country-city].countryPages.city
-              if (cmsContent?.sections?.cityPages?.[cityPageId]?.countryPages?.[city?.toLowerCase()]) {
-                cityPageContent = cmsContent.sections.cityPages[cityPageId].countryPages[city?.toLowerCase()];
-              } else {
-                // NEW: Also check for nested structure: sections.cityPages[country-city].countryPages[citySlug]
-                const citySlug = city?.toLowerCase().replace(/[^a-z0-9-]/g, "");
-                if (cmsContent?.sections?.cityPages?.[cityPageId]?.countryPages?.[citySlug]) {
-                  cityPageContent = cmsContent.sections.cityPages[cityPageId].countryPages[citySlug];
+              // First, try to get the city-specific content from the main cityPages structure
+              cityPageContent = cmsContent?.sections?.cityPages?.[cityPageId];
+              
+              // If that doesn't work, try the nested countryPages structure
+              if (!cityPageContent && cmsContent?.sections?.cityPages?.[cityPageId]?.countryPages) {
+                // Try direct city name as key
+                if (cmsContent.sections.cityPages[cityPageId].countryPages[city.toLowerCase()]) {
+                  cityPageContent = cmsContent.sections.cityPages[cityPageId].countryPages[city.toLowerCase()];
                 } else {
-                  // Fallback to original logic if nested structure not found
-                  cityPageContent = cmsContent?.sections?.cityPages?.[cityPageId] || cmsContent;
+                  // Try city slug as key
+                  const citySlug = city.toLowerCase().replace(/[^a-z0-9-]/g, "");
+                  if (cmsContent.sections.cityPages[cityPageId].countryPages[citySlug]) {
+                    cityPageContent = cmsContent.sections.cityPages[cityPageId].countryPages[citySlug];
+                  }
                 }
+              }
+              
+              // If still no content found, use fallback
+              if (!cityPageContent) {
+                cityPageContent = cmsContent?.sections?.cityPages?.[cityPageId] || cmsContent;
               }
               
               // Extract content properly from various possible structures
@@ -1142,12 +1151,37 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                   .replace(/\s+/g, "-")
                   .replace(/[^a-z0-9-]/g, "");
                 const key = `${countrySlug}-${citySlug}`;
-                const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
-                const nested = (raw as any)?.countryPages?.[citySlug] || raw;
+                
+                // Try multiple sources for city content
+                let contentSource = null;
+                
+                // First try savedPageContent
+                if (savedPageContent) {
+                  const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
+                  if (raw?.countryPages?.[citySlug]) {
+                    contentSource = raw.countryPages[citySlug];
+                  } else if (raw?.countryPages?.[city.toLowerCase()]) {
+                    contentSource = raw.countryPages[city.toLowerCase()];
+                  } else {
+                    contentSource = raw;
+                  }
+                }
+                
+                // If no content from savedPageContent, try cmsContent
+                if (!contentSource && cmsContent) {
+                  const raw = (cmsContent as any)?.sections?.cityPages?.[key];
+                  if (raw?.countryPages?.[citySlug]) {
+                    contentSource = raw.countryPages[citySlug];
+                  } else if (raw?.countryPages?.[city.toLowerCase()]) {
+                    contentSource = raw.countryPages[city.toLowerCase()];
+                  } else {
+                    contentSource = raw;
+                  }
+                }
                 
                 // Fix: Ensure we're not passing objects directly to JSX
                 const headingRaw =
-                  nested?.servicesHeading ||
+                  contentSource?.servicesHeading ||
                   (cmsContent as any)?.sections?.cityPages?.[key]?.servicesHeading ||
                   (cmsContent as any)?.servicesHeading;
                 
@@ -1169,12 +1203,37 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                     .replace(/\s+/g, "-")
                     .replace(/[^a-z0-9-]/g, "");
                   const key = `${countrySlug}-${citySlug}`;
-                  const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
-                  const nested = (raw as any)?.countryPages?.[citySlug] || raw;
+                  
+                  // Try multiple sources for city content
+                  let contentSource = null;
+                  
+                  // First try savedPageContent
+                  if (savedPageContent) {
+                    const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
+                    if (raw?.countryPages?.[citySlug]) {
+                      contentSource = raw.countryPages[citySlug];
+                    } else if (raw?.countryPages?.[city.toLowerCase()]) {
+                      contentSource = raw.countryPages[city.toLowerCase()];
+                    } else {
+                      contentSource = raw;
+                    }
+                  }
+                  
+                  // If no content from savedPageContent, try cmsContent
+                  if (!contentSource && cmsContent) {
+                    const raw = (cmsContent as any)?.sections?.cityPages?.[key];
+                    if (raw?.countryPages?.[citySlug]) {
+                      contentSource = raw.countryPages[citySlug];
+                    } else if (raw?.countryPages?.[city.toLowerCase()]) {
+                      contentSource = raw.countryPages[city.toLowerCase()];
+                    } else {
+                      contentSource = raw;
+                    }
+                  }
                   
                   // Fix: Ensure we're not passing objects directly to JSX
                   const paragraphRaw =
-                    nested?.servicesParagraph ||
+                    contentSource?.servicesParagraph ||
                     (cmsContent as any)?.sections?.cityPages?.[key]
                       ?.servicesParagraph ||
                     (cmsContent as any)?.servicesParagraph;
@@ -1255,8 +1314,8 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                 const rawCity = city
                   ? (savedPageContent as any)?.sections?.cityPages?.[key]
                   : null;
-                const nestedCity = city
-                  ? (rawCity as any)?.countryPages?.[citySlug] || rawCity
+                const nestedCity = city && citySlug
+                  ? (rawCity as any)?.countryPages?.[citySlug] ? (rawCity as any).countryPages[citySlug] : rawCity
                   : null;
                 const cityBlock = city
                   ? nestedCity ||
@@ -1297,8 +1356,8 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                 const rawCity = city
                   ? (savedPageContent as any)?.sections?.cityPages?.[key]
                   : null;
-                const nestedCity = city
-                  ? (rawCity as any)?.countryPages?.[citySlug] || rawCity
+                const nestedCity = city && citySlug
+                  ? (rawCity as any)?.countryPages?.[citySlug] ? (rawCity as any).countryPages[citySlug] : rawCity
                   : null;
                 const cityBlock = city
                   ? nestedCity ||
