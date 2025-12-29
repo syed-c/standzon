@@ -545,8 +545,19 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
       const citySlug = slugify(finalLocationName);
       const key = `${countrySlug}-${citySlug}`;
       
-      // Debug log to see the structure
-      console.log('🔍 DEBUG: CMS Data structure:', JSON.stringify(cmsData, null, 2));
+      // NEW: Handle the specific nested structure for city pages
+      // content.sections.cityPages[country-city].countryPages.city
+      if (cmsData?.sections?.cityPages?.[key]?.countryPages?.[citySlug]) {
+        console.log('✅ Found specific nested structure content:', key, citySlug);
+        return cmsData.sections.cityPages[key].countryPages[citySlug];
+      }
+      
+      // NEW: Also check for variations in the nested structure
+      const citySlugClean = citySlug.replace(/[^a-z0-9-]/g, "");
+      if (cmsData?.sections?.cityPages?.[key]?.countryPages?.[citySlugClean]) {
+        console.log('✅ Found specific nested structure content with clean slug:', key, citySlugClean);
+        return cmsData.sections.cityPages[key].countryPages[citySlugClean];
+      }
       
       // Try multiple paths to find the city content
       let cityContent = cmsData?.sections?.cityPages?.[key] || cmsData;
@@ -554,24 +565,6 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
       // If we have a direct match, use it
       if (cmsData?.sections?.cityPages?.[key]) {
         console.log('✅ Found direct city content match for key:', key);
-        // Try to find hero description in the nested structure
-        if (cmsData?.sections?.cityPages) {
-          const cityPageKeys = Object.keys(cmsData.sections.cityPages);
-          for (const pageKey of cityPageKeys) {
-            const countryPages = cmsData.sections.cityPages[pageKey]?.countryPages;
-            if (countryPages) {
-              const countryPageKeys = Object.keys(countryPages);
-              for (const countryKey of countryPageKeys) {
-                const countryPage = countryPages[countryKey];
-                if (countryPage && countryPage.heroDescription) {
-                  console.log('✅ Found hero description in nested structure');
-                  // Return the country page content which contains the hero description
-                  return countryPage;
-                }
-              }
-            }
-          }
-        }
         return cityContent;
       }
       
@@ -582,6 +575,12 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
         for (const pageKey of Object.keys(cityPages)) {
           if (pageKey.includes(countrySlug) && pageKey.includes(citySlug)) {
             console.log('✅ Found city content by pattern matching:', pageKey);
+            // NEW: Check if this page has nested countryPages structure
+            const nestedCountryPages = cityPages[pageKey]?.countryPages;
+            if (nestedCountryPages && nestedCountryPages[citySlug]) {
+              console.log('✅ Found nested countryPages content in pattern match:', pageKey, citySlug);
+              return nestedCountryPages[citySlug];
+            }
             return cityPages[pageKey];
           }
         }
@@ -601,19 +600,6 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
           if (cityPages[pageKey]?.cityPages?.[key]?.countryPages?.[citySlug]) {
             console.log('✅ Found deeply nested content:', pageKey, key, citySlug);
             return cityPages[pageKey].cityPages[key].countryPages[citySlug];
-          }
-        }
-      }
-      
-      // Handle the specific structure we identified:
-      // content.sections.cityPages[country-city].countryPages.city
-      if (cmsData?.sections?.cityPages) {
-        const cityPageKeys = Object.keys(cmsData.sections.cityPages);
-        for (const pageKey of cityPageKeys) {
-          const countryPages = cmsData.sections.cityPages[pageKey]?.countryPages;
-          if (countryPages && countryPages[citySlug]) {
-            console.log('✅ Found specific nested structure content:', pageKey, citySlug);
-            return countryPages[citySlug];
           }
         }
       }

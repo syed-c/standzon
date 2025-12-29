@@ -681,8 +681,24 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
             
             // If we have CMS content with the proper structure, use it directly
             if (cmsContent && typeof cmsContent === 'object') {
-              // For city pages, the content might be nested in sections.cityPages
-              const cityPageContent = cmsContent?.sections?.cityPages?.[`${country.toLowerCase()}-${city?.toLowerCase()}`] || cmsContent;
+              // NEW: Handle the specific nested structure for city pages
+              // content.sections.cityPages[country-city].countryPages.city
+              const cityPageId = `${country.toLowerCase()}-${city?.toLowerCase()}`;
+              let cityPageContent = cmsContent?.sections?.cityPages?.[cityPageId];
+              
+              // NEW: Handle the nested structure: sections.cityPages[country-city].countryPages.city
+              if (cmsContent?.sections?.cityPages?.[cityPageId]?.countryPages?.[city?.toLowerCase()]) {
+                cityPageContent = cmsContent.sections.cityPages[cityPageId].countryPages[city?.toLowerCase()];
+              } else {
+                // NEW: Also check for nested structure: sections.cityPages[country-city].countryPages[citySlug]
+                const citySlug = city?.toLowerCase().replace(/[^a-z0-9-]/g, "");
+                if (cmsContent?.sections?.cityPages?.[cityPageId]?.countryPages?.[citySlug]) {
+                  cityPageContent = cmsContent.sections.cityPages[cityPageId].countryPages[citySlug];
+                } else {
+                  // Fallback to original logic if nested structure not found
+                  cityPageContent = cmsContent?.sections?.cityPages?.[cityPageId] || cmsContent;
+                }
+              }
               
               // Extract content properly from various possible structures
               const extractText = (content: any): string => {
