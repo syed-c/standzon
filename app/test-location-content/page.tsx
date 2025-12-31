@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import CountryCityPage from '@/components/CountryCityPage';
+import CountryCityPage from '@/components/public/CountryCityPage';
 
 export default function TestLocationContent() {
   // Sample builder data with proper structure matching the common pattern in the codebase

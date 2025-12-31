@@ -5,7 +5,7 @@ import Link, { LinkProps } from "next/link";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, Home, Building2, FileText, Settings, Database, Users, BarChart3, Globe, Upload, Shield, PieChart, Activity, Zap, Award, TrendingUp, Monitor, Sun, Moon } from "lucide-react";
-import { useTheme } from "@/components/ThemeProvider";
+import { useTheme } from '@/components/ThemeProvider';
 
 interface Links {
   label: string;

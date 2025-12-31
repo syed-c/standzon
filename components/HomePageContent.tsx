@@ -3,14 +3,14 @@
 import React, { useEffect, useState, Suspense, lazy } from "react";
 import { sanitizeHtml } from "@/lib/utils/html";
 import Navigation from "@/components/Navigation";
-import UltraFastHero from "@/components/UltraFastHero";
+import UltraFastHero from '@/components/public/UltraFastHero';
 import { getFontClass } from "@/lib/utils/fonts";
 import PublicQuoteRequest from "@/components/PublicQuoteRequest";
 
 // ✅ PERFORMANCE: Lazy load non-critical components
 const LocationsSection = lazy(() => import("@/components/LocationsSection"));
-const TestimonialsCarousel = lazy(() => import("@/components/TestimonialsCarousel"));
-const ContactSection = lazy(() => import("@/components/ContactSection"));
+const TestimonialsCarousel = lazy(() => import("@/components/shared/TestimonialsCarousel"));
+const ContactSection = lazy(() => import("@/components/shared/ContactSection"));
 const Footer = lazy(() => import("@/components/Footer"));
 
 type SavedContent = any;

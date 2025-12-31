@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import LocationSelector from '@/components/LocationSelector';
 import LocationDisplay from '@/components/LocationDisplay';
-import PhoneInput from '@/components/PhoneInput';
+import PhoneInput from '@/components/shared/PhoneInput';
 import type { LocationSelection } from '@/lib/utils/globalLocationManager';
 import { 
   Building, MapPin, Mail, Phone, User, Calendar, 
