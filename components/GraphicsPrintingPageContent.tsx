@@ -14,7 +14,7 @@ import {
 import Link from "next/link";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import TradeStyleBanner from "@/components/TradeStyleBanner";
+import TradeStyleBanner from '@/components/shared/TradeStyleBanner';
 
 export default function GraphicsPrintingPageContent() {
   const [saved, setSaved] = useState<any>(null);

@@ -15,7 +15,7 @@ import {
   UserCheck, Mail, Target, CheckSquare, User, ChevronDown, ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
-import WorkingGlobalPagesManager from '@/components/WorkingGlobalPagesManager';
+import WorkingGlobalPagesManager from '@/components/admin/WorkingGlobalPagesManager';
 
 interface FixedSuperAdminDashboardProps {
   adminId: string;

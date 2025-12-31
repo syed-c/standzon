@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import LocationDisplay from '@/components/LocationDisplay';
-import BuilderCard from '@/components/BuilderCard';
+import BuilderCard from '@/components/builder/BuilderCard';
 import LeadInquiryForm from '@/components/LeadInquiryForm';
 import GlobalLocationManager from '@/lib/utils/globalLocationManager';
 import type { ExhibitionCity, ExhibitionCountry } from '@/lib/data/globalCities';
