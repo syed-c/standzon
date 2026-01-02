@@ -1,24 +1,30 @@
 import { ReactNode } from 'react';
 import { ThemeProvider } from '@/app/theme-provider';
+import Shell from '@/components/ui/Shell';
+import Topbar from '@/components/admin/Topbar';
+import Sidebar from '@/components/admin/Sidebar';
 
 interface AdminLayoutProps {
   children: ReactNode;
 }
 
+/**
+ * Admin domain layout.
+ * Handles admin theming and UI scaffolding.
+ * Purely UI-focused, no auth logic.
+ */
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  // Admin-specific layout with theming
-  // Client-side auth check will be handled by individual pages
-
   return (
     <ThemeProvider theme="admin">
-      <div className="min-h-screen bg-slate-50">
-        <div className="flex">
-          {/* Admin sidebar could go here */}
-          <main className="flex-1">
-            {children}
-          </main>
+      <Shell 
+        topbar={<Topbar />} 
+        sidebar={<div className="w-[300px] h-full overflow-y-auto border-r border-gray-800"><Sidebar /></div>}
+        className="bg-slate-900 text-white"
+      >
+        <div className="admin-content-wrapper p-4 md:p-8">
+          {children}
         </div>
-      </div>
+      </Shell>
     </ThemeProvider>
   );
 }

@@ -1,8 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import NewBuilderDashboard from '@/components/NewBuilderDashboard';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import AuthBoundary from '@/components/boundaries/AuthBoundary';
 
 export const metadata: Metadata = {
   title: 'Builder Dashboard - ExhibitBay',
@@ -13,16 +12,10 @@ export default function BuilderDashboardPage() {
   console.log('✅ Unified Builder Dashboard page loaded');
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <main className="pt-20 px-6 pb-12">
-        <div className="max-w-7xl mx-auto">
-          <NewBuilderDashboard />
-        </div>
-      </main>
-      
-      <Footer />
-    </div>
+    <AuthBoundary requiredRole="builder">
+      <div className="max-w-7xl mx-auto py-6">
+        <NewBuilderDashboard />
+      </div>
+    </AuthBoundary>
   );
 }

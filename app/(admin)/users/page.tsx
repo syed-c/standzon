@@ -1,9 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import UserManagement from '@/components/admin/UserManagement';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
+import AuthBoundary from '@/components/boundaries/AuthBoundary';
 
 export const metadata: Metadata = {
   title: 'User Management - Admin Dashboard',
@@ -19,8 +17,8 @@ const mockAdmin = {
 
 export default function AdminUsersPage() {
   return (
-    <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
+    <AuthBoundary requiredRole="admin">
       <UserManagement adminId={mockAdmin.id} />
-    </AdminLayout>
+    </AuthBoundary>
   );
 }
