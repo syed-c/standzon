@@ -683,7 +683,9 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
             if (cmsContent && typeof cmsContent === 'object') {
               // NEW: Handle the specific nested structure for city pages
               // content.sections.cityPages[country-city].countryPages.city
-              const cityPageId = `${country.toLowerCase()}-${city?.toLowerCase()}`;
+              const countrySlug = normalizeCountrySlug(country);
+              const citySlug = normalizeCitySlug(city || "");
+              const cityPageId = `${countrySlug}-${citySlug}`;
               let cityPageContent = cmsContent?.sections?.cityPages?.[cityPageId];
               
               // NEW: Handle the nested structure: sections.cityPages[country-city].countryPages.city
@@ -693,14 +695,8 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
               // If that doesn't work, try the nested countryPages structure
               if (!cityPageContent && cmsContent?.sections?.cityPages?.[cityPageId]?.countryPages) {
                 // Try direct city name as key
-                if (cmsContent.sections.cityPages[cityPageId].countryPages[city.toLowerCase()]) {
-                  cityPageContent = cmsContent.sections.cityPages[cityPageId].countryPages[city.toLowerCase()];
-                } else {
-                  // Try city slug as key
-                  const citySlug = city.toLowerCase().replace(/[^a-z0-9-]/g, "");
-                  if (cmsContent.sections.cityPages[cityPageId].countryPages[citySlug]) {
-                    cityPageContent = cmsContent.sections.cityPages[cityPageId].countryPages[citySlug];
-                  }
+                if (cmsContent.sections.cityPages[cityPageId].countryPages[citySlug]) {
+                  cityPageContent = cmsContent.sections.cityPages[cityPageId].countryPages[citySlug];
                 }
               }
               
@@ -711,6 +707,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
               
               // Extract content properly from various possible structures
               const extractText = (content: any): string => {
+                if (!content) return "";
                 if (typeof content === 'string') return content;
                 if (typeof content === 'object' && content !== null) {
                   // Try common properties in order of preference
@@ -726,6 +723,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
               
               // Extract array or return as array
               const extractArray = (content: any): string[] => {
+                if (!content) return [];
                 if (Array.isArray(content)) return content;
                 if (typeof content === 'string') return [content];
                 if (typeof content === 'object' && content !== null) {
@@ -738,23 +736,23 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
               
               return {
                 seo: {
-                  metaTitle: extractText(cityPageContent?.seo?.metaTitle) || baseContent.seo.metaTitle,
-                  metaDescription: extractText(cityPageContent?.seo?.metaDescription) || baseContent.seo.metaDescription,
-                  keywords: extractArray(cityPageContent?.seo?.keywords) || baseContent.seo.keywords,
+                  metaTitle: extractText(cityPageContent?.seo?.metaTitle || cityPageContent?.metaTitle) || baseContent.seo.metaTitle,
+                  metaDescription: extractText(cityPageContent?.seo?.metaDescription || cityPageContent?.metaDescription || cityPageContent?.description) || baseContent.seo.metaDescription,
+                  keywords: extractArray(cityPageContent?.seo?.keywords || cityPageContent?.seoKeywords) || baseContent.seo.keywords,
                 },
                 hero: {
-                  title: extractText(cityPageContent?.hero?.title) || extractText(cityPageContent?.hero?.heading) || baseContent.hero.title,
-                  description: extractText(cityPageContent?.heroDescription) || extractText(cityPageContent?.hero?.description) || extractText(cityPageContent?.hero?.text) || baseContent.hero.description,
+                  title: extractText(cityPageContent?.hero?.title) || extractText(cityPageContent?.hero?.heading) || extractText(cityPageContent?.title) || baseContent.hero.title,
+                  description: extractText(cityPageContent?.heroDescription) || extractText(cityPageContent?.heroContent) || extractText(cityPageContent?.hero?.description) || extractText(cityPageContent?.hero?.text) || extractText(cityPageContent?.description) || baseContent.hero.description,
                   ctaText: extractText(cityPageContent?.hero?.ctaText) || baseContent.hero.ctaText,
                   subtitle: extractText(cityPageContent?.hero?.subtitle) || baseContent.hero.subtitle,
                 },
                 content: {
-                  introduction: extractText(cityPageContent?.heroDescription) || extractText(cityPageContent?.heroContent) || extractText(cityPageContent?.content?.introduction) || extractText(cityPageContent?.hero?.description) || baseContent.content.introduction,
-                  whyChooseSection: extractText(cityPageContent?.content?.whyChooseSection) || extractText(cityPageContent?.whyChooseSection) || baseContent.content.whyChooseSection,
-                  industryOverview: extractText(cityPageContent?.content?.industryOverview) || baseContent.content.industryOverview,
-                  venueInformation: extractText(cityPageContent?.content?.venueInformation) || baseContent.content.venueInformation,
-                  builderAdvantages: extractText(cityPageContent?.content?.builderAdvantages) || baseContent.content.builderAdvantages,
-                  conclusion: extractText(cityPageContent?.content?.conclusion) || baseContent.content.conclusion,
+                  introduction: extractText(cityPageContent?.heroDescription) || extractText(cityPageContent?.heroContent) || extractText(cityPageContent?.content?.introduction) || extractText(cityPageContent?.hero?.description) || extractText(cityPageContent?.description) || baseContent.content.introduction,
+                  whyChooseSection: extractText(cityPageContent?.content?.whyChooseSection) || extractText(cityPageContent?.whyChooseSection) || extractText(cityPageContent?.whyChooseParagraph) || baseContent.content.whyChooseSection,
+                  industryOverview: extractText(cityPageContent?.content?.industryOverview) || extractText(cityPageContent?.industryOverview) || baseContent.content.industryOverview,
+                  venueInformation: extractText(cityPageContent?.content?.venueInformation) || extractText(cityPageContent?.venueInformation) || baseContent.content.venueInformation,
+                  builderAdvantages: extractText(cityPageContent?.content?.builderAdvantages) || extractText(cityPageContent?.builderAdvantages) || baseContent.content.builderAdvantages,
+                  conclusion: extractText(cityPageContent?.content?.conclusion) || extractText(cityPageContent?.conclusion) || baseContent.content.conclusion,
                 },
                 design: {
                   ...baseContent.design,
@@ -765,6 +763,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
             
             // Fallback: Ensure all content properties are strings, not objects
             const safeExtractText = (content: any): string => {
+              if (!content) return "";
               if (typeof content === 'string') return content;
               if (typeof content === 'object' && content !== null) {
                 return content.description || 
@@ -1031,105 +1030,25 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
               {(() => {
-                // Extract content from CMS structure
-                let heading = `Professional Exhibition Stand Builders in ${country}`;
-                
-                // Try to get from savedPageContent first
-                if (savedPageContent) {
-                  const countrySlug = country
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")
-                    .replace(/[^a-z0-9-]/g, "");
-                    
-                  // Check nested structure in savedPageContent
-                  if (savedPageContent?.sections?.countryPages?.[countrySlug]?.servicesHeading) {
-                    const headingRaw = savedPageContent.sections.countryPages[countrySlug].servicesHeading;
-                    heading = typeof headingRaw === 'object' ? 
-                      (headingRaw.heading || headingRaw.title || JSON.stringify(headingRaw)) : 
-                      headingRaw;
-                  }
-                }
-                
-                // Fallback to cmsContent
-                if (cmsContent && heading === `Professional Exhibition Stand Builders in ${country}`) {
-                  const countrySlug = country
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")
-                    .replace(/[^a-z0-9-]/g, "");
-                  
-                  // Check various possible structures in cmsContent
-                  if (cmsContent?.sections?.countryPages?.[countrySlug]?.servicesHeading) {
-                    const headingRaw = cmsContent.sections.countryPages[countrySlug].servicesHeading;
-                    heading = typeof headingRaw === 'object' ? 
-                      (headingRaw.heading || headingRaw.title || JSON.stringify(headingRaw)) : 
-                      headingRaw;
-                  } else if (cmsContent?.content?.sections?.countryPages?.[countrySlug]?.servicesHeading) {
-                    const headingRaw = cmsContent.content.sections.countryPages[countrySlug].servicesHeading;
-                    heading = typeof headingRaw === 'object' ? 
-                      (headingRaw.heading || headingRaw.title || JSON.stringify(headingRaw)) : 
-                      headingRaw;
-                  } else if (cmsContent?.servicesHeading) {
-                    const headingRaw = cmsContent.servicesHeading;
-                    heading = typeof headingRaw === 'object' ? 
-                      (headingRaw.heading || headingRaw.title || JSON.stringify(headingRaw)) : 
-                      headingRaw;
-                  }
-                }
-                
-                return heading;
+                const headingRaw = pageContent?.servicesHeading;
+                // Ensure heading is a string, not an object
+                return typeof headingRaw === 'object' 
+                  ? headingRaw?.heading || headingRaw?.title || `Professional Exhibition Stand Builders in ${country}` 
+                  : headingRaw || `Professional Exhibition Stand Builders in ${country}`;
               })()}
             </h2>
             <div
               className="prose max-w-none leading-relaxed text-gray-900"
               dangerouslySetInnerHTML={{
                 __html: (() => {
-                  // Extract content from CMS structure
-                  let paragraph = `<p>${country} offers exceptional exhibition stand building services with skilled craftsmen and innovative designers. Our local builders understand regional market dynamics and can create stunning displays that attract visitors and generate leads.</p>
+                  const paragraphRaw = pageContent?.servicesParagraph;
+                  // Ensure paragraph is a string, not an object
+                  const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || paragraphRaw?.text || 
+                    `<p>${country} offers exceptional exhibition stand building services with skilled craftsmen and innovative designers. Our local builders understand regional market dynamics and can create stunning displays that attract visitors and generate leads.</p>
+                     <p>With expertise in various industries including technology, healthcare, automotive, and consumer goods, ${country}'s exhibition stand builders deliver customized solutions that align with your brand identity and marketing objectives.</p>` 
+                    : paragraphRaw || 
+                    `<p>${country} offers exceptional exhibition stand building services with skilled craftsmen and innovative designers. Our local builders understand regional market dynamics and can create stunning displays that attract visitors and generate leads.</p>
                      <p>With expertise in various industries including technology, healthcare, automotive, and consumer goods, ${country}'s exhibition stand builders deliver customized solutions that align with your brand identity and marketing objectives.</p>`;
-                  
-                  // Try to get from savedPageContent first
-                  if (savedPageContent) {
-                    const countrySlug = country
-                      .toLowerCase()
-                      .replace(/\s+/g, "-")
-                      .replace(/[^a-z0-9-]/g, "");
-                      
-                    // Check nested structure in savedPageContent
-                    if (savedPageContent?.sections?.countryPages?.[countrySlug]?.servicesParagraph) {
-                      const paragraphRaw = savedPageContent.sections.countryPages[countrySlug].servicesParagraph;
-                      paragraph = typeof paragraphRaw === 'object' ? 
-                        (paragraphRaw.description || paragraphRaw.text || JSON.stringify(paragraphRaw)) : 
-                        paragraphRaw;
-                    }
-                  }
-                  
-                  // Fallback to cmsContent
-                  if (cmsContent && paragraph === `<p>${country} offers exceptional exhibition stand building services with skilled craftsmen and innovative designers. Our local builders understand regional market dynamics and can create stunning displays that attract visitors and generate leads.</p>
-                     <p>With expertise in various industries including technology, healthcare, automotive, and consumer goods, ${country}'s exhibition stand builders deliver customized solutions that align with your brand identity and marketing objectives.</p>`) {
-                    const countrySlug = country
-                      .toLowerCase()
-                      .replace(/\s+/g, "-")
-                      .replace(/[^a-z0-9-]/g, "");
-                    
-                    // Check various possible structures in cmsContent
-                    if (cmsContent?.sections?.countryPages?.[countrySlug]?.servicesParagraph) {
-                      const paragraphRaw = cmsContent.sections.countryPages[countrySlug].servicesParagraph;
-                      paragraph = typeof paragraphRaw === 'object' ? 
-                        (paragraphRaw.description || paragraphRaw.text || JSON.stringify(paragraphRaw)) : 
-                        paragraphRaw;
-                    } else if (cmsContent?.content?.sections?.countryPages?.[countrySlug]?.servicesParagraph) {
-                      const paragraphRaw = cmsContent.content.sections.countryPages[countrySlug].servicesParagraph;
-                      paragraph = typeof paragraphRaw === 'object' ? 
-                        (paragraphRaw.description || paragraphRaw.text || JSON.stringify(paragraphRaw)) : 
-                        paragraphRaw;
-                    } else if (cmsContent?.servicesParagraph) {
-                      const paragraphRaw = cmsContent.servicesParagraph;
-                      paragraph = typeof paragraphRaw === 'object' ? 
-                        (paragraphRaw.description || paragraphRaw.text || JSON.stringify(paragraphRaw)) : 
-                        paragraphRaw;
-                    }
-                  }
-                  
                   return paragraph.replace(/\r?\n/g, "<br/>");
                 })()
               }}
@@ -1142,102 +1061,18 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
               {(() => {
-                const countrySlug = country
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")
-                  .replace(/[^a-z0-9-]/g, "");
-                const citySlug = city
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")
-                  .replace(/[^a-z0-9-]/g, "");
-                const key = `${countrySlug}-${citySlug}`;
-                
-                // Try multiple sources for city content
-                let contentSource = null;
-                
-                // First try savedPageContent
-                if (savedPageContent) {
-                  const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
-                  if (raw?.countryPages?.[citySlug]) {
-                    contentSource = raw.countryPages[citySlug];
-                  } else if (raw?.countryPages?.[city.toLowerCase()]) {
-                    contentSource = raw.countryPages[city.toLowerCase()];
-                  } else {
-                    contentSource = raw;
-                  }
-                }
-                
-                // If no content from savedPageContent, try cmsContent
-                if (!contentSource && cmsContent) {
-                  const raw = (cmsContent as any)?.sections?.cityPages?.[key];
-                  if (raw?.countryPages?.[citySlug]) {
-                    contentSource = raw.countryPages[citySlug];
-                  } else if (raw?.countryPages?.[city.toLowerCase()]) {
-                    contentSource = raw.countryPages[city.toLowerCase()];
-                  } else {
-                    contentSource = raw;
-                  }
-                }
-                
-                // Fix: Ensure we're not passing objects directly to JSX
-                const headingRaw =
-                  contentSource?.servicesHeading ||
-                  (cmsContent as any)?.sections?.cityPages?.[key]?.servicesHeading ||
-                  (cmsContent as any)?.servicesHeading;
-                
+                const headingRaw = pageContent?.servicesHeading;
                 // Ensure heading is a string, not an object
-                const heading = typeof headingRaw === 'object' ? headingRaw?.heading || `Expert Exhibition Stand Builders in ${city}, ${country}` : headingRaw || `Expert Exhibition Stand Builders in ${city}, ${country}`;
-                return heading;
+                return typeof headingRaw === 'object' 
+                  ? headingRaw?.heading || `Expert Exhibition Stand Builders in ${city}, ${country}` 
+                  : headingRaw || `Expert Exhibition Stand Builders in ${city}, ${country}`;
               })()}
             </h2>
             <div
               className="prose max-w-none leading-relaxed text-gray-900"
               dangerouslySetInnerHTML={{
                 __html: (() => {
-                  const countrySlug = country
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")
-                    .replace(/[^a-z0-9-]/g, "");
-                  const citySlug = city
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")
-                    .replace(/[^a-z0-9-]/g, "");
-                  const key = `${countrySlug}-${citySlug}`;
-                  
-                  // Try multiple sources for city content
-                  let contentSource = null;
-                  
-                  // First try savedPageContent
-                  if (savedPageContent) {
-                    const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
-                    if (raw?.countryPages?.[citySlug]) {
-                      contentSource = raw.countryPages[citySlug];
-                    } else if (raw?.countryPages?.[city.toLowerCase()]) {
-                      contentSource = raw.countryPages[city.toLowerCase()];
-                    } else {
-                      contentSource = raw;
-                    }
-                  }
-                  
-                  // If no content from savedPageContent, try cmsContent
-                  if (!contentSource && cmsContent) {
-                    const raw = (cmsContent as any)?.sections?.cityPages?.[key];
-                    if (raw?.countryPages?.[citySlug]) {
-                      contentSource = raw.countryPages[citySlug];
-                    } else if (raw?.countryPages?.[city.toLowerCase()]) {
-                      contentSource = raw.countryPages[city.toLowerCase()];
-                    } else {
-                      contentSource = raw;
-                    }
-                  }
-                  
-                  // Fix: Ensure we're not passing objects directly to JSX
-                  const paragraphRaw =
-                    contentSource?.servicesParagraph ||
-                    (cmsContent as any)?.sections?.cityPages?.[key]
-                      ?.servicesParagraph ||
-                    (cmsContent as any)?.servicesParagraph;
-                  
+                  const paragraphRaw = pageContent?.servicesParagraph;
                   // Ensure paragraph is a string, not an object
                   const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || 
                     `<p>${city}, ${country} provides access to top-tier exhibition stand builders who specialize in creating impactful displays for trade shows and exhibitions. Our local experts combine creativity with technical excellence to deliver solutions that exceed expectations.</p>
@@ -1295,128 +1130,30 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               {(() => {
-                const countrySlug = country
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")
-                  .replace(/[^a-z0-9-]/g, "");
-                const citySlug = city
-                  ? city
-                      .toLowerCase()
-                      .replace(/\s+/g, "-")
-                      .replace(/[^a-z0-9-]/g, "")
-                  : "";
-                const key = city ? `${countrySlug}-${citySlug}` : "";
-                const countryBlock =
-                  (savedPageContent as any)?.sections?.countryPages?.[countrySlug] ||
-                  (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
-                  (cmsContent as any) ||
-                  {};
-                const rawCity = city
-                  ? (savedPageContent as any)?.sections?.cityPages?.[key]
-                  : null;
-                const nestedCity = city && citySlug
-                  ? (rawCity as any)?.countryPages?.[citySlug] ? (rawCity as any).countryPages[citySlug] : rawCity
-                  : null;
-                const cityBlock = city
-                  ? nestedCity ||
-                    (cmsContent as any)?.sections?.cityPages?.[key] ||
-                    (cmsContent as any) ||
-                    {}
-                  : null;
-                const block = city ? cityBlock || {} : countryBlock || {};
-                
-                // Fix: Ensure we're not passing objects directly to JSX
-                const headingRaw =
-                  (block as any)?.finalCtaHeading ||
-                  `Ready to Find Your Perfect Builder in ${city || country}?`;
-                
-                // Ensure values are strings, not objects
-                const heading = typeof headingRaw === 'object' ? headingRaw?.heading || headingRaw : headingRaw;
-                return heading;
+                const headingRaw = pageContent?.finalCtaHeading || pageContent?.hero?.title;
+                // Ensure heading is a string, not an object
+                return typeof headingRaw === 'object' 
+                  ? headingRaw?.heading || headingRaw?.title || `Ready to Find Your Perfect Builder in ${city || country}?` 
+                  : headingRaw || `Ready to Find Your Perfect Builder in ${city || country}?`;
               })()}
             </h2>
             <p className="text-xl text-slate-300 mb-8">
               {(() => {
-                const countrySlug = country
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")
-                  .replace(/[^a-z0-9-]/g, "");
-                const citySlug = city
-                  ? city
-                      .toLowerCase()
-                      .replace(/\s+/g, "-")
-                      .replace(/[^a-z0-9-]/g, "")
-                  : "";
-                const key = city ? `${countrySlug}-${citySlug}` : "";
-                const countryBlock =
-                  (savedPageContent as any)?.sections?.countryPages?.[countrySlug] ||
-                  (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
-                  (cmsContent as any) ||
-                  {};
-                const rawCity = city
-                  ? (savedPageContent as any)?.sections?.cityPages?.[key]
-                  : null;
-                const nestedCity = city && citySlug
-                  ? (rawCity as any)?.countryPages?.[citySlug] ? (rawCity as any).countryPages[citySlug] : rawCity
-                  : null;
-                const cityBlock = city
-                  ? nestedCity ||
-                    (cmsContent as any)?.sections?.cityPages?.[key] ||
-                    (cmsContent as any) ||
-                    {}
-                  : null;
-                const block = city ? cityBlock || {} : countryBlock || {};
-                
-                // Fix: Ensure we're not passing objects directly to JSX
-                const paragraphRaw =
-                  (block as any)?.finalCtaParagraph ||
-                  "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.";
-                
-                // Ensure values are strings, not objects
-                const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || paragraphRaw : paragraphRaw;
-                return paragraph;
+                const paragraphRaw = pageContent?.finalCtaParagraph || pageContent?.hero?.description || pageContent?.description;
+                // Ensure paragraph is a string, not an object
+                return typeof paragraphRaw === 'object' 
+                  ? paragraphRaw?.description || paragraphRaw?.text || "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs." 
+                  : paragraphRaw || "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.";
               })()}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button className="text-lg px-8 py-4 text-black">
                 {(() => {
-                  const countrySlug = country
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")
-                    .replace(/[^a-z0-9-]/g, "");
-                  const citySlug = city
-                    ? city
-                        .toLowerCase()
-                        .replace(/\s+/g, "-")
-                        .replace(/[^a-z0-9-]/g, "")
-                    : "";
-                  const key = city ? `${countrySlug}-${citySlug}` : "";
-                  const countryBlock =
-                    (savedPageContent as any)?.sections?.countryPages?.[countrySlug] ||
-                    (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
-                    (cmsContent as any) ||
-                    {};
-                  const rawCity = city
-                    ? (savedPageContent as any)?.sections?.cityPages?.[key]
-                    : null;
-                  const nestedCity = city
-                    ? (rawCity as any)?.countryPages?.[citySlug] || rawCity
-                    : null;
-                  const cityBlock = city
-                    ? nestedCity ||
-                      (cmsContent as any)?.sections?.cityPages?.[key] ||
-                      (cmsContent as any) ||
-                      {}
-                    : null;
-                  const block = city ? cityBlock || {} : countryBlock || {};
-                  
-                  // Fix: Ensure we're not passing objects directly to JSX
-                  const buttonTextRaw =
-                    (block as any)?.finalCtaButtonText || "Start Getting Quotes";
-                  
-                  // Ensure values are strings, not objects
-                  const buttonText = typeof buttonTextRaw === 'object' ? buttonTextRaw?.text || buttonTextRaw : buttonTextRaw;
-                  return buttonText;
+                  const buttonTextRaw = pageContent?.finalCtaButtonText || pageContent?.hero?.ctaText;
+                  // Ensure buttonText is a string, not an object
+                  return typeof buttonTextRaw === 'object' 
+                    ? buttonTextRaw?.text || buttonTextRaw?.title || "Start Getting Quotes" 
+                    : buttonTextRaw || "Start Getting Quotes";
                 })()}
               </Button>
               <Button
