@@ -111,8 +111,6 @@ const benefits = [
 export default function ServicesPageContent() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -284,8 +282,6 @@ export default function ServicesPageContent() {
           </div>
         </section>
       </div>
-
-      <Footer />
     </div>
   );
 }

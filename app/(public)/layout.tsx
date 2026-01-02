@@ -20,7 +20,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
         footer={<Footer />}
         className="bg-white"
       >
-        <div className="public-content-wrapper pt-20">
+        <div className="public-content-wrapper">
           {children}
         </div>
       </Shell>

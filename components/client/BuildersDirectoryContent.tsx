@@ -571,8 +571,6 @@ export default function BuildersDirectoryContent() {
 
   return (
     <div className="font-inter min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      <Navigation />
-      
       {/* Hero Section - Matching location pages style */}
       <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white pt-24 pb-20">
         <div className="absolute inset-0 opacity-20">
@@ -1075,7 +1073,6 @@ export default function BuildersDirectoryContent() {
         </div>
       </section>
       
-      <Footer />
       <WhatsAppFloat />
       <TradeStyleBanner 
         mainHeading="Find Exhibition Stand"

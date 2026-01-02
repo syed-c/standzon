@@ -79,7 +79,14 @@ export default async function CityPage({ params }: CityPageProps) {
   const cityName = ('name' in cityData) ? cityData.name : cityData.cityName;
   const countryName = toTitle(countrySlug);
 
-  const cmsContent = await getPageContent(`${countrySlug}-${citySlug}`);
+  let cmsContent = await getPageContent(`${countrySlug}-${citySlug}`);
+  
+  // If city-specific content not found, try fetching country content
+  if (!cmsContent) {
+    console.log(`🔍 City content not found for ${countrySlug}-${citySlug}, falling back to country content: ${countrySlug}`);
+    cmsContent = await getPageContent(countrySlug);
+  }
+
   const countryCode = getCountryCodeByName(countryName);
   
   const rawCities = countryCode ? await getCitiesByCountry(countryCode) : [];
@@ -117,17 +124,32 @@ export default async function CityPage({ params }: CityPageProps) {
     premiumMember: builder.premium_member || false
   }));
 
+  const defaultContent = {
+    id: `${countrySlug}-${citySlug}-main`,
+    title: `Exhibition Stand Builders in ${cityName}, ${countryName}`,
+    metaTitle: `${cityName} Exhibition Stand Builders | ${countryName} Trade Show Booth Design`,
+    metaDescription: `Leading exhibition stand builders in ${cityName}, ${countryName}. Custom trade show displays, booth design, and professional exhibition services.`,
+    description: `${cityName} is a key hub for trade shows in ${countryName}. Our expert exhibition stand builders in ${cityName} deliver innovative designs that capture attention and drive results in this dynamic market.`,
+    heroContent: `Partner with ${cityName}'s premier exhibition stand builders for trade show success.`,
+    seoKeywords: [`${cityName} exhibition stands`, `${cityName} trade show builders`, `${cityName} exhibition builders`, `${countryName} booth design`, `${cityName} exhibition services`]
+  };
+
+  const cityBlock = cmsContent?.sections?.cityPages?.[`${countrySlug}-${citySlug}`] || cmsContent || null;
+  const mergedContent = {
+    ...defaultContent,
+    ...(cityBlock || {})
+  };
+
   return (
     <>
-      <Navigation />
       <CountryCityPage 
         country={countryName} 
         city={cityName} 
         initialBuilders={transformedBuilders as any}
+        initialContent={mergedContent}
         cities={cities}
         cmsContent={cmsContent}
       />
-      <Footer />
       <WhatsAppFloat />
     </>
   );

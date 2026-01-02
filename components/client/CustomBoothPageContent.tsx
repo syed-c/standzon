@@ -111,8 +111,6 @@ export default function CustomBoothPageContent() {
   
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
-
       {/* Hero Section */}
       <TradeStyleBanner
         badgeText="Professional Trade Show Database"
@@ -308,8 +306,6 @@ export default function CustomBoothPageContent() {
           </div>
         </section>
       </div>
-
-      <Footer />
     </div>
   );
 }

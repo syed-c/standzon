@@ -332,7 +332,6 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
         <div className="pt-20 pb-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="animate-pulse space-y-8">
@@ -347,7 +346,6 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
             </div>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -358,7 +356,6 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
 
                   <Dialog open={showLeadModal} onOpenChange={setShowLeadModal}>
                     <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -386,7 +383,6 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
         onOpenQuote={() => setShowLeadModal(true)}
       />
 
-      <Footer />
       <WhatsAppFloat />
     </div>
   );
