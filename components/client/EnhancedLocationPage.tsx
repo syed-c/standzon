@@ -541,105 +541,63 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
   // --- helpers to resolve CMS block for page (country or city) ---
   const resolvedCmsBlock = useMemo(() => {
     if (!cmsData) return null;
+
+    // Handle nested structures within the found content
+    const resolveInner = (block: any) => {
+      if (!block) return block;
+      // If it's the old structure with sections.countryPages
+      if (block.sections?.countryPages?.[countrySlug]) {
+        return block.sections.countryPages[countrySlug];
+      }
+      // If it has a 'content' property that is an object (common in some API responses)
+      if (block.content && typeof block.content === 'object' && !Array.isArray(block.content)) {
+        return { ...block, ...block.content };
+      }
+      return block;
+    };
+
     if (isCity) {
       const citySlug = slugify(finalLocationName);
       const key = `${countrySlug}-${citySlug}`;
-      
+
       // NEW: Handle the specific nested structure for city pages
       // content.sections.cityPages[country-city].countryPages.city
       if (cmsData?.sections?.cityPages?.[key]?.countryPages?.[citySlug]) {
         console.log('✅ Found specific nested structure content:', key, citySlug);
         return cmsData.sections.cityPages[key].countryPages[citySlug];
       }
-      
+
       // NEW: Also check for variations in the nested structure
       const citySlugClean = citySlug.replace(/[^a-z0-9-]/g, "");
       if (cmsData?.sections?.cityPages?.[key]?.countryPages?.[citySlugClean]) {
         console.log('✅ Found specific nested structure content with clean slug:', key, citySlugClean);
         return cmsData.sections.cityPages[key].countryPages[citySlugClean];
       }
-      
+
       // Try multiple paths to find the city content
-      let cityContent = cmsData?.sections?.cityPages?.[key] || cmsData;
-      
-      // If we have a direct match, use it
+      let cityContent = cmsData?.sections?.cityPages?.[key] ||
+                       cmsData?.sections?.countryPages?.[countrySlug] ||
+                       cmsData?.sections?.countryPages?.[finalLocationName.toLowerCase()] ||
+                       cmsData;
+
+      // If we have a direct match in cityPages, use it
       if (cmsData?.sections?.cityPages?.[key]) {
         console.log('✅ Found direct city content match for key:', key);
         return cityContent;
       }
-      
-      // Otherwise, try to find content in nested structures
-      if (cmsData?.sections?.cityPages) {
-        // Look for any city content that might match our location
-        const cityPages = cmsData.sections.cityPages;
-        for (const pageKey of Object.keys(cityPages)) {
-          if (pageKey.includes(countrySlug) && pageKey.includes(citySlug)) {
-            console.log('✅ Found city content by pattern matching:', pageKey);
-            // NEW: Check if this page has nested countryPages structure
-            const nestedCountryPages = cityPages[pageKey]?.countryPages;
-            if (nestedCountryPages && nestedCountryPages[citySlug]) {
-              console.log('✅ Found nested countryPages content in pattern match:', pageKey, citySlug);
-              return nestedCountryPages[citySlug];
-            }
-            return cityPages[pageKey];
-          }
-        }
+
+      cityContent = resolveInner(cityContent);
+
+      // If still no content found, use fallback
+      if (!cityContent || Object.keys(cityContent).length === 0) {
+        cityContent = cmsData;
       }
-      
-      // Try another approach - look for nested countryPages within cityPages
-      if (cmsData?.sections?.cityPages) {
-        const cityPages = cmsData.sections.cityPages;
-        for (const pageKey of Object.keys(cityPages)) {
-          // Check if this city page has nested countryPages with our city
-          if (cityPages[pageKey]?.countryPages?.[citySlug]) {
-            console.log('✅ Found nested countryPages content:', pageKey, citySlug);
-            return cityPages[pageKey].countryPages[citySlug];
-          }
-          
-          // Check for deeper nesting: cityPages -> cityPages -> countryPages
-          if (cityPages[pageKey]?.cityPages?.[key]?.countryPages?.[citySlug]) {
-            console.log('✅ Found deeply nested content:', pageKey, key, citySlug);
-            return cityPages[pageKey].cityPages[key].countryPages[citySlug];
-          }
-        }
-      }
-      
-      // Debug: Check if we can find hero description in the nested structure
-      console.log('🔍 DEBUG: Looking for hero description in nested structure');
-      if (cmsData?.sections?.cityPages) {
-        const cityPageKeys = Object.keys(cmsData.sections.cityPages);
-        console.log('🔍 DEBUG: City page keys:', cityPageKeys);
-        for (const pageKey of cityPageKeys) {
-          const countryPages = cmsData.sections.cityPages[pageKey]?.countryPages;
-          if (countryPages) {
-            const countryPageKeys = Object.keys(countryPages);
-            console.log('🔍 DEBUG: Country page keys:', countryPageKeys);
-            for (const countryKey of countryPageKeys) {
-              const countryPage = countryPages[countryKey];
-              if (countryPage && countryPage.heroDescription) {
-                console.log('✅ DEBUG: Found hero description in nested structure');
-                // Return the country page content which contains the hero description
-                return countryPage;
-              }
-            }
-          }
-        }
-      }
-      
-      console.log('ℹ️ Returning default city content');
-      // Normalize content if it has a nested 'content' property (common in some API responses)
-      if (cityContent?.content && typeof cityContent.content === 'object' && !Array.isArray(cityContent.content)) {
-        return { ...cityContent, ...cityContent.content };
-      }
-      return cityContent;
+
+      return resolveInner(cityContent);
     }
-    
+
     const countryContent = cmsData?.sections?.countryPages?.[countrySlug] || cmsData;
-    // Normalize content if it has a nested 'content' property
-    if (countryContent?.content && typeof countryContent.content === 'object' && !Array.isArray(countryContent.content)) {
-      return { ...countryContent, ...countryContent.content };
-    }
-    return countryContent;
+    return resolveInner(countryContent);
   }, [cmsData, isCity, countrySlug, finalLocationName]);
   // --- render ---
   return (
@@ -1129,9 +1087,17 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
             <div className="mt-10">
               <CountryGallery images={(() => {
                 // First try to get gallery images from the resolved CMS block directly
-                let galleryImages = resolvedCmsBlock?.galleryImages || 
-                                 pageContent?.galleryImages || 
-                                 pageContent?.content?.galleryImages;
+                let galleryImages = (resolvedCmsBlock?.galleryImages && Array.isArray(resolvedCmsBlock.galleryImages) && resolvedCmsBlock.galleryImages.length > 0) 
+                                 ? resolvedCmsBlock.galleryImages 
+                                 : (pageContent?.galleryImages && Array.isArray(pageContent.galleryImages) && pageContent.galleryImages.length > 0)
+                                 ? pageContent.galleryImages
+                                 : (pageContent?.content?.galleryImages && Array.isArray(pageContent.content.galleryImages) && pageContent.content.galleryImages.length > 0)
+                                 ? pageContent.content.galleryImages
+                                 : (resolvedCmsBlock?.images && Array.isArray(resolvedCmsBlock.images) && resolvedCmsBlock.images.length > 0)
+                                 ? resolvedCmsBlock.images
+                                 : (pageContent?.images && Array.isArray(pageContent.images) && pageContent.images.length > 0)
+                                 ? pageContent.images
+                                 : null;
                 
                 // If not found, check for nested structure (common in city pages)
                 if (!galleryImages && resolvedCmsBlock?.countryPages) {

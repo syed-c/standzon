@@ -142,6 +142,116 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
   const buildersRef = useRef<Builder[]>(initialBuilders);
   const { toast } = useToast();
 
+  // Helper function to extract text safely from various CMS structures
+  const extractText = (content: any): string => {
+    if (!content) return "";
+    if (typeof content === 'string') return content;
+    if (typeof content === 'object' && content !== null) {
+      // Try common properties in order of preference
+      return content.description || 
+             content.text || 
+             content.heading || 
+             content.title || 
+             content.content ||
+             content.heroDescription ||
+             content.heroContent ||
+             JSON.stringify(content);
+    }
+    return String(content);
+  };
+
+  // Helper function to extract array safely
+  const extractArray = (content: any): any[] => {
+    if (!content) return [];
+    if (Array.isArray(content)) return content;
+    if (typeof content === 'string') return [content];
+    if (typeof content === 'object' && content !== null) {
+      // If it's an object with keywords property
+      if (Array.isArray(content.keywords)) return content.keywords;
+      if (typeof content.keywords === 'string') return [content.keywords];
+      if (Array.isArray(content.galleryImages)) return content.galleryImages;
+    }
+    return [];
+  };
+
+  // Resolve the effective content once for the whole page
+  const resolvedContent = React.useMemo(() => {
+    const countrySlug = normalizeCountrySlug(country);
+    const citySlug = city ? normalizeCitySlug(city) : "";
+    const cityPageId = city ? `${countrySlug}-${citySlug}` : "";
+    
+    // Base content from props or state
+    const base = initialContent || pageContent || {};
+    
+    // Resolve block from cmsContent
+    let block = cmsContent;
+    if (city && cmsContent?.sections?.cityPages?.[cityPageId]) {
+      block = cmsContent.sections.cityPages[cityPageId];
+      // Handle nested countryPages in cityPages
+      if (block.countryPages?.[citySlug]) {
+        block = block.countryPages[citySlug];
+      }
+    } else if (cmsContent?.sections?.countryPages?.[countrySlug]) {
+      block = cmsContent.sections.countryPages[countrySlug];
+    }
+
+    // Handle nested 'content' property
+    if (block?.content && typeof block.content === 'object' && !Array.isArray(block.content)) {
+      block = { ...block, ...block.content };
+    }
+
+    // Merge everything
+    const merged = {
+      ...base,
+      ...(block || {}),
+    };
+
+    return {
+      seo: {
+        metaTitle: extractText(merged.seo?.metaTitle || merged.metaTitle || merged.title),
+        metaDescription: extractText(merged.seo?.metaDescription || merged.metaDescription || merged.description),
+        keywords: extractArray(merged.seo?.keywords || merged.seoKeywords),
+      },
+      hero: {
+        title: extractText(merged.hero?.title || merged.hero?.heading || merged.title),
+        description: extractText(merged.heroDescription || merged.heroContent || merged.hero?.description || merged.hero?.text || merged.description),
+        ctaText: extractText(merged.hero?.ctaText || merged.ctaText || "Get Free Quote"),
+        subtitle: extractText(merged.hero?.subtitle || merged.subtitle || "Professional booth design and construction services"),
+      },
+      content: {
+        introduction: extractText(merged.content?.introduction || merged.description || merged.heroDescription || merged.heroContent),
+        whyChooseSection: extractText(merged.content?.whyChooseSection || merged.whyChooseSection || merged.whyChooseParagraph),
+        industryOverview: extractText(merged.content?.industryOverview || merged.industryOverview),
+        venueInformation: extractText(merged.content?.venueInformation || merged.venueInformation),
+        builderAdvantages: extractText(merged.content?.builderAdvantages || merged.builderAdvantages),
+        conclusion: extractText(merged.content?.conclusion || merged.conclusion),
+      },
+      design: {
+        primaryColor: merged.design?.primaryColor || "#ec4899",
+        accentColor: merged.design?.accentColor || "#f97316",
+        layout: merged.design?.layout || "modern",
+        showStats: merged.design?.showStats ?? true,
+        showMap: city ? true : false,
+      },
+      galleryImages: extractArray(merged.galleryImages || merged.content?.galleryImages || merged.images),
+      whyChooseHeading: extractText(merged.whyChooseHeading || merged.content?.whyChooseHeading || merged.whyChooseSectionHeading),
+      whyChooseParagraph: extractText(merged.whyChooseParagraph || merged.content?.whyChooseParagraph || merged.whyChooseSection || merged.content?.whyChooseSection),
+      quotesParagraph: extractText(merged.quotesParagraph || merged.content?.quotesParagraph || merged.quotesText),
+      buildersHeading: extractText(merged.buildersHeading || merged.content?.buildersHeading || merged.buildersSectionHeading),
+      buildersIntro: extractText(merged.buildersIntro || merged.content?.buildersIntro || merged.buildersDescription),
+      servicesHeading: extractText(merged.servicesHeading || merged.content?.servicesHeading || merged.industryOverviewHeading || merged.title),
+      servicesParagraph: extractText(merged.servicesParagraph || merged.content?.servicesParagraph || merged.industryOverview || merged.content?.industryOverview || merged.description),
+      finalCtaHeading: extractText(merged.finalCtaHeading || merged.content?.finalCtaHeading || merged.ctaHeading),
+      finalCtaParagraph: extractText(merged.finalCtaParagraph || merged.content?.finalCtaParagraph || merged.ctaDescription),
+      finalCtaButtonText: extractText(merged.finalCtaButtonText || merged.content?.finalCtaButtonText || merged.ctaButtonText),
+      // Add other editor fields
+      industryOverview: extractText(merged.industryOverview || merged.content?.industryOverview),
+      venueInformation: extractText(merged.venueInformation || merged.content?.venueInformation),
+      builderAdvantages: extractText(merged.builderAdvantages || merged.content?.builderAdvantages),
+      conclusion: extractText(merged.conclusion || merged.content?.conclusion),
+    };
+  }, [country, city, cmsContent, initialContent, pageContent]);
+
   // ✅ PRODUCTION FIX: Force initialization on component mount (removed duplicate)
   useEffect(() => {
     console.log('🔄 CountryCityPage mounted, checking unified platform initialization...');
@@ -648,182 +758,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
         suppressPostBuildersContent
         exhibitions={generateExhibitions(country, city)}
         venues={generateVenues(country, city)}
-        pageContent={          // Fix: Ensure we're not passing objects directly where strings are expected
-          (() => {
-            const baseContent = savedPageContent || {
-              seo: {
-                metaTitle: pageContent.metaTitle,
-                metaDescription: pageContent.metaDescription,
-                keywords: pageContent.seoKeywords,
-              },
-              hero: {
-                title: pageContent.title,
-                subtitle: `Professional booth design and construction services`,
-                description: pageContent.heroContent || pageContent.description,
-                ctaText: "Get Free Quote",
-              },
-              content: {
-                introduction: pageContent.description,
-                whyChooseSection: `${city || country} offers unique advantages for exhibition projects with its strategic location and skilled local builders.`,
-                industryOverview: `${city || country}'s exhibition industry serves diverse sectors, contributing to its position as a key business destination.`,
-                venueInformation: `${city || country} offers modern exhibition facilities equipped with contemporary amenities and flexible spaces.`,
-                builderAdvantages: `Choosing local ${city || country} exhibition stand builders provides strategic advantages including knowledge of venue requirements.`,
-                conclusion: `${city || country} presents excellent opportunities for exhibition success with its growing business environment.`,
-              },
-              design: {
-                primaryColor: "#ec4899",
-                accentColor: "#f97316",
-                layout: "modern" as const,
-                showStats: true,
-                showMap: city ? true : false,
-              },
-            };
-            
-            // If we have CMS content with the proper structure, use it directly
-            if (cmsContent && typeof cmsContent === 'object') {
-              // NEW: Handle the specific nested structure for city pages
-              // content.sections.cityPages[country-city].countryPages.city
-              const countrySlug = normalizeCountrySlug(country);
-              const citySlug = normalizeCitySlug(city || "");
-              const cityPageId = `${countrySlug}-${citySlug}`;
-              let cityPageContent = cmsContent?.sections?.cityPages?.[cityPageId];
-              
-              // NEW: Handle the nested structure: sections.cityPages[country-city].countryPages.city
-              // First, try to get the city-specific content from the main cityPages structure
-              cityPageContent = cmsContent?.sections?.cityPages?.[cityPageId];
-              
-              // If that doesn't work, try the nested countryPages structure
-              if (!cityPageContent && cmsContent?.sections?.cityPages?.[cityPageId]?.countryPages) {
-                // Try direct city name as key
-                if (cmsContent.sections.cityPages[cityPageId].countryPages[citySlug]) {
-                  cityPageContent = cmsContent.sections.cityPages[cityPageId].countryPages[citySlug];
-                }
-              }
-              
-              // If still no content found, use fallback
-              if (!cityPageContent) {
-                cityPageContent = cmsContent?.sections?.cityPages?.[cityPageId] || cmsContent;
-              }
-              
-              // Extract content properly from various possible structures
-              const extractText = (content: any): string => {
-                if (!content) return "";
-                if (typeof content === 'string') return content;
-                if (typeof content === 'object' && content !== null) {
-                  // Try common properties in order of preference
-                  return content.description || 
-                         content.text || 
-                         content.heading || 
-                         content.title || 
-                         content.content ||
-                         JSON.stringify(content);
-                }
-                return String(content);
-              };
-              
-              // Extract array or return as array
-              const extractArray = (content: any): string[] => {
-                if (!content) return [];
-                if (Array.isArray(content)) return content;
-                if (typeof content === 'string') return [content];
-                if (typeof content === 'object' && content !== null) {
-                  // If it's an object with keywords property
-                  if (Array.isArray(content.keywords)) return content.keywords;
-                  if (typeof content.keywords === 'string') return [content.keywords];
-                }
-                return [];
-              };
-              
-              return {
-                seo: {
-                  metaTitle: extractText(cityPageContent?.seo?.metaTitle || cityPageContent?.metaTitle) || baseContent.seo.metaTitle,
-                  metaDescription: extractText(cityPageContent?.seo?.metaDescription || cityPageContent?.metaDescription || cityPageContent?.description) || baseContent.seo.metaDescription,
-                  keywords: extractArray(cityPageContent?.seo?.keywords || cityPageContent?.seoKeywords) || baseContent.seo.keywords,
-                },
-                hero: {
-                  title: extractText(cityPageContent?.hero?.title) || extractText(cityPageContent?.hero?.heading) || extractText(cityPageContent?.title) || baseContent.hero.title,
-                  description: extractText(cityPageContent?.heroDescription) || extractText(cityPageContent?.heroContent) || extractText(cityPageContent?.hero?.description) || extractText(cityPageContent?.hero?.text) || extractText(cityPageContent?.description) || baseContent.hero.description,
-                  ctaText: extractText(cityPageContent?.hero?.ctaText) || baseContent.hero.ctaText,
-                  subtitle: extractText(cityPageContent?.hero?.subtitle) || baseContent.hero.subtitle,
-                },
-                content: {
-                  introduction: extractText(cityPageContent?.heroDescription) || extractText(cityPageContent?.heroContent) || extractText(cityPageContent?.content?.introduction) || extractText(cityPageContent?.hero?.description) || extractText(cityPageContent?.description) || baseContent.content.introduction,
-                  whyChooseSection: extractText(cityPageContent?.content?.whyChooseSection) || extractText(cityPageContent?.whyChooseSection) || extractText(cityPageContent?.whyChooseParagraph) || baseContent.content.whyChooseSection,
-                  industryOverview: extractText(cityPageContent?.content?.industryOverview) || extractText(cityPageContent?.industryOverview) || baseContent.content.industryOverview,
-                  venueInformation: extractText(cityPageContent?.content?.venueInformation) || extractText(cityPageContent?.venueInformation) || baseContent.content.venueInformation,
-                  builderAdvantages: extractText(cityPageContent?.content?.builderAdvantages) || extractText(cityPageContent?.builderAdvantages) || baseContent.content.builderAdvantages,
-                  conclusion: extractText(cityPageContent?.content?.conclusion) || extractText(cityPageContent?.conclusion) || baseContent.content.conclusion,
-                },
-                design: {
-                  ...baseContent.design,
-                  ...cityPageContent?.design,
-                },
-                // Add missing fields used by EnhancedLocationPage
-                galleryImages: cityPageContent?.galleryImages || cityPageContent?.content?.galleryImages || [],
-                whyChooseHeading: extractText(cityPageContent?.whyChooseHeading || cityPageContent?.content?.whyChooseHeading),
-                whyChooseParagraph: extractText(cityPageContent?.whyChooseParagraph || cityPageContent?.content?.whyChooseParagraph),
-                quotesParagraph: extractText(cityPageContent?.quotesParagraph || cityPageContent?.content?.quotesParagraph),
-                buildersHeading: extractText(cityPageContent?.buildersHeading || cityPageContent?.content?.buildersHeading),
-                buildersIntro: extractText(cityPageContent?.buildersIntro || cityPageContent?.content?.buildersIntro),
-                servicesHeading: extractText(cityPageContent?.servicesHeading || cityPageContent?.content?.servicesHeading),
-                servicesParagraph: extractText(cityPageContent?.servicesParagraph || cityPageContent?.content?.servicesParagraph),
-                finalCtaHeading: extractText(cityPageContent?.finalCtaHeading || cityPageContent?.content?.finalCtaHeading),
-                finalCtaParagraph: extractText(cityPageContent?.finalCtaParagraph || cityPageContent?.content?.finalCtaParagraph),
-                finalCtaButtonText: extractText(cityPageContent?.finalCtaButtonText || cityPageContent?.content?.finalCtaButtonText),
-              };
-            }
-            
-            // Fallback: Ensure all content properties are strings, not objects
-            const safeExtractText = (content: any): string => {
-              if (!content) return "";
-              if (typeof content === 'string') return content;
-              if (typeof content === 'object' && content !== null) {
-                return content.description || 
-                       content.text || 
-                       content.heading || 
-                       content.title || 
-                       JSON.stringify(content);
-              }
-              return String(content);
-            };
-            
-            return {
-              ...baseContent,
-              seo: baseContent.seo ? {
-                ...baseContent.seo,
-                metaTitle: safeExtractText(baseContent.seo.metaTitle),
-                metaDescription: safeExtractText(baseContent.seo.metaDescription),
-                keywords: Array.isArray(baseContent.seo.keywords) ? baseContent.seo.keywords : 
-                  (typeof baseContent.seo.keywords === 'string' ? [baseContent.seo.keywords] : [])
-              } : {},
-              hero: baseContent.hero ? {
-                ...baseContent.hero,
-                title: safeExtractText(baseContent.hero.title),
-                description: safeExtractText(pageContent?.heroContent) || safeExtractText(baseContent.hero.description),
-              } : {},
-              content: baseContent.content ? {
-                ...baseContent.content,
-                introduction: safeExtractText(pageContent?.heroContent) || safeExtractText(baseContent.content.introduction),
-                whyChooseSection: safeExtractText(baseContent.content.whyChooseSection),
-                industryOverview: safeExtractText(baseContent.content.industryOverview),
-                venueInformation: safeExtractText(baseContent.content.venueInformation),
-                builderAdvantages: safeExtractText(baseContent.content.builderAdvantages),
-                conclusion: safeExtractText(baseContent.content.conclusion),
-              } : {},
-              galleryImages: pageContent?.galleryImages || baseContent?.galleryImages || [],
-              whyChooseHeading: safeExtractText(pageContent?.whyChooseHeading || baseContent?.whyChooseHeading),
-              whyChooseParagraph: safeExtractText(pageContent?.whyChooseParagraph || baseContent?.whyChooseParagraph),
-              quotesParagraph: safeExtractText(pageContent?.quotesParagraph || baseContent?.quotesParagraph),
-              buildersHeading: safeExtractText(pageContent?.buildersHeading || baseContent?.buildersHeading),
-              buildersIntro: safeExtractText(pageContent?.buildersIntro || baseContent?.buildersIntro),
-              servicesHeading: safeExtractText(pageContent?.servicesHeading || baseContent?.servicesHeading),
-              servicesParagraph: safeExtractText(pageContent?.servicesParagraph || baseContent?.servicesParagraph),
-              finalCtaHeading: safeExtractText(pageContent?.finalCtaHeading || baseContent?.finalCtaHeading),
-              finalCtaParagraph: safeExtractText(pageContent?.finalCtaParagraph || baseContent?.finalCtaParagraph),
-              finalCtaButtonText: safeExtractText(pageContent?.finalCtaButtonText || baseContent?.finalCtaButtonText),
-            };
-          })()
-        }
+        pageContent={resolvedContent}
         // ✅ CRITICAL FIX: Pass calculated stats to override defaults
         locationStats={{
           totalBuilders: filteredBuilders.length,
@@ -1052,99 +987,93 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              {(() => {
-                const extractText = (c: any): string => {
-                  if (!c) return "";
-                  if (typeof c === 'string') return c;
-                  if (typeof c === 'object' && c !== null) {
-                    return c.heading || c.title || c.text || c.description || JSON.stringify(c);
-                  }
-                  return String(c);
-                };
-
-                const headingRaw = pageContent?.servicesHeading || 
-                                 pageContent?.content?.servicesHeading ||
-                                 pageContent?.content?.extra?.sectionHeading;
-                
-                return extractText(headingRaw) || `Professional Exhibition Stand Builders in ${country}`;
-              })()}
+              {resolvedContent.servicesHeading || `Professional Exhibition Stand Builders in ${country}`}
             </h2>
-            <div
-              className="prose max-w-none leading-relaxed text-gray-900"
-              dangerouslySetInnerHTML={{
-                __html: (() => {
-                  const extractText = (c: any): string => {
-                    if (!c) return "";
-                    if (typeof c === 'string') return c;
-                    if (typeof c === 'object' && c !== null) {
-                      return c.description || c.text || c.content || c.personalizedHtml || JSON.stringify(c);
-                    }
-                    return String(c);
-                  };
-
-                  const paragraphRaw = pageContent?.servicesParagraph || 
-                                     pageContent?.content?.servicesParagraph ||
-                                     pageContent?.content?.extra?.personalizedHtml ||
-                                     pageContent?.description;
-                  
-                  const paragraph = extractText(paragraphRaw) || 
+            <div className="prose max-w-none leading-relaxed text-gray-900 space-y-6">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: (resolvedContent.servicesParagraph || 
                     `<p>${country} offers exceptional exhibition stand building services with skilled craftsmen and innovative designers. Our local builders understand regional market dynamics and can create stunning displays that attract visitors and generate leads.</p>
-                     <p>With expertise in various industries including technology, healthcare, automotive, and consumer goods, ${country}'s exhibition stand builders deliver customized solutions that align with your brand identity and marketing objectives.</p>`;
-                  
-                  return paragraph.replace(/\r?\n/g, "<br/>");
-                })()
-              }}
-            />
+                     <p>With expertise in various industries including technology, healthcare, automotive, and consumer goods, ${country}'s exhibition stand builders deliver customized solutions that align with your brand identity and marketing objectives.</p>`)
+                    .replace(/\r?\n/g, "<br/>")
+                }}
+              />
+
+              {resolvedContent.industryOverview && (
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Industry Overview</h3>
+                  <div dangerouslySetInnerHTML={{ __html: resolvedContent.industryOverview.replace(/\r?\n/g, "<br/>") }} />
+                </div>
+              )}
+              
+              {resolvedContent.venueInformation && (
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Venue Information</h3>
+                  <div dangerouslySetInnerHTML={{ __html: resolvedContent.venueInformation.replace(/\r?\n/g, "<br/>") }} />
+                </div>
+              )}
+              
+              {resolvedContent.builderAdvantages && (
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Builder Advantages</h3>
+                  <div dangerouslySetInnerHTML={{ __html: resolvedContent.builderAdvantages.replace(/\r?\n/g, "<br/>") }} />
+                </div>
+              )}
+              
+              {resolvedContent.conclusion && (
+                <div className="mt-8 pt-8 border-t border-gray-100">
+                  <div dangerouslySetInnerHTML={{ __html: resolvedContent.conclusion.replace(/\r?\n/g, "<br/>") }} />
+                </div>
+              )}
+            </div>
           </div>
         </section>
-      )}      {/* City Services Section (H2 + paragraph) sourced from CMS */}
+      )}
+
+      {/* City Services Section (H2 + paragraph) sourced from CMS */}
       {city && (
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              {(() => {
-                const extractText = (c: any): string => {
-                  if (!c) return "";
-                  if (typeof c === 'string') return c;
-                  if (typeof c === 'object' && c !== null) {
-                    return c.heading || c.title || c.text || c.description || JSON.stringify(c);
-                  }
-                  return String(c);
-                };
-
-                const headingRaw = pageContent?.servicesHeading || 
-                                 pageContent?.content?.servicesHeading ||
-                                 pageContent?.content?.extra?.sectionHeading;
-                
-                return extractText(headingRaw) || `Expert Exhibition Stand Builders in ${city}, ${country}`;
-              })()}
+              {resolvedContent.servicesHeading || `Expert Exhibition Stand Builders in ${city}, ${country}`}
             </h2>
-            <div
-              className="prose max-w-none leading-relaxed text-gray-900"
-              dangerouslySetInnerHTML={{
-                __html: (() => {
-                  const extractText = (c: any): string => {
-                    if (!c) return "";
-                    if (typeof c === 'string') return c;
-                    if (typeof c === 'object' && c !== null) {
-                      return c.description || c.text || c.content || c.personalizedHtml || JSON.stringify(c);
-                    }
-                    return String(c);
-                  };
-
-                  const paragraphRaw = pageContent?.servicesParagraph || 
-                                     pageContent?.content?.servicesParagraph ||
-                                     pageContent?.content?.extra?.personalizedHtml ||
-                                     pageContent?.description;
-                  
-                  const paragraph = extractText(paragraphRaw) || 
+            <div className="prose max-w-none leading-relaxed text-gray-900 space-y-6">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: (resolvedContent.servicesParagraph || 
                     `<p>${city}, ${country} provides access to top-tier exhibition stand builders who specialize in creating impactful displays for trade shows and exhibitions. Our local experts combine creativity with technical excellence to deliver solutions that exceed expectations.</p>
-                     <p>Whether you need a modular booth, custom island display, or specialty activation, ${city}'s exhibition stand builders offer comprehensive services from concept to installation, ensuring your brand stands out in competitive environments.</p>`;
-                  
-                  return paragraph.replace(/\r?\n/g, "<br/>");
-                })()
-              }}
-            />
+                     <p>Whether you need a modular booth, custom island display, or specialty activation, ${city}'s exhibition stand builders offer comprehensive services from concept to installation, ensuring your brand stands out in competitive environments.</p>`)
+                    .replace(/\r?\n/g, "<br/>")
+                }}
+              />
+              
+              {resolvedContent.industryOverview && (
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Industry Overview</h3>
+                  <div dangerouslySetInnerHTML={{ __html: resolvedContent.industryOverview.replace(/\r?\n/g, "<br/>") }} />
+                </div>
+              )}
+              
+              {resolvedContent.venueInformation && (
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Venue Information</h3>
+                  <div dangerouslySetInnerHTML={{ __html: resolvedContent.venueInformation.replace(/\r?\n/g, "<br/>") }} />
+                </div>
+              )}
+              
+              {resolvedContent.builderAdvantages && (
+                <div>
+                  <h3 className="text-xl font-bold mb-2">Builder Advantages</h3>
+                  <div dangerouslySetInnerHTML={{ __html: resolvedContent.builderAdvantages.replace(/\r?\n/g, "<br/>") }} />
+                </div>
+              )}
+              
+              {resolvedContent.conclusion && (
+                <div className="mt-8 pt-8 border-t border-gray-100">
+                  <div dangerouslySetInnerHTML={{ __html: resolvedContent.conclusion.replace(/\r?\n/g, "<br/>") }} />
+                </div>
+              )}
+            </div>
           </div>
         </section>
       )}
@@ -1190,58 +1119,14 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
         <div className="container mx-auto px-6 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {(() => {
-                const extractText = (c: any): string => {
-                  if (!c) return "";
-                  if (typeof c === 'string') return c;
-                  if (typeof c === 'object' && c !== null) {
-                    return c.heading || c.title || c.text || JSON.stringify(c);
-                  }
-                  return String(c);
-                };
-
-                const headingRaw = pageContent?.finalCtaHeading || 
-                                 pageContent?.hero?.title ||
-                                 pageContent?.title;
-                
-                return extractText(headingRaw) || `Ready to Find Your Perfect Builder in ${city || country}?`;
-              })()}
+              {resolvedContent.finalCtaHeading || `Ready to Find Your Perfect Builder in ${city || country}?`}
             </h2>
             <p className="text-xl text-slate-300 mb-8">
-              {(() => {
-                const extractText = (c: any): string => {
-                  if (!c) return "";
-                  if (typeof c === 'string') return c;
-                  if (typeof c === 'object' && c !== null) {
-                    return c.description || c.text || JSON.stringify(c);
-                  }
-                  return String(c);
-                };
-
-                const paragraphRaw = pageContent?.finalCtaParagraph || 
-                                   pageContent?.hero?.description || 
-                                   pageContent?.description;
-                
-                return extractText(paragraphRaw) || "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.";
-              })()}
+              {resolvedContent.finalCtaParagraph || "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button className="text-lg px-8 py-4 text-black">
-                {(() => {
-                  const extractText = (c: any): string => {
-                    if (!c) return "";
-                    if (typeof c === 'string') return c;
-                    if (typeof c === 'object' && c !== null) {
-                      return c.text || c.title || JSON.stringify(c);
-                    }
-                    return String(c);
-                  };
-
-                  const buttonTextRaw = pageContent?.finalCtaButtonText || 
-                                      pageContent?.hero?.ctaText;
-                  
-                  return extractText(buttonTextRaw) || "Start Getting Quotes";
-                })()}
+                {resolvedContent.finalCtaButtonText || "Start Getting Quotes"}
               </Button>
               <Button
                 variant="outline"
