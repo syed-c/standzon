@@ -160,7 +160,7 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
   }, []);
 
   // Helper: dedupe & sort builders
-  const normalizeBuilders = (list: any[], sortKey: typeof sortBy) => {
+  const normalizeBuilders = React.useCallback((list: any[], sortKey: typeof sortBy) => {
     const map = new Map<string, any>();
     const normalizeName = (n?: string) =>
       (n || '').toLowerCase().replace(/[,./|!@#$%^&*()_+\-]+/g, ' ').replace(/\b(ltd|limited|llc|inc|gmbh|co|company|srl|ag|se)\b/g, '').replace(/\s+/g, ' ').trim();
@@ -192,7 +192,7 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
         break;
     }
     return arr;
-  };
+  }, [isCity]);
 
   // ✅ PRODUCTION FIX: Force initialization on component mount
   useEffect(() => {
@@ -466,7 +466,7 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
     };
     // intentionally exclude normalizeBuilders from deps; rely on displayLocation & sortBy
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displayLocation, sortBy]); // Removed initial from dependencies to prevent infinite loop
+  }, [displayLocation, sortBy, normalizeBuilders]); // Added normalizeBuilders to dependencies
 
   // Update filteredBuilders when initial prop actually changes
   useEffect(() => {
@@ -627,9 +627,19 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
       }
       
       console.log('ℹ️ Returning default city content');
+      // Normalize content if it has a nested 'content' property (common in some API responses)
+      if (cityContent?.content && typeof cityContent.content === 'object' && !Array.isArray(cityContent.content)) {
+        return { ...cityContent, ...cityContent.content };
+      }
       return cityContent;
     }
-    return cmsData?.sections?.countryPages?.[countrySlug] || cmsData;
+    
+    const countryContent = cmsData?.sections?.countryPages?.[countrySlug] || cmsData;
+    // Normalize content if it has a nested 'content' property
+    if (countryContent?.content && typeof countryContent.content === 'object' && !Array.isArray(countryContent.content)) {
+      return { ...countryContent, ...countryContent.content };
+    }
+    return countryContent;
   }, [cmsData, isCity, countrySlug, finalLocationName]);
   // --- render ---
   return (
@@ -1119,7 +1129,9 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
             <div className="mt-10">
               <CountryGallery images={(() => {
                 // First try to get gallery images from the resolved CMS block directly
-                let galleryImages = resolvedCmsBlock?.galleryImages;
+                let galleryImages = resolvedCmsBlock?.galleryImages || 
+                                 pageContent?.galleryImages || 
+                                 pageContent?.content?.galleryImages;
                 
                 // If not found, check for nested structure (common in city pages)
                 if (!galleryImages && resolvedCmsBlock?.countryPages) {
@@ -1206,7 +1218,9 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">
                   {(() => {
-                    let content = resolvedCmsBlock?.buildersHeading;
+                    let content = resolvedCmsBlock?.buildersHeading || 
+                                 pageContent?.buildersHeading || 
+                                 pageContent?.content?.buildersHeading;
                     
                     // Handle nested structure for buildersHeading
                     if (!content && resolvedCmsBlock?.countryPages) {
@@ -1244,9 +1258,11 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                   })()}
                 </h2>
                 <div className="text-gray-600">
-                  {resolvedCmsBlock?.buildersIntro ? (
+                  { (resolvedCmsBlock?.buildersIntro || pageContent?.buildersIntro || pageContent?.content?.buildersIntro) ? (
                     <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml((() => {
-                      let content = resolvedCmsBlock?.buildersIntro;
+                      let content = resolvedCmsBlock?.buildersIntro || 
+                                   pageContent?.buildersIntro || 
+                                   pageContent?.content?.buildersIntro;
                       
                       // Handle nested structure for buildersIntro
                       if (!content && resolvedCmsBlock?.countryPages) {
@@ -1330,7 +1346,7 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                 <div className="text-center py-16">
                   <Building className="w-16 h-16 text-gray-400 mx-auto mb-4 text-white" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">No builders available yet</h3>
-                  <p className="text-gray-600 mb-6">We're adding builders in {displayLocation}. Get notified when they're available.</p>
+                  <p className="text-gray-600 mb-6">We&apos;re adding builders in {displayLocation}. Get notified when they&apos;re available.</p>
                   <PublicQuoteRequest location={displayLocation} buttonText={
                     (() => {
                       const content = "Get Quotes from Global Builders";
@@ -1353,7 +1369,9 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
               <div className="max-w-4xl mx-auto prose prose-slate leading-relaxed space-y-4">
                 <h2 className="text-2xl md:text-3xl font-bold !mb-4">
                   {(() => {
-                    let content = resolvedCmsBlock?.servicesHeading;
+                    let content = resolvedCmsBlock?.servicesHeading || 
+                                 pageContent?.servicesHeading || 
+                                 pageContent?.content?.servicesHeading;
                     
                     // Handle nested structure for servicesHeading
                     if (!content && resolvedCmsBlock?.countryPages) {
@@ -1391,7 +1409,9 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                   })()}
                 </h2>
                 <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml((() => {
-                  let content = resolvedCmsBlock?.servicesParagraph;
+                  let content = resolvedCmsBlock?.servicesParagraph || 
+                               pageContent?.servicesParagraph || 
+                               pageContent?.content?.servicesParagraph;
                   
                   // Handle nested structure for servicesParagraph
                   if (!content && resolvedCmsBlock?.countryPages) {

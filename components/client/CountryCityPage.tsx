@@ -340,7 +340,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [country, city]); // Removed initialBuilders from dependencies to prevent infinite loop
+  }, [country, city, initialBuilders]); // Added initialBuilders to dependencies
 
   // Update filteredBuilders when builders actually change
   useEffect(() => {
@@ -411,7 +411,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
 
     setFilteredBuilders(filtered);
     setCurrentPage(1);
-  }, [searchTerm, sortBy, selectedCity, city]); // Removed builders from dependencies to prevent infinite loop
+  }, [searchTerm, sortBy, selectedCity, city, builders]); // Added builders to dependencies
 
   const totalPages = Math.ceil(filteredBuilders.length / BUILDERS_PER_PAGE);
   const startIndex = (currentPage - 1) * BUILDERS_PER_PAGE;
@@ -758,6 +758,18 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                   ...baseContent.design,
                   ...cityPageContent?.design,
                 },
+                // Add missing fields used by EnhancedLocationPage
+                galleryImages: cityPageContent?.galleryImages || cityPageContent?.content?.galleryImages || [],
+                whyChooseHeading: extractText(cityPageContent?.whyChooseHeading || cityPageContent?.content?.whyChooseHeading),
+                whyChooseParagraph: extractText(cityPageContent?.whyChooseParagraph || cityPageContent?.content?.whyChooseParagraph),
+                quotesParagraph: extractText(cityPageContent?.quotesParagraph || cityPageContent?.content?.quotesParagraph),
+                buildersHeading: extractText(cityPageContent?.buildersHeading || cityPageContent?.content?.buildersHeading),
+                buildersIntro: extractText(cityPageContent?.buildersIntro || cityPageContent?.content?.buildersIntro),
+                servicesHeading: extractText(cityPageContent?.servicesHeading || cityPageContent?.content?.servicesHeading),
+                servicesParagraph: extractText(cityPageContent?.servicesParagraph || cityPageContent?.content?.servicesParagraph),
+                finalCtaHeading: extractText(cityPageContent?.finalCtaHeading || cityPageContent?.content?.finalCtaHeading),
+                finalCtaParagraph: extractText(cityPageContent?.finalCtaParagraph || cityPageContent?.content?.finalCtaParagraph),
+                finalCtaButtonText: extractText(cityPageContent?.finalCtaButtonText || cityPageContent?.content?.finalCtaButtonText),
               };
             }
             
@@ -797,7 +809,18 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                 venueInformation: safeExtractText(baseContent.content.venueInformation),
                 builderAdvantages: safeExtractText(baseContent.content.builderAdvantages),
                 conclusion: safeExtractText(baseContent.content.conclusion),
-              } : {}
+              } : {},
+              galleryImages: pageContent?.galleryImages || baseContent?.galleryImages || [],
+              whyChooseHeading: safeExtractText(pageContent?.whyChooseHeading || baseContent?.whyChooseHeading),
+              whyChooseParagraph: safeExtractText(pageContent?.whyChooseParagraph || baseContent?.whyChooseParagraph),
+              quotesParagraph: safeExtractText(pageContent?.quotesParagraph || baseContent?.quotesParagraph),
+              buildersHeading: safeExtractText(pageContent?.buildersHeading || baseContent?.buildersHeading),
+              buildersIntro: safeExtractText(pageContent?.buildersIntro || baseContent?.buildersIntro),
+              servicesHeading: safeExtractText(pageContent?.servicesHeading || baseContent?.servicesHeading),
+              servicesParagraph: safeExtractText(pageContent?.servicesParagraph || baseContent?.servicesParagraph),
+              finalCtaHeading: safeExtractText(pageContent?.finalCtaHeading || baseContent?.finalCtaHeading),
+              finalCtaParagraph: safeExtractText(pageContent?.finalCtaParagraph || baseContent?.finalCtaParagraph),
+              finalCtaButtonText: safeExtractText(pageContent?.finalCtaButtonText || baseContent?.finalCtaButtonText),
             };
           })()
         }
@@ -1030,25 +1053,44 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
               {(() => {
-                const headingRaw = pageContent?.servicesHeading;
-                // Ensure heading is a string, not an object
-                return typeof headingRaw === 'object' 
-                  ? headingRaw?.heading || headingRaw?.title || `Professional Exhibition Stand Builders in ${country}` 
-                  : headingRaw || `Professional Exhibition Stand Builders in ${country}`;
+                const extractText = (c: any): string => {
+                  if (!c) return "";
+                  if (typeof c === 'string') return c;
+                  if (typeof c === 'object' && c !== null) {
+                    return c.heading || c.title || c.text || c.description || JSON.stringify(c);
+                  }
+                  return String(c);
+                };
+
+                const headingRaw = pageContent?.servicesHeading || 
+                                 pageContent?.content?.servicesHeading ||
+                                 pageContent?.content?.extra?.sectionHeading;
+                
+                return extractText(headingRaw) || `Professional Exhibition Stand Builders in ${country}`;
               })()}
             </h2>
             <div
               className="prose max-w-none leading-relaxed text-gray-900"
               dangerouslySetInnerHTML={{
                 __html: (() => {
-                  const paragraphRaw = pageContent?.servicesParagraph;
-                  // Ensure paragraph is a string, not an object
-                  const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || paragraphRaw?.text || 
-                    `<p>${country} offers exceptional exhibition stand building services with skilled craftsmen and innovative designers. Our local builders understand regional market dynamics and can create stunning displays that attract visitors and generate leads.</p>
-                     <p>With expertise in various industries including technology, healthcare, automotive, and consumer goods, ${country}'s exhibition stand builders deliver customized solutions that align with your brand identity and marketing objectives.</p>` 
-                    : paragraphRaw || 
+                  const extractText = (c: any): string => {
+                    if (!c) return "";
+                    if (typeof c === 'string') return c;
+                    if (typeof c === 'object' && c !== null) {
+                      return c.description || c.text || c.content || c.personalizedHtml || JSON.stringify(c);
+                    }
+                    return String(c);
+                  };
+
+                  const paragraphRaw = pageContent?.servicesParagraph || 
+                                     pageContent?.content?.servicesParagraph ||
+                                     pageContent?.content?.extra?.personalizedHtml ||
+                                     pageContent?.description;
+                  
+                  const paragraph = extractText(paragraphRaw) || 
                     `<p>${country} offers exceptional exhibition stand building services with skilled craftsmen and innovative designers. Our local builders understand regional market dynamics and can create stunning displays that attract visitors and generate leads.</p>
                      <p>With expertise in various industries including technology, healthcare, automotive, and consumer goods, ${country}'s exhibition stand builders deliver customized solutions that align with your brand identity and marketing objectives.</p>`;
+                  
                   return paragraph.replace(/\r?\n/g, "<br/>");
                 })()
               }}
@@ -1061,25 +1103,44 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
               {(() => {
-                const headingRaw = pageContent?.servicesHeading;
-                // Ensure heading is a string, not an object
-                return typeof headingRaw === 'object' 
-                  ? headingRaw?.heading || `Expert Exhibition Stand Builders in ${city}, ${country}` 
-                  : headingRaw || `Expert Exhibition Stand Builders in ${city}, ${country}`;
+                const extractText = (c: any): string => {
+                  if (!c) return "";
+                  if (typeof c === 'string') return c;
+                  if (typeof c === 'object' && c !== null) {
+                    return c.heading || c.title || c.text || c.description || JSON.stringify(c);
+                  }
+                  return String(c);
+                };
+
+                const headingRaw = pageContent?.servicesHeading || 
+                                 pageContent?.content?.servicesHeading ||
+                                 pageContent?.content?.extra?.sectionHeading;
+                
+                return extractText(headingRaw) || `Expert Exhibition Stand Builders in ${city}, ${country}`;
               })()}
             </h2>
             <div
               className="prose max-w-none leading-relaxed text-gray-900"
               dangerouslySetInnerHTML={{
                 __html: (() => {
-                  const paragraphRaw = pageContent?.servicesParagraph;
-                  // Ensure paragraph is a string, not an object
-                  const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || 
-                    `<p>${city}, ${country} provides access to top-tier exhibition stand builders who specialize in creating impactful displays for trade shows and exhibitions. Our local experts combine creativity with technical excellence to deliver solutions that exceed expectations.</p>
-                     <p>Whether you need a modular booth, custom island display, or specialty activation, ${city}'s exhibition stand builders offer comprehensive services from concept to installation, ensuring your brand stands out in competitive environments.</p>` 
-                    : paragraphRaw || 
+                  const extractText = (c: any): string => {
+                    if (!c) return "";
+                    if (typeof c === 'string') return c;
+                    if (typeof c === 'object' && c !== null) {
+                      return c.description || c.text || c.content || c.personalizedHtml || JSON.stringify(c);
+                    }
+                    return String(c);
+                  };
+
+                  const paragraphRaw = pageContent?.servicesParagraph || 
+                                     pageContent?.content?.servicesParagraph ||
+                                     pageContent?.content?.extra?.personalizedHtml ||
+                                     pageContent?.description;
+                  
+                  const paragraph = extractText(paragraphRaw) || 
                     `<p>${city}, ${country} provides access to top-tier exhibition stand builders who specialize in creating impactful displays for trade shows and exhibitions. Our local experts combine creativity with technical excellence to deliver solutions that exceed expectations.</p>
                      <p>Whether you need a modular booth, custom island display, or specialty activation, ${city}'s exhibition stand builders offer comprehensive services from concept to installation, ensuring your brand stands out in competitive environments.</p>`;
+                  
                   return paragraph.replace(/\r?\n/g, "<br/>");
                 })()
               }}
@@ -1130,30 +1191,56 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               {(() => {
-                const headingRaw = pageContent?.finalCtaHeading || pageContent?.hero?.title;
-                // Ensure heading is a string, not an object
-                return typeof headingRaw === 'object' 
-                  ? headingRaw?.heading || headingRaw?.title || `Ready to Find Your Perfect Builder in ${city || country}?` 
-                  : headingRaw || `Ready to Find Your Perfect Builder in ${city || country}?`;
+                const extractText = (c: any): string => {
+                  if (!c) return "";
+                  if (typeof c === 'string') return c;
+                  if (typeof c === 'object' && c !== null) {
+                    return c.heading || c.title || c.text || JSON.stringify(c);
+                  }
+                  return String(c);
+                };
+
+                const headingRaw = pageContent?.finalCtaHeading || 
+                                 pageContent?.hero?.title ||
+                                 pageContent?.title;
+                
+                return extractText(headingRaw) || `Ready to Find Your Perfect Builder in ${city || country}?`;
               })()}
             </h2>
             <p className="text-xl text-slate-300 mb-8">
               {(() => {
-                const paragraphRaw = pageContent?.finalCtaParagraph || pageContent?.hero?.description || pageContent?.description;
-                // Ensure paragraph is a string, not an object
-                return typeof paragraphRaw === 'object' 
-                  ? paragraphRaw?.description || paragraphRaw?.text || "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs." 
-                  : paragraphRaw || "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.";
+                const extractText = (c: any): string => {
+                  if (!c) return "";
+                  if (typeof c === 'string') return c;
+                  if (typeof c === 'object' && c !== null) {
+                    return c.description || c.text || JSON.stringify(c);
+                  }
+                  return String(c);
+                };
+
+                const paragraphRaw = pageContent?.finalCtaParagraph || 
+                                   pageContent?.hero?.description || 
+                                   pageContent?.description;
+                
+                return extractText(paragraphRaw) || "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.";
               })()}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button className="text-lg px-8 py-4 text-black">
                 {(() => {
-                  const buttonTextRaw = pageContent?.finalCtaButtonText || pageContent?.hero?.ctaText;
-                  // Ensure buttonText is a string, not an object
-                  return typeof buttonTextRaw === 'object' 
-                    ? buttonTextRaw?.text || buttonTextRaw?.title || "Start Getting Quotes" 
-                    : buttonTextRaw || "Start Getting Quotes";
+                  const extractText = (c: any): string => {
+                    if (!c) return "";
+                    if (typeof c === 'string') return c;
+                    if (typeof c === 'object' && c !== null) {
+                      return c.text || c.title || JSON.stringify(c);
+                    }
+                    return String(c);
+                  };
+
+                  const buttonTextRaw = pageContent?.finalCtaButtonText || 
+                                      pageContent?.hero?.ctaText;
+                  
+                  return extractText(buttonTextRaw) || "Start Getting Quotes";
                 })()}
               </Button>
               <Button

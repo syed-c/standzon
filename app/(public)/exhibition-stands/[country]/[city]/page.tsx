@@ -79,7 +79,14 @@ export default async function CityPage({ params }: CityPageProps) {
   const cityName = ('name' in cityData) ? cityData.name : cityData.cityName;
   const countryName = toTitle(countrySlug);
 
-  const cmsContent = await getPageContent(`${countrySlug}-${citySlug}`);
+  let cmsContent = await getPageContent(`${countrySlug}-${citySlug}`);
+  
+  // If city-specific content not found, try fetching country content
+  if (!cmsContent) {
+    console.log(`🔍 City content not found for ${countrySlug}-${citySlug}, falling back to country content: ${countrySlug}`);
+    cmsContent = await getPageContent(countrySlug);
+  }
+
   const countryCode = getCountryCodeByName(countryName);
   
   const rawCities = countryCode ? await getCitiesByCountry(countryCode) : [];
