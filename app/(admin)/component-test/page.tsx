@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import CountryCityPage from '@/components/public/CountryCityPage';
-import EnhancedLocationPage from '@/components/public/EnhancedLocationPage';
+import { Button } from '@/components/shared/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/shared/card';
+import CountryCityPage from '@/components/client/CountryCityPage';
+import EnhancedLocationPage from '@/components/client/EnhancedLocationPage';
 
 export default function ComponentTest() {
   const [testType, setTestType] = useState<'country' | 'city'>('country');

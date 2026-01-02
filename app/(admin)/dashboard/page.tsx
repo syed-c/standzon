@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
-import SuperAdminDashboard from '@/components/admin/SuperAdminDashboard';
+import SuperAdminDashboard from '@/components/client/SuperAdminDashboard';
 import AuthBoundary from '@/components/boundaries/AuthBoundary';
 import { 
   BarChart3, 

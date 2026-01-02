@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/shared/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/shared/card';
+import { Alert, AlertDescription } from '@/components/shared/alert';
 import { Terminal } from 'lucide-react';
 
 export default function ClearCachePage() {

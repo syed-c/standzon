@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 import { ThemeProvider } from '@/app/theme-provider';
-import Shell from '@/components/ui/Shell';
-import Topbar from '@/components/admin/Topbar';
-import Sidebar from '@/components/admin/Sidebar';
+import Shell from '@/components/shared/Shell';
+import Topbar from '@/components/client/Topbar';
+import Sidebar from '@/components/client/Sidebar';
 
 interface AdminLayoutProps {
   children: ReactNode;

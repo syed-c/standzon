@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
-import BoothRentalPageContent from '@/components/public/BoothRentalPageContent';
+import BoothRentalPageContent from '@/components/client/BoothRentalPageContent';
 
 export const metadata: Metadata = siteMetadata['/booth-rental'] || {
   title: 'Booth Rental Services | Exhibition Stand Rental | StandsZone',

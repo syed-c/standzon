@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import DataAuditSystem from '@/components/admin/DataAuditSystem';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
+import DataAuditSystem from '@/components/client/DataAuditSystem';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
+import AdminLayout from '@/components/client/AdminLayout';
+import Sidebar from '@/components/client/Sidebar';
+import Topbar from '@/components/client/Topbar';
 
 export default function DataAuditPage() {
   return (

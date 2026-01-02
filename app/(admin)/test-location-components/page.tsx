@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import CountryCityPage from '@/components/public/CountryCityPage';
-import EnhancedLocationPage from '@/components/public/EnhancedLocationPage';
+import { Button } from '@/components/shared/button';
+import { Input } from '@/components/shared/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/shared/card';
+import CountryCityPage from '@/components/client/CountryCityPage';
+import EnhancedLocationPage from '@/components/client/EnhancedLocationPage';
 
 export default function TestLocationComponents() {
   const [country, setCountry] = useState('Germany');

@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react';
-import { SuperAdminLeadsManager } from '@/components/SuperAdminLeadsManager';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
+import { SuperAdminLeadsManager } from '@/components/client/SuperAdminLeadsManager';
+import AdminLayout from '@/components/client/AdminLayout';
+import Sidebar from '@/components/client/Sidebar';
+import Topbar from '@/components/client/Topbar';
 
 // Loading component for Suspense fallback
 function LoadingComponent() {

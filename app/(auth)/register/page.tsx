@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import AuthPage from '@/components/shared/AuthPage';
+import AuthPage from '@/components/client/AuthPage';
 
 export const metadata: Metadata = {
   title: 'Register - ExhibitBay',

@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/card';
+import { Badge } from '@/components/shared/badge';
+import { Button } from '@/components/shared/button';
 import { Download, Building, MapPin, Star, ExternalLink, Eye } from 'lucide-react';
 
 // Mock admin session

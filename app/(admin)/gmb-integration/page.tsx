@@ -1,10 +1,10 @@
 'use client';
 
 import React, { Suspense, useState } from 'react';
-import GMBAPIFetchTool from '@/components/GMBAPIFetchTool';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
+import GMBAPIFetchTool from '@/components/client/GMBAPIFetchTool';
+import AdminLayout from '@/components/client/AdminLayout';
+import Sidebar from '@/components/client/Sidebar';
+import Topbar from '@/components/client/Topbar';
 
 function GMBIntegrationClient() {
   // Mock admin data for the tool

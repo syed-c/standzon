@@ -32,23 +32,23 @@ import {
   Eye,
   RefreshCw
 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/card';
+import { Button } from '@/components/shared/button';
+import { Input } from '@/components/shared/input';
+import { Badge } from '@/components/shared/badge';
+import { Progress } from '@/components/shared/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/shared/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shared/select';
+import { ScrollArea } from '@/components/shared/scroll-area';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
 import { GLOBAL_EXHIBITION_DATA } from '@/lib/data/globalCities';
 import { getAllExpandedCities } from '@/lib/data/expandedLocations';
 import { dataPublishingService, PublishingTask } from '@/lib/services/dataPublishingService';
 import { useToast } from '@/hooks/use-toast';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
+import AdminLayout from '@/components/client/AdminLayout';
+import Sidebar from '@/components/client/Sidebar';
+import Topbar from '@/components/client/Topbar';
 
 interface SummaryData {
   totalCountries: number;

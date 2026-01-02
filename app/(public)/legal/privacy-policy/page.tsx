@@ -1,7 +1,7 @@
 'use client';
 
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
 import { Shield, Clock, Globe, Users } from 'lucide-react';
 
 export default function PrivacyPolicyPage() {

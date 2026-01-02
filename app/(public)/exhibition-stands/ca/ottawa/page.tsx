@@ -5,10 +5,10 @@ import { Metadata } from 'next';
 export const dynamic = 'force-dynamic';// import { preloadQuery } from "convex/nextjs";
 // import { api } from "@/convex/_generated/api";
 import { notFound } from 'next/navigation';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/shared/WhatsAppFloat';
-import CountryCityPage from '@/components/public/CountryCityPage';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
+import WhatsAppFloat from '@/components/client/WhatsAppFloat';
+import CountryCityPage from '@/components/client/CountryCityPage';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {

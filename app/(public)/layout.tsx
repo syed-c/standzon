@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 import { ThemeProvider } from '@/app/theme-provider';
-import Shell from '@/components/ui/Shell';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import Shell from '@/components/shared/Shell';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
 
 interface PublicLayoutProps {
   children: ReactNode;

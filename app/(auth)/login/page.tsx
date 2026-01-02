@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import AuthPage from '@/components/shared/AuthPage';
+import AuthPage from '@/components/client/AuthPage';
 
 interface LoginPageProps {
   searchParams: Promise<{

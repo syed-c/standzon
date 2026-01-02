@@ -2,25 +2,25 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { notFound } from 'next/navigation';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/shared/WhatsAppFloat';
-import { LeadInquiryForm } from '@/components/LeadInquiryForm';
-import { ProfileClaimSystem } from '@/components/ProfileClaimSystem';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
+import WhatsAppFloat from '@/components/client/WhatsAppFloat';
+import { LeadInquiryForm } from '@/components/client/LeadInquiryForm';
+import { ProfileClaimSystem } from '@/components/client/ProfileClaimSystem';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/card';
+import { Badge } from '@/components/shared/badge';
+import { Button } from '@/components/shared/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/shared/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/shared/dialog';
+import { Input } from '@/components/shared/input';
+import { Label } from '@/components/shared/label';
+import { Alert, AlertDescription } from '@/components/shared/alert';
 import { 
   MapPin, Star, Users, Clock, Phone, Mail, Globe, 
   Award, Shield, CheckCircle, Quote, MessageCircle,
   Building, Calendar, Target, Eye, Zap, Camera, Info
 } from 'lucide-react';
-import BuilderProfileTemplate from '@/components/builder/BuilderProfileTemplate';
+import BuilderProfileTemplate from '@/components/client/BuilderProfileTemplate';
 import { exhibitionBuilders } from '@/lib/data/exhibitionBuilders';
 import { unifiedPlatformAPI } from '@/lib/data/unifiedPlatformData';
 

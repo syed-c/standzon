@@ -1,14 +1,14 @@
 'use client';
 
 import React, { Suspense, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/card';
+import { Button } from '@/components/shared/button';
+import { Input } from '@/components/shared/input';
+import { Label } from '@/components/shared/label';
+import { Textarea } from '@/components/shared/textarea';
+import { Badge } from '@/components/shared/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/shared/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shared/select';
 import { 
   FileText, ArrowLeft, Save, Edit, Globe, MapPin, Calendar,
   Building2, Search, Plus, Eye, RefreshCw, Upload, Download

@@ -1,5 +1,5 @@
 import React from 'react';
-import FeaturedBuildersManager from '@/components/admin/FeaturedBuildersManager';
+import FeaturedBuildersManager from '@/components/client/FeaturedBuildersManager';
 
 export default function FeaturedBuildersPage() {
   return (

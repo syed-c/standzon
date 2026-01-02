@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/shared/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/card';
+import { Alert, AlertDescription } from '@/components/shared/alert';
+import { Badge } from '@/components/shared/badge';
+import { Progress } from '@/components/shared/progress';
+import { Separator } from '@/components/shared/separator';
 import { 
   Activity, 
   Database, 

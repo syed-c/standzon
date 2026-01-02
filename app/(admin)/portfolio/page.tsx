@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import AuthBoundary from '@/components/boundaries/AuthBoundary';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/card';
+import { Button } from '@/components/shared/button';
+import { Textarea } from '@/components/shared/textarea';
+import { Label } from '@/components/shared/label';
 import { useToast } from '@/hooks/use-toast';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shared/select';
 
 export default function AdminPortfolio() {
   console.log(' AdminPortfolio component rendered');

@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/shared/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/shared/card';
 import { supabase, supabaseAdmin } from '@/lib/supabase/client';
 
 export default function DirectDbTest() {

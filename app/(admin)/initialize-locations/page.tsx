@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/shared/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/shared/card";
+import { Alert, AlertDescription } from "@/components/shared/alert";
+import { Progress } from "@/components/shared/progress";
 import { Terminal, Loader2 } from "lucide-react";
 
 export default function InitializeLocationsPage() {

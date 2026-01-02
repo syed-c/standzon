@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
-import ServicesPageContent from '@/components/ServicesPageContent';
+import ServicesPageContent from '@/components/client/ServicesPageContent';
 import { getServerSupabase } from '@/lib/supabase';
 
 export async function generateMetadata(): Promise<Metadata> {

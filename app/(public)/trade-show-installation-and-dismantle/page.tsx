@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
-import InstallationDismantlePageContent from '@/components/InstallationDismantlePageContent';
+import InstallationDismantlePageContent from '@/components/client/InstallationDismantlePageContent';
 
 export const metadata: Metadata = siteMetadata['/trade-show-installation-and-dismantle'] || {
   title: 'Trade Show Installation & Dismantle | Professional I&D Services | StandsZone',

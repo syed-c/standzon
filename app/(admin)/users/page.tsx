@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import UserManagement from '@/components/admin/UserManagement';
+import UserManagement from '@/components/client/UserManagement';
 import AuthBoundary from '@/components/boundaries/AuthBoundary';
 
 export const metadata: Metadata = {

@@ -1,20 +1,20 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
-import WhatsAppFloat from '@/components/shared/WhatsAppFloat';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import Navigation from "@/components/client/Navigation";
+import Footer from "@/components/client/Footer";
+import WhatsAppFloat from '@/components/client/WhatsAppFloat';
+import { Button } from "@/components/shared/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/shared/card";
+import { Badge } from "@/components/shared/badge";
+import { Input } from "@/components/shared/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/shared/select";
 import Link from "next/link";
 import {
   FiCalendar,

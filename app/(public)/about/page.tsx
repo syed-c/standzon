@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
-import AboutPageContent from '@/components/public/AboutPageContent';
+import AboutPageContent from '@/components/client/AboutPageContent';
 import { getServerSupabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';

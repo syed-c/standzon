@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/shared/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/shared/card';
 
 export default function InspectDatabase() {
   const [dbInfo, setDbInfo] = useState<any>(null);

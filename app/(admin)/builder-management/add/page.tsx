@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/card';
+import { Button } from '@/components/shared/button';
+import { Input } from '@/components/shared/input';
+import { Label } from '@/components/shared/label';
+import { Textarea } from '@/components/shared/textarea';
+import { Switch } from '@/components/shared/switch';
 import { 
   Building2, 
   ArrowLeft, 

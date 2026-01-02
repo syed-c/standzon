@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/card';
+import { Button } from '@/components/shared/button';
+import { Badge } from '@/components/shared/badge';
 import { 
   Database, MapPin, Building2, Calendar, Globe, Settings, 
   CheckCircle, ArrowRight, ExternalLink, Star, Users,

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
-import GraphicsPrintingPageContent from '@/components/GraphicsPrintingPageContent';
+import GraphicsPrintingPageContent from '@/components/client/GraphicsPrintingPageContent';
 
 export const metadata: Metadata = siteMetadata['/trade-show-graphics-printing'] || {
   title: 'Trade Show Graphics & Printing | Professional Branding Services | StandsZone',

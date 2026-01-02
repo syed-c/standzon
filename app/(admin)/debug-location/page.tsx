@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/shared/button';
+import { Input } from '@/components/shared/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/shared/card';
 
 export default function DebugLocationPage() {
   const [country, setCountry] = useState('Germany');

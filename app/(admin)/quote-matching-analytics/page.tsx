@@ -1,8 +1,8 @@
 import React from 'react';
 import { Metadata } from 'next';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import RealTimePlatformAnalytics from '@/components/RealTimePlatformAnalytics';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
+import RealTimePlatformAnalytics from '@/components/client/RealTimePlatformAnalytics';
 
 export const metadata: Metadata = {
   title: 'Quote Matching Analytics - Phase 4 Complete | ExhibitBay',

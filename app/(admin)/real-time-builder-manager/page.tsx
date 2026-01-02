@@ -1,8 +1,8 @@
 import React from 'react';
 import { Metadata } from 'next';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import RealTimeBuilderManager from '@/components/admin/RealTimeBuilderManager';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
+import RealTimeBuilderManager from '@/components/client/RealTimeBuilderManager';
 
 export const metadata: Metadata = {
   title: 'Real-Time Builder Manager - Admin Dashboard',

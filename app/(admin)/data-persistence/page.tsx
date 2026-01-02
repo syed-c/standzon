@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import DataPersistenceMonitor from '@/components/admin/DataPersistenceMonitor';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
+import DataPersistenceMonitor from '@/components/client/DataPersistenceMonitor';
+import AdminLayout from '@/components/client/AdminLayout';
+import Sidebar from '@/components/client/Sidebar';
+import Topbar from '@/components/client/Topbar';
 
 export default function DataPersistenceMonitorPage() {
   return (
