@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
-import QuoteRequestContent from '@/components/QuoteRequestContent';
+import QuoteRequestContent from '@/components/client/QuoteRequestContent';
 
 export const metadata: Metadata = siteMetadata['/quote'] || {
   title: 'Get Free Exhibition Stand Quote | Instant Quote Request | StandsZone',

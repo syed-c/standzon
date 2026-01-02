@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import ExhibitionPage from '@/components/public/ExhibitionPage';
+import ExhibitionPage from '@/components/client/ExhibitionPage';
 import { notFound } from 'next/navigation';
 import { exhibitions } from '@/lib/data/exhibitions';
 import { tradeShows } from '@/lib/data/tradeShows';

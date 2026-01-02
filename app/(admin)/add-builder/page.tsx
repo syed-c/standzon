@@ -1,8 +1,8 @@
 "use client";
 
 import { Suspense } from 'react';
-import AddBuilderForm from '@/components/admin/AddBuilderForm';
-import { Card, CardContent } from '@/components/ui/card';
+import AddBuilderForm from '@/components/client/AddBuilderForm';
+import { Card, CardContent } from '@/components/shared/card';
 
 export default function AddBuilderPage() {
   const handleSuccess = () => {

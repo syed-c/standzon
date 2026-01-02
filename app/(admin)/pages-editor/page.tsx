@@ -1,19 +1,19 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import AdminLayout from '@/components/client/AdminLayout';
+import Sidebar from '@/components/client/Sidebar';
+import Topbar from '@/components/client/Topbar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/card';
+import { Button } from '@/components/shared/button';
+import { Input } from '@/components/shared/input';
+import { Textarea } from '@/components/shared/textarea';
+import { Label } from '@/components/shared/label';
+import { Badge } from '@/components/shared/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, Edit, RefreshCw, FileText } from 'lucide-react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/shared/accordion';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shared/select';
 
 type PageItem = {
   title: string;

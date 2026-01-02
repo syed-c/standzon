@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
-import RenderingConceptPageContent from '@/components/RenderingConceptPageContent';
+import RenderingConceptPageContent from '@/components/client/RenderingConceptPageContent';
 
 // Export metadata from centralized metadata.json
 export const metadata: Metadata = siteMetadata['/3d-rendering-and-concept-development'] || {

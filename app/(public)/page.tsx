@@ -1,23 +1,16 @@
-'use client';
+import HomePageContent from '@/components/client/HomePageContent';
+import OfflineSupport from '@/components/client/OfflineSupport';
+import { getPageContent } from '@/lib/server/db/pages';
 
-import HomePageContent from '@/components/HomePageContent';
-import OfflineSupport from '@/components/OfflineSupport';
-// import OfflineTest from '@/components/OfflineTest';
-import { useIndexedDB } from '@/hooks/useIndexedDB';
-import { useEffect } from 'react';
+// Force dynamic to ensure fresh content if needed, or use revalidate
+export const revalidate = 3600; // Cache for 1 hour
 
-export default function Home() {
-  const { addRecentlyVisited } = useIndexedDB();
-  
-  useEffect(() => {
-    // Track this page visit
-    addRecentlyVisited('/', 'Home');
-  }, [addRecentlyVisited]);
+export default async function Home() {
+  const pageContent = await getPageContent('/');
   
   return (
     <>
-      <HomePageContent />
-      {/* <OfflineTest /> */}
+      <HomePageContent initialContent={pageContent} />
       <OfflineSupport />
     </>
   );

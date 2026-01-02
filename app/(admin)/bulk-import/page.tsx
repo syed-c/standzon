@@ -1,11 +1,11 @@
 import React from 'react';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
-import BulkBuilderImporter from '@/components/admin/BulkBuilderImporter';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import AdminLayout from '@/components/client/AdminLayout';
+import Sidebar from '@/components/client/Sidebar';
+import Topbar from '@/components/client/Topbar';
+import BulkBuilderImporter from '@/components/client/BulkBuilderImporter';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/shared/card';
+import { Button } from '@/components/shared/button';
+import { Badge } from '@/components/shared/badge';
 import { 
   ArrowLeft, 
   Database, 

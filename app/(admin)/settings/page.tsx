@@ -3,14 +3,14 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import SystemSettingsPanel from '@/components/admin/SystemSettingsPanel';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
+import SystemSettingsPanel from '@/components/client/SystemSettingsPanel';
+import { Button } from '@/components/shared/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/shared/card';
+import { Badge } from '@/components/shared/badge';
 import { ArrowLeft, Settings, Shield, AlertTriangle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription } from '@/components/shared/alert';
 
 export default function AdminSettingsPage() {
   const router = useRouter();

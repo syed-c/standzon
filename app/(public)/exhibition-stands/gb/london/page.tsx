@@ -1,10 +1,10 @@
 import { Metadata } from 'next';
 import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/shared/WhatsAppFloat';
-import CountryCityPage  from '@/components/public/CountryCityPage';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
+import WhatsAppFloat from '@/components/client/WhatsAppFloat';
+import CountryCityPage  from '@/components/client/CountryCityPage';
 import { getServerSupabase } from '@/lib/supabase';
 
 // ✅ FIX #1: Force dynamic rendering to prevent build-time evaluation

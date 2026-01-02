@@ -1,9 +1,9 @@
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/shared/WhatsAppFloat';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
+import WhatsAppFloat from '@/components/client/WhatsAppFloat';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/shared/button';
+import { Card, CardContent } from '@/components/shared/card';
 import { FiMapPin, FiUsers, FiCalendar, FiTrendingUp, FiStar, FiArrowRight, FiCheckCircle, FiGlobe, FiTool } from 'react-icons/fi';
 
 export const metadata = {

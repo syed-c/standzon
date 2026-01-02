@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/shared/card';
 import { getServerSupabase } from '@/lib/supabase';
 
 export default async function PublicFilterTest() {

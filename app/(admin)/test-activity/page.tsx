@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import AdminLayout from '@/components/client/AdminLayout';
+import Sidebar from '@/components/client/Sidebar';
+import Topbar from '@/components/client/Topbar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shared/card";
+import { Button } from "@/components/shared/button";
+import { Input } from "@/components/shared/input";
+import { Label } from "@/components/shared/label";
+import { Textarea } from "@/components/shared/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/shared/select";
+import { Alert, AlertDescription } from "@/components/shared/alert";
 import { CheckCircle, XCircle } from "lucide-react";
 
 export default function TestActivityPage() {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
-import CustomBoothPageContent from '@/components/public/CustomBoothPageContent';
+import CustomBoothPageContent from '@/components/client/CustomBoothPageContent';
 
 export const metadata: Metadata = siteMetadata['/custom-booth'] || {
   title: 'Custom Exhibition Booths | Bespoke Trade Show Stands | StandsZone',

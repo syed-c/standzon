@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import NewBuilderDashboard from '@/components/NewBuilderDashboard';
+import NewBuilderDashboard from '@/components/client/NewBuilderDashboard';
 import AuthBoundary from '@/components/boundaries/AuthBoundary';
 
 export const metadata: Metadata = {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
-import BuildersDirectoryContent from '@/components/public/BuildersDirectoryContent';
+import BuildersDirectoryContent from '@/components/client/BuildersDirectoryContent';
 
 // Export metadata from centralized metadata.json
 export const metadata: Metadata = siteMetadata['/builders'] || {

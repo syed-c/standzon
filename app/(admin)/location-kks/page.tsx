@@ -1,5 +1,5 @@
 import React from 'react';
-import LocationKKSDashboard from '@/components/LocationKKSDashboard';
+import LocationKKSDashboard from '@/components/client/LocationKKSDashboard';
 
 export default function LocationKKSPage() {
   return (

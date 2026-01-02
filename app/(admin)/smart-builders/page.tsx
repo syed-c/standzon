@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import SmartBuildersManager from '@/components/SmartBuildersManager';
+import SmartBuildersManager from '@/components/client/SmartBuildersManager';
 
 const mockAdmin = {
   id: 'admin-001',

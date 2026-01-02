@@ -1,15 +1,15 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter, Poppins, Roboto, Montserrat, Red_Hat_Display } from "next/font/google";
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@/components/shared/toaster';
 import siteMetadata from '@/app/metadata.json';
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import PerformanceMonitor from '@/components/shared/PerformanceMonitor';
-import ServiceWorkerRegistration from '@/components/shared/ServiceWorkerRegistration';
-import CriticalResourcePreloader from '@/components/CriticalResourcePreloader';
-import { ConvexClientProvider } from '@/components/ConvexProvider';
-import { ThemeProvider } from '@/components/ThemeProvider';
+import PerformanceMonitor from '@/components/client/PerformanceMonitor';
+import ServiceWorkerRegistration from '@/components/client/ServiceWorkerRegistration';
+import CriticalResourcePreloader from '@/components/client/CriticalResourcePreloader';
+import { ConvexClientProvider } from '@/components/client/ConvexProvider';
+import { ThemeProvider } from '@/components/client/ThemeProvider';
 // GlobalTypography temporarily disabled due to dev chunk issue
 
 // ✅ PERFORMANCE: Optimize font loading

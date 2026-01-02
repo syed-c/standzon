@@ -1,7 +1,7 @@
 'use client';
 
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
 import { FileText, Clock, Scale, Shield, Users, Globe } from 'lucide-react';
 
 export default function TermsOfServicePage() {

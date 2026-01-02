@@ -1,9 +1,9 @@
 "use client";
 
-import AdminClaimsManager from '@/components/admin/AdminClaimsManager';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import AdminClaimsManager from '@/components/client/AdminClaimsManager';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/card';
 import { Shield, Users, TrendingUp, AlertCircle } from 'lucide-react';
 
 export default function ProfileClaimsPage() {

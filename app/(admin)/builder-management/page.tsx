@@ -1,13 +1,13 @@
 'use client';
 
 import React, { Suspense, useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/shared/card';
+import { Button } from '@/components/shared/button';
+import { Badge } from '@/components/shared/badge';
+import { Input } from '@/components/shared/input';
+import { Label } from '@/components/shared/label';
+import { Textarea } from '@/components/shared/textarea';
+import { Switch } from '@/components/shared/switch';
 import { 
   Building2, 
   Mail, 
@@ -29,9 +29,9 @@ import {
   ChevronsRight
 } from 'lucide-react';
 import Link from 'next/link';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
+import AdminLayout from '@/components/client/AdminLayout';
+import Sidebar from '@/components/client/Sidebar';
+import Topbar from '@/components/client/Topbar';
 import { useBuilders } from '@/lib/hooks/useBuilders';
 
 function BuildersManagementClient() {

@@ -1,7 +1,7 @@
-import FinalAuditReport from '@/components/FinalAuditReport';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
+import FinalAuditReport from '@/components/client/FinalAuditReport';
+import AdminLayout from '@/components/client/AdminLayout';
+import Sidebar from '@/components/client/Sidebar';
+import Topbar from '@/components/client/Topbar';
 
 export default function FinalAuditPage() {
   return (

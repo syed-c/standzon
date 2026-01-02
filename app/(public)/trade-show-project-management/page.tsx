@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
-import ProjectManagementPageContent from '@/components/ProjectManagementPageContent';
+import ProjectManagementPageContent from '@/components/client/ProjectManagementPageContent';
 
 export const metadata: Metadata = siteMetadata['/trade-show-project-management'] || {
   title: 'Trade Show Project Management | Professional PM Services | StandsZone',

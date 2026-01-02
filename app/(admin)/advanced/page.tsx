@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import AdvancedAdminDashboard from '@/components/admin/AdvancedAdminDashboard';
+import AdvancedAdminDashboard from '@/components/client/AdvancedAdminDashboard';
 
 export const metadata: Metadata = {
   title: 'Advanced Admin Control Center - ExhibitBay',

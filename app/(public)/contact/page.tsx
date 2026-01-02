@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
-import ContactPageContent from '@/components/public/ContactPageContent';
+import ContactPageContent from '@/components/client/ContactPageContent';
 
 // Export metadata from centralized metadata.json
 export const metadata: Metadata = siteMetadata['/contact'] || {

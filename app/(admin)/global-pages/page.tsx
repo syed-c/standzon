@@ -1,8 +1,8 @@
 'use client';
 
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-// import { GlobalPagesManager } from '@/components/GlobalPagesManager';
+import Navigation from '@/components/client/Navigation';
+import Footer from '@/components/client/Footer';
+// import { GlobalPagesManager } from '@/components/client/GlobalPagesManager';
 
 export default function GlobalPagesPage() {
   return (
