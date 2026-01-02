@@ -228,8 +228,6 @@ export default function AboutPageContent() {
 
   return (
     <div className="font-inter min-h-screen">
-      <Navigation />
-
       {/* Trade Shows style banner */}
       <TradeStyleBanner
         badgeText="Professional Trade Show Database"
@@ -460,7 +458,6 @@ export default function AboutPageContent() {
         </div>
       </section>
 
-      <Footer />
       <WhatsAppFloat />
     </div>
   );

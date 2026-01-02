@@ -83,8 +83,6 @@ export default function HomePageContent({ initialContent }: { initialContent: an
 
   return (
     <div className="page-container homepage-container">
-      <Navigation />
-
       <main className="main-content">
         {/* ✅ PERFORMANCE: Ultra-fast hero section with minimal dependencies */}
         <UltraFastHero
@@ -269,11 +267,6 @@ export default function HomePageContent({ initialContent }: { initialContent: an
           </div>
         </section>
       </main>
-      
-      {/* ✅ PERFORMANCE: Lazy load Footer */}
-      <Suspense fallback={<div className="h-32 bg-gray-900 animate-pulse"></div>}>
-        <Footer />
-      </Suspense>
     </div>
   );
 }

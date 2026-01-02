@@ -142,7 +142,6 @@ export default async function CityPage({ params }: CityPageProps) {
 
   return (
     <>
-      <Navigation />
       <CountryCityPage 
         country={countryName} 
         city={cityName} 
@@ -151,7 +150,6 @@ export default async function CityPage({ params }: CityPageProps) {
         cities={cities}
         cmsContent={cmsContent}
       />
-      <Footer />
       <WhatsAppFloat />
     </>
   );

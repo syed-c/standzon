@@ -553,7 +553,6 @@ export default function QuoteRequestContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50">
-      <Navigation />
       <TradeStyleBanner 
         badgeText="Get Customized Quotes"
         mainHeading="Request a Quote for Your"
@@ -1035,7 +1034,6 @@ export default function QuoteRequestContent() {
         </div>
       </div>
       
-      <Footer />
       <WhatsAppFloat />
     </div>
   );

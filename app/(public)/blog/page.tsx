@@ -141,8 +141,6 @@ export default function BlogPage() {
 
   return (
     <div className="font-inter min-h-screen">
-      <Navigation />
-      
       {/* Hero Section */}
       <section className="pt-20 pb-16 bg-gradient-to-br from-navy-900 via-navy-800 to-blue-dark text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -351,7 +349,6 @@ export default function BlogPage() {
         </div>
       </section>
 
-      <Footer />
       <WhatsAppFloat />
     </div>
   );

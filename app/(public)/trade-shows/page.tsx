@@ -236,8 +236,6 @@ export default function TradeShowsDirectory() {
       className="font-inter min-h-screen bg-background-gray"
       data-macaly="trade-shows-main-container"
     >
-      <Navigation />
-
       {/* Professional Hero Section */}
       <section className="pt-20 pb-16 bg-gradient-to-br from-deep-navy via-gray-800 to-primary-blue text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1011,7 +1009,6 @@ export default function TradeShowsDirectory() {
         </div>
       </section>
 
-      <Footer />
       <WhatsAppFloat />
     </div>
   );

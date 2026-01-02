@@ -454,7 +454,6 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
 
   return (
     <div className="font-inter">
-      <Navigation />
       <CountryCityPage
         country={countryInfo.name}
         initialBuilders={builders}
@@ -464,7 +463,6 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
         // Explicitly set hideCitiesSection to false to ensure cities section is shown
         hideCitiesSection={false}
       />
-      <Footer />
       <WhatsAppFloat />
     </div>
   );
