@@ -1,9 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
+import AuthBoundary from '@/components/boundaries/AuthBoundary';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,25 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 export default function AdminPortfolio() {
   console.log(' AdminPortfolio component rendered');
   
-  // Simple client-side guard: require admin session in localStorage
-  React.useEffect(() => {
-    console.log(' Checking admin authentication');
-    try {
-      const raw = typeof window !== 'undefined' ? localStorage.getItem('currentUser') : null;
-      const user = raw ? JSON.parse(raw) : null;
-      const isAdmin = !!user && (user.role === 'super_admin' || user.role === 'admin' || user.isAdmin);
-      if (!isAdmin) {
-        console.log(' User is not admin, redirecting to login');
-        window.location.href = '/admin/login';
-      } else {
-        console.log(' User is admin, proceeding');
-      }
-    } catch (error) {
-      console.log(' Error checking admin auth, redirecting to login', error);
-      if (typeof window !== 'undefined') window.location.href = '/admin/login';
-    }
-  }, []);
-
   const { toast } = useToast();
 
   // Country and City options state
@@ -42,13 +21,11 @@ export default function AdminPortfolio() {
   // Log when country options change
   useEffect(() => {
     // Remove console.log statements to prevent potential infinite loops
-
   }, [countryOptions]);
   
   // Log when city options change
   useEffect(() => {
     // Remove console.log statements to prevent potential infinite loops
-
   }, [cityOptionsByCountry]);
   
   // Country Gallery Editors state
@@ -70,14 +47,11 @@ export default function AdminPortfolio() {
     
     (async () => {
       try {
-        // console.log('🔍 Attempting to fetch location data from API...');
-        
         // Fetch all location data from our API endpoint
         const response = await fetch('/api/admin/portfolio/locations');
         
         if (!response.ok) {
           const errorText = await response.text();
-          // console.error('❌ Error fetching location data:', errorText);
           if (isMounted) {
             toast({ 
               title: 'Error', 
@@ -91,7 +65,6 @@ export default function AdminPortfolio() {
         const result = await response.json();
         
         if (!result.success) {
-          // console.error('❌ Error in location data response:', result.error);
           if (isMounted) {
             toast({ 
               title: 'Error', 
@@ -102,21 +75,14 @@ export default function AdminPortfolio() {
           return;
         }
 
-        // console.log(`✅ Successfully fetched location data`);
-        // console.log('📊 Countries:', result.countries.length);
-        // console.log('📊 Cities for Germany:', result.cities['germany']?.length || 0);
-        // console.log('📊 All city groups:', Object.keys(result.cities).length);
-
         // Add a small delay to ensure state updates properly
         setTimeout(() => {
           if (isMounted) {
             setCountryOptions(result.countries);
             setCityOptionsByCountry(result.cities);
-            // console.log('✅ Country/city data loading complete');
           }
         }, 100);
       } catch (error: any) {
-        // console.error('❌ Error loading country/city data:', error);
         if (isMounted) {
           toast({ 
             title: 'Error', 
@@ -130,7 +96,7 @@ export default function AdminPortfolio() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [toast]);
 
   const loadCountryGallery = async () => {
     if (!selectedCountryForGallery) return;
@@ -287,25 +253,21 @@ export default function AdminPortfolio() {
   };
 
   return (
-    <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
-      <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+    <AuthBoundary requiredRole="admin">
+      <div className="py-6">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Portfolio Management</h1>
-              <p className="text-gray-600">Manage gallery images for country and city pages.</p>
-              {/* Debug info */}
+              <h1 className="text-3xl font-bold text-white">Portfolio Management</h1>
+              <p className="text-gray-400">Manage gallery images for country and city pages.</p>
               <p className="text-sm text-gray-500 mt-1">
                 Countries: {countryOptions.length} | 
                 City Groups: {Object.keys(cityOptionsByCountry).length}
               </p>
             </div>
-            {/* Test button to manually reload data */}
             <Button onClick={async () => {
-              console.log(' Manually reloading location data...');
               const response = await fetch('/api/admin/portfolio/locations');
               const result = await response.json();
-              console.log(' Manual reload result:', result);
               if (result.success) {
                 setCountryOptions(result.countries);
                 setCityOptionsByCountry(result.cities);
@@ -317,32 +279,31 @@ export default function AdminPortfolio() {
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            {/* Country Gallery Editor */}
-            <Card>
+            <Card className="bg-slate-800 border-slate-700 text-white">
               <CardHeader>
                 <CardTitle>Country Gallery Manager</CardTitle>
-                <CardDescription>Add or update gallery images for a specific country page.</CardDescription>
+                <CardDescription className="text-gray-400">Add or update gallery images for a specific country page.</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <Label>Select Country</Label>
                   <Select value={selectedCountryForGallery} onValueChange={(v)=>setSelectedCountryForGallery(v)}>
-                    <SelectTrigger className="w-full"><SelectValue placeholder="Choose a country" /></SelectTrigger>
-                    <SelectContent className="max-h-80">
+                    <SelectTrigger className="w-full bg-slate-700 border-slate-600"><SelectValue placeholder="Choose a country" /></SelectTrigger>
+                    <SelectContent className="max-h-80 bg-slate-800 text-white border-slate-700">
                       {countryOptions.map((c) => (
                         <SelectItem key={`country-${c.slug}`} value={c.slug}>{c.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   <div className="flex gap-2">
-                    <Button type="button" variant="outline" onClick={loadCountryGallery} disabled={!selectedCountryForGallery || loadingCountryGallery}>
+                    <Button type="button" variant="outline" onClick={loadCountryGallery} disabled={!selectedCountryForGallery || loadingCountryGallery} className="border-slate-600 hover:bg-slate-700">
                       {loadingCountryGallery ? 'Loading…' : 'Load Images'}
                     </Button>
                   </div>
                   <Label className="mt-2">Image URLs (one per line)</Label>
-                  <Textarea rows={8} value={countryGalleryText} onChange={(e)=>setCountryGalleryText(e.target.value)} placeholder="https://example.com/1.jpg\nhttps://example.com/2.jpg" />
+                  <Textarea rows={8} value={countryGalleryText} onChange={(e)=>setCountryGalleryText(e.target.value)} placeholder="https://example.com/1.jpg\nhttps://example.com/2.jpg" className="bg-slate-700 border-slate-600 text-white" />
                   <div className="flex items-center gap-3">
-                    <input type="file" accept="image/*" onChange={async (e)=>{
+                    <input type="file" accept="image/*" className="text-sm text-gray-400" onChange={async (e)=>{
                       const f = e.target.files?.[0];
                       if (!f) return;
                       const fd = new FormData();
@@ -357,28 +318,27 @@ export default function AdminPortfolio() {
                         toast({ title: 'Upload failed', description: j?.error||'Could not upload', variant: 'destructive' });
                       }
                     }} />
-                    <span className="text-xs text-gray-500">Upload to Supabase Storage</span>
+                    <span className="text-xs text-gray-500">Upload to Storage</span>
                   </div>
                   <div className="flex gap-2">
                     <Button onClick={saveCountryGallery} disabled={!selectedCountryForGallery || savingCountryGallery}>{savingCountryGallery ? 'Saving…' : 'Save Country Gallery'}</Button>
-                    <Button variant="outline" onClick={()=>setCountryGalleryText('')}>Clear</Button>
+                    <Button variant="outline" onClick={()=>setCountryGalleryText('')} className="border-slate-600 hover:bg-slate-700">Clear</Button>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* City Gallery Editor */}
-            <Card>
+            <Card className="bg-slate-800 border-slate-700 text-white">
               <CardHeader>
                 <CardTitle>City Gallery Manager</CardTitle>
-                <CardDescription>Add or update gallery images for a specific city page.</CardDescription>
+                <CardDescription className="text-gray-400">Add or update gallery images for a specific city page.</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <Label>Select Country</Label>
                   <Select value={selectedCountryForCityGallery} onValueChange={(v)=>{ setSelectedCountryForCityGallery(v); setSelectedCityForGallery(''); }}>
-                    <SelectTrigger className="w-full"><SelectValue placeholder="Choose a country" /></SelectTrigger>
-                    <SelectContent className="max-h-80">
+                    <SelectTrigger className="w-full bg-slate-700 border-slate-600"><SelectValue placeholder="Choose a country" /></SelectTrigger>
+                    <SelectContent className="max-h-80 bg-slate-800 text-white border-slate-700">
                       {countryOptions.map((c) => (
                         <SelectItem key={`country-${c.slug}`} value={c.slug}>{c.name}</SelectItem>
                       ))}
@@ -387,8 +347,8 @@ export default function AdminPortfolio() {
 
                   <Label>Select City</Label>
                   <Select value={selectedCityForGallery} onValueChange={(v)=>setSelectedCityForGallery(v)} disabled={!selectedCountryForCityGallery}>
-                    <SelectTrigger className="w-full"><SelectValue placeholder="Choose a city" /></SelectTrigger>
-                    <SelectContent className="max-h-80">
+                    <SelectTrigger className="w-full bg-slate-700 border-slate-600"><SelectValue placeholder="Choose a city" /></SelectTrigger>
+                    <SelectContent className="max-h-80 bg-slate-800 text-white border-slate-700">
                       {(cityOptionsByCountry[selectedCountryForCityGallery]||[]).map(city => (
                         <SelectItem key={city.slug} value={city.slug}>{city.name}</SelectItem>
                       ))}
@@ -396,14 +356,14 @@ export default function AdminPortfolio() {
                   </Select>
 
                   <div className="flex gap-2">
-                    <Button type="button" variant="outline" onClick={loadCityGallery} disabled={!selectedCountryForCityGallery || !selectedCityForGallery || loadingCityGallery}>
+                    <Button type="button" variant="outline" onClick={loadCityGallery} disabled={!selectedCountryForCityGallery || !selectedCityForGallery || loadingCityGallery} className="border-slate-600 hover:bg-slate-700">
                       {loadingCityGallery ? 'Loading…' : 'Load Images'}
                     </Button>
                   </div>
                   <Label className="mt-2">Image URLs (one per line)</Label>
-                  <Textarea rows={8} value={cityGalleryText} onChange={(e)=>setCityGalleryText(e.target.value)} placeholder="https://example.com/1.jpg\nhttps://example.com/2.jpg" />
+                  <Textarea rows={8} value={cityGalleryText} onChange={(e)=>setCityGalleryText(e.target.value)} placeholder="https://example.com/1.jpg\nhttps://example.com/2.jpg" className="bg-slate-700 border-slate-600 text-white" />
                   <div className="flex items-center gap-3">
-                    <input type="file" accept="image/*" onChange={async (e)=>{
+                    <input type="file" accept="image/*" className="text-sm text-gray-400" onChange={async (e)=>{
                       const f = e.target.files?.[0];
                       if (!f) return;
                       const fd = new FormData();
@@ -418,11 +378,11 @@ export default function AdminPortfolio() {
                         toast({ title: 'Upload failed', description: j?.error||'Could not upload', variant: 'destructive' });
                       }
                     }} />
-                    <span className="text-xs text-gray-500">Upload to Supabase Storage</span>
+                    <span className="text-xs text-gray-500">Upload to Storage</span>
                   </div>
                   <div className="flex gap-2">
                     <Button onClick={saveCityGallery} disabled={!selectedCountryForCityGallery || !selectedCityForGallery || savingCityGallery}>{savingCityGallery ? 'Saving…' : 'Save City Gallery'}</Button>
-                    <Button variant="outline" onClick={()=>setCityGalleryText('')}>Clear</Button>
+                    <Button variant="outline" onClick={()=>setCityGalleryText('')} className="border-slate-600 hover:bg-slate-700">Clear</Button>
                   </div>
                 </div>
               </CardContent>
@@ -430,6 +390,6 @@ export default function AdminPortfolio() {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </AuthBoundary>
   );
 }

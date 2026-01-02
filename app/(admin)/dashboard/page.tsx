@@ -2,9 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import siteMetadata from '@/app/metadata.json';
 import SuperAdminDashboard from '@/components/admin/SuperAdminDashboard';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
+import AuthBoundary from '@/components/boundaries/AuthBoundary';
 import { 
   BarChart3, 
   Users, 
@@ -63,7 +61,7 @@ const mockAdmin = {
 
 export default function SmartAdminDashboardPage() {
   return (
-    <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
+    <AuthBoundary requiredRole="admin">
       {/* Consolidated Budget Card placeholder wrapper; keep logic inside SuperAdminDashboard */}
       <div className="space-y-8">
         {/* Welcome Banner */}
@@ -71,7 +69,7 @@ export default function SmartAdminDashboardPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-white">Welcome back, Admin</h1>
-              <p className="text-gray-400 mt-1">Here's what's happening with your platform today.</p>
+              <p className="text-gray-400 mt-1">Here&apos;s what&apos;s happening with your platform today.</p>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -223,6 +221,6 @@ export default function SmartAdminDashboardPage() {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </AuthBoundary>
   );
 }

@@ -1,25 +1,29 @@
 import { ReactNode } from 'react';
 import { ThemeProvider } from '@/app/theme-provider';
+import Shell from '@/components/ui/Shell';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 
 interface PublicLayoutProps {
   children: ReactNode;
 }
 
+/**
+ * Public domain layout.
+ * Optimized for SEO and minimal overhead.
+ */
 export default function PublicLayout({ children }: PublicLayoutProps) {
-  // Public-facing layout for SEO-optimized pages with theming
-  // No auth required, focuses on theming and structure
-
   return (
     <ThemeProvider theme="public">
-      <div className="min-h-screen bg-white">
-        <div className="flex flex-col">
-          {/* Public header/navigation could go here */}
-          <main className="flex-1">
-            {children}
-          </main>
-          {/* Public footer could go here */}
+      <Shell 
+        topbar={<Navigation />} 
+        footer={<Footer />}
+        className="bg-white"
+      >
+        <div className="public-content-wrapper pt-20">
+          {children}
         </div>
-      </div>
+      </Shell>
     </ThemeProvider>
   );
 }
