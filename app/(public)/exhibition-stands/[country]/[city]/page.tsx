@@ -1,9 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Navigation from "@/components/client/Navigation";
-import Footer from "@/components/client/Footer";
 import WhatsAppFloat from '@/components/client/WhatsAppFloat';
-import CountryCityPage from '@/components/client/CountryCityPage';
 import {
   getCityBySlug as getGlobalCityBySlug,
   getCountryBySlug as getGlobalCountryBySlug,
@@ -13,11 +10,13 @@ import {
   getCountryBySlug as getComprehensiveCountryBySlug,
 } from "@/lib/data/comprehensiveLocationData";
 import { getCountryCodeByName } from "@/lib/utils/countryUtils";
-import { getBuilders } from "@/lib/server/db/builders";
-import { getCitiesByCountry } from "@/lib/server/db/locations";
-import { getPageContent } from "@/lib/server/db/pages";
+import { fetchCityContent } from "@/lib/server/content/fetch-city";
+import { extractContentBlocks } from "@/lib/server/content/parse-content";
+import { BlockRenderer } from "@/components/blocks";
+import { getCitiesByCountry as getGlobalCitiesByCountry } from "@/lib/data/globalExhibitionDatabase";
 
-export const dynamic = 'force-dynamic';
+// Enable ISR with 6-hour revalidation
+export const revalidate = 21600; // 6 hours in seconds
 
 interface CityPageProps {
   params: Promise<{
@@ -48,10 +47,18 @@ export async function generateMetadata({
   const cityName = ('name' in cityData) ? cityData.name : cityData.cityName;
   const countryName = toTitle(countrySlug);
 
-  const cmsContent = await getPageContent(`${countrySlug}-${citySlug}`);
-  
-  const title = cmsContent?.seo?.metaTitle || `Exhibition Stand Builders in ${cityName}, ${countryName} | Professional Trade Show Displays`;
-  const description = cmsContent?.seo?.metaDescription || `Find professional exhibition stand builders in ${cityName}, ${countryName}. Custom trade show displays, booth design, and comprehensive exhibition services.`;
+  // Fetch cached content - this will be shared with page render due to React cache()
+  const contentData = await fetchCityContent(
+    countrySlug,
+    countryName,
+    citySlug,
+    cityName
+  );
+
+  const title = contentData?.content.seo?.metaTitle || 
+    `Exhibition Stand Builders in ${cityName}, ${countryName} | Professional Trade Show Displays`;
+  const description = contentData?.content.seo?.metaDescription || 
+    `Find professional exhibition stand builders in ${cityName}, ${countryName}. Custom trade show displays, booth design, and comprehensive exhibition services.`;
 
   return {
     title,
@@ -79,78 +86,168 @@ export default async function CityPage({ params }: CityPageProps) {
   const cityName = ('name' in cityData) ? cityData.name : cityData.cityName;
   const countryName = toTitle(countrySlug);
 
-  let cmsContent = await getPageContent(`${countrySlug}-${citySlug}`);
-  
-  // If city-specific content not found, try fetching country content
-  if (!cmsContent) {
-    console.log(`🔍 City content not found for ${countrySlug}-${citySlug}, falling back to country content: ${countrySlug}`);
-    cmsContent = await getPageContent(countrySlug);
+  // Fetch all data in parallel using cached functions
+  const contentData = await fetchCityContent(
+    countrySlug,
+    countryName,
+    citySlug,
+    cityName
+  );
+
+  if (!contentData) {
+    console.error(`❌ Failed to load content for ${cityName}`);
+    notFound();
   }
 
-  const countryCode = getCountryCodeByName(countryName);
-  
-  const rawCities = countryCode ? await getCitiesByCountry(countryCode) : [];
-  const cities = rawCities.map((c: any) => ({
-    name: c.city_name,
-    slug: c.city_slug,
-    builderCount: c.builder_count || 0
-  }));
+  const { content, builders, cities, stats } = contentData;
 
-  const allBuilders = await getBuilders();
-  const normalizedCityName = cityName.toLowerCase();
-  const normalizedCountryName = countryName.toLowerCase();
-  
-  const filteredBuilders = allBuilders.filter((builder: any) => {
-    const bCity = (builder.headquarters_city || '').toLowerCase();
-    const bCountry = (builder.headquarters_country || '').toLowerCase();
-    return (bCity === normalizedCityName || bCity.includes(normalizedCityName)) && 
-           (bCountry === normalizedCountryName || bCountry.includes(normalizedCountryName) || 
-            (normalizedCountryName === 'united arab emirates' && bCountry === 'uae') ||
-            (normalizedCountryName === 'uae' && bCountry === 'united arab emirates'));
-  });
+  // Extract blocks from parsed content
+  const blocks = extractContentBlocks(content);
 
-  const transformedBuilders = filteredBuilders.map((builder: any) => ({
-    id: builder.id,
-    companyName: builder.company_name,
-    slug: builder.slug,
-    headquarters: {
-      city: builder.headquarters_city,
-      country: builder.headquarters_country
-    },
-    rating: builder.rating || 0,
-    reviewCount: builder.review_count || 0,
-    projectsCompleted: builder.projects_completed || 0,
-    verified: builder.verified || false,
-    premiumMember: builder.premium_member || false
-  }));
+  // Get other cities in the same country
+  const otherCities = cities
+    .filter((c: any) => c.slug !== citySlug)
+    .slice(0, 6);
 
-  const defaultContent = {
-    id: `${countrySlug}-${citySlug}-main`,
-    title: `Exhibition Stand Builders in ${cityName}, ${countryName}`,
-    metaTitle: `${cityName} Exhibition Stand Builders | ${countryName} Trade Show Booth Design`,
-    metaDescription: `Leading exhibition stand builders in ${cityName}, ${countryName}. Custom trade show displays, booth design, and professional exhibition services.`,
-    description: `${cityName} is a key hub for trade shows in ${countryName}. Our expert exhibition stand builders in ${cityName} deliver innovative designs that capture attention and drive results in this dynamic market.`,
-    heroContent: `Partner with ${cityName}'s premier exhibition stand builders for trade show success.`,
-    seoKeywords: [`${cityName} exhibition stands`, `${cityName} trade show builders`, `${cityName} exhibition builders`, `${countryName} booth design`, `${cityName} exhibition services`]
-  };
+  // Build complete block list with dynamic data
+  const blocksWithData = [
+    ...blocks.map(block => {
+      // Inject dynamic data into specific blocks
+      if (block.id === 'stats') {
+        return {
+          ...block,
+          data: stats
+        };
+      }
+      if (block.id === 'builders-list') {
+        return {
+          ...block,
+          data: {
+            builders,
+            heading: content.buildersHeading || `Exhibition Stand Builders in ${cityName}`,
+            intro: content.buildersIntro
+          }
+        };
+      }
+      if (block.id === 'cities-list') {
+        return {
+          ...block,
+          data: {
+            countrySlug,
+            countryName,
+            cities: otherCities,
+            heading: `Other Cities in ${countryName}`,
+            intro: `Find exhibition stand builders in other cities across ${countryName}`
+          }
+        };
+      }
+      if (block.id === 'final-cta') {
+        return {
+          ...block,
+          data: {
+            ...block.data,
+            location: `${cityName}, ${countryName}`,
+            heading: content.finalCtaHeading || `Need a Custom Exhibition Stand in ${cityName}?`
+          }
+        };
+      }
+      return block;
+    })
+  ];
 
-  const cityBlock = cmsContent?.sections?.cityPages?.[`${countrySlug}-${citySlug}`] || cmsContent || null;
-  const mergedContent = {
-    ...defaultContent,
-    ...(cityBlock || {})
-  };
+  // Add builders-list block if not present
+  if (!blocksWithData.find(b => b.id === 'builders-list')) {
+    blocksWithData.push({
+      id: 'builders-list',
+      type: 'builders-list',
+      order: 100,
+      data: {
+        builders,
+        heading: `Exhibition Stand Builders in ${cityName}`,
+        intro: content.buildersIntro
+      }
+    });
+  }
+
+  // Add cities-list block for city pages if not present and there are other cities
+  if (!blocksWithData.find(b => b.id === 'cities-list') && otherCities.length > 0) {
+    blocksWithData.push({
+      id: 'cities-list',
+      type: 'cities-list',
+      order: 200,
+      data: {
+        countrySlug,
+        countryName,
+        cities: otherCities,
+        heading: `Other Cities in ${countryName}`,
+        intro: `Find exhibition stand builders in other cities across ${countryName}`
+      }
+    });
+  }
+
+  // Sort blocks by order
+  blocksWithData.sort((a, b) => a.order - b.order);
 
   return (
-    <>
-      <CountryCityPage 
-        country={countryName} 
-        city={cityName} 
-        initialBuilders={transformedBuilders as any}
-        initialContent={mergedContent}
-        cities={cities}
-        cmsContent={cmsContent}
-      />
+    <div className="font-inter min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Hero section with stats integrated */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <BlockRenderer 
+            blocks={[blocksWithData.find(b => b.id === 'hero') || blocksWithData[0]]}
+            className="mb-12"
+          />
+          
+          {/* Stats block (rendered directly after hero) */}
+          <div id="stats" className="block-stats">
+            <div className="max-w-4xl mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center bg-white/15 backdrop-blur-sm rounded-xl p-4">
+                  <div className="text-2xl lg:text-4xl font-bold text-white">
+                    {stats.totalBuilders}+
+                  </div>
+                  <div className="text-blue-200 text-sm lg:text-base">
+                    Verified Builders
+                  </div>
+                </div>
+                <div className="text-center bg-white/15 backdrop-blur-sm rounded-xl p-4">
+                  <div className="text-2xl lg:text-4xl font-bold text-white">
+                    {stats.averageRating}
+                  </div>
+                  <div className="text-blue-200 text-sm lg:text-base">
+                    Average Rating
+                  </div>
+                </div>
+                <div className="text-center bg-white/15 backdrop-blur-sm rounded-xl p-4">
+                  <div className="text-2xl lg:text-4xl font-bold text-white">
+                    {stats.totalProjects}
+                  </div>
+                  <div className="text-blue-200 text-sm lg:text-base">
+                    Projects Completed
+                  </div>
+                </div>
+                <div className="text-center bg-white/15 backdrop-blur-sm rounded-xl p-4">
+                  <div className="text-2xl lg:text-4xl font-bold text-white">
+                    $450
+                  </div>
+                  <div className="text-blue-200 text-sm lg:text-base">
+                    Avg. Price/sqm
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main content area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <BlockRenderer 
+          blocks={blocksWithData.filter(b => b.id !== 'hero')}
+        />
+      </div>
+
       <WhatsAppFloat />
-    </>
+    </div>
   );
 }
