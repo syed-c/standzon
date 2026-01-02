@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import NewBuilderDashboard from '@/components/client/NewBuilderDashboard';
-import AuthBoundary from '@/components/boundaries/AuthBoundary';
+import AuthBoundary from '@/components/client/AuthBoundary';
 
 export const metadata: Metadata = {
   title: 'Builder Dashboard - ExhibitBay',

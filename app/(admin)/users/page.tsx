@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import UserManagement from '@/components/client/UserManagement';
-import AuthBoundary from '@/components/boundaries/AuthBoundary';
+import AuthBoundary from '@/components/client/AuthBoundary';
 
 export const metadata: Metadata = {
   title: 'User Management - Admin Dashboard',
