@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import AuthBoundary from '@/components/boundaries/AuthBoundary';
+import AuthBoundary from '@/components/client/AuthBoundary';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared/card';
 import { Button } from '@/components/shared/button';
 import { Textarea } from '@/components/shared/textarea';

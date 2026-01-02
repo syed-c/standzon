@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import AuthPage from '@/components/client/AuthPage';
 
@@ -20,9 +20,11 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
   console.log('Registration page loaded for user type:', userType);
 
   return (
-    <AuthPage 
-      mode="register" 
-      userType={userType}
-    />
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <AuthPage 
+        mode="register" 
+        userType={userType}
+      />
+    </Suspense>
   );
 }

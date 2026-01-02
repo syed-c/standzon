@@ -30,6 +30,8 @@ export default async function ManageBuildersPage() {
   }));
 
   return (
-    <ManageBuildersClient initialBuilders={transformedBuilders as any} />
+    <Suspense fallback={<div>Loading builders...</div>}>
+      <ManageBuildersClient initialBuilders={transformedBuilders as any} />
+    </Suspense>
   );
 }
