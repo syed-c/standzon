@@ -1152,9 +1152,44 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                   }
                 }
                 
-                // Ensure we return an array
+                // Extract portfolio images from builders
+                let portfolioImages: string[] = [];
+                if (Array.isArray(filteredBuilders)) {
+                  filteredBuilders.forEach(builder => {
+                    if (builder.portfolio && Array.isArray(builder.portfolio)) {
+                      // If portfolio items are objects with image URLs
+                      builder.portfolio.forEach(item => {
+                        if (typeof item === 'string') {
+                          // Direct image URL
+                          portfolioImages.push(item);
+                        } else if (typeof item === 'object' && item !== null) {
+                          // Object with image property - could be 'image', 'imageUrl', 'url', etc.
+                          if (item.image) portfolioImages.push(item.image);
+                          else if (item.imageUrl) portfolioImages.push(item.imageUrl);
+                          else if (item.url) portfolioImages.push(item.url);
+                          else if (item.src) portfolioImages.push(item.src);
+                        }
+                      });
+                    }
+                  });
+                }
+                
+                // Combine CMS gallery images with builder portfolio images
+                let combinedImages = [];
                 if (Array.isArray(galleryImages)) {
-                  return galleryImages;
+                  combinedImages = [...galleryImages];
+                }
+                
+                // Add unique portfolio images (avoid duplicates)
+                portfolioImages.forEach(img => {
+                  if (!combinedImages.includes(img)) {
+                    combinedImages.push(img);
+                  }
+                });
+                
+                // Ensure we return an array
+                if (Array.isArray(combinedImages) && combinedImages.length > 0) {
+                  return combinedImages;
                 }
                 return [];
               })() || []} />

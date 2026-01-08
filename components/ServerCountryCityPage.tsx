@@ -83,6 +83,7 @@ interface Builder {
   keyStrengths: string[];
   logo?: string;
   featured?: boolean;
+  portfolio?: any[]; // Add portfolio field for gallery images
 }
 
 interface LocalPageContent {
@@ -223,7 +224,8 @@ export default async function ServerCountryCityPage({
         companyDescription: b.description || b.company_description || "",
         keyStrengths: b.key_strengths || [],
         featured: b.featured || false,
-        logo: b.logo || b.profile_image || b.image_url || null // Add logo field to fix image display issue
+        logo: b.logo || b.profile_image || b.image_url || b.avatar || b.photo || b.logo_url || b.brand_logo || "/images/builders/default-logo.png", // Add all possible logo fields
+        portfolio: b.portfolio || b.gallery_images || b.images || [], // Add portfolio field for gallery images
       }));
     } catch (error) {
       console.error("Error loading builders on server:", error);

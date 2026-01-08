@@ -338,7 +338,29 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
         companyDescription: b.description || b.company_description || "",
         keyStrengths: b.key_strengths || [],
         featured: b.featured || false,
-        logo: b.logo || b.profile_image || b.image_url || null // Add logo field
+        logo: b.logo || b.profile_image || b.image_url || b.avatar || b.photo || b.logo_url || b.brand_logo || "/images/builders/default-logo.png",
+        // Add portfolio field for gallery/images
+        portfolio: b.portfolio || b.gallery_images || b.images || [],
+        certifications: b.certifications || [],
+        awards: b.awards || [],
+        tradeshowExperience: b.tradeshow_experience || [],
+        priceRange: b.price_range || { min: 0, max: 0, currency: "USD" },
+        whyChooseUs: b.why_choose_us || [],
+        clientTestimonials: b.client_testimonials || [],
+        socialMedia: b.social_media || {},
+        businessLicense: b.business_license || "",
+        insurance: b.insurance || {},
+        sustainability: b.sustainability || {},
+        recentProjects: b.recent_projects || [],
+        claimed: b.claimed || false,
+        claimStatus: b.claim_status || "unclaimed",
+        planType: b.plan_type || "free",
+        source: b.source || "",
+        importedAt: b.imported_at || "",
+        lastUpdated: b.last_updated || b.updated_at || new Date().toISOString(),
+        status: b.status || "active",
+        plan: b.plan || "free",
+        contactEmail: b.contact_email || b.primary_email || b.primaryEmail || ""
       }));
     } else {
       const buildersData = await response.json();
@@ -461,7 +483,7 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
             projectsCompleted:
               b.projectsCompleted || b.projects_completed || 0,
             importedFromGMB: b.importedFromGMB || b.gmbImported || false,
-            logo: b.logo || "/images/builders/default-logo.png",
+            logo: b.logo || b.profile_image || b.image_url || b.avatar || b.photo || b.logo_url || b.brand_logo || "/images/builders/default-logo.png",
             establishedYear: b.establishedYear || b.established_year || 2020,
             teamSize: b.teamSize || 10,
             reviewCount: b.reviewCount || 0,
@@ -483,6 +505,30 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
               b.importedFromGMB ||
               b.source === "GMB_API" ||
               false,
+            // Add portfolio field for gallery/images
+            portfolio: b.portfolio || b.gallery_images || b.images || [],
+            services: b.services || [],
+            specializations: b.specializations || [],
+            certifications: b.certifications || [],
+            awards: b.awards || [],
+            tradeshowExperience: b.tradeshow_experience || [],
+            priceRange: b.price_range || { min: 0, max: 0, currency: "USD" },
+            whyChooseUs: b.why_choose_us || [],
+            clientTestimonials: b.client_testimonials || [],
+            socialMedia: b.social_media || {},
+            businessLicense: b.business_license || "",
+            insurance: b.insurance || {},
+            sustainability: b.sustainability || {},
+            recentProjects: b.recent_projects || [],
+            claimed: b.claimed || false,
+            claimStatus: b.claim_status || "unclaimed",
+            planType: b.plan_type || "free",
+            source: b.source || "",
+            importedAt: b.imported_at || "",
+            lastUpdated: b.last_updated || b.updated_at || new Date().toISOString(),
+            status: b.status || "active",
+            plan: b.plan || "free",
+            contactEmail: b.contact_email || b.primary_email || b.primaryEmail || ""
           };
           
           // Log first few transformations
@@ -611,7 +657,7 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
         companyDescription: b.description || b.company_description || "",
         keyStrengths: b.key_strengths || [],
         featured: b.featured || false,
-        logo: b.logo || b.profile_image || b.image_url || null // Add logo field
+        logo: b.logo || b.profile_image || b.image_url || b.avatar || b.photo || b.logo_url || b.brand_logo || null // Add all possible logo fields
       }));
     } catch (error) {
       console.error('❌ Error fetching all builders from Supabase fallback:', error);

@@ -5,6 +5,8 @@ import UltraFastHero from "@/components/UltraFastHero";
 import { getFontClass } from "@/lib/utils/fonts";
 import PublicQuoteRequest from "@/components/PublicQuoteRequest";
 import { getServerPageContent } from "@/lib/data/serverPageContent";
+import { convertToProxyUrl } from "@/lib/utils/imageProxyUtils";
+import { PageContent } from '@/lib/data/storage';
 
 // ✅ PERFORMANCE: Lazy load non-critical components
 import RecentLeadsSection from "@/components/RecentLeadsSection";
@@ -13,7 +15,7 @@ const TestimonialsCarousel = React.lazy(() => import("@/components/TestimonialsC
 const ContactSection = React.lazy(() => import("@/components/ContactSection"));
 const Footer = React.lazy(() => import("@/components/Footer"));
 
-type SavedContent = any;
+type SavedContent = PageContent | null;
 
 export default async function ServerHomePageContent() {
   // Fetch content on the server side
@@ -29,7 +31,7 @@ export default async function ServerHomePageContent() {
   const heroDescriptionRaw = saved?.sections?.hero?.description || "";
   const heroDescription = sanitizeHtml(heroDescriptionRaw);
   const heroBgImage = saved?.sections?.hero?.bgImage || '';
-  const heroBgOpacity = typeof saved?.sections?.hero?.bgOpacity === 'number' ? saved.sections.hero.bgOpacity : 0.25;
+  const heroBgOpacity = typeof saved?.sections?.hero?.bgOpacity === 'number' ? saved!.sections!.hero!.bgOpacity : 0.25;
 
   // Section heading font choices
   const leadsIntroFont = saved?.sections?.leadsIntro?.headingFont || '';
@@ -47,7 +49,7 @@ export default async function ServerHomePageContent() {
   const heroButtonsFromTop = topLevelButtons.filter(b => (b.section||'').toLowerCase() === 'hero').map(b => ({ text: b.text, href: b.link || b.href }));
   const finalButtonsFromTop = topLevelButtons.filter(b => (b.section||'').toLowerCase() === 'finalcta').map(b => ({ text: b.text, href: b.link || b.href }));
 
-  const reviewsFromTop = Array.isArray(saved?.reviews) ? saved!.reviews as Array<any> : [];
+  const reviewsFromTop = Array.isArray(saved?.reviews) ? saved!.reviews as Array<{ name?: string; role?: string; rating?: number; text?: string; image?: string }> : [];
   // Use separate leadsIntro for the heading/paragraph above the table
   const leadsHeading = saved?.sections?.leadsIntro?.heading || "";
   const leadsParagraph = saved?.sections?.leadsIntro?.paragraph || "";
@@ -178,18 +180,18 @@ export default async function ServerHomePageContent() {
           <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
             <div className="max-w-6xl mx-auto px-4">
               {saved?.sections?.clientSay?.heading && (
-                <h2 className={["text-3xl font-bold text-gray-900 mb-3 text-center", getFontClass(leadsIntroFont as any)].join(' ')}>{saved.sections.clientSay.heading}</h2>
+                <h2 className={["text-3xl font-bold text-gray-900 mb-3 text-center", getFontClass(leadsIntroFont as any)].join(' ')}>{saved!.sections!.clientSay!.heading}</h2>
               )}
               {saved?.sections?.clientSay?.paragraph && (
-                <p className="text-lg text-gray-600 mb-8 text-center" dangerouslySetInnerHTML={{ __html: saved.sections.clientSay.paragraph }} />
+                <p className="text-lg text-gray-600 mb-8 text-center" dangerouslySetInnerHTML={{ __html: saved!.sections!.clientSay!.paragraph }} />
               )}
               {/* If custom reviews provided, render them; else fallback to existing carousel */}
               {(Array.isArray(saved?.sections?.reviews) && saved!.sections!.reviews!.length > 0) || reviewsFromTop.length>0 ? (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {(saved!.sections?.reviews || reviewsFromTop).map((r: any, i: number) => (
+                  {(saved!.sections?.reviews || reviewsFromTop).map((r: { name?: string; role?: string; rating?: number; text?: string; image?: string }, i: number) => (
                     <div key={i} className="bg-white rounded-xl shadow p-6 border">
                       <div className="flex items-center gap-4 mb-4">
-                        <img src={r.image || "https://via.placeholder.com/80x80"} alt={r.name || "Reviewer"} className="w-14 h-14 rounded-full object-cover" />
+                        <img src={convertToProxyUrl(r.image || "https://via.placeholder.com/80x80")} alt={r.name || "Reviewer"} className="w-14 h-14 rounded-full object-cover" />
                         <div>
                           <div className="font-semibold text-gray-900">{r.name || "Anonymous"}</div>
                           <div className="text-sm text-gray-500">{r.role || ""}</div>
@@ -231,7 +233,7 @@ export default async function ServerHomePageContent() {
             </h2>
             <p className="text-lg md:text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed" dangerouslySetInnerHTML={{ __html: finalCta.paragraph }} />
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {((finalButtonsFromTop.length>0 ? finalButtonsFromTop : finalCta.buttons) || []).map((b: any, i: number) => (
+              {((finalButtonsFromTop.length>0 ? finalButtonsFromTop : finalCta.buttons) || []).map((b: { text?: string; href?: string }, i: number) => (
                 <a key={i} href={b.href || "#"}>
                   <button className={i === 0 
                     ? "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg transition-all duration-300" 
