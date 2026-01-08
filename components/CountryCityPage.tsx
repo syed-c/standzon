@@ -690,7 +690,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
               cityPageContent = cmsContent?.sections?.cityPages?.[cityPageId];
               
               // If that doesn't work, try the nested countryPages structure
-              if (!cityPageContent && cmsContent?.sections?.cityPages?.[cityPageId]?.countryPages) {
+              if (!cityPageContent && cmsContent?.sections?.cityPages?.[cityPageId]?.countryPages && city) {
                 // Try direct city name as key
                 if (cmsContent.sections.cityPages[cityPageId].countryPages[city.toLowerCase()]) {
                   cityPageContent = cmsContent.sections.cityPages[cityPageId].countryPages[city.toLowerCase()];
@@ -1146,16 +1146,18 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                   .replace(/\s+/g, "-")
                   .replace(/[^a-z0-9-]/g, "");
                 const citySlug = city
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")
-                  .replace(/[^a-z0-9-]/g, "");
-                const key = `${countrySlug}-${citySlug}`;
+                  ? city
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")
+                      .replace(/[^a-z0-9-]/g, "")
+                  : "";
+                const key = city ? `${countrySlug}-${citySlug}` : "";
                 
                 // Try multiple sources for city content
                 let contentSource = null;
                 
                 // First try savedPageContent
-                if (savedPageContent) {
+                if (savedPageContent && city) {
                   const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
                   if (raw?.countryPages?.[citySlug]) {
                     contentSource = raw.countryPages[citySlug];
@@ -1167,7 +1169,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                 }
                 
                 // If no content from savedPageContent, try cmsContent
-                if (!contentSource && cmsContent) {
+                if (!contentSource && cmsContent && city) {
                   const raw = (cmsContent as any)?.sections?.cityPages?.[key];
                   if (raw?.countryPages?.[citySlug]) {
                     contentSource = raw.countryPages[citySlug];
@@ -1185,7 +1187,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                   (cmsContent as any)?.servicesHeading;
                 
                 // Ensure heading is a string, not an object
-                const heading = typeof headingRaw === 'object' ? headingRaw?.heading || `Expert Exhibition Stand Builders in ${city}, ${country}` : headingRaw || `Expert Exhibition Stand Builders in ${city}, ${country}`;
+                const heading = typeof headingRaw === 'object' ? headingRaw?.heading || `Expert Exhibition Stand Builders in ${city || 'Unknown'}, ${country}` : headingRaw || `Expert Exhibition Stand Builders in ${city || 'Unknown'}, ${country}`;
                 return heading;
               })()}
             </h2>
@@ -1198,16 +1200,18 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                     .replace(/\s+/g, "-")
                     .replace(/[^a-z0-9-]/g, "");
                   const citySlug = city
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")
-                    .replace(/[^a-z0-9-]/g, "");
-                  const key = `${countrySlug}-${citySlug}`;
+                    ? city
+                        .toLowerCase()
+                        .replace(/\s+/g, "-")
+                        .replace(/[^a-z0-9-]/g, "")
+                    : "";
+                  const key = city ? `${countrySlug}-${citySlug}` : "";
                   
                   // Try multiple sources for city content
                   let contentSource = null;
                   
                   // First try savedPageContent
-                  if (savedPageContent) {
+                  if (savedPageContent && city) {
                     const raw = (savedPageContent as any)?.sections?.cityPages?.[key];
                     if (raw?.countryPages?.[citySlug]) {
                       contentSource = raw.countryPages[citySlug];
@@ -1219,7 +1223,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                   }
                   
                   // If no content from savedPageContent, try cmsContent
-                  if (!contentSource && cmsContent) {
+                  if (!contentSource && cmsContent && city) {
                     const raw = (cmsContent as any)?.sections?.cityPages?.[key];
                     if (raw?.countryPages?.[citySlug]) {
                       contentSource = raw.countryPages[citySlug];
@@ -1239,11 +1243,11 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                   
                   // Ensure paragraph is a string, not an object
                   const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || 
-                    `<p>${city}, ${country} provides access to top-tier exhibition stand builders who specialize in creating impactful displays for trade shows and exhibitions. Our local experts combine creativity with technical excellence to deliver solutions that exceed expectations.</p>
-                     <p>Whether you need a modular booth, custom island display, or specialty activation, ${city}'s exhibition stand builders offer comprehensive services from concept to installation, ensuring your brand stands out in competitive environments.</p>` 
+                    `<p>${city || 'Unknown'}, ${country} provides access to top-tier exhibition stand builders who specialize in creating impactful displays for trade shows and exhibitions. Our local experts combine creativity with technical excellence to deliver solutions that exceed expectations.</p>
+                     <p>Whether you need a modular booth, custom island display, or specialty activation, ${(city || 'Unknown')}'s exhibition stand builders offer comprehensive services from concept to installation, ensuring your brand stands out in competitive environments.</p>` 
                     : paragraphRaw || 
-                    `<p>${city}, ${country} provides access to top-tier exhibition stand builders who specialize in creating impactful displays for trade shows and exhibitions. Our local experts combine creativity with technical excellence to deliver solutions that exceed expectations.</p>
-                     <p>Whether you need a modular booth, custom island display, or specialty activation, ${city}'s exhibition stand builders offer comprehensive services from concept to installation, ensuring your brand stands out in competitive environments.</p>`;
+                    `<p>${city || 'Unknown'}, ${country} provides access to top-tier exhibition stand builders who specialize in creating impactful displays for trade shows and exhibitions. Our local experts combine creativity with technical excellence to deliver solutions that exceed expectations.</p>
+                     <p>Whether you need a modular booth, custom island display, or specialty activation, ${(city || 'Unknown')}'s exhibition stand builders offer comprehensive services from concept to installation, ensuring your brand stands out in competitive environments.</p>`;
                   return paragraph.replace(/\r?\n/g, "<br/>");
                 })()
               }}
@@ -1257,7 +1261,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-gray-900">
-                {`Get Free Quotes from ${city} Builders`}
+                {`Get Free Quotes from ${city || 'Local'} Builders`}
               </h2>
               <p className="text-lg text-gray-600 mt-2">
                 Submit your requirements and receive competitive quotes from
@@ -1279,7 +1283,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
                            country === 'India' ? 'IN' :
                            country === 'Singapore' ? 'SG' :
                            country === 'China' ? 'CN' : 'US'}
-                cityName={city}
+                cityName={city || ''}
                 buttonText="Get Free Quote"
                 size="lg"
                 className=""

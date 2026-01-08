@@ -1,13 +1,13 @@
 import React from 'react';
 import { Metadata } from 'next';
-import UsersManagement from '@/components/UsersManagement';
+import TemplatesComponentsMarketplace from '@/components/TemplatesComponentsMarketplace';
 import SuperAdminLayout from '@/components/admin/SuperAdminLayout';
 import { Sidebar } from '@/components/admin/SuperAdminSidebar';
 import Topbar from '@/components/admin/Topbar';
 
 export const metadata: Metadata = {
-  title: 'Users Management - Super Admin Dashboard',
-  description: 'Manage platform users, their roles, and permissions.',
+  title: 'Templates & Components Marketplace - Super Admin Dashboard',
+  description: 'Manage and distribute design templates and reusable components.',
 };
 
 // Mock admin session
@@ -46,14 +46,14 @@ const mockAdmin = {
   loginCount: 234
 };
 
-export default function UsersManagementPage() {
+export default function TemplatesComponentsMarketplacePage() {
   return (
     <SuperAdminLayout 
       sidebar={<Sidebar />} 
       topbar={<Topbar />}
     >
       <div className="space-y-8">
-        <UsersManagement 
+        <TemplatesComponentsMarketplace 
           adminId={mockAdmin.id}
           permissions={mockAdmin.permissions}
         />

@@ -1,0 +1,1175 @@
+// Enhanced Database Schema for Standzon Multi-Tenant SaaS Platform
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Changed to PostgreSQL for better scalability
+  url      = env("DATABASE_URL")
+}
+
+// Enhanced User Model with RBAC Support
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  phone         String?
+  emailVerified DateTime?
+  image         String?
+  role          UserRole @default(USER)
+  status        UserStatus @default(ACTIVE)
+  tenantId      String?  // For multi-tenant support (null for super admins)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lastLoginAt   DateTime?
+
+  // Authentication
+  accounts      Account[]
+  sessions      Session[]
+
+  // Relations
+  builderProfile BuilderProfile?
+  leads         Lead[]
+  quotes        Quote[]
+  subscriptions Subscription[]
+  notifications Notification[]
+  reviews       Review[]
+  createdByLogs AuditLog[] @relation("CreatedByUser")
+  updatedByLogs AuditLog[] @relation("UpdatedByUser")
+
+  // Super Admin Relations
+  assignedAlerts Alert[]
+  
+  @@map("users")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  TENANT_ADMIN
+  TENANT_MEMBER
+  USER
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING
+  SUSPENDED
+  BANNED
+}
+
+// Enhanced Builder Profile Model
+model BuilderProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Company Information
+  companyName       String
+  businessDescription String
+  website           String?
+  linkedinUrl       String?
+  foundedYear       Int?
+  teamSize          Int?
+  
+  // Contact Information
+  primaryEmail      String
+  primaryPhone      String
+  contactPerson     String?
+  contactPosition   String?
+  
+  // Business Details
+  registrationNumber String?
+  vatNumber         String?
+  logo              String?
+  coverImage        String?
+  
+  // Performance Metrics
+  rating            Float    @default(0)
+  reviewCount       Int      @default(0)
+  projectsCompleted Int      @default(0)
+  responseTime      String   @default("Within 24 hours")
+  
+  // Status & Verification
+  verified          Boolean  @default(false)
+  featured          Boolean  @default(false)
+  subscriptionPlan  SubscriptionPlan @default(FREE)
+  riskScore         Float    @default(0.0)
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  tenantId          String   // Links to Tenant
+  tenant            Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  locations         BuilderLocation[]
+  services          BuilderService[]
+  portfolio         PortfolioItem[]
+  leads             LeadAssignment[]
+  quotes            Quote[]
+  reviews           Review[]
+  aiInsights        AIInsight[]
+  deployments       Deployment[]
+  domains           Domain[]
+  
+  @@map("builder_profiles")
+}
+
+enum SubscriptionPlan {
+  FREE
+  PROFESSIONAL
+  ENTERPRISE
+  PREMIUM
+}
+
+// Tenant Model for Multi-Tenancy
+model Tenant {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  plan            SubscriptionPlan @default(FREE)
+  status          TenantStatus @default(ACTIVE)
+  billingEmail    String?
+  supportEmail    String?
+  trialEndsAt     DateTime?
+  stripeCustomerId String?
+  stripeSubscriptionId String?
+  
+  // Features
+  maxBuilders     Int      @default(1)
+  maxProjects     Int      @default(1)
+  maxStorageBytes BigInt   @default(1073741824) // 1GB
+  maxDomains      Int      @default(1)
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  suspendedAt     DateTime?
+  
+  // Relations
+  builders        BuilderProfile[]
+  projects        Project[]
+  users           User[]
+  payments        Payment[]
+  aiInsights      AIInsight[]
+  alerts          Alert[]
+  integrations    Integration[]
+  
+  @@map("tenants")
+}
+
+enum TenantStatus {
+  ACTIVE
+  TRIAL
+  SUSPENDED
+  CANCELLED
+}
+
+// Project Model
+model Project {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String
+  description     String?
+  status          ProjectStatus @default(DRAFT)
+  templateId      String?
+  template        Template? @relation(fields: [templateId], references: [id])
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  builderId       String
+  builder         BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  // Configuration
+  customDomain    String?
+  sslEnabled      Boolean  @default(false)
+  analyticsEnabled Boolean @default(true)
+  seoEnabled      Boolean  @default(true)
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  publishedAt     DateTime?
+  archivedAt      DateTime?
+  
+  // Relations
+  deployments     Deployment[]
+  domains         Domain[]
+  components      ProjectComponent[]
+  pages           Page[]
+  leads           Lead[]
+  
+  @@unique([tenantId, slug])
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  MAINTENANCE
+}
+
+// Domain Model
+model Domain {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  domainName      String   @unique
+  dnsProvider     String?
+  sslStatus       SSLStatus @default(PENDING)
+  verified        Boolean  @default(false)
+  verificationToken String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("domains")
+}
+
+enum SSLStatus {
+  PENDING
+  ISSUED
+  FAILED
+  EXPIRED
+}
+
+// Deployment Model
+model Deployment {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  builderId       String
+  builder         BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  deploymentType  DeploymentType @default(BUILD)
+  status          DeploymentStatus @default(QUEUED)
+  commitHash      String?
+  branch          String?
+  buildLogs       String?
+  deployUrl       String?
+  rollbackUrl     String?
+  rollbackEnabled Boolean  @default(false)
+  durationMs      Int?
+  triggeredBy     String?
+  triggerReason   String?
+  createdAt       DateTime @default(now())
+  startedAt       DateTime?
+  completedAt     DateTime?
+  rollbackAt      DateTime?
+  
+  @@map("deployments")
+}
+
+enum DeploymentType {
+  BUILD
+  DEPLOY
+  ROLLBACK
+  HOTFIX
+}
+
+enum DeploymentStatus {
+  QUEUED
+  RUNNING
+  SUCCESS
+  FAILED
+  CANCELLED
+  ROLLEDBACK
+}
+
+// Lead Model (Enhanced)
+model Lead {
+  id              String   @id @default(cuid())
+  
+  // Client Information
+  clientId        String?
+  client          User?    @relation(fields: [clientId], references: [id])
+  
+  // Contact Details (for non-registered users)
+  companyName     String
+  contactName     String
+  contactEmail    String
+  contactPhone    String
+  
+  // Event Information
+  tradeShowName   String
+  eventDate       DateTime?
+  venue           String?
+  city            String
+  country         String
+  
+  // Stand Requirements
+  standSize       Int
+  budget          String
+  timeline        String
+  standType       String
+  
+  // Additional Requirements
+  specialRequests String?
+  needsInstallation Boolean @default(true)
+  needsTransportation Boolean @default(false)
+  needsStorage    Boolean @default(false)
+  needsAVEquipment Boolean @default(false)
+  needsLighting   Boolean @default(false)
+  needsFurniture  Boolean @default(false)
+  needsGraphics   Boolean @default(false)
+  
+  // Lead Scoring & Status
+  leadScore       Int      @default(50)
+  estimatedValue  Int?
+  status          LeadStatus @default(NEW)
+  priority        LeadPriority @default(MEDIUM)
+  
+  // Source Tracking
+  source          String   @default("website")
+  sourceDetails   String?
+  referrer        String?
+  utmCampaign     String?
+  utmSource       String?
+  utmMedium       String?
+  
+  // File Attachments
+  attachments     String // URLs to uploaded files
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  convertedAt     DateTime?
+  
+  // Relations
+  tenantId        String?
+  tenant          Tenant?
+  projectId       String?
+  project         Project? @relation(fields: [projectId], references: [id])
+  builderId       String?
+  builder         BuilderProfile? @relation(fields: [builderId], references: [id])
+  assignments     LeadAssignment[]
+  quotes          Quote[]
+  notes           LeadNote[]
+  appointments    Appointment[]
+  
+  @@map("leads")
+}
+
+// Appointment Model (Placeholder)
+model Appointment {
+  id              String   @id @default(cuid())
+  leadId          String
+  lead            Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  appointmentDate DateTime
+  durationMinutes Int      @default(30)
+  status          AppointmentStatus @default(SCHEDULED)
+  timezone        String   @default("UTC")
+  meetingUrl      String?
+  meetingProvider String?
+  reminderSent    Boolean  @default(false)
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("appointments")
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  RESCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum LeadStatus {
+  NEW
+  ASSIGNED
+  CONTACTED
+  QUOTED
+  CONVERTED
+  LOST
+  CANCELLED
+}
+
+enum LeadPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Lead Assignment to Builders
+model LeadAssignment {
+  id          String   @id @default(cuid())
+  
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  builderId   String
+  builder     BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  // Assignment Details
+  assignedAt  DateTime @default(now())
+  status      AssignmentStatus @default(PENDING)
+  
+  // Builder Actions
+  viewedAt    DateTime?
+  contactedAt DateTime?
+  quotedAt    DateTime?
+  declinedAt  DateTime?
+  declineReason String?
+  
+  // Lead Access Control
+  accessGranted Boolean @default(false)
+  accessPrice   Int?    // Price paid to access full lead details
+  
+  @@unique([leadId, builderId])
+  @@map("lead_assignments")
+}
+
+enum AssignmentStatus {
+  PENDING
+  VIEWED
+  CONTACTED
+  QUOTED
+  DECLINED
+  EXPIRED
+}
+
+// Template Model
+model Template {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  category        String?
+  tags            String[] @default([])
+  thumbnailUrl    String?
+  previewUrl      String?
+  jsonConfig      Json?
+  htmlTemplate    String?
+  cssStyles       String?
+  jsScripts       String?
+  version         String   @default("1.0.0")
+  isPublic        Boolean  @default(false)
+  isPremium       Boolean  @default(false)
+  featured        Boolean  @default(false)
+  usageCount      Int      @default(0)
+  rating          Float    @default(0)
+  reviewCount     Int      @default(0)
+  authorId        String?
+  author          User?
+  publishedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  components      TemplateComponent[]
+  projects        Project[]
+  
+  @@map("templates")
+}
+
+// Component Model
+model Component {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  category        String?
+  tags            String[] @default([])
+  componentType   ComponentType @default(BLOCK)
+  jsonSchema      Json?
+  htmlTemplate    String?
+  cssStyles       String?
+  jsScripts       String?
+  defaultProps    Json?
+  version         String   @default("1.0.0")
+  isPublic        Boolean  @default(false)
+  isPremium       Boolean  @default(false)
+  usageCount      Int      @default(0)
+  rating          Float    @default(0)
+  reviewCount     Int      @default(0)
+  authorId        String?
+  author          User?
+  publishedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  templateComponents TemplateComponent[]
+  projectComponents ProjectComponent[]
+  
+  @@map("components")
+}
+
+enum ComponentType {
+  BLOCK
+  WIDGET
+  MODULE
+  LAYOUT
+  FORM
+  NAVIGATION
+}
+
+// Template Component Relationship
+model TemplateComponent {
+  id            String   @id @default(cuid())
+  templateId    String
+  template      Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  componentId   String
+  component     Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  sortOrder     Int      @default(0)
+  config        Json?
+  
+  @@unique([templateId, componentId])
+  @@map("template_components")
+}
+
+// Project Component Relationship
+model ProjectComponent {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  componentId   String
+  component     Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  sortOrder     Int      @default(0)
+  config        Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([projectId, componentId])
+  @@map("project_components")
+}
+
+// Page Model
+model Page {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title           String
+  slug            String
+  path            String   // Full path including dynamic segments
+  content         Json?
+  htmlContent     String?
+  cssClasses      String?
+  seoTitle        String?
+  seoDescription  String?
+  seoKeywords     String[]
+  metaTags        Json?
+  status          PageStatus @default(DRAFT)
+  isPublished     Boolean  @default(false)
+  publishedAt     DateTime?
+  version         String   @default("1.0.0")
+  parentId        String?  // For hierarchical pages
+  parent          Page?    @relation("PageHierarchy", fields: [parentId], references: [id])
+  children        Page[]   @relation("PageHierarchy")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([projectId, slug])
+  @@map("pages")
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  REVIEW
+}
+
+// Integration Model
+model Integration {
+  id              String   @id @default(cuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name            String
+  slug            String
+  type            IntegrationType
+  status          IntegrationStatus @default(DISCONNECTED)
+  config          Json?
+  credentials     Json?    // Encrypted
+  webhookUrl      String?
+  isActive        Boolean  @default(false)
+  rateLimit       Int?     // Requests per minute
+  lastSyncAt      DateTime?
+  lastError       String?
+  errorCount      Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([tenantId, slug])
+  @@map("integrations")
+}
+
+enum IntegrationType {
+  GOOGLE_OAUTH
+  GOOGLE_GMB
+  SMTP
+  SMS_TWILIO
+  STRIPE
+  PADDLE
+  OPENAI
+  GEMINI
+  ANTHROPIC
+  CLOUDFLARE
+  AWS_ROUTE53
+  CUSTOM_WEBHOOK
+}
+
+enum IntegrationStatus {
+  CONNECTED
+  DISCONNECTED
+  ERROR
+  PENDING_VERIFICATION
+  RATE_LIMITED
+}
+
+// Payment Model
+model Payment {
+  id              String   @id @default(cuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoiceId       String?
+  amount          Int      // Amount in cents
+  currency        String   @default("USD")
+  status          PaymentStatus @default(PENDING)
+  paymentMethod   String?
+  transactionId   String?
+  gateway         PaymentGateway?
+  receiptUrl      String?
+  description     String?
+  metadata        Json?
+  refundedAt      DateTime?
+  refundReason    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum PaymentGateway {
+  STRIPE
+  PADDLE
+  PAYPAL
+  RAZORPAY
+  CUSTOM
+}
+
+// Review Model (Enhanced)
+model Review {
+  id          String @id @default(cuid())
+  
+  builderId   String
+  builder     BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  clientId    String
+  client      User   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  
+  // Review Content
+  rating      Int    // 1-5 stars
+  title       String?
+  content     String
+  
+  // Review Categories
+  qualityRating      Int @default(5)
+  communicationRating Int @default(5)
+  timelineRating     Int @default(5)
+  valueRating        Int @default(5)
+  
+  // Status
+  verified    Boolean @default(false)
+  published   Boolean @default(true)
+  
+  // Project Details
+  projectType String?
+  projectValue Int?
+  tradeShow   String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([builderId, clientId]) // One review per client-builder pair
+  @@map("reviews")
+}
+
+// Notification System
+model Notification {
+  id        String   @id @default(cuid())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type      NotificationType
+  title     String
+  message   String
+  
+  // Notification Data
+  data      String?    // Additional structured data
+  
+  // Status
+  read      Boolean  @default(false)
+  readAt    DateTime?
+  
+  // Action URL
+  actionUrl String?
+  
+  createdAt DateTime @default(now())
+  
+  @@map("notifications")
+}
+
+enum NotificationType {
+  LEAD_RECEIVED
+  QUOTE_REQUEST
+  PAYMENT_RECEIVED
+  SUBSCRIPTION_EXPIRING
+  PROFILE_APPROVED
+  REVIEW_RECEIVED
+  SYSTEM_ANNOUNCEMENT
+  DEPLOYMENT_SUCCESS
+  DEPLOYMENT_FAILED
+  INTEGRATION_ERROR
+  DOMAIN_VERIFICATION
+  BILLING_ALERT
+}
+
+// Trade Shows & Events (Static Data)
+model TradeShow {
+  id          String @id @default(cuid())
+  
+  name        String
+  slug        String @unique
+  description String?
+  
+  // Location
+  city        String
+  country     String
+  venue       String?
+  
+  // Dates
+  startDate   DateTime
+  endDate     DateTime
+  year        Int
+  
+  // Details
+  industry    String
+  website     String?
+  exhibitors  Int?
+  visitors    Int?
+  
+  // Status
+  active      Boolean @default(true)
+  featured    Boolean @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("trade_shows")
+}
+
+// Geographic Coverage
+model BuilderLocation {
+  id          String @id @default(cuid())
+  builderId   String
+  builder     BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  country     String
+  city        String
+  state       String?
+  region      String?
+  isHeadquarters Boolean @default(false)
+  
+  createdAt   DateTime @default(now())
+  
+  @@map("builder_locations")
+}
+
+// Services Offered
+model BuilderService {
+  id          String @id @default(cuid())
+  builderId   String
+  builder     BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  name        String
+  description String?
+  category    ServiceCategory
+  
+  @@map("builder_services")
+}
+
+enum ServiceCategory {
+  CUSTOM_DESIGN
+  MODULAR_SYSTEMS
+  PORTABLE_DISPLAYS
+  INSTALLATION
+  TRANSPORTATION
+  STORAGE
+  GRAPHICS
+  LIGHTING
+  FURNITURE
+  AV_EQUIPMENT
+  OTHER
+}
+
+// Portfolio Management
+model PortfolioItem {
+  id          String @id @default(cuid())
+  builderId   String
+  builder     BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  title       String
+  description String?
+  imageUrl    String
+  projectYear Int?
+  client      String?
+  tradeShow   String?
+  standSize   Int?
+  category    String?
+  
+  createdAt   DateTime @default(now())
+  
+  @@map("portfolio_items")
+}
+
+// Quote Management
+model Quote {
+  id          String   @id @default(cuid())
+  
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  builderId   String
+  builder     BuilderProfile @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  
+  clientId    String?
+  client      User?    @relation(fields: [clientId], references: [id])
+  
+  // Quote Details
+  title       String
+  description String
+  totalPrice  Int      // In cents
+  currency    String   @default("USD")
+  validUntil  DateTime
+  
+  // Quote Items/Line Items
+  items       QuoteItem[]
+  
+  // Status & Timeline
+  status      QuoteStatus @default(DRAFT)
+  sentAt      DateTime?
+  viewedAt    DateTime?
+  acceptedAt  DateTime?
+  rejectedAt  DateTime?
+  
+  // Files & Documents
+  proposalDocument String?
+  technicalDrawings String
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("quotes")
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+// Quote Line Items
+model QuoteItem {
+  id          String @id @default(cuid())
+  quoteId     String
+  quote       Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  
+  name        String
+  description String?
+  quantity    Int    @default(1)
+  unitPrice   Int    // In cents
+  totalPrice  Int    // In cents
+  category    String?
+  
+  @@map("quote_items")
+}
+
+// Lead Notes & Communication
+model LeadNote {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  authorId  String
+  
+  content   String
+  type      NoteType @default(GENERAL)
+  isInternal Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  
+  @@map("lead_notes")
+}
+
+enum NoteType {
+  GENERAL
+  PHONE_CALL
+  EMAIL
+  MEETING
+  FOLLOW_UP
+  IMPORTANT
+}
+
+// Subscription & Billing
+model Subscription {
+  id              String   @id @default(cuid())
+  
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  plan            SubscriptionPlan
+  status          SubscriptionStatus @default(ACTIVE)
+  
+  // Billing Details
+  priceId         String   // Stripe price ID
+  customerId      String?  // Stripe customer ID
+  subscriptionId  String?  // Stripe subscription ID
+  
+  // Plan Limits
+  leadCredits     Int      @default(0)
+  featuredListings Int     @default(0)
+  portfolioItems  Int      @default(10)
+  
+  // Billing Cycle
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  cancelledAt     DateTime?
+  
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  PAST_DUE
+  UNPAID
+}
+
+// Super Admin Models
+
+// AI Insights Model
+model AIInsight {
+  id              String   @id @default(cuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  builderId       String?
+  builder         BuilderProfile?
+  insightType     InsightType
+  title           String
+  description     String
+  severity        InsightSeverity @default(INFO)
+  priority        InsightPriority @default(NORMAL)
+  status          InsightStatus @default(OPEN)
+  metadata        Json?
+  suggestedActions String[]
+  impactScore     Float?   // 0-100
+  confidenceLevel Float?   // 0-100
+  resolutionNotes String?
+  resolvedAt      DateTime?
+  resolvedById    String?
+  resolvedBy      User?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("ai_insights")
+}
+
+enum InsightType {
+  PERFORMANCE
+  OPTIMIZATION
+  SECURITY
+  COMPLIANCE
+  BUSINESS_INTELLIGENCE
+  MARKETING
+  CONVERSION
+  TECHNICAL
+}
+
+enum InsightSeverity {
+  INFO
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum InsightPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum InsightStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+// Alert Model
+model Alert {
+  id              String   @id @default(cuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  alertType       AlertType
+  title           String
+  description     String
+  severity        AlertSeverity @default(WARNING)
+  status          AlertStatus @default(ACTIVE)
+  assignedToId    String?
+  assignedTo      User?
+  acknowledgedAt  DateTime?
+  acknowledgedById String?
+  acknowledgedBy  User?
+  resolvedAt      DateTime?
+  resolvedById    String?
+  resolvedBy      User?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("alerts")
+}
+
+enum AlertType {
+  SYSTEM_ERROR
+  INTEGRATION_FAILURE
+  PERFORMANCE_ISSUE
+  SECURITY_BREACH
+  ABUSE_PATTERN
+  API_RATE_LIMIT
+  PAYMENT_FAILED
+  DOMAIN_EXPIRY
+  SSL_EXPIRY
+  CUSTOMER_COMPLAINT
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+enum AlertStatus {
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+  CLOSED
+}
+
+// Log Model
+model Log {
+  id              String   @id @default(cuid())
+  level           LogLevel @default(INFO)
+  message         String
+  module          String?
+  action          String?
+  userId          String?
+  user            User?
+  tenantId        String?
+  tenant          Tenant?
+  resourceId      String?
+  resourceType    String?
+  ipAddress       String?
+  userAgent       String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  
+  @@map("logs")
+}
+
+enum LogLevel {
+  DEBUG
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+// Audit Log Model
+model AuditLog {
+  id              String   @id @default(cuid())
+  action          String
+  resourceType    String
+  resourceId      String
+  oldValues       Json?
+  newValues       Json?
+  userId          String
+  user            User     @relation("CreatedByUser", fields: [userId], references: [id])
+  updatedByUserId String?
+  updatedByUser   User?    @relation("UpdatedByUser", fields: [updatedByUserId], references: [id])
+  ipAddress       String?
+  userAgent       String?
+  tenantId        String?
+  tenant          Tenant?
+  createdAt       DateTime @default(now())
+  
+  @@map("audit_logs")
+}
+
+// NextAuth.js required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Scalar Types
+scalar Json

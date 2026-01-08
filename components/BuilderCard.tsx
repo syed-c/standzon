@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 
 interface Builder {
+  logo: string;
   id: string;
   companyName: string;
   slug: string;

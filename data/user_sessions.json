@@ -1,8 +1,8 @@
 {
   "_metadata": {
-    "timestamp": "2026-01-08T12:28:01.592Z",
+    "timestamp": "2026-01-08T12:38:05.684Z",
     "version": "1.0",
-    "checksum": "6075e0b"
+    "checksum": "-2fef9c09"
   },
   "data": [
     {
@@ -79,6 +79,28 @@
       "id": "ef47a42c-0183-4139-b67f-8f53fda9593c",
       "loginTime": "2025-12-26T14:26:55.746Z",
       "lastActivityTime": "2025-12-26T14:26:55.746Z",
+      "isActive": true,
+      "pagesVisited": [],
+      "userId": "super-admin",
+      "user": "sadiqzaidi123456@gmail.com",
+      "ip": "unknown",
+      "userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0"
+    },
+    {
+      "id": "4f6bbde5-86c3-44f3-966b-f9607bd3a990",
+      "loginTime": "2026-01-08T12:37:29.284Z",
+      "lastActivityTime": "2026-01-08T12:37:29.284Z",
+      "isActive": true,
+      "pagesVisited": [],
+      "userId": "super-admin",
+      "user": "sadiqzaidi123456@gmail.com",
+      "ip": "unknown",
+      "userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0"
+    },
+    {
+      "id": "4647e20d-7dae-4ffd-b786-aaec2a6409ac",
+      "loginTime": "2026-01-08T12:38:05.658Z",
+      "lastActivityTime": "2026-01-08T12:38:05.658Z",
       "isActive": true,
       "pagesVisited": [],
       "userId": "super-admin",

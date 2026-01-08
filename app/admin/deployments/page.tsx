@@ -1,19 +1,19 @@
 import React from 'react';
 import SuperAdminLayout from '@/components/admin/SuperAdminLayout';
 import SuperAdminSidebar from '@/components/admin/SuperAdminSidebar';
-import SystemSettings from '@/components/SystemSettings';
+import DeploymentsPanel from '@/components/DeploymentsPanel';
 
-const SettingsPage = () => {
+const DeploymentsPage = () => {
   return (
     <SuperAdminLayout>
       <div className="flex h-full">
         <SuperAdminSidebar />
         <div className="flex-1 overflow-auto p-6">
-          <SystemSettings />
+          <DeploymentsPanel />
         </div>
       </div>
     </SuperAdminLayout>
   );
 };
 
-export default SettingsPage;
+export default DeploymentsPage;

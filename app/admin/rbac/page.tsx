@@ -1,19 +1,19 @@
 import React from 'react';
 import SuperAdminLayout from '@/components/admin/SuperAdminLayout';
 import SuperAdminSidebar from '@/components/admin/SuperAdminSidebar';
-import SystemSettings from '@/components/SystemSettings';
+import RBACManagement from '@/components/RBACManagement';
 
-const SettingsPage = () => {
+const RBACPage = () => {
   return (
     <SuperAdminLayout>
       <div className="flex h-full">
         <SuperAdminSidebar />
         <div className="flex-1 overflow-auto p-6">
-          <SystemSettings />
+          <RBACManagement />
         </div>
       </div>
     </SuperAdminLayout>
   );
 };
 
-export default SettingsPage;
+export default RBACPage;
