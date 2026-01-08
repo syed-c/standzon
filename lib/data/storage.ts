@@ -539,4 +539,37 @@ export const storageAPI = {
   clearAll: () => platformStorage.clearAll()
 };
 
+// Server-side function to fetch page content
+export async function getServerPageContent(pageId: string): Promise<PageContent | null> {
+  try {
+    // First try to get from the storage API
+    const content = storageAPI.getPageContent(pageId);
+    if (content) {
+      return content;
+    }
+    
+    // If not found in storage, try to fetch from the database
+    // This is a server-side function that can access Supabase directly
+    const { getServerSupabase } = await import('@/lib/supabase');
+    const sb = getServerSupabase();
+    
+    if (sb) {
+      const result = await sb
+        .from('page_contents')
+        .select('content')
+        .eq('id', pageId)
+        .maybeSingle();
+      
+      if (result.data?.content) {
+        return result.data.content;
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error fetching page content on server:', error);
+    return null;
+  }
+}
+
 console.log('Storage API initialized and ready');

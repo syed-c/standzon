@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
-import CountryCityPage from "@/components/CountryCityPage";
+import ServerCountryCityPage from "@/components/ServerCountryCityPage";
 import { GLOBAL_EXHIBITION_DATA } from "@/lib/data/globalCities";
 import { getServerSupabase } from "@/lib/supabase";
 import { getCountryCodeByName } from "@/lib/utils/countryUtils";
@@ -455,7 +455,7 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
   return (
     <div className="font-inter">
       <Navigation />
-      <CountryCityPage
+      <ServerCountryCityPage
         country={countryInfo.name}
         initialBuilders={builders}
         initialContent={mergedContent}
@@ -463,6 +463,7 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
         cities={cities}
         // Explicitly set hideCitiesSection to false to ensure cities section is shown
         hideCitiesSection={false}
+        serverCmsContent={cmsContent}
       />
       <Footer />
       <WhatsAppFloat />
