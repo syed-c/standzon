@@ -46,9 +46,9 @@ import {
   Tag,
   Building,
 } from "lucide-react";
-import { getServerSupabase } from "@/lib/supabase";
-import { getAllBuilders } from "@/lib/supabase/builders";
-import { getServerPageContent } from "@/lib/data/storage";
+import { getServerSupabase } from '@/lib/supabase';
+import { getAllBuilders } from '@/lib/supabase/builders';
+import { getServerPageContent } from '@/lib/data/serverPageContent';
 
 interface Builder {
   id: string;
@@ -81,6 +81,7 @@ interface Builder {
   }>;
   companyDescription: string;
   keyStrengths: string[];
+  logo?: string;
   featured?: boolean;
 }
 
@@ -106,6 +107,8 @@ interface ServerCountryCityPageProps {
   showQuoteForm?: boolean;
   cmsContent?: any;
   serverCmsContent?: any;
+  currentPage?: number;
+  itemsPerPage?: number;
 }
 
 const BUILDERS_PER_PAGE = 6;
@@ -121,7 +124,9 @@ export default async function ServerCountryCityPage({
   cities = [],
   showQuoteForm = true,
   cmsContent,
-  serverCmsContent
+  serverCmsContent,
+  currentPage,
+  itemsPerPage
 }: ServerCountryCityPageProps) {
   // Fetch CMS content on the server
   let pageContent = serverCmsContent || cmsContent || initialContent || {};
@@ -217,7 +222,8 @@ export default async function ServerCountryCityPage({
         specializations: b.specializations || [],
         companyDescription: b.description || b.company_description || "",
         keyStrengths: b.key_strengths || [],
-        featured: b.featured || false
+        featured: b.featured || false,
+        logo: b.logo || b.profile_image || b.image_url || null // Add logo field to fix image display issue
       }));
     } catch (error) {
       console.error("Error loading builders on server:", error);
@@ -234,12 +240,21 @@ export default async function ServerCountryCityPage({
     heroContent: `Partner with ${city ? city + ', ' : ''}${country}'s premier exhibition stand builders for trade show success.`,
     seoKeywords: [`${country} exhibition stands`, `${country} trade show builders`, `${country} exhibition builders`, `${country} booth design`, `${country} exhibition services`]
   };
-
+  
   const mergedContent = {
     ...defaultContent,
     ...(pageContent || {})
   };
-
+  
+  // Calculate pagination
+  const effectiveItemsPerPage = itemsPerPage || BUILDERS_PER_PAGE; // Use constant instead of hardcoded 6
+  const effectiveCurrentPage = currentPage || 1;
+    
+  // Paginate the builders
+  const startIndex = (effectiveCurrentPage - 1) * effectiveItemsPerPage;
+  const endIndex = startIndex + effectiveItemsPerPage;
+  const paginatedBuilders = builders.slice(startIndex, endIndex);
+  
   // Prepare country data for the client component
   const countryData = {
     countryName: country,
@@ -254,7 +269,7 @@ export default async function ServerCountryCityPage({
         locationType={city ? "city" : "country"}
         locationName={city || country}
         countryName={city ? country : undefined}
-        initialBuilders={builders}
+        initialBuilders={paginatedBuilders}
         // we will render Cities + SEO + CTA in this parent below pagination
         suppressPostBuildersContent
         exhibitions={[]}
@@ -281,12 +296,13 @@ export default async function ServerCountryCityPage({
         serverCmsContent={pageContent}
         isEditable={false}
         // NOTE: Removed event handlers to comply with server component restrictions
-        // searchTerm is handled via defaultValue
+        // Removed event handlers to comply with server component restrictions
+        // searchTerm, onSearchTermChange, and other event handlers are removed
         // onContentUpdate is removed since isEditable is false
       />
 
       {/* Pagination Controls (immediately after builders) */}
-      {Math.ceil(builders.length / BUILDERS_PER_PAGE) > 1 && (
+      {Math.ceil(builders.length / effectiveItemsPerPage) > 1 && (
         <section className="py-6 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap items-center justify-center gap-2">
@@ -294,23 +310,23 @@ export default async function ServerCountryCityPage({
                 variant="outline"
                 size="sm"
                 className="text-gray-900 border-gray-300 min-w-[80px]"
-                disabled={true}
+                disabled={effectiveCurrentPage <= 1}
               >
                 Previous
               </Button>
               <div className="flex flex-wrap gap-2 justify-center">
-                {Array.from({ length: Math.min(Math.ceil(builders.length / BUILDERS_PER_PAGE), 10) }, (_, i) => {
+                {Array.from({ length: Math.min(Math.ceil(builders.length / effectiveItemsPerPage), 10) }, (_, i) => {
                   const pageNum = i + 1;
-                  if (Math.ceil(builders.length / BUILDERS_PER_PAGE) > 10) {
-                    if (pageNum === 1 || pageNum === Math.ceil(builders.length / BUILDERS_PER_PAGE) || 
-                        (pageNum >= 1 /*currentPage - 1*/ && pageNum <= 1 /*currentPage + 1*/)) {
+                  if (Math.ceil(builders.length / effectiveItemsPerPage) > 10) {
+                    if (pageNum === 1 || pageNum === Math.ceil(builders.length / effectiveItemsPerPage) || 
+                        (pageNum >= effectiveCurrentPage - 1 && pageNum <= effectiveCurrentPage + 1)) {
                       return (
                         <Button
                           key={i}
-                          variant={"outline" /*currentPage === pageNum ? "default" : "outline"*/}
+                          variant={effectiveCurrentPage === pageNum ? "default" : "outline"}
                           size="sm"
                           className={
-                            1 /*currentPage === pageNum*/ 
+                            effectiveCurrentPage === pageNum 
                               ? "min-w-[40px]" 
                               : "text-gray-900 border-gray-300 min-w-[40px]"
                           }
@@ -318,7 +334,7 @@ export default async function ServerCountryCityPage({
                           {pageNum}
                         </Button>
                       );
-                    } else if (pageNum === 2 || pageNum === Math.ceil(builders.length / BUILDERS_PER_PAGE) - 1) {
+                    } else if (pageNum === 2 || pageNum === Math.ceil(builders.length / effectiveItemsPerPage) - 1) {
                       return (
                         <span key={i} className="px-2 py-1 text-gray-500">...</span>
                       );
@@ -328,10 +344,10 @@ export default async function ServerCountryCityPage({
                   return (
                     <Button
                       key={i}
-                      variant={"outline" /*currentPage === pageNum ? "default" : "outline"*/}
+                      variant={effectiveCurrentPage === pageNum ? "default" : "outline"}
                       size="sm"
                       className={
-                        1 /*currentPage === pageNum*/ 
+                        effectiveCurrentPage === pageNum 
                           ? "min-w-[40px]" 
                           : "text-gray-900 border-gray-300 min-w-[40px]"
                       }
@@ -345,13 +361,13 @@ export default async function ServerCountryCityPage({
                 variant="outline"
                 size="sm"
                 className="text-gray-900 border-gray-300 min-w-[80px]"
-                disabled={true}
+                disabled={effectiveCurrentPage >= Math.ceil(builders.length / effectiveItemsPerPage)}
               >
                 Next
               </Button>
             </div>
             <div className="text-center text-sm text-gray-500 mt-2">
-              Page 1 of {Math.ceil(builders.length / BUILDERS_PER_PAGE)}
+              Page {effectiveCurrentPage} of {Math.ceil(builders.length / effectiveItemsPerPage)}
             </div>
           </div>
         </section>

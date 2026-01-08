@@ -4,9 +4,10 @@ import Navigation from "@/components/Navigation";
 import UltraFastHero from "@/components/UltraFastHero";
 import { getFontClass } from "@/lib/utils/fonts";
 import PublicQuoteRequest from "@/components/PublicQuoteRequest";
-import { getServerPageContent } from "@/lib/data/storage";
+import { getServerPageContent } from "@/lib/data/serverPageContent";
 
 // ✅ PERFORMANCE: Lazy load non-critical components
+import RecentLeadsSection from "@/components/RecentLeadsSection";
 const LocationsSection = React.lazy(() => import("@/components/LocationsSection"));
 const TestimonialsCarousel = React.lazy(() => import("@/components/TestimonialsCarousel"));
 const ContactSection = React.lazy(() => import("@/components/ContactSection"));
@@ -117,13 +118,13 @@ export default async function ServerHomePageContent() {
             </div>
             {/* Existing recent leads component with CMS CTA */}
             <div>
-              {React.createElement((await import("@/components/RecentLeadsSection")).default, {
-                ctaHeading: (saved?.sections?.readyLeads?.heading || '').trim() || undefined,
-                ctaParagraph: (saved?.sections?.readyLeads?.paragraph || '').trim() || undefined,
-                ctaButtons: Array.isArray(saved?.buttons)
+              <RecentLeadsSection
+                ctaHeading={(saved?.sections?.readyLeads?.heading || '').trim() || undefined}
+                ctaParagraph={(saved?.sections?.readyLeads?.paragraph || '').trim() || undefined}
+                ctaButtons={Array.isArray(saved?.buttons)
                   ? (saved!.buttons as Array<any>).filter(b => (b.section||'').toLowerCase() === 'readyleads').map(b => ({ text: b.text, href: b.link || b.href }))
-                  : (saved?.sections?.readyLeads?.buttons || undefined),
-              })}
+                  : (saved?.sections?.readyLeads?.buttons || undefined)}
+              />
             </div>
           </div>
         </section>

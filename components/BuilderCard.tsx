@@ -259,9 +259,23 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
           </div>
         </div>
 
-        <CardTitle className="text-lg sm:text-xl leading-tight">
-          {builder.companyName}
-        </CardTitle>
+        <div className="flex items-start gap-3">
+          {builder.logo && (
+            <img 
+              src={builder.logo} 
+              alt={builder.companyName}
+              className="w-12 h-12 object-contain rounded-lg bg-gray-100 p-1"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.onerror = null; // prevents infinite loop
+                target.src = '/images/builders/default-logo.png';
+              }}
+            />
+          )}
+          <CardTitle className="text-lg sm:text-xl leading-tight">
+            {builder.companyName}
+          </CardTitle>
+        </div>
         
         <div className="space-y-2 text-sm text-gray-600">
           <div className="flex items-center gap-2">

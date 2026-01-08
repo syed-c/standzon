@@ -1,9 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
 import ServerCountryCityPage from "@/components/ServerCountryCityPage";
+import CountryPageClientWrapper from "@/components/CountryPageClientWrapper";
 import { GLOBAL_EXHIBITION_DATA } from "@/lib/data/globalCities";
 import { getServerSupabase } from "@/lib/supabase";
 import { getCountryCodeByName } from "@/lib/utils/countryUtils";
@@ -229,7 +227,9 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
   console.log(`🔍 DEBUG: Cities data for ${countryInfo.name}:`, cities);
   
   // Fetch builders from Supabase API with better error handling
-  let builders: any[] = [];  try {
+  let builders: any[] = [];
+  
+  try {
     // Use absolute URL for server-side fetch
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     console.log(`🔍 Fetching builders from: ${baseUrl}/api/admin/builders?limit=1000&prioritize_real=true`);
@@ -242,14 +242,43 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
     );
     
     if (!response.ok) {
-      throw new Error(`Builders API returned ${response.status}: ${response.statusText}`);
-    }
-    
-    const buildersData = await response.json();
-    console.log(`✅ Builders API response received. Success: ${buildersData.success}, Builders count: ${buildersData.data?.builders?.length || 0}`);
-    
-    if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
-      // Handle country name variations (UAE vs United Arab Emirates)
+      console.warn(`⚠️ Builders API returned ${response.status}: ${response.statusText}, falling back to direct Supabase query`);
+      // Fallback to direct Supabase query
+      const sb = getServerSupabase();
+      if (!sb) {
+        console.error('❌ Supabase client not available');
+        throw new Error('Supabase client not available');
+      }
+      
+      const { data: buildersData, error: buildersError } = await sb
+        .from('builders')
+        .select('*')
+        .is('deleted_at', null); // Only get non-deleted builders
+      
+      if (buildersError) {
+        console.error('❌ Error querying builders table:', buildersError);
+        // Try the builder_profiles table as fallback
+        console.warn('⚠️ No data in builders table or error occurred, trying builder_profiles table...');
+        
+        const { data: profilesData, error: profilesError } = await sb
+          .from('builder_profiles')
+          .select('*')
+          .is('deleted_at', null);
+          
+        if (profilesError) {
+          console.error('❌ Error querying builder_profiles table:', profilesError);
+          builders = [];
+        } else {
+          console.log('✅ Found builders in builder_profiles:', profilesData?.length || 0);
+          builders = profilesData || [];
+        }
+      } else {
+        console.log('✅ Found builders in builders table:', buildersData?.length || 0);
+        builders = buildersData || [];
+      }
+      
+      // Filter builders for this country
+      console.log('🔍 Filtering builders for country:', countryInfo.name);
       const normalizedCountryName = countryInfo.name.toLowerCase();
       const countryVariations = [normalizedCountryName];
       if (normalizedCountryName.includes("united arab emirates")) {
@@ -257,162 +286,338 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
       } else if (normalizedCountryName === "uae") {
         countryVariations.push("united arab emirates");
       }
-
-      console.log('🔍 DEBUG: Country variations for filtering:', countryVariations);
       
-      // Filter builders for this country (with variations)
-      const filteredBuilders = buildersData.data.builders.filter((builder: any) => {
-        // Normalize strings for comparison
-        const normalizeString = (str: string) => {
-          if (!str) return '';
-          return str.toString().toLowerCase().trim();
-        };
-        
-        // Check headquarters country (handle different field names)
-        const headquartersCountry = normalizeString(
-          builder.headquarters_country || 
-          builder.headquarters?.country || 
-          builder.headquartersCountry || 
-          ''
-        );
-        
-        const headquartersMatch = countryVariations.some(variation => 
-          headquartersCountry === variation || headquartersCountry.includes(variation)
+      // Filter builders by location
+      builders = builders.filter((builder: any) => {
+        // Check headquarters country
+        const headquartersCountry = (builder.headquarters_country || builder.country || '').toLowerCase().trim();
+        const countryMatch = countryVariations.some(variation => 
+          headquartersCountry.includes(variation)
         );
         
         // Check service locations
         const serviceLocations = builder.service_locations || builder.serviceLocations || [];
         const serviceLocationMatch = serviceLocations.some((loc: any) => {
-          const serviceCountry = normalizeString(loc.country);
+          const serviceCountry = (loc.country || '').toLowerCase().trim();
           return countryVariations.some(variation => 
-            serviceCountry === variation || serviceCountry.includes(variation)
+            serviceCountry.includes(variation)
           );
         });
         
-        // Log for debugging first builder
-        if (buildersData.data.builders.indexOf(builder) === 0) {
-          console.log('🔍 DEBUG: Server-side country filtering for first builder:', {
-            country: countryInfo.name,
-            countryVariations,
-            headquartersCountry,
-            headquartersMatch,
-            serviceLocationMatch,
-            finalResult: headquartersMatch || serviceLocationMatch
+        return countryMatch || serviceLocationMatch;
+      });
+
+      console.log(`📍 Filtered to ${builders.length} builders for country: ${countryInfo.name}`);
+      
+      // Transform builders to match Builder interface
+      builders = builders.map((b: any) => ({
+        id: b.id,
+        companyName: b.company_name || b.companyName || "",
+        slug: b.slug ||
+          (b.company_name || b.companyName || "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "-"),
+        headquarters: {
+          city: b.headquarters_city || b.headquarters?.city || "Unknown",
+          country:
+            b.headquarters_country ||
+            b.headquartersCountry ||
+            b.headquarters?.country ||
+            "Unknown",
+        },
+        serviceLocations: b.service_locations || b.service_locations || [],
+        rating: b.rating || 0,
+        reviewCount: b.reviewCount || 0,
+        projectsCompleted: b.projects_completed || b.projects_completed || 0,
+        responseTime: b.response_time || b.responseTime || "Within 24 hours",
+        verified: b.verified || b.isVerified || false,
+        premiumMember: b.premium_member || b.premiumMember || false,
+        planType: b.plan_type || "free",
+        services: b.services || [],
+        specializations: b.specializations || [],
+        companyDescription: b.description || b.company_description || "",
+        keyStrengths: b.key_strengths || [],
+        featured: b.featured || false,
+        logo: b.logo || b.profile_image || b.image_url || null // Add logo field
+      }));
+    } else {
+      const buildersData = await response.json();
+      console.log(`✅ Builders API response received. Success: ${buildersData.success}, Builders count: ${buildersData.data?.builders?.length || 0}`);
+      
+      if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
+        // Handle country name variations (UAE vs United Arab Emirates)
+        const normalizedCountryName = countryInfo.name.toLowerCase();
+        const countryVariations = [normalizedCountryName];
+        if (normalizedCountryName.includes("united arab emirates")) {
+          countryVariations.push("uae");
+        } else if (normalizedCountryName === "uae") {
+          countryVariations.push("united arab emirates");
+        }
+
+        console.log('🔍 DEBUG: Country variations for filtering:', countryVariations);
+        
+        // Filter builders for this country (with variations)
+        const filteredBuilders = buildersData.data.builders.filter((builder: any) => {
+          // Normalize strings for comparison
+          const normalizeString = (str: string) => {
+            if (!str) return '';
+            return str.toString().toLowerCase().trim();
+          };
+          
+          // Check headquarters country (handle different field names)
+          const headquartersCountry = normalizeString(
+            builder.headquarters_country || 
+            builder.headquarters?.country || 
+            builder.headquartersCountry || 
+            ''
+          );
+          
+          const headquartersMatch = countryVariations.some(variation => 
+            headquartersCountry === variation || headquartersCountry.includes(variation)
+          );
+          
+          // Check service locations
+          const serviceLocations = builder.service_locations || builder.serviceLocations || [];
+          const serviceLocationMatch = serviceLocations.some((loc: any) => {
+            const serviceCountry = normalizeString(loc.country);
+            return countryVariations.some(variation => 
+              serviceCountry === variation || serviceCountry.includes(variation)
+            );
+          });
+          
+          // Log for debugging first builder
+          if (buildersData.data.builders.indexOf(builder) === 0) {
+            console.log('🔍 DEBUG: Server-side country filtering for first builder:', {
+              country: countryInfo.name,
+              countryVariations,
+              headquartersCountry,
+              headquartersMatch,
+              serviceLocationMatch,
+              finalResult: headquartersMatch || serviceLocationMatch
+            });
+          }
+          
+          return headquartersMatch || serviceLocationMatch;
+        });
+        
+        // Deduplicate builders by ID
+        const builderMap = new Map();
+        filteredBuilders.forEach((builder: any) => {
+          if (!builderMap.has(builder.id)) {
+            builderMap.set(builder.id, builder);
+          }
+        });
+        
+        const uniqueBuilders = Array.from(builderMap.values());
+        
+        // Log before transformation
+        console.log('🔍 DEBUG: Before transformation - unique builders count:', uniqueBuilders.length);
+        if (uniqueBuilders.length > 0) {
+          console.log('🔍 DEBUG: First unique builder before transformation:', {
+            id: uniqueBuilders[0].id,
+            company_name: uniqueBuilders[0].company_name,
+            headquarters_city: uniqueBuilders[0].headquarters_city,
+            headquarters_country: uniqueBuilders[0].headquarters_country
           });
         }
         
-        return headquartersMatch || serviceLocationMatch;
-      });
-      
-      // Deduplicate builders by ID
-      const builderMap = new Map();
-      filteredBuilders.forEach((builder: any) => {
-        if (!builderMap.has(builder.id)) {
-          builderMap.set(builder.id, builder);
-        }
-      });
-      
-      const uniqueBuilders = Array.from(builderMap.values());
-      
-      // Log before transformation
-      console.log('🔍 DEBUG: Before transformation - unique builders count:', uniqueBuilders.length);
-      if (uniqueBuilders.length > 0) {
-        console.log('🔍 DEBUG: First unique builder before transformation:', {
-          id: uniqueBuilders[0].id,
-          company_name: uniqueBuilders[0].company_name,
-          headquarters_city: uniqueBuilders[0].headquarters_city,
-          headquarters_country: uniqueBuilders[0].headquarters_country
+        // Transform builders to match expected interface (same as in BuildersDirectoryContent)
+        builders = uniqueBuilders.map((b: any) => {
+          const transformed = {
+            id: b.id,
+            companyName: b.company_name || b.companyName || "",
+            companyDescription: (() => {
+              let desc = b.description || b.companyDescription || "";
+              // Remove SERVICE_LOCATIONS JSON from description more aggressively
+              desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
+              desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
+              desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
+              desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
+              desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
+              // Remove any remaining raw data patterns
+              desc = desc.replace(/sdfghjl.*$/g, '');
+              desc = desc.replace(/testing.*$/g, '');
+              desc = desc.replace(/sdfghj.*$/g, '');
+              desc = desc.trim();
+              return desc || "";
+            })(),
+            headquarters: {
+              city: b.headquarters_city || b.headquarters?.city || "Unknown",
+              country:
+                b.headquarters_country ||
+                b.headquartersCountry ||
+                b.headquarters?.country ||
+                "Unknown",
+              countryCode: b.headquarters?.countryCode || "XX",
+              address: b.headquarters?.address || "",
+              latitude: b.headquarters?.latitude || 0,
+              longitude: b.headquarters?.longitude || 0,
+              isHeadquarters: true,
+            },
+            serviceLocations: b.serviceLocations || b.service_locations || [],
+            keyStrengths: b.keyStrengths || [],
+            verified: b.verified || b.isVerified || false,
+            rating: b.rating || 0,
+            projectsCompleted:
+              b.projectsCompleted || b.projects_completed || 0,
+            importedFromGMB: b.importedFromGMB || b.gmbImported || false,
+            logo: b.logo || "/images/builders/default-logo.png",
+            establishedYear: b.establishedYear || b.established_year || 2020,
+            teamSize: b.teamSize || 10,
+            reviewCount: b.reviewCount || 0,
+            responseTime: b.responseTime || "Within 24 hours",
+            languages: b.languages || ["English"],
+            premiumMember: b.premiumMember || b.premium_member || false,
+            slug:
+              b.slug ||
+              (b.company_name || b.companyName || "")
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, "-"),
+            primary_email: b.primary_email || b.primaryEmail || "",
+            phone: b.phone || "",
+            website: b.website || "",
+            contact_person: b.contact_person || b.contactPerson || "",
+            position: b.position || "",
+            gmbImported:
+              b.gmbImported ||
+              b.importedFromGMB ||
+              b.source === "GMB_API" ||
+              false,
+          };
+          
+          // Log first few transformations
+          if (uniqueBuilders.indexOf(b) < 3) {
+            console.log(`🔍 DEBUG: Transformed builder ${b.company_name || b.companyName}:`, {
+              id: transformed.id,
+              companyName: transformed.companyName,
+              headquarters: transformed.headquarters
+            });
+          }
+          
+          return transformed;
+        });
+        
+        console.log('🔍 DEBUG: After transformation - builders count:', builders.length);
+      } else {
+        console.warn('⚠️ No builders data received or invalid format:', {
+          success: buildersData.success,
+          hasData: !!buildersData.data,
+          isArray: Array.isArray(buildersData.data?.builders)
         });
       }
-      
-      // Transform builders to match expected interface (same as in BuildersDirectoryContent)
-      builders = uniqueBuilders.map((b: any) => {
-        const transformed = {
-          id: b.id,
-          companyName: b.company_name || b.companyName || "",
-          companyDescription: (() => {
-            let desc = b.description || b.companyDescription || "";
-            // Remove SERVICE_LOCATIONS JSON from description more aggressively
-            desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
-            desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
-            desc = desc.replace(/SERVICE_LOCATIONS:\[.*?\]/g, '');
-            desc = desc.replace(/\n\n.*SERVICE_LOCATIONS.*$/g, '');
-            desc = desc.replace(/.*SERVICE_LOCATIONS.*$/g, '');
-            // Remove any remaining raw data patterns
-            desc = desc.replace(/sdfghjl.*$/g, '');
-            desc = desc.replace(/testing.*$/g, '');
-            desc = desc.replace(/sdfghj.*$/g, '');
-            desc = desc.trim();
-            return desc || "";
-          })(),
-          headquarters: {
-            city: b.headquarters_city || b.headquarters?.city || "Unknown",
-            country:
-              b.headquarters_country ||
-              b.headquartersCountry ||
-              b.headquarters?.country ||
-              "Unknown",
-            countryCode: b.headquarters?.countryCode || "XX",
-            address: b.headquarters?.address || "",
-            latitude: b.headquarters?.latitude || 0,
-            longitude: b.headquarters?.longitude || 0,
-            isHeadquarters: true,
-          },
-          serviceLocations: b.serviceLocations || b.service_locations || [],
-          keyStrengths: b.keyStrengths || [],
-          verified: b.verified || b.isVerified || false,
-          rating: b.rating || 0,
-          projectsCompleted:
-            b.projectsCompleted || b.projects_completed || 0,
-          importedFromGMB: b.importedFromGMB || b.gmbImported || false,
-          logo: b.logo || "/images/builders/default-logo.png",
-          establishedYear: b.establishedYear || b.established_year || 2020,
-          teamSize: b.teamSize || 10,
-          reviewCount: b.reviewCount || 0,
-          responseTime: b.responseTime || "Within 24 hours",
-          languages: b.languages || ["English"],
-          premiumMember: b.premiumMember || b.premium_member || false,
-          slug:
-            b.slug ||
-            (b.company_name || b.companyName || "")
-              .toLowerCase()
-              .replace(/[^a-z0-9]/g, "-"),
-          primary_email: b.primary_email || b.primaryEmail || "",
-          phone: b.phone || "",
-          website: b.website || "",
-          contact_person: b.contact_person || b.contactPerson || "",
-          position: b.position || "",
-          gmbImported:
-            b.gmbImported ||
-            b.importedFromGMB ||
-            b.source === "GMB_API" ||
-            false,
-        };
-        
-        // Log first few transformations
-        if (uniqueBuilders.indexOf(b) < 3) {
-          console.log(`🔍 DEBUG: Transformed builder ${b.company_name || b.companyName}:`, {
-            id: transformed.id,
-            companyName: transformed.companyName,
-            headquarters: transformed.headquarters
-          });
-        }
-        
-        return transformed;
-      });
-      
-      console.log('🔍 DEBUG: After transformation - builders count:', builders.length);
-    } else {
-      console.warn('⚠️ No builders data received or invalid format:', {
-        success: buildersData.success,
-        hasData: !!buildersData.data,
-        isArray: Array.isArray(buildersData.data?.builders)
-      });
     }
   } catch (error) {
-    console.error("❌ Error loading builders:", error);
-    // Don't let builder loading errors crash the page
-    builders = [];
+    console.error("❌ Error loading builders from API:", error);
+  }
+  
+  // If API failed or returned no builders, fallback to direct Supabase query
+  if (builders.length === 0) {
+    try {
+      console.log('🔍 Fetching all builders from Supabase as fallback...');
+      const sb = getServerSupabase();
+      if (!sb) {
+        console.error('❌ Supabase client not available');
+        throw new Error('Supabase client not available');
+      }
+      
+      console.log('🔍 Using client type: Admin (bypasses RLS)');
+      console.log('🔍 Querying builders table...');
+      
+      // Query the builders table
+      const { data: buildersData, error: buildersError } = await sb
+        .from('builders')
+        .select('*')
+        .is('deleted_at', null); // Only get non-deleted builders
+      
+      if (buildersError) {
+        console.error('❌ Error querying builders table:', buildersError);
+        // Try the builder_profiles table as fallback
+        console.warn('⚠️ No data in builders table or error occurred, trying builder_profiles table...');
+        
+        const { data: profilesData, error: profilesError } = await sb
+          .from('builder_profiles')
+          .select('*')
+          .is('deleted_at', null);
+          
+        if (profilesError) {
+          console.error('❌ Error querying builder_profiles table:', profilesError);
+        } else {
+          console.log('✅ Found builders in builder_profiles:', profilesData?.length || 0);
+          builders = profilesData || [];
+        }
+      } else {
+        console.log('✅ Found builders in builders table:', buildersData?.length || 0);
+        builders = buildersData || [];
+      }
+      
+      // Filter builders for this country
+      console.log('🔍 Filtering builders for country:', countryInfo.name);
+      const normalizedCountryName = countryInfo.name.toLowerCase();
+      const countryVariations = [normalizedCountryName];
+      if (normalizedCountryName.includes("united arab emirates")) {
+        countryVariations.push("uae");
+      } else if (normalizedCountryName === "uae") {
+        countryVariations.push("united arab emirates");
+      }
+      
+      // Filter builders by location
+      builders = builders.filter((builder: any) => {
+        // Check headquarters country
+        const headquartersCountry = (builder.headquarters_country || builder.country || '').toLowerCase().trim();
+        const countryMatch = countryVariations.some(variation => 
+          headquartersCountry.includes(variation)
+        );
+        
+        // Check service locations
+        const serviceLocations = builder.service_locations || builder.serviceLocations || [];
+        const serviceLocationMatch = serviceLocations.some((loc: any) => {
+          const serviceCountry = (loc.country || '').toLowerCase().trim();
+          return countryVariations.some(variation => 
+            serviceCountry.includes(variation)
+          );
+        });
+        
+        return countryMatch || serviceLocationMatch;
+      });
+
+      console.log(`📍 Filtered to ${builders.length} builders for country: ${countryInfo.name}`);
+      
+      // Transform builders to match Builder interface
+      builders = builders.map((b: any) => ({
+        id: b.id,
+        companyName: b.company_name || b.companyName || "",
+        slug: b.slug ||
+          (b.company_name || b.companyName || "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "-"),
+        headquarters: {
+          city: b.headquarters_city || b.headquarters?.city || "Unknown",
+          country:
+            b.headquarters_country ||
+            b.headquartersCountry ||
+            b.headquarters?.country ||
+            "Unknown",
+        },
+        serviceLocations: b.service_locations || b.service_locations || [],
+        rating: b.rating || 0,
+        reviewCount: b.reviewCount || 0,
+        projectsCompleted: b.projects_completed || b.projects_completed || 0,
+        responseTime: b.response_time || b.responseTime || "Within 24 hours",
+        verified: b.verified || b.isVerified || false,
+        premiumMember: b.premium_member || b.premiumMember || false,
+        planType: b.plan_type || "free",
+        services: b.services || [],
+        specializations: b.specializations || [],
+        companyDescription: b.description || b.company_description || "",
+        keyStrengths: b.key_strengths || [],
+        featured: b.featured || false,
+        logo: b.logo || b.profile_image || b.image_url || null // Add logo field
+      }));
+    } catch (error) {
+      console.error('❌ Error fetching all builders from Supabase fallback:', error);
+      // Fallback to empty array
+      builders = [];
+    }
   }
   
   // DEBUG: Log builders info
@@ -454,19 +659,18 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
 
   return (
     <div className="font-inter">
-      <Navigation />
-      <ServerCountryCityPage
-        country={countryInfo.name}
-        initialBuilders={builders}
-        initialContent={mergedContent}
-        cmsContent={cmsContent}
-        cities={cities}
-        // Explicitly set hideCitiesSection to false to ensure cities section is shown
-        hideCitiesSection={false}
-        serverCmsContent={cmsContent}
-      />
-      <Footer />
-      <WhatsAppFloat />
+      <CountryPageClientWrapper>
+        <ServerCountryCityPage
+          country={countryInfo.name}
+          initialBuilders={builders}
+          initialContent={mergedContent}
+          cmsContent={cmsContent}
+          cities={cities}
+          // Explicitly set hideCitiesSection to false to ensure cities section is shown
+          hideCitiesSection={false}
+          serverCmsContent={cmsContent}
+        />
+      </CountryPageClientWrapper>
     </div>
   );
 }

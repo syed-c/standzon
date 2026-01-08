@@ -52,10 +52,9 @@ import {
 } from "lucide-react";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import { forcePlatformInitialization } from "@/lib/utils/platformInitializer";
-import {
-  storageAPI,
-  PageContent as SavedPageContent,
-} from "@/lib/data/storage";
+// Removed storageAPI import due to fs dependencies
+// Using Supabase directly instead
+import { PageContent as SavedPageContent } from '@/lib/data/storage';
 
 interface Builder {
   id: string;
