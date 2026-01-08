@@ -1,8 +1,5 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
 import CountryCityPage from "@/components/CountryCityPage";
 import {
   getCityBySlug as getGlobalCityBySlug,
@@ -18,6 +15,7 @@ import { getCountryCodeByName } from "@/lib/utils/countryUtils";
 import { getCitiesByCountry } from "@/lib/supabase/client";
 // Import the global database function
 import { getCitiesByCountry as getGlobalCitiesByCountry } from "@/lib/data/globalExhibitionDatabase";
+import ServerPageWithBreadcrumbs from "@/components/ServerPageWithBreadcrumbs";
 
 // ✅ FIX #1: Force dynamic rendering to prevent build-time evaluation
 export const dynamic = 'force-dynamic';
@@ -640,21 +638,20 @@ export default async function CityPage({ params }: CityPageProps) {
   }
 
   return (
-    <div className="font-inter">
-      <Navigation />
-      <CountryCityPage
-        country={countryName}
-        city={cityName}
-        initialBuilders={builders}
-        initialContent={mergedContent}
-        cmsContent={cmsContent}
-        showQuoteForm={true}
-        hideCitiesSection={false}
-        cities={cities}
-      />
-      <Footer />
-      <WhatsAppFloat />
-    </div>
+    <ServerPageWithBreadcrumbs pathname={`/exhibition-stands/${countrySlug}/${citySlug}`}>
+      <div className="font-inter">
+        <CountryCityPage
+          country={countryName}
+          city={cityName}
+          initialBuilders={builders}
+          initialContent={mergedContent}
+          cmsContent={cmsContent}
+          showQuoteForm={true}
+          hideCitiesSection={false}
+          cities={cities}
+        />
+      </div>
+    </ServerPageWithBreadcrumbs>
   );
 }
 

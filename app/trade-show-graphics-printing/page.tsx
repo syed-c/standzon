@@ -15,6 +15,12 @@ export const metadata: Metadata = siteMetadata['/trade-show-graphics-printing'] 
   },
 };
 
+import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
+
 export default function GraphicsPrintingPage() {
-  return <GraphicsPrintingPageContent />;
+  return (
+    <ClientPageWithBreadcrumbs pathname="/trade-show-graphics-printing">
+      <GraphicsPrintingPageContent />
+    </ClientPageWithBreadcrumbs>
+  );
 }

@@ -17,6 +17,12 @@ export const metadata: Metadata = siteMetadata['/3d-rendering-and-concept-develo
 };
 
 // Server component shell that renders the client component
+import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
+
 export default function RenderingConceptPage() {
-  return <RenderingConceptPageContent />;
+  return (
+    <ClientPageWithBreadcrumbs pathname="/3d-rendering-and-concept-development">
+      <RenderingConceptPageContent />
+    </ClientPageWithBreadcrumbs>
+  );
 }

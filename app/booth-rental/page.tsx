@@ -15,6 +15,12 @@ export const metadata: Metadata = siteMetadata['/booth-rental'] || {
   },
 };
 
+import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
+
 export default function BoothRentalPage() {
-  return <BoothRentalPageContent />;
+  return (
+    <ClientPageWithBreadcrumbs pathname="/booth-rental">
+      <BoothRentalPageContent />
+    </ClientPageWithBreadcrumbs>
+  );
 } 

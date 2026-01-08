@@ -1,9 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
+import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
 import TradeStyleBanner from '@/components/TradeStyleBanner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -190,8 +188,7 @@ export default function ExhibitionStandsContent() {
   }
 
   return (
-    <div className="font-inter min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <Navigation />
+    <ClientPageWithBreadcrumbs className="font-inter min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       
       {/* Trade Shows style banner */}
       <TradeStyleBanner
@@ -376,8 +373,6 @@ export default function ExhibitionStandsContent() {
         </div>
       </section>
       
-      <Footer />
-      <WhatsAppFloat />
-    </div>
+    </ClientPageWithBreadcrumbs>
   );
 }

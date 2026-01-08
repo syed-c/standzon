@@ -1,10 +1,8 @@
 import { Metadata } from 'next';
 import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage from '@/components/CountryCityPage';
+import ServerPageWithBreadcrumbs from '@/components/ServerPageWithBreadcrumbs';
 
 
 
@@ -35,24 +33,23 @@ export default async function StrasbourgPage() {
   console.log('🇫🇷 Loading Strasbourg page with modern UI...');
   
   return (
-    <div className="font-inter">
-      <Navigation />
-      <CountryCityPage
-        country="France"
-        city="Strasbourg"
-        initialBuilders={[]}
-        initialContent={{
-          id: 'fr-strasbourg',
-          title: 'Exhibition Stand Builders in Strasbourg',
-          metaTitle: 'Strasbourg Exhibition Stand Builders | Trade Show Booth Design',
-          metaDescription: 'Leading exhibition stand builders in Strasbourg, France. Custom trade show displays, booth design, and professional exhibition services.',
-          description: 'Strasbourg is a major cultural and trade center in France, hosting significant events throughout the year. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Strasbourg\'s dynamic exhibition landscape.',
-          heroContent: 'Partner with Strasbourg\'s premier exhibition stand builders for trade show success in the city.',
-          seoKeywords: ['Strasbourg exhibition stands', 'Strasbourg trade show builders', 'Strasbourg exhibition builders', 'Strasbourg booth design', 'Strasbourg exhibition services', 'France trade show displays']
-        }}
-      />
-      <Footer />
-      <WhatsAppFloat />
-    </div>
+    <ServerPageWithBreadcrumbs pathname="/exhibition-stands/fr/strasbourg">
+      <div className="font-inter">
+        <CountryCityPage
+          country="France"
+          city="Strasbourg"
+          initialBuilders={[]}
+          initialContent={{
+            id: 'fr-strasbourg',
+            title: 'Exhibition Stand Builders in Strasbourg',
+            metaTitle: 'Strasbourg Exhibition Stand Builders | Trade Show Booth Design',
+            metaDescription: 'Leading exhibition stand builders in Strasbourg, France. Custom trade show displays, booth design, and professional exhibition services.',
+            description: 'Strasbourg is a major cultural and trade center in France, hosting significant events throughout the year. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Strasbourg\'s dynamic exhibition landscape.',
+            heroContent: 'Partner with Strasbourg\'s premier exhibition stand builders for trade show success in the city.',
+            seoKeywords: ['Strasbourg exhibition stands', 'Strasbourg trade show builders', 'Strasbourg exhibition builders', 'Strasbourg booth design', 'Strasbourg exhibition services', 'France trade show displays']
+          }}
+        />
+      </div>
+    </ServerPageWithBreadcrumbs>
   );
 }

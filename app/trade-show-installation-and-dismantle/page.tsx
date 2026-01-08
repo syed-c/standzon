@@ -15,6 +15,12 @@ export const metadata: Metadata = siteMetadata['/trade-show-installation-and-dis
   },
 };
 
+import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
+
 export default function InstallationDismantlePage() {
-  return <InstallationDismantlePageContent />;
+  return (
+    <ClientPageWithBreadcrumbs pathname="/trade-show-installation-and-dismantle">
+      <InstallationDismantlePageContent />
+    </ClientPageWithBreadcrumbs>
+  );
 }

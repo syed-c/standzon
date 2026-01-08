@@ -19,8 +19,7 @@ import {
   Shield
 } from 'lucide-react';
 import Link from 'next/link';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
 
 const services = [
   {
@@ -110,8 +109,7 @@ const benefits = [
 
 export default function ServicesPageContent() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
+    <ClientPageWithBreadcrumbs className="min-h-screen bg-gray-50">
       
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 mt-16">
@@ -285,7 +283,6 @@ export default function ServicesPageContent() {
         </section>
       </div>
 
-      <Footer />
-    </div>
+    </ClientPageWithBreadcrumbs>
   );
 }

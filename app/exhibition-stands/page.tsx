@@ -16,6 +16,12 @@ export const metadata: Metadata = siteMetadata['/exhibition-stands'] || {
   },
 };
 
+import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
+
 export default function ExhibitionStandsPage() {
-  return <ExhibitionStandsContent />;
+  return (
+    <ClientPageWithBreadcrumbs pathname="/exhibition-stands">
+      <ExhibitionStandsContent />
+    </ClientPageWithBreadcrumbs>
+  );
 }

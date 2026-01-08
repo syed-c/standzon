@@ -5,10 +5,8 @@ import { Metadata } from 'next';
 export const dynamic = 'force-dynamic';// import { preloadQuery } from "convex/nextjs";
 // import { api } from "@/convex/_generated/api";
 import { notFound } from 'next/navigation';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage from '@/components/CountryCityPage';
+import ServerPageWithBreadcrumbs from '@/components/ServerPageWithBreadcrumbs';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -36,24 +34,23 @@ export default async function OttawaPage() {
   console.log('🇨🇦 Loading Ottawa page with modern UI...');
   
   return (
-    <div className="font-inter">
-      <Navigation />
-      <CountryCityPage
-        country="Canada"
-        city="Ottawa"
-        initialBuilders={[]}
-        initialContent={{
-          id: 'ca-ottawa',
-          title: 'Exhibition Stand Builders in Ottawa',
-          metaTitle: 'Ottawa Exhibition Stand Builders | Trade Show Booth Design',
-          metaDescription: 'Leading exhibition stand builders in Ottawa, Canada. Custom trade show displays, booth design, and professional exhibition services.',
-          description: 'Ottawa is the capital and major government center of Canada, hosting significant events throughout the year. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Ottawa\'s dynamic exhibition landscape.',
-          heroContent: 'Partner with Ottawa\'s premier exhibition stand builders for trade show success in the city.',
-          seoKeywords: ['Ottawa exhibition stands', 'Ottawa trade show builders', 'Ottawa exhibition builders', 'Ottawa booth design', 'Ottawa exhibition services', 'Canada trade show displays']
-        }}
-      />
-      <Footer />
-      <WhatsAppFloat />
-    </div>
+    <ServerPageWithBreadcrumbs pathname="/exhibition-stands/ca/ottawa">
+      <div className="font-inter">
+        <CountryCityPage
+          country="Canada"
+          city="Ottawa"
+          initialBuilders={[]}
+          initialContent={{
+            id: 'ca-ottawa',
+            title: 'Exhibition Stand Builders in Ottawa',
+            metaTitle: 'Ottawa Exhibition Stand Builders | Trade Show Booth Design',
+            metaDescription: 'Leading exhibition stand builders in Ottawa, Canada. Custom trade show displays, booth design, and professional exhibition services.',
+            description: 'Ottawa is the capital and major government center of Canada, hosting significant events throughout the year. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Ottawa\'s dynamic exhibition landscape.',
+            heroContent: 'Partner with Ottawa\'s premier exhibition stand builders for trade show success in the city.',
+            seoKeywords: ['Ottawa exhibition stands', 'Ottawa trade show builders', 'Ottawa exhibition builders', 'Ottawa booth design', 'Ottawa exhibition services', 'Canada trade show displays']
+          }}
+        />
+      </div>
+    </ServerPageWithBreadcrumbs>
   );
 }

@@ -12,6 +12,12 @@ export const metadata: Metadata = siteMetadata['/trade-show-project-management']
   },
 };
 
+import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
+
 export default function ProjectManagementPage() {
-  return <ProjectManagementPageContent />;
+  return (
+    <ClientPageWithBreadcrumbs pathname="/trade-show-project-management">
+      <ProjectManagementPageContent />
+    </ClientPageWithBreadcrumbs>
+  );
 }

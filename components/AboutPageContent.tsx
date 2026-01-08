@@ -1,8 +1,6 @@
 "use client";
 
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
+import ClientPageWithBreadcrumbs from "@/components/ClientPageWithBreadcrumbs";
 import TradeStyleBanner from "@/components/TradeStyleBanner";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -227,8 +225,7 @@ export default function AboutPageContent() {
   }, [saved]);
 
   return (
-    <div className="font-inter min-h-screen">
-      <Navigation />
+    <ClientPageWithBreadcrumbs className="font-inter min-h-screen">
 
       {/* Trade Shows style banner */}
       <TradeStyleBanner
@@ -460,8 +457,6 @@ export default function AboutPageContent() {
         </div>
       </section>
 
-      <Footer />
-      <WhatsAppFloat />
-    </div>
+    </ClientPageWithBreadcrumbs>
   );
 }

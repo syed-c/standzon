@@ -2,9 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { notFound } from 'next/navigation';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
+import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
 import { LeadInquiryForm } from '@/components/LeadInquiryForm';
 import { ProfileClaimSystem } from '@/components/ProfileClaimSystem';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -331,8 +329,7 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
+      <ClientPageWithBreadcrumbs className="min-h-screen bg-gray-50">
         <div className="pt-20 pb-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="animate-pulse space-y-8">
@@ -347,8 +344,7 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
             </div>
           </div>
         </div>
-        <Footer />
-      </div>
+      </ClientPageWithBreadcrumbs>
     );
   }
 
@@ -357,8 +353,7 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
+    <ClientPageWithBreadcrumbs className="min-h-screen bg-gray-50">
 
                   <Dialog open={showLeadModal} onOpenChange={setShowLeadModal}>
                     <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -386,8 +381,6 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
         onOpenQuote={() => setShowLeadModal(true)}
       />
 
-      <Footer />
-      <WhatsAppFloat />
-    </div>
+    </ClientPageWithBreadcrumbs>
   );
 }

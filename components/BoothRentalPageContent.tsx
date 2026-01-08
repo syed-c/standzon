@@ -12,8 +12,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import Link from "next/link";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
+import ClientPageWithBreadcrumbs from "@/components/ClientPageWithBreadcrumbs";
 import TradeStyleBanner from "@/components/TradeStyleBanner";
 
 export default function BoothRentalPageContent() {
@@ -100,8 +99,7 @@ export default function BoothRentalPageContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
+    <ClientPageWithBreadcrumbs className="min-h-screen bg-gray-50">
 
       {/* Hero Section */}
       <TradeStyleBanner
@@ -291,7 +289,6 @@ export default function BoothRentalPageContent() {
         </section>
       </div>
 
-      <Footer />
-    </div>
+    </ClientPageWithBreadcrumbs>
   );
 }

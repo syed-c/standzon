@@ -1,16 +1,16 @@
 import { Metadata } from 'next';
 import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage from '@/components/CountryCityPage';
 import { getServerSupabase } from '@/lib/supabase';
+import ServerPageWithBreadcrumbs from '@/components/ServerPageWithBreadcrumbs';
 
 
 
 // ✅ FIX: Force dynamic rendering to prevent build-time evaluation
-export const dynamic = 'force-dynamic';// Fetch CMS content for the Taiwan page
+export const dynamic = 'force-dynamic';
+
+// Fetch CMS content for the Taiwan page
 async function getTaiwanPageContent() {
   try {
     const sb = getServerSupabase();
@@ -84,16 +84,13 @@ export default async function TaiwanPage() {
   };
   
   return (
-    <div className="font-inter">
-      <Navigation />
+    <ServerPageWithBreadcrumbs pathname="/exhibition-stands/tw">
       <CountryCityPage
         country="Taiwan"
         initialBuilders={[]}
         initialContent={mergedContent}
         cmsContent={cmsContent}
       />
-      <Footer />
-      <WhatsAppFloat />
-    </div>
+    </ServerPageWithBreadcrumbs>
   );
 }

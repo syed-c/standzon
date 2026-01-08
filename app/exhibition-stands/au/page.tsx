@@ -1,10 +1,8 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage  from '@/components/CountryCityPage';
 import { getServerSupabase } from '@/lib/supabase';
+import ServerPageWithBreadcrumbs from '@/components/ServerPageWithBreadcrumbs';
 
 // ✅ FIX #1: Force dynamic rendering to prevent build-time evaluation
 export const dynamic = 'force-dynamic';
@@ -120,16 +118,13 @@ export default async function AustraliaPage() {
   };
   
   return (
-    <div className="font-inter">
-      <Navigation />
+    <ServerPageWithBreadcrumbs pathname="/exhibition-stands/au">
       <CountryCityPage
         country="Australia"
         initialBuilders={[]}
         initialContent={mergedContent}
         cmsContent={cmsContent}
       />
-      <Footer />
-      <WhatsAppFloat />
-    </div>
+    </ServerPageWithBreadcrumbs>
   );
 }

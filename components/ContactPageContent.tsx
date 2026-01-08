@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
+import ClientPageWithBreadcrumbs from "@/components/ClientPageWithBreadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -122,8 +120,7 @@ export default function ContactPageContent() {
   };
 
   return (
-    <div className="font-inter min-h-screen">
-      <Navigation />
+    <ClientPageWithBreadcrumbs className="font-inter min-h-screen">
 
       {/* Hero Section */}
       <section className="pt-20 pb-16 bg-gradient-to-br from-navy-900 via-navy-800 to-blue-dark text-white">
@@ -560,8 +557,6 @@ export default function ContactPageContent() {
         </div>
       </section>
 
-      <Footer />
-      <WhatsAppFloat />
-    </div>
+    </ClientPageWithBreadcrumbs>
   );
 }

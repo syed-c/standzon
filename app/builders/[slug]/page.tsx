@@ -291,5 +291,9 @@ export default async function BuilderProfilePage({
   }
 
   console.log("✅ Server: Found builder:", builder.companyName);
-  return <BuilderProfileClient slug={slug} initialBuilder={builder} />;
+  return (
+    <ClientPageWithBreadcrumbs pathname={`/builders/${slug}`}>
+      <BuilderProfileClient slug={slug} initialBuilder={builder} />
+    </ClientPageWithBreadcrumbs>
+  );
 }

@@ -62,6 +62,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // Server component shell that renders the client component
+import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
+
 export default function AboutPage() {
-  return <AboutPageContent />;
+  return (
+    <ClientPageWithBreadcrumbs pathname="/about">
+      <AboutPageContent />
+    </ClientPageWithBreadcrumbs>
+  );
 }

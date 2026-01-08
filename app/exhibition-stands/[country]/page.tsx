@@ -8,6 +8,7 @@ import { getCountryCodeByName } from "@/lib/utils/countryUtils";
 import { getCitiesByCountry } from "@/lib/supabase/client";
 // Import the global database function
 import { getCitiesByCountry as getGlobalCitiesByCountry } from "@/lib/data/globalExhibitionDatabase";
+import ServerPageWithBreadcrumbs from "@/components/ServerPageWithBreadcrumbs";
 
 // ✅ FIX #1: Force dynamic rendering to prevent build-time evaluation
 export const dynamic = 'force-dynamic';
@@ -702,19 +703,21 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
   };
 
   return (
-    <div className="font-inter">
-      <CountryPageClientWrapper>
-        <ServerCountryCityPage
-          country={countryInfo.name}
-          initialBuilders={builders}
-          initialContent={mergedContent}
-          cmsContent={cmsContent}
-          cities={cities}
-          // Explicitly set hideCitiesSection to false to ensure cities section is shown
-          hideCitiesSection={false}
-          serverCmsContent={cmsContent}
-        />
-      </CountryPageClientWrapper>
-    </div>
+    <ServerPageWithBreadcrumbs pathname={`/exhibition-stands/${countrySlug}`}>
+      <div className="font-inter">
+        <CountryPageClientWrapper>
+          <ServerCountryCityPage
+            country={countryInfo.name}
+            initialBuilders={builders}
+            initialContent={mergedContent}
+            cmsContent={cmsContent}
+            cities={cities}
+            // Explicitly set hideCitiesSection to false to ensure cities section is shown
+            hideCitiesSection={false}
+            serverCmsContent={cmsContent}
+          />
+        </CountryPageClientWrapper>
+      </div>
+    </ServerPageWithBreadcrumbs>
   );
 }
