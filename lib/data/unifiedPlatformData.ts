@@ -170,7 +170,14 @@ class UnifiedDataManager {
         baseUrl = window.location.origin;
         console.log('🌍 Detected browser base URL:', baseUrl);
       } else if (typeof process !== 'undefined' && process.env) {
-        baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+        let rawBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
+        
+        // Ensure the base URL has a protocol (http:// or https://)
+        if (!rawBaseUrl.startsWith('http://') && !rawBaseUrl.startsWith('https://')) {
+          rawBaseUrl = `https://${rawBaseUrl}`;
+        }
+        
+        baseUrl = rawBaseUrl;
         console.log('🖥️ Detected server base URL:', baseUrl);
       }
       
