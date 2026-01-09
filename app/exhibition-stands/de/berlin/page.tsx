@@ -1,9 +1,6 @@
 import { Metadata } from 'next';
 import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage from '@/components/CountryCityPage';
 
 // ✅ FIX #1: Force dynamic rendering to prevent build-time evaluation
@@ -36,7 +33,6 @@ export default async function BerlinPage() {
   
   return (
     <div className="font-inter">
-      <Navigation />
       <CountryCityPage
         country="Germany"
         city="Berlin"
@@ -51,8 +47,6 @@ export default async function BerlinPage() {
           seoKeywords: ['Berlin exhibition stands', 'Berlin trade show builders', 'Berlin exhibition builders', 'Berlin booth design', 'Berlin exhibition services', 'Germany trade show displays']
         }}
       />
-      <Footer />
-      <WhatsAppFloat />
     </div>
   );
 }

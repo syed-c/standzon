@@ -1,9 +1,6 @@
 import { Metadata } from 'next';
 import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage  from '@/components/CountryCityPage';
 import { getServerSupabase } from '@/lib/supabase';
 
@@ -85,7 +82,6 @@ export default async function LondonPage() {
   
   return (
     <div className="font-inter">
-      <Navigation />
       <CountryCityPage
         country="United Kingdom"
         city="London"
@@ -100,8 +96,6 @@ export default async function LondonPage() {
           seoKeywords: ['London exhibition stands', 'London trade show builders', 'London exhibition builders', 'London booth design', 'London exhibition services', 'UK trade show displays']
         }}
       />
-      <Footer />
-      <WhatsAppFloat />
     </div>
   );
 }

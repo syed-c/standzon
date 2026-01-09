@@ -1,9 +1,6 @@
 import { Metadata } from 'next';
 import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage from '@/components/CountryCityPage';
 import { getServerSupabase } from '@/lib/supabase';
 
@@ -85,15 +82,12 @@ export default async function SpainPage() {
   
   return (
     <div className="font-inter">
-      <Navigation />
       <CountryCityPage
         country="Spain"
         initialBuilders={[]}
         initialContent={mergedContent}
         cmsContent={cmsContent}
       />
-      <Footer />
-      <WhatsAppFloat />
     </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import React from "react";
 import Navigation from "./Navigation";
-import Footer from "./Footer";
 import WhatsAppFloat from "./WhatsAppFloat";
 
 interface CountryPageClientWrapperProps {
@@ -14,7 +13,6 @@ const CountryPageClientWrapper: React.FC<CountryPageClientWrapperProps> = ({ chi
     <>
       <Navigation />
       {children}
-      <Footer />
       <WhatsAppFloat />
     </>
   );
