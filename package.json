@@ -98,6 +98,7 @@
     "use-debounce": "^10.0.6",
     "uuid": "^13.0.0",
     "uuid4": "^2.0.3",
+    "web-vitals": "^5.1.0",
     "workbox-background-sync": "^7.3.0",
     "workbox-broadcast-update": "^7.3.0",
     "workbox-cacheable-response": "^7.3.0",

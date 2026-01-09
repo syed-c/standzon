@@ -4,7 +4,7 @@ interface BreadcrumbItem {
   href?: string;
 }
 
-export function generateBreadcrumbsServer(pathname: string): BreadcrumbItem[] {
+export function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
   const segments = pathname.split('/').filter(Boolean);
   const breadcrumbs: BreadcrumbItem[] = [];
 

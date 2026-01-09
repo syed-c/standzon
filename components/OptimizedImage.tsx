@@ -52,7 +52,7 @@ export default function OptimizedImage({
           alt={alt}
           width={width}
           height={height}
-          className={`transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+          className={`transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'} img-optimize`}
           priority={priority}
           placeholder={placeholder}
           blurDataURL={blurDataURL || defaultBlurDataURL}
@@ -67,6 +67,10 @@ export default function OptimizedImage({
           loading={priority ? 'eager' : 'lazy'}
           // ✅ PERFORMANCE: Enable modern formats
           unoptimized={false}
+          // ✅ PERFORMANCE: Enable decoding for faster loading
+          decoding="async"
+          // ✅ PERFORMANCE: Enable fetch priority
+          fetchPriority={priority ? 'high' : 'auto'}
         />
       )}
     </div>

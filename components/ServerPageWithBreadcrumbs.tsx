@@ -3,8 +3,8 @@ import React from 'react';
 import Navigation from './Navigation';
 import Footer from './Footer';
 import WhatsAppFloat from './WhatsAppFloat';
-import { BreadcrumbNavigation } from './BreadcrumbNavigation';
-import { generateBreadcrumbsServer } from '@/lib/utils/generateBreadcrumbs';
+import { ServerBreadcrumbNavigation } from './ServerBreadcrumbNavigation';
+import { generateBreadcrumbs } from '@/lib/utils/breadcrumbUtils';
 
 interface ServerPageWithBreadcrumbsProps {
   children: React.ReactNode;
@@ -24,7 +24,7 @@ export default function ServerPageWithBreadcrumbs({
     <div className={`min-h-screen flex flex-col ${className}`}>
       <Navigation />
       {showBreadcrumbs && (
-        <BreadcrumbNavigation items={generateBreadcrumbsServer(pathname)} />
+        <ServerBreadcrumbNavigation items={generateBreadcrumbs(pathname)} />
       )}
       <main className="flex-grow pt-4">
         {children}

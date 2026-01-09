@@ -950,7 +950,7 @@ export default function TemplatesComponentsMarketplace({
     
     let matchesCategory = true;
     if (categoryFilter !== "all") {
-      if (item.category.toLowerCase() !== categoryFilter.toLowerCase()) matchesType = false;
+      if (item.category.toLowerCase() !== categoryFilter.toLowerCase()) matchesCategory = false;
     }
     
     let matchesStatus = true;

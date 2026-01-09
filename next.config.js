@@ -29,6 +29,15 @@ const nextConfig = {
       config.cache = false;
     }
     
+    // Add performance optimizations
+    config.resolve.fallback = {
+      ...(config.resolve.fallback || {}),
+      fs: false,
+      path: false,
+      os: false,
+      crypto: false,
+    };
+    
     // ✅ PERFORMANCE: Optimize bundle splitting
     if (!isServer) {
       config.optimization.splitChunks = {
@@ -79,6 +88,20 @@ const nextConfig = {
       };
     }
     
+    // Add performance optimizations
+    if (!dev) {
+      // Enable tree shaking
+      config.optimization.usedExports = true;
+      config.optimization.providedExports = true;
+      
+      // Enable minimizer for production
+      if (Array.isArray(config.optimization.minimizer)) {
+        config.optimization.minimizer = config.optimization.minimizer.filter(
+          (minimizer) => minimizer && typeof minimizer !== 'string'
+        );
+      }
+    }
+    
     return config;
   },
   experimental: {
@@ -86,12 +109,17 @@ const nextConfig = {
     optimizeCss: true,
     optimizePackageImports: ['lucide-react', 'recharts'],
   },
+  // Enable output standalone for optimized Docker builds
+  output: 'standalone',
+  // Enable compression for production builds
+  compress: true,
   // ✅ PERFORMANCE: Enable caching headers
   async headers() {
     return [
       {
         source: '/(.*)',
         headers: [
+          // Security headers
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
@@ -104,9 +132,22 @@ const nextConfig = {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
           },
+          // Performance headers
           {
             key: 'X-Robots-Tag',
             value: 'index, follow, max-image-preview:large, max-video-preview:-1, max-snippet:-1',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
           },
         ],
       },
@@ -125,6 +166,28 @@ const nextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/fonts/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'Content-Type',
+            value: 'font/woff2',
           },
         ],
       },

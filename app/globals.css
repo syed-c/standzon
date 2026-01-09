@@ -86,6 +86,51 @@
   }
 }
 
+/* ✅ PERFORMANCE: Optimize rendering and reduce layout thrashing */
+@layer utilities {
+  /* Optimize for GPU acceleration */
+  .gpu-accelerate {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Optimize for paint efficiency */
+  .paint-efficient {
+    contain: layout style paint;
+  }
+
+  /* Optimize for composite operations */
+  .composite-efficient {
+    transform: translate3d(0,0,0);
+  }
+
+  /* Optimize for image rendering */
+  .img-optimize {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+
+  /* Optimize for scroll performance */
+  .scroll-optimize {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Optimize for memory usage */
+  .memory-efficient {
+    contain: strict;
+  }
+
+  /* Optimize for reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
 /* ✅ PERFORMANCE: Optimize scroll behavior */
 @layer utilities {
   .scroll-smooth {

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import BuilderProfileClient from "./BuilderProfileClient";
 import { getServerSupabase } from "@/lib/supabase";
+import ClientPageWithBreadcrumbs from "@/components/ClientPageWithBreadcrumbs";
 
 // Server component wrapper that handles params
 export default async function BuilderProfilePage({

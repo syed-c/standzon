@@ -1,13 +1,15 @@
 import React from 'react';
 import SuperAdminLayout from '@/components/admin/SuperAdminLayout';
-import SuperAdminSidebar from '@/components/admin/SuperAdminSidebar';
+import { Sidebar, SidebarBody } from '@/components/admin/SuperAdminSidebar';
 import SystemSettings from '@/components/SystemSettings';
 
 const SettingsPage = () => {
   return (
     <SuperAdminLayout>
       <div className="flex h-full">
-        <SuperAdminSidebar />
+        <Sidebar>
+          <SidebarBody />
+        </Sidebar>
         <div className="flex-1 overflow-auto p-6">
           <SystemSettings />
         </div>

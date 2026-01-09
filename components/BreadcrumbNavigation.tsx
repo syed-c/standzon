@@ -64,8 +64,11 @@ export function BreadcrumbNavigation({ items, className = '' }: BreadcrumbNaviga
   );
 }
 
+export default BreadcrumbNavigation;
+
 // Helper function to generate breadcrumbs for different page types
-export function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
+// This function doesn't use any client-specific features, so it can be used server-side
+function generateBreadcrumbsInternal(pathname: string): BreadcrumbItem[] {
   const segments = pathname.split('/').filter(Boolean);
   const breadcrumbs: BreadcrumbItem[] = [];
 
@@ -182,9 +185,26 @@ export function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
       const adminSection = segments[1].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
       breadcrumbs.push({ label: adminSection });
     }
+  } else if (segments[0]) {
+    // Handle other top-level routes by capitalizing the first letter
+    const firstSegment = segments[0].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    breadcrumbs.push({ 
+      label: firstSegment, 
+      href: `/${segments[0]}` 
+    });
+    
+    if (segments[1]) {
+      // Handle second-level routes
+      const secondSegment = segments[1].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      breadcrumbs.push({ 
+        label: secondSegment,
+        href: `/${segments[0]}/${segments[1]}` 
+      });
+    }
   }
 
   return breadcrumbs;
 }
 
-export default BreadcrumbNavigation;
+// Export the function for both client and server usage
+export { generateBreadcrumbsInternal as generateBreadcrumbs };

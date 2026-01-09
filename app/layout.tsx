@@ -8,6 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import PerformanceMonitor from '@/components/PerformanceMonitor';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import CriticalResourcePreloader from '@/components/CriticalResourcePreloader';
+import CoreWebVitalsMonitor from '@/components/CoreWebVitalsMonitor';
 import { ConvexClientProvider } from '@/components/ConvexProvider';
 import { ThemeProvider } from '@/components/ThemeProvider';
 // GlobalTypography temporarily disabled due to dev chunk issue
@@ -123,6 +124,7 @@ export default function RootLayout({
               {children}
               <Toaster />
               <PerformanceMonitor />
+              <CoreWebVitalsMonitor />
               <ServiceWorkerRegistration />
               <SpeedInsights />
               <Analytics />
