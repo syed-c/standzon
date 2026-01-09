@@ -1,9 +1,6 @@
 import { Metadata } from 'next';
 import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage from '@/components/CountryCityPage';
 
 
@@ -36,7 +33,6 @@ export default async function ColognePage() {
   
   return (
     <div className="font-inter">
-      <Navigation />
       <CountryCityPage
         country="Germany"
         city="Cologne"
@@ -51,8 +47,6 @@ export default async function ColognePage() {
           seoKeywords: ['Cologne exhibition stands', 'Cologne trade show builders', 'Cologne exhibition builders', 'Cologne booth design', 'Cologne exhibition services', 'Germany trade show displays']
         }}
       />
-      <Footer />
-      <WhatsAppFloat />
     </div>
   );
 }

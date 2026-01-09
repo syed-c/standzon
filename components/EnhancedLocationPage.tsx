@@ -111,8 +111,6 @@ function sanitizeHtml(html?: string): string {
   }
 }
 
-"use client";
-
 export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
   // --- derive canonical location names ---
   const {

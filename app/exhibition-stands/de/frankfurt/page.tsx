@@ -1,9 +1,6 @@
 import { Metadata } from 'next';
 import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage from '@/components/CountryCityPage';
 
 
@@ -36,7 +33,6 @@ export default async function FrankfurtPage() {
   
   return (
     <div className="font-inter">
-      <Navigation />
       <CountryCityPage
         country="Germany"
         city="Frankfurt"
@@ -51,8 +47,6 @@ export default async function FrankfurtPage() {
           seoKeywords: ['Frankfurt exhibition stands', 'Frankfurt trade show builders', 'Frankfurt exhibition builders', 'Frankfurt booth design', 'Frankfurt exhibition services', 'Germany trade show displays']
         }}
       />
-      <Footer />
-      <WhatsAppFloat />
     </div>
   );
 }
