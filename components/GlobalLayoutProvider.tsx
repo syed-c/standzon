@@ -4,6 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { BreadcrumbNavigation } from '@/components/BreadcrumbNavigation';
 import { generateBreadcrumbs } from '@/lib/utils/breadcrumbUtils';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
+import WhatsAppFloat from '@/components/WhatsAppFloat';
 
 interface GlobalLayoutProviderProps {
   children: React.ReactNode;
@@ -24,8 +27,13 @@ export default function GlobalLayoutProvider({ children }: GlobalLayoutProviderP
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Navigation />
       {showBreadcrumbs && <BreadcrumbNavigation items={breadcrumbs} />}
-      {children}
+      <main className="flex-grow">
+        {children}
+      </main>
+      <Footer />
+      <WhatsAppFloat />
     </div>
   );
 }

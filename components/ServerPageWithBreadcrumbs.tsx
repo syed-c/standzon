@@ -1,8 +1,5 @@
 // This component is designed to be used in server components where pathname is passed as a prop
 import React from 'react';
-import Navigation from './Navigation';
-import Footer from './Footer';
-import WhatsAppFloat from './WhatsAppFloat';
 import { ServerBreadcrumbNavigation } from './ServerBreadcrumbNavigation';
 import { generateBreadcrumbs } from '@/lib/utils/breadcrumbUtils';
 
@@ -22,15 +19,12 @@ export default function ServerPageWithBreadcrumbs({
 
   return (
     <div className={`min-h-screen flex flex-col ${className}`}>
-      <Navigation />
       {showBreadcrumbs && (
         <ServerBreadcrumbNavigation items={generateBreadcrumbs(pathname)} />
       )}
       <main className="flex-grow pt-4">
         {children}
       </main>
-      <Footer />
-      <WhatsAppFloat />
     </div>
   );
 }

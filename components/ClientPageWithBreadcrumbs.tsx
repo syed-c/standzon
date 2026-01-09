@@ -4,9 +4,7 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import { BreadcrumbNavigation } from './BreadcrumbNavigation';
 import { generateBreadcrumbs } from '@/lib/utils/breadcrumbUtils';
-import Navigation from './Navigation';
-import Footer from './Footer';
-import WhatsAppFloat from './WhatsAppFloat';
+import { cn } from '@/lib/utils';
 
 interface ClientPageWithBreadcrumbsProps {
   children: React.ReactNode;
@@ -26,16 +24,13 @@ export default function ClientPageWithBreadcrumbs({
   const showBreadcrumbs = resolvedPathname !== '/' && !resolvedPathname.startsWith('/debug');
 
   return (
-    <div className={`min-h-screen flex flex-col ${className}`}>
-      <Navigation />
+    <div className={cn(`min-h-screen flex flex-col`, className)}>
       {showBreadcrumbs && (
         <BreadcrumbNavigation items={generateBreadcrumbs(resolvedPathname)} />
       )}
       <main className="flex-grow pt-4">
         {children}
       </main>
-      <Footer />
-      <WhatsAppFloat />
     </div>
   );
 }

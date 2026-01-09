@@ -11,6 +11,7 @@ import CriticalResourcePreloader from '@/components/CriticalResourcePreloader';
 import CoreWebVitalsMonitor from '@/components/CoreWebVitalsMonitor';
 import { ConvexClientProvider } from '@/components/ConvexProvider';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import AppWrapper from '@/components/AppWrapper';
 // GlobalTypography temporarily disabled due to dev chunk issue
 
 // ✅ PERFORMANCE: Optimize font loading
@@ -121,7 +122,9 @@ export default function RootLayout({
             <ConvexClientProvider>
               <CriticalResourcePreloader />
               {/* <GlobalTypography /> */}
-              {children}
+              <AppWrapper>
+                {children}
+              </AppWrapper>
               <Toaster />
               <PerformanceMonitor />
               <CoreWebVitalsMonitor />
