@@ -9,11 +9,11 @@ import { convertToProxyUrl } from "@/lib/utils/imageProxyUtils";
 import { PageContent } from '@/lib/data/storage';
 import Image from "next/image";
 
-// ✅ PERFORMANCE: Lazy load non-critical components
-import RecentLeadsSection from "@/components/RecentLeadsSection";
-const LocationsSection = React.lazy(() => import("@/components/LocationsSection"));
-const TestimonialsCarousel = React.lazy(() => import("@/components/TestimonialsCarousel"));
-const ContactSection = React.lazy(() => import("@/components/ContactSection"));
+// ✅ PERFORMANCE: Import server components where possible
+import RecentLeadsSection from '@/components/ServerRecentLeadsSection';
+const LocationsSection = React.lazy(() => import('@/components/LocationsSection'));
+const TestimonialsCarousel = React.lazy(() => import('@/components/TestimonialsCarousel'));
+const ContactSection = React.lazy(() => import('@/components/ContactSection'));
 const Footer = React.lazy(() => import("@/components/Footer"));
 
 type SavedContent = PageContent | null;

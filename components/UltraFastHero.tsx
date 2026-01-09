@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { sanitizeHtml } from '@/lib/utils/html';
 import { getFontClass } from '@/lib/utils/fonts';
 
@@ -33,9 +34,14 @@ export default function UltraFastHero({
       
       {/* Background image with low opacity, blended over gradient */}
       {bgImage && (
-        <div
-          className="absolute inset-0 bg-center bg-cover"
-          style={{ backgroundImage: `url(${bgImage})`, opacity: Math.max(0, Math.min(1, bgOpacity)) }}
+        <div 
+          className="absolute inset-0" 
+          style={{ 
+            backgroundImage: `url(${bgImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: Math.max(0, Math.min(1, bgOpacity))
+          }} 
           aria-hidden="true"
         />
       )}

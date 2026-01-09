@@ -16,7 +16,7 @@ import {
 import { unifiedPlatformAPI } from '@/lib/data/unifiedPlatformData';
 import { forcePlatformInitialization } from '@/lib/utils/platformInitializer';
 
-const CountryGallery = dynamic(() => import('@/components/CountryGallery'), { ssr: false });
+const CountryGallery = dynamic(() => import('@/components/CountryGallery'), { ssr: true });
 
 /**
  * Props: flexible and permissive so this component can be used server-side or client-side.
@@ -110,6 +110,8 @@ function sanitizeHtml(html?: string): string {
     return '';
   }
 }
+
+"use client";
 
 export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
   // --- derive canonical location names ---

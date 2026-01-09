@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
-import GlobalLayoutProvider from './GlobalLayoutProvider';
+import { usePathname } from 'next/navigation';
+import ServerGlobalLayoutProvider from './ServerGlobalLayoutProvider';
 
 export default function AppWrapper({ children }: { children: React.ReactNode }) {
-  return <GlobalLayoutProvider>{children}</GlobalLayoutProvider>;
+  const pathname = usePathname();
+  return <ServerGlobalLayoutProvider pathname={pathname}>{children}</ServerGlobalLayoutProvider>;
 }

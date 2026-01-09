@@ -13,6 +13,17 @@ const nextConfig = {
     minimumCacheTTL: 31536000, // 1 year
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Set device sizes for responsive images
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+  experimental: {
+    // Enable React Server Components
+    serverComponentsExternalPackages: ['@react-email/render'],
+    // Enable SWC transforms
+    swcPlugins: [
+      ['next-superjson-plugin', {}]
+    ],
   },
   devIndicators: false,
   // ✅ PERFORMANCE: Enable compression and optimization
@@ -108,6 +119,17 @@ const nextConfig = {
     // ✅ PERFORMANCE: Enable modern features
     optimizeCss: true,
     optimizePackageImports: ['lucide-react', 'recharts'],
+    // Enable React Server Components
+    serverComponentsExternalPackages: ['@react-email/render'],
+  },
+  // ✅ PERFORMANCE: Additional performance optimizations
+  compiler: {
+    removeConsole: {
+      exclude: ['error', 'warn'], // Keep error and warn logs
+    },
+    reactRemoveProperties: false, // Keep React properties for compatibility
+    relay: undefined, // No relay integration
+    styledComponents: false, // We're using Tailwind, not styled-components
   },
   // Enable output standalone for optimized Docker builds
   output: 'standalone',

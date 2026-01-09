@@ -4,56 +4,59 @@ import { Inter, Poppins, Roboto, Montserrat, Red_Hat_Display } from "next/font/g
 import { Toaster } from '@/components/ui/toaster';
 import siteMetadata from '@/app/metadata.json';
 
-import PerformanceMonitor from '@/components/PerformanceMonitor';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import CriticalResourcePreloader from '@/components/CriticalResourcePreloader';
-import CoreWebVitalsMonitor from '@/components/CoreWebVitalsMonitor';
 import DeferredAnalytics from '@/components/DeferredAnalytics';
+import DeferredMonitoring from '@/components/DeferredMonitoring';
+import NonCriticalScripts from '@/components/NonCriticalScripts';
 import { ConvexClientProvider } from '@/components/ConvexProvider';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import AppWrapper from '@/components/AppWrapper';
 // GlobalTypography temporarily disabled due to dev chunk issue
 
-// ✅ PERFORMANCE: Optimize font loading
+// Font optimization: Reduce font weights and enable swap
 const inter = Inter({ 
   subsets: ["latin"],
-  display: 'swap',
+  display: 'optional', // Use optional for better performance
   preload: true,
-  fallback: ['system-ui', 'arial']
+  fallback: ['system-ui', 'arial'],
+  weight: ['400', '500', '600'], // Only load essential weights
 });
 
-// Paragraph default font
+// Limit font weights for performance
 const poppins = Poppins({
   subsets: ['latin'],
-  weight: ['300','400','500','600','700'],
-  display: 'swap',
+  weight: ['400', '500', '600'], // Reduced from ['300','400','500','600','700']
+  display: 'optional',
   preload: true,
   variable: '--font-poppins'
 });
 
 const roboto = Roboto({
   subsets: ['latin'],
-  weight: ['300','400','500','700'],
-  display: 'swap',
+  weight: ['400', '500', '700'], // Reduced from ['300','400','500','700']
+  display: 'optional',
   preload: true,
   variable: '--font-roboto'
 });
 
 const montserrat = Montserrat({
   subsets: ['latin'],
-  weight: ['400','500','600','700'],
-  display: 'swap',
+  weight: ['400', '500', '600'], // Reduced from ['400','500','600','700']
+  display: 'optional',
   preload: true,
   variable: '--font-montserrat'
 });
 
 const redHatDisplay = Red_Hat_Display({
   subsets: ['latin'],
-  weight: ['400','500','600','700','900'],
-  display: 'swap',
+  weight: ['400', '500', '700'], // Reduced from ['400','500','600','700','900']
+  display: 'optional',
   preload: true,
   variable: '--font-red-hat-display'
 });
+
+
 
 // Use centralized metadata for the root layout
 export const metadata: Metadata = {
@@ -112,8 +115,70 @@ export default function RootLayout({
           {/* ✅ PERFORMANCE: Critical resource optimization */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+          <link rel="preconnect" href="https://api.mapbox.com" />
           <link rel="dns-prefetch" href="//vercel.live" />
           <link rel="dns-prefetch" href="//vitals.vercel-insights.com" />
+          <link rel="dns-prefetch" href="//www.google-analytics.com" />
+          
+          {/* ✅ PERFORMANCE: Preload critical resources */}
+          <link rel="preload" as="font" href="/fonts/inter-var.woff2" type="font/woff2" crossOrigin="anonymous" />
+          
+          {/* ✅ PERFORMANCE: Preload hero background images for faster LCP */}
+          <link rel="prefetch" href="/api/hero-images" />
+          <link rel="preload" as="image" href="/images/hero-bg-default.webp" />
+          
+          {/* ✅ PERFORMANCE: Critical CSS for hero section */}
+          <style>{`
+            /* Critical hero styles */
+            .hero-gradient {
+              background: linear-gradient(135deg, #1e293b 0%, #1e40af 50%, #1e293b 100%);
+            }
+            
+            /* Critical button styles */
+            .btn-primary {
+              background: linear-gradient(90deg, #E11D74 0%, #F1558E 100%);
+            }
+            
+            /* Animation optimizations */
+            .animate-bounce {
+              animation: bounce 2s infinite;
+            }
+            
+            .animate-pulse {
+              animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            
+            @keyframes bounce {
+              0%, 100% { transform: translateY(0); }
+              50% { transform: translateY(-10px); }
+            }
+            
+            @keyframes pulse {
+              0%, 100% { opacity: 1; }
+              50% { opacity: 0.5; }
+            }
+          `}</style>
+          
+          {/* ✅ PERFORMANCE: Inline critical CSS */}
+          <style>{`
+            /* Critical CSS for header and navigation */
+            .nav-container { display: flex; align-items: center; justify-content: space-between; }
+            .header-gradient { background: linear-gradient(135deg, #1e40af 0%, #1e293b 100%); }
+            
+            /* Critical typography */
+            .text-gradient { background: linear-gradient(90deg, #E11D74 0%, #F1558E 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            
+            /* Critical layout */
+            .page-container { min-height: 100vh; display: flex; flex-direction: column; }
+            .main-content { flex: 1; }
+            
+            /* Sticky navigation for better UX */
+            nav.sticky-nav { position: sticky; top: 0; z-index: 100; }
+            
+            /* Optimized scroll behavior */
+            html { scroll-behavior: smooth; scroll-padding-top: 4rem; }
+          `}</style>
           
           {/* Note: Removed preload links that were causing warnings in development */}
         </head>
@@ -126,10 +191,9 @@ export default function RootLayout({
                 {children}
               </AppWrapper>
               <Toaster />
-              <PerformanceMonitor />
-              <CoreWebVitalsMonitor />
-              <ServiceWorkerRegistration />
               <DeferredAnalytics />
+              <DeferredMonitoring />
+              <NonCriticalScripts />
             </ConvexClientProvider>
           </ThemeProvider>
         </body>
