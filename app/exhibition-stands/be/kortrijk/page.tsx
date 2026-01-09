@@ -41,8 +41,8 @@ export default async function KortrijkPage() {
           title: 'Exhibition Stand Builders in Kortrijk',
           metaTitle: 'Kortrijk Exhibition Stand Builders | Trade Show Booth Design',
           metaDescription: 'Leading exhibition stand builders in Kortrijk, Belgium. Custom trade show displays, booth design, and professional exhibition services.',
-          description: 'Kortrijk is a major industrial and trade center in Belgium, hosting significant events throughout the year. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Kortrijk\\'s dynamic exhibition landscape.',
-          heroContent: 'Partner with Kortrijk\\'s premier exhibition stand builders for trade show success in the city.',
+          description: `Kortrijk is a major industrial and trade center in Belgium, hosting significant events throughout the year. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Kortrijk's dynamic exhibition landscape.`,
+          heroContent: `Partner with Kortrijk's premier exhibition stand builders for trade show success in the city.`,
           seoKeywords: ['Kortrijk exhibition stands', 'Kortrijk trade show builders', 'Kortrijk exhibition builders', 'Kortrijk booth design', 'Kortrijk exhibition services', 'Belgium trade show displays']
         }}
       />

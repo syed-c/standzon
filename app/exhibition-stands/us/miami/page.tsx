@@ -42,8 +42,8 @@ export default async function MiamiPage() {
           title: 'Exhibition Stand Builders in Miami',
           metaTitle: 'Miami Exhibition Stand Builders | Trade Show Booth Design',
           metaDescription: 'Leading exhibition stand builders in Miami, USA. Custom trade show displays, booth design, and professional exhibition services.',
-          description: 'Miami is a major international gateway and tourism hub in Florida, hosting significant events throughout the year. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Miami\\'s dynamic exhibition landscape.',
-          heroContent: 'Partner with Miami\\'s premier exhibition stand builders for trade show success in the city.',
+          description: `Miami is a major international gateway and tourism hub in Florida, hosting significant events throughout the year. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Miami's dynamic exhibition landscape.`,
+          heroContent: `Partner with Miami's premier exhibition stand builders for trade show success in the city.`,
           seoKeywords: ['Miami exhibition stands', 'Miami trade show builders', 'Miami exhibition builders', 'Miami booth design', 'Miami exhibition services', 'USA trade show displays']
         }}
       />

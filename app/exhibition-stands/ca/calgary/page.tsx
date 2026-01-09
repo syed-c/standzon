@@ -1,8 +1,5 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
 import CountryCityPage from '@/components/CountryCityPage';
 
 
@@ -35,7 +32,6 @@ export default async function CalgaryPage() {
   
   return (
     <div className="font-inter">
-      <Navigation />
       <CountryCityPage
         country="Canada"
         city="Calgary"
@@ -45,13 +41,11 @@ export default async function CalgaryPage() {
           title: 'Exhibition Stand Builders in Calgary',
           metaTitle: 'Calgary Exhibition Stand Builders | Trade Show Booth Design',
           metaDescription: 'Leading exhibition stand builders in Calgary, Canada. Custom trade show displays, booth design, and professional exhibition services.',
-          description: 'Calgary is a major energy and business hub in western Canada, hosting significant events throughout the year. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Calgary\'s dynamic exhibition landscape.',
-          heroContent: 'Partner with Calgary\'s premier exhibition stand builders for trade show success in the city.',
+          description: `Calgary is a major energy and business hub in western Canada, hosting significant events throughout the year. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Calgary's dynamic exhibition landscape.`,
+          heroContent: `Partner with Calgary's premier exhibition stand builders for trade show success in the city.`,
           seoKeywords: ['Calgary exhibition stands', 'Calgary trade show builders', 'Calgary exhibition builders', 'Calgary booth design', 'Calgary exhibition services', 'Canada trade show displays']
         }}
       />
-      <Footer />
-      <WhatsAppFloat />
     </div>
   );
 }

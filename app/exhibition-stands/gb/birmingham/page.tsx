@@ -42,8 +42,8 @@ export default async function BirminghamPage() {
           title: 'Exhibition Stand Builders in Birmingham',
           metaTitle: 'Birmingham Exhibition Stand Builders | Trade Show Booth Design',
           metaDescription: 'Leading exhibition stand builders in Birmingham, UK. Custom trade show displays, booth design, and professional exhibition services.',
-          description: 'Birmingham is a major industrial and trade center in the United Kingdom, hosting significant events throughout the year. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Birmingham\\'s dynamic exhibition landscape.',
-          heroContent: 'Partner with Birmingham\\'s premier exhibition stand builders for trade show success in the city.',
+          description: `Birmingham is a major industrial and trade center in the United Kingdom, hosting significant events throughout the year. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Birmingham's dynamic exhibition landscape.`,
+          heroContent: `Partner with Birmingham's premier exhibition stand builders for trade show success in the city.`,
           seoKeywords: ['Birmingham exhibition stands', 'Birmingham trade show builders', 'Birmingham exhibition builders', 'Birmingham booth design', 'Birmingham exhibition services', 'UK trade show displays']
         }}
       />

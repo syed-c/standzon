@@ -80,8 +80,8 @@ export default async function FinlandPage() {
     title: 'Exhibition Stand Builders in Finland',
     metaTitle: 'Finland Exhibition Stand Builders | Trade Show Booth Design',
     metaDescription: 'Leading exhibition stand builders across Finland. Custom trade show displays, booth design, and professional exhibition services.',
-    description: 'Finland is a major hub for international trade shows and exhibitions, hosting significant events throughout the country. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Finland\'s dynamic exhibition landscape.',
-    heroContent: 'Partner with Finland\'s premier exhibition stand builders for trade show success across the country.',
+    description: `Finland is a major hub for international trade shows and exhibitions, hosting significant events throughout the country. Our expert exhibition stand builders deliver innovative designs that capture attention and drive results in Finland's dynamic exhibition landscape.`,
+    heroContent: `Partner with Finland's premier exhibition stand builders for trade show success across the country.`,
     seoKeywords: ['Finland exhibition stands', 'Finland trade show builders', 'Finland exhibition builders', 'Finland booth design', 'Finland exhibition services']
   };
   
