@@ -1,6 +1,3 @@
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -141,7 +138,6 @@ export default function BlogPage() {
 
   return (
     <div className="font-inter min-h-screen">
-      <Navigation />
       
       {/* Hero Section */}
       <section className="pt-20 pb-16 bg-gradient-to-br from-navy-900 via-navy-800 to-blue-dark text-white">
@@ -351,8 +347,7 @@ export default function BlogPage() {
         </div>
       </section>
 
-      <Footer />
-      <WhatsAppFloat />
+
     </div>
   );
 }

@@ -1,9 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
 import TradeStyleBanner from "@/components/TradeStyleBanner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -571,7 +568,6 @@ export default function BuildersDirectoryContent() {
 
   return (
     <div className="font-inter min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      <Navigation />
       
       {/* Hero Section - Matching location pages style */}
       <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white pt-24 pb-20">
@@ -1075,8 +1071,6 @@ export default function BuildersDirectoryContent() {
         </div>
       </section>
       
-      <Footer />
-      <WhatsAppFloat />
       <TradeStyleBanner 
         mainHeading="Find Exhibition Stand"
         highlightHeading="Builders Worldwide"

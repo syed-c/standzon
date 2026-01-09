@@ -22,8 +22,8 @@ export default function GlobalLayoutProvider({ children }: GlobalLayoutProviderP
     }
   }, [pathname]);
 
-  // Don't show breadcrumbs on the home page or debug pages
-  const showBreadcrumbs = pathname !== '/' && !pathname.startsWith('/debug');
+  // Don't show breadcrumbs on debug pages
+  const showBreadcrumbs = !pathname.startsWith('/debug');
 
   return (
     <div className="min-h-screen flex flex-col">
