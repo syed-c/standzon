@@ -1,9 +1,6 @@
 'use client';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
-import { BreadcrumbNavigation } from './BreadcrumbNavigation';
-import { generateBreadcrumbs } from '@/lib/utils/breadcrumbUtils';
 import { cn } from '@/lib/utils';
 
 interface ClientPageWithBreadcrumbsProps {
@@ -17,18 +14,12 @@ export default function ClientPageWithBreadcrumbs({
   pathname,
   className = '' 
 }: ClientPageWithBreadcrumbsProps) {
-  const currentPathname = usePathname();
-  const resolvedPathname = pathname || currentPathname;
+  // Since breadcrumbs are now handled globally in GlobalLayoutProvider,
+  // this component only serves as a wrapper for client-side pages
   
-  // Don't show breadcrumbs on the home page
-  const showBreadcrumbs = resolvedPathname !== '/' && !resolvedPathname.startsWith('/debug');
-
   return (
     <div className={cn(`min-h-screen flex flex-col`, className)}>
-      {showBreadcrumbs && (
-        <BreadcrumbNavigation items={generateBreadcrumbs(resolvedPathname)} />
-      )}
-      <main className="flex-grow pt-4">
+      <main className="flex-grow pt-0">
         {children}
       </main>
     </div>

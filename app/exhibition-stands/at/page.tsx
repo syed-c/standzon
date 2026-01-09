@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import CountryCityPage from '@/components/CountryCityPage';
 import { getServerSupabase } from '@/lib/supabase';
-import ServerPageWithBreadcrumbs from '@/components/ServerPageWithBreadcrumbs';
 
 // ✅ FIX #1: Force dynamic rendering to prevent build-time evaluation
 export const dynamic = 'force-dynamic';
@@ -81,15 +80,13 @@ export default async function AustriaPage() {
   };
   
   return (
-    <ServerPageWithBreadcrumbs pathname="/exhibition-stands/at">
-      <div className="font-inter">
-        <CountryCityPage
-          country="Austria"
-          initialBuilders={[]}
-          initialContent={mergedContent}
-          cmsContent={cmsContent}
-        />
-      </div>
-    </ServerPageWithBreadcrumbs>
+    <div className="font-inter">
+      <CountryCityPage
+        country="Austria"
+        initialBuilders={[]}
+        initialContent={mergedContent}
+        cmsContent={cmsContent}
+      />
+    </div>
   );
 }

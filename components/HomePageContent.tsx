@@ -6,6 +6,7 @@ import Navigation from "@/components/Navigation";
 import UltraFastHero from "@/components/UltraFastHero";
 import { getFontClass } from "@/lib/utils/fonts";
 import PublicQuoteRequest from "@/components/PublicQuoteRequest";
+import Image from "next/image";
 
 // ✅ PERFORMANCE: Lazy load non-critical components
 const LocationsSection = lazy(() => import("@/components/LocationsSection"));
@@ -213,7 +214,7 @@ export default function HomePageContent() {
                   {(saved!.sections?.reviews || reviewsFromTop).map((r: any, i: number) => (
                     <div key={i} className="bg-white rounded-xl shadow p-6 border">
                       <div className="flex items-center gap-4 mb-4">
-                        <img src={r.image || "https://via.placeholder.com/80x80"} alt={r.name || "Reviewer"} className="w-14 h-14 rounded-full object-cover" />
+                        <Image src={r.image || "https://via.placeholder.com/80x80"} alt={r.name || "Reviewer"} width={56} height={56} className="w-14 h-14 rounded-full object-cover" />
                         <div>
                           <div className="font-semibold text-gray-900">{r.name || "Anonymous"}</div>
                           <div className="text-sm text-gray-500">{r.role || ""}</div>

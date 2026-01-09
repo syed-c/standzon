@@ -28,7 +28,11 @@ export default function GlobalLayoutProvider({ children }: GlobalLayoutProviderP
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
-      {showBreadcrumbs && <BreadcrumbNavigation items={breadcrumbs} />}
+      {showBreadcrumbs && (
+        <div className="sticky top-16 z-10 bg-white">
+          <BreadcrumbNavigation items={breadcrumbs} />
+        </div>
+      )}
       <main className="flex-grow">
         {children}
       </main>

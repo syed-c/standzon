@@ -44,9 +44,6 @@ class StripeService {
 
   constructor() {
     if (!process.env.STRIPE_SECRET_KEY) {
-      console.warn(
-        "⚠️ STRIPE_SECRET_KEY not configured - Stripe service will be disabled"
-      );
       this.stripe = null;
       this.webhookSecret = "";
       return;
@@ -135,7 +132,7 @@ class StripeService {
       );
     }
 
-    console.log("🏗️ Creating Stripe customer for user:", params.userId);
+
 
     try {
       // Check if customer already exists
@@ -145,7 +142,6 @@ class StripeService {
       });
 
       if (existingCustomers.data.length > 0) {
-        console.log("✅ Found existing Stripe customer");
         return existingCustomers.data[0];
       }
 
@@ -161,10 +157,8 @@ class StripeService {
         },
       });
 
-      console.log("✅ Created new Stripe customer:", customer.id);
       return customer;
     } catch (error) {
-      console.error("❌ Failed to create Stripe customer:", error);
       throw error;
     }
   }
@@ -176,7 +170,7 @@ class StripeService {
     subscription: Stripe.Subscription;
     clientSecret?: string;
   }> {
-    console.log("📋 Creating subscription for user:", params.userId);
+
 
     try {
       const plan = this.getSubscriptionPlans().find(
@@ -215,7 +209,7 @@ class StripeService {
       const subscription =
         await this.stripe.subscriptions.create(subscriptionData);
 
-      console.log("✅ Created subscription:", subscription.id);
+
 
       // Extract client secret for frontend confirmation
       let clientSecret: string | undefined;
@@ -235,7 +229,6 @@ class StripeService {
         clientSecret,
       };
     } catch (error) {
-      console.error("❌ Failed to create subscription:", error);
       throw error;
     }
   }
@@ -247,7 +240,7 @@ class StripeService {
     subscriptionId: string,
     immediately = false
   ): Promise<Stripe.Subscription> {
-    console.log("❌ Cancelling subscription:", subscriptionId);
+
 
     try {
       const subscription = await this.stripe.subscriptions.update(
@@ -258,10 +251,8 @@ class StripeService {
         }
       );
 
-      console.log("✅ Subscription cancelled:", subscription.id);
       return subscription;
     } catch (error) {
-      console.error("❌ Failed to cancel subscription:", error);
       throw error;
     }
   }
@@ -273,12 +264,7 @@ class StripeService {
     subscriptionId: string,
     newPlanId: string
   ): Promise<Stripe.Subscription> {
-    console.log(
-      "🔄 Updating subscription:",
-      subscriptionId,
-      "to plan:",
-      newPlanId
-    );
+
 
     try {
       const newPlan = this.getSubscriptionPlans().find(
@@ -309,10 +295,8 @@ class StripeService {
         }
       );
 
-      console.log("✅ Subscription updated successfully");
       return subscription;
     } catch (error) {
-      console.error("❌ Failed to update subscription:", error);
       throw error;
     }
   }
@@ -323,7 +307,7 @@ class StripeService {
   async processLeadPayment(
     params: ProcessLeadPaymentParams
   ): Promise<Stripe.PaymentIntent> {
-    console.log("💳 Processing lead payment for builder:", params.builderId);
+
 
     try {
       // Create payment intent
@@ -341,10 +325,8 @@ class StripeService {
         description: `Lead access payment - Lead ${params.leadId}`,
       });
 
-      console.log("✅ Lead payment processed:", paymentIntent.id);
       return paymentIntent;
     } catch (error) {
-      console.error("❌ Failed to process lead payment:", error);
       throw error;
     }
   }
@@ -353,7 +335,7 @@ class StripeService {
    * Create setup intent for saving payment methods
    */
   async createSetupIntent(customerId: string): Promise<Stripe.SetupIntent> {
-    console.log("🔧 Creating setup intent for customer:", customerId);
+
 
     try {
       const setupIntent = await this.stripe.setupIntents.create({
@@ -364,10 +346,8 @@ class StripeService {
         },
       });
 
-      console.log("✅ Setup intent created:", setupIntent.id);
       return setupIntent;
     } catch (error) {
-      console.error("❌ Failed to create setup intent:", error);
       throw error;
     }
   }
@@ -376,7 +356,7 @@ class StripeService {
    * Get customer's payment methods
    */
   async getPaymentMethods(customerId: string): Promise<Stripe.PaymentMethod[]> {
-    console.log("💳 Fetching payment methods for customer:", customerId);
+
 
     try {
       const paymentMethods = await this.stripe.paymentMethods.list({
@@ -384,10 +364,8 @@ class StripeService {
         type: "card",
       });
 
-      console.log(`✅ Found ${paymentMethods.data.length} payment methods`);
       return paymentMethods.data;
     } catch (error) {
-      console.error("❌ Failed to fetch payment methods:", error);
       throw error;
     }
   }
@@ -403,7 +381,7 @@ class StripeService {
     event?: Stripe.Event;
     error?: string;
   }> {
-    console.log("🔗 Processing Stripe webhook");
+
 
     try {
       const event = this.stripe.webhooks.constructEvent(
@@ -411,8 +389,6 @@ class StripeService {
         signature,
         this.webhookSecret
       );
-
-      console.log("📨 Webhook event type:", event.type);
 
       switch (event.type) {
         case "invoice.payment_succeeded":
@@ -444,12 +420,10 @@ class StripeService {
           break;
 
         default:
-          console.log("🤷 Unhandled webhook event type:", event.type);
       }
 
       return { success: true, event };
     } catch (error) {
-      console.error("❌ Webhook processing failed:", error);
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
@@ -463,7 +437,7 @@ class StripeService {
   private async handleSuccessfulPayment(
     invoice: Stripe.Invoice
   ): Promise<void> {
-    console.log("✅ Processing successful payment for invoice:", invoice.id);
+
 
     try {
       const subscriptionId = (invoice as any).subscription;
@@ -484,8 +458,6 @@ class StripeService {
 
       // TODO: Send confirmation email
       // await sendPaymentConfirmationEmail(userId, invoice);
-
-      console.log("✅ Subscription payment processed successfully");
     } catch (error) {
       console.error("❌ Error processing successful payment:", error);
     }
@@ -495,7 +467,7 @@ class StripeService {
    * Handle failed subscription payment
    */
   private async handleFailedPayment(invoice: Stripe.Invoice): Promise<void> {
-    console.log("❌ Processing failed payment for invoice:", invoice.id);
+
 
     try {
       const subscriptionId = (invoice as any).subscription;
@@ -509,8 +481,6 @@ class StripeService {
 
       // TODO: Send payment failure notification
       // await sendPaymentFailureEmail(userId, invoice);
-
-      console.log("❌ Payment failure processed");
     } catch (error) {
       console.error("❌ Error processing payment failure:", error);
     }
@@ -522,7 +492,7 @@ class StripeService {
   private async handleSubscriptionUpdate(
     subscription: Stripe.Subscription
   ): Promise<void> {
-    console.log("🔄 Processing subscription update:", subscription.id);
+
 
     try {
       // TODO: Update database with new subscription details
@@ -534,8 +504,6 @@ class StripeService {
       //     currentPeriodEnd: new Date(subscription.current_period_end * 1000)
       //   }
       // });
-
-      console.log("✅ Subscription update processed");
     } catch (error) {
       console.error("❌ Error processing subscription update:", error);
     }
@@ -547,7 +515,7 @@ class StripeService {
   private async handleSubscriptionCancellation(
     subscription: Stripe.Subscription
   ): Promise<void> {
-    console.log("❌ Processing subscription cancellation:", subscription.id);
+
 
     try {
       // TODO: Update database subscription status
@@ -561,8 +529,6 @@ class StripeService {
 
       // TODO: Downgrade to free plan
       // await downgradeToFreePlan(userId);
-
-      console.log("✅ Subscription cancellation processed");
     } catch (error) {
       console.error("❌ Error processing subscription cancellation:", error);
     }
@@ -574,7 +540,7 @@ class StripeService {
   private async handlePaymentIntentSuccess(
     paymentIntent: Stripe.PaymentIntent
   ): Promise<void> {
-    console.log("✅ Processing successful payment intent:", paymentIntent.id);
+
 
     try {
       const metadata = paymentIntent.metadata;
@@ -594,8 +560,6 @@ class StripeService {
         //     accessPrice: paymentIntent.amount
         //   }
         // });
-
-        console.log("✅ Lead access granted for payment:", paymentIntent.id);
       }
     } catch (error) {
       console.error("❌ Error processing payment intent success:", error);

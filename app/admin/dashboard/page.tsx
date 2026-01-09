@@ -49,7 +49,7 @@ const mockAdmin = {
 export default function CommandCenterPage() {
   return (
     <SuperAdminLayout 
-      sidebar={<Sidebar />} 
+      sidebar={<Sidebar children={undefined} />} 
       topbar={<Topbar />}
     >
       <div className="space-y-8">

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { convertToProxyUrl } from '@/lib/utils/imageProxyUtils';
+import Image from 'next/image';
 
 export default function CountryGallery({ images }: { images: string[] }) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
@@ -61,9 +62,11 @@ export default function CountryGallery({ images }: { images: string[] }) {
               className="relative overflow-hidden rounded-2xl shadow-lg aspect-square cursor-pointer group"
               onClick={() => openModal(i)}
             >
-              <img
+              <Image
                 src={src}
                 alt={`Exhibition booth ${i + 1}`}
+                width={400}
+                height={400}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
               />
@@ -121,9 +124,11 @@ export default function CountryGallery({ images }: { images: string[] }) {
 
           {/* Main Image */}
           <div className="max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center p-4">
-            <img
+            <Image
               src={gallery[selectedImage]}
               alt={`Exhibition booth ${selectedImage + 1}`}
+              width={1200}
+              height={800}
               className="max-w-full max-h-full object-contain"
               onClick={(e) => e.stopPropagation()}
             />

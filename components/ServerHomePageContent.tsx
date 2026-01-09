@@ -7,6 +7,7 @@ import PublicQuoteRequest from "@/components/PublicQuoteRequest";
 import { getServerPageContent } from "@/lib/data/serverPageContent";
 import { convertToProxyUrl } from "@/lib/utils/imageProxyUtils";
 import { PageContent } from '@/lib/data/storage';
+import Image from "next/image";
 
 // ✅ PERFORMANCE: Lazy load non-critical components
 import RecentLeadsSection from "@/components/RecentLeadsSection";
@@ -191,7 +192,7 @@ export default async function ServerHomePageContent() {
                   {(saved!.sections?.reviews || reviewsFromTop).map((r: { name?: string; role?: string; rating?: number; text?: string; image?: string }, i: number) => (
                     <div key={i} className="bg-white rounded-xl shadow p-6 border">
                       <div className="flex items-center gap-4 mb-4">
-                        <img src={convertToProxyUrl(r.image || "https://via.placeholder.com/80x80")} alt={r.name || "Reviewer"} className="w-14 h-14 rounded-full object-cover" />
+                        <Image src={convertToProxyUrl(r.image || "https://via.placeholder.com/80x80")} alt={r.name || "Reviewer"} width={56} height={56} className="w-14 h-14 rounded-full object-cover" />
                         <div>
                           <div className="font-semibold text-gray-900">{r.name || "Anonymous"}</div>
                           <div className="text-sm text-gray-500">{r.role || ""}</div>

@@ -16,12 +16,9 @@ export const metadata: Metadata = siteMetadata['/contact'] || {
   },
 };
 
-import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
 
 export default function ContactPage() {
   return (
-    <ClientPageWithBreadcrumbs pathname="/contact">
-      <ContactPageContent />
-    </ClientPageWithBreadcrumbs>
+    <ContactPageContent />
   );
 }

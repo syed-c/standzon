@@ -3,12 +3,12 @@ import type { Metadata } from "next";
 import { Inter, Poppins, Roboto, Montserrat, Red_Hat_Display } from "next/font/google";
 import { Toaster } from '@/components/ui/toaster';
 import siteMetadata from '@/app/metadata.json';
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+
 import PerformanceMonitor from '@/components/PerformanceMonitor';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import CriticalResourcePreloader from '@/components/CriticalResourcePreloader';
 import CoreWebVitalsMonitor from '@/components/CoreWebVitalsMonitor';
+import DeferredAnalytics from '@/components/DeferredAnalytics';
 import { ConvexClientProvider } from '@/components/ConvexProvider';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import AppWrapper from '@/components/AppWrapper';
@@ -129,8 +129,7 @@ export default function RootLayout({
               <PerformanceMonitor />
               <CoreWebVitalsMonitor />
               <ServiceWorkerRegistration />
-              <SpeedInsights />
-              <Analytics />
+              <DeferredAnalytics />
             </ConvexClientProvider>
           </ThemeProvider>
         </body>

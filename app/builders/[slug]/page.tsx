@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import BuilderProfileClient from "./BuilderProfileClient";
-import { getServerSupabase } from "@/lib/supabase";
-import ClientPageWithBreadcrumbs from "@/components/ClientPageWithBreadcrumbs";
+import { getServerSupabase } from '@/lib/supabase';
 
 // Server component wrapper that handles params
 export default async function BuilderProfilePage({
@@ -293,8 +292,6 @@ export default async function BuilderProfilePage({
 
   console.log("✅ Server: Found builder:", builder.companyName);
   return (
-    <ClientPageWithBreadcrumbs pathname={`/builders/${slug}`}>
-      <BuilderProfileClient slug={slug} initialBuilder={builder} />
-    </ClientPageWithBreadcrumbs>
+    <BuilderProfileClient slug={slug} initialBuilder={builder} />
   );
 }

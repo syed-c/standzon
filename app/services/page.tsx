@@ -58,12 +58,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
 
 export default function ServicesPage() {
   return (
-    <ClientPageWithBreadcrumbs pathname="/services">
-      <ServicesPageContent />
-    </ClientPageWithBreadcrumbs>
+    <ServicesPageContent />
   );
 }

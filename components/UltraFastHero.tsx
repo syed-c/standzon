@@ -1,9 +1,5 @@
-'use client';
-
-import React, { memo } from 'react';
+import React from 'react';
 import { sanitizeHtml } from '@/lib/utils/html';
-import { Button } from '@/components/ui/button';
-import PublicQuoteRequest from '@/components/PublicQuoteRequest';
 import { getFontClass } from '@/lib/utils/fonts';
 
 interface UltraFastHeroProps {
@@ -17,8 +13,7 @@ interface UltraFastHeroProps {
   bgOpacity?: number;
 }
 
-// ✅ PERFORMANCE: Memoized component to prevent unnecessary re-renders
-const UltraFastHero = memo(function UltraFastHero({
+export default function UltraFastHero({
   headings,
   subtitle = "",
   description = "",
@@ -128,6 +123,4 @@ const UltraFastHero = memo(function UltraFastHero({
       </div>
     </section>
   );
-});
-
-export default UltraFastHero;
+}

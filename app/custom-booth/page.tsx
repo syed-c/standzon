@@ -15,12 +15,9 @@ export const metadata: Metadata = siteMetadata['/custom-booth'] || {
   },
 };
 
-import ClientPageWithBreadcrumbs from '@/components/ClientPageWithBreadcrumbs';
 
 export default function CustomBoothPage() {
   return (
-    <ClientPageWithBreadcrumbs pathname="/custom-booth">
-      <CustomBoothPageContent />
-    </ClientPageWithBreadcrumbs>
+    <CustomBoothPageContent />
   );
 }
