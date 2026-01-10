@@ -42,7 +42,7 @@ export default function Footer() {
       fetch(url, { cache: 'no-store' })
         .then(r => r.json())
         .then(json => { if (mounted) setFooterData(json?.data || null); })
-        .catch(() => {});
+        .catch(() => { });
     };
     fetchFooter();
     // Refresh when the tab gains focus (helps after saving in CMS)
@@ -104,7 +104,7 @@ export default function Footer() {
     <footer className="bg-gray-900 text-white w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Main Footer Content */}
-        <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full">
+        <div className="py-12 md:py-16 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 gap-y-10 w-full">
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="mb-4">
@@ -113,7 +113,7 @@ export default function Footer() {
             <p className="text-gray-300 mb-6 leading-relaxed">
               {footerData?.paragraph || siteData.pages?.footerText || fallbackData.pages.footerText}
             </p>
-            
+
             <div className="space-y-3">
               <div className="flex items-center">
                 <FiPhone className="w-4 h-4 text-pink-400 mr-3 flex-shrink-0" />
@@ -227,10 +227,10 @@ export default function Footer() {
                   className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-pink-400 hover:bg-gray-700 transition-all duration-300 touch-active no-tap-highlight"
                 >
                   {social.icon === 'linkedin' ? <FiLinkedin className="w-4 h-4" />
-                   : social.icon === 'twitter' ? <FiTwitter className="w-4 h-4" />
-                   : social.icon === 'instagram' ? <FiInstagram className="w-4 h-4" />
-                   : social.icon === 'facebook' ? <FiFacebook className="w-4 h-4" />
-                   : <FiExternalLink className="w-4 h-4" />}
+                    : social.icon === 'twitter' ? <FiTwitter className="w-4 h-4" />
+                      : social.icon === 'instagram' ? <FiInstagram className="w-4 h-4" />
+                        : social.icon === 'facebook' ? <FiFacebook className="w-4 h-4" />
+                          : <FiExternalLink className="w-4 h-4" />}
                 </a>
               ))}
             </div>

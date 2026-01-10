@@ -28,95 +28,98 @@ export default function UltraFastHero({
   const headingFontClass = headingFont ? getFontClass(headingFont as any) : undefined;
   const heroBtnClass = "inline-flex items-center justify-center gap-2 px-6 py-3 text-white font-semibold border border-white/80 rounded-full bg-gradient-to-r from-[#E11D74] to-[#F1558E] active:from-[#C31860] active:to-[#E44080] transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300";
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-24 md:pt-0">
       {/* ✅ PERFORMANCE: CSS-only gradient background (no images) */}
       <div className="absolute inset-0 hero-gradient" />
-      
+
       {/* Background image with low opacity, blended over gradient */}
+      {/* Background image optimized for LCP */}
       {bgImage && (
-        <div 
-          className="absolute inset-0" 
-          style={{ 
-            backgroundImage: `url(${bgImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            opacity: Math.max(0, Math.min(1, bgOpacity))
-          }} 
-          aria-hidden="true"
-        />
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={bgImage}
+            alt="Exhibition Stand Builder"
+            fill
+            priority
+            className="object-cover"
+            style={{ opacity: Math.max(0, Math.min(1, bgOpacity)) }}
+            sizes="100vw"
+            quality={85}
+          />
+        </div>
       )}
       {/* Subtle dark overlay to ensure text contrast */}
       <div className="absolute inset-0 bg-black/30" />
-      
+
       <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8">
         {/* Content container with white border and dark translucent background */}
         <div className="mx-auto max-w-6xl rounded-2xl shadow-lg">
           <div className="text-center px-4 sm:px-8 md:px-12 py-8 md:py-12 space-y-8">
-          {/* Headings */}
-          <div className="space-y-4">
-            {headings.map((heading, index) => (
-              <h1 
-                key={index}
-                className={[
-                  'text-4xl md:text-6xl lg:text-6xl font-bold text-white leading-tight',
-                  headingFontClass,
-                ].filter(Boolean).join(' ')}
-                style={{ 
-                  willChange: 'transform' // Optimize for animations
-                }}
-              >
-                {heading}
-              </h1>
-            ))}
-          </div>
-
-          {/* Subtitle */}
-          {subtitle && (
-            <h2 className="text-xl md:text-2xl text-blue-100 font-medium">
-              {subtitle}
-            </h2>
-          )}
-
-          {/* Description - allow basic HTML from CMS */}
-          {description && (
-            <div
-              className="text-lg md:text-xl text-gray-200 max-w-4xl mx-auto leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
-            />
-          )}
-
-          {/* Stats */}
-          {stats.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-white mb-2">
-                    {stat.value}
-                  </div>
-                  <div className="text-blue-100 text-sm md:text-base">
-                    {stat.label}
-                  </div>
-                </div>
+            {/* Headings */}
+            <div className="space-y-4">
+              {headings.map((heading, index) => (
+                <h1
+                  key={index}
+                  className={[
+                    'text-4xl md:text-6xl lg:text-6xl font-bold text-white leading-tight',
+                    headingFontClass,
+                  ].filter(Boolean).join(' ')}
+                  style={{
+                    willChange: 'transform' // Optimize for animations
+                  }}
+                >
+                  {heading}
+                </h1>
               ))}
             </div>
-          )}
 
-          {/* Buttons */}
-          {buttons.length > 0 && (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              {buttons.map((button, index) => {
-                const label = (button.text || '').replace(/[→»›⟶⟹➡️]/g, '').trim();
-                const href = button.isQuoteButton ? '/quote' : (button.href || '#');
-                return (
-                  <div key={index} className="w-full sm:w-auto">
-                    <a href={href} className={`${heroBtnClass} w-full sm:w-auto min-w-[200px]`}>
-                      {label}
-                    </a>
+            {/* Subtitle */}
+            {subtitle && (
+              <h2 className="text-xl md:text-2xl text-blue-100 font-medium">
+                {subtitle}
+              </h2>
+            )}
+
+            {/* Description - allow basic HTML from CMS */}
+            {description && (
+              <div
+                className="text-lg md:text-xl text-gray-200 max-w-4xl mx-auto leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
+              />
+            )}
+
+            {/* Stats */}
+            {stats.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                {stats.map((stat, index) => (
+                  <div key={index} className="text-center">
+                    <div className="text-3xl md:text-4xl font-bold text-white mb-2">
+                      {stat.value}
+                    </div>
+                    <div className="text-blue-100 text-sm md:text-base">
+                      {stat.label}
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+
+            {/* Buttons */}
+            {buttons.length > 0 && (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                {buttons.map((button, index) => {
+                  const label = (button.text || '').replace(/[→»›⟶⟹➡️]/g, '').trim();
+                  const href = button.isQuoteButton ? '/quote' : (button.href || '#');
+                  return (
+                    <div key={index} className="w-full sm:w-auto">
+                      <a href={href} className={`${heroBtnClass} w-full sm:w-auto min-w-[200px]`}>
+                        {label}
+                      </a>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>

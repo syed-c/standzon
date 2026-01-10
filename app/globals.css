@@ -384,7 +384,15 @@ button:not([class*="bg-"]):not([class*="text-"]):not([class*="gradient"]) {
 }
 
 /* ✅ FIXED: Ensure outline buttons always have visible text */
-button[class*="outline"]:not([class*="text-white"]) {
+/* ✅ FIXED: Ensure outline buttons always have visible text */
+button[class*="outline"]:not([class*="text-"]) {
+  color: inherit !important;
+}
+
+/* On dark backgrounds, usually we want white text for outline */
+.dark button[class*="outline"]:not([class*="text-"]),
+.bg-slate-900 button[class*="outline"]:not([class*="text-"]),
+.bg-gray-900 button[class*="outline"]:not([class*="text-"]) {
   color: #fff !important;
 }
 
@@ -481,10 +489,13 @@ button[class*="outline"] span {
 }
 
 /* ✅ FIXED: Ensure white buttons with borders stay visible - removed hover effect */
+/* ✅ FIXED: Ensure white buttons with borders stay visible - default to dark text */
 button[class*="bg-white"] {
   background-color: white !important;
   border-color: #d1d5db !important;
-  /* gray-300 for subtle border */
+  /* gray-300 */
+  color: #1f2937 !important;
+  /* gray-800 - HIGH CONTRAST */
 }
 
 button[class*="bg-white"][class*="text-"] {
