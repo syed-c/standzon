@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getRecentLeads } from '@/lib/data/leadData';
 
 type LeadsCTAButton = { text?: string; href?: string };
@@ -163,13 +164,14 @@ export default async function ServerRecentLeadsSection({
             {(ctaButtons && ctaButtons.length > 0
               ? ctaButtons
               : [
-                  { text: "Join as Builder", href: "/builders" },
-                  { text: "Learn More", href: "/about" },
-                ]
+                { text: "Join as Builder", href: "/builders" },
+                { text: "Learn More", href: "/about" },
+              ]
             ).map((b, i) => (
-              <a
+              <Link
                 key={i}
                 href={b.href || "#"}
+                prefetch={true}
                 className={
                   i === 0
                     ? "px-4 py-2 bg-white text-emerald-600 font-semibold rounded-lg hover:bg-emerald-50 transition-colors text-sm md:text-base"
@@ -177,7 +179,7 @@ export default async function ServerRecentLeadsSection({
                 }
               >
                 {b.text || (i === 0 ? "Primary" : "Secondary")}
-              </a>
+              </Link>
             ))}
           </div>
         </div>

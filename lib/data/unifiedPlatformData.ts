@@ -54,7 +54,7 @@ class UnifiedDataManager {
   private data: PlatformData;
   private subscribers: ((event: DataEvent) => void)[] = [];
   private initialized: boolean = false;
-  
+
   // Public getter for initialization status
   get isInitialized(): boolean {
     return this.initialized;
@@ -62,7 +62,7 @@ class UnifiedDataManager {
 
   constructor() {
     console.log('🚀 UnifiedDataManager: Lightweight constructor started...');
-    
+
     // Initialize with empty data structure - no heavy operations
     this.data = {
       builders: [],
@@ -73,10 +73,10 @@ class UnifiedDataManager {
       users: [],
       stats: {}
     };
-    
+
     this.subscribers = [];
     this.initialized = false;
-    
+
     console.log('✅ UnifiedDataManager: Lightweight constructor completed');
   }
 
@@ -85,18 +85,18 @@ class UnifiedDataManager {
     if (this.initialized) {
       return; // Already initialized
     }
-    
+
     // If already initializing, wait for the existing promise
     if (isInitializing && initializationPromise) {
       console.log('🔄 Waiting for existing initialization to complete...');
       await initializationPromise;
       return;
     }
-    
+
     console.log('🔄 Performing one-time initialization...');
     isInitializing = true;
     initializationPromise = this.initialize();
-    
+
     try {
       await initializationPromise;
       this.initialized = true;
@@ -108,7 +108,7 @@ class UnifiedDataManager {
       initializationPromise = null;
       throw error;
     }
-    
+
     isInitializing = false;
     initializationPromise = null;
   }
@@ -116,11 +116,11 @@ class UnifiedDataManager {
   // ✅ SIMPLIFIED: Basic initialization
   private async initialize(): Promise<void> {
     console.log('🏗️ Initializing unified data management system...');
-    
+
     try {
       // Load initial data
       await this.loadInitialData();
-      
+
       // Initialize stats
       this.data.stats = {
         totalBuilders: this.data.builders.length,
@@ -128,7 +128,7 @@ class UnifiedDataManager {
         verifiedBuilders: this.data.builders.filter(b => b.verified).length,
         lastUpdate: new Date().toISOString()
       };
-      
+
       console.log('✅ Unified data management system initialized successfully');
     } catch (error) {
       console.error('❌ Failed to initialize unified data system:', error);
@@ -138,13 +138,13 @@ class UnifiedDataManager {
 
   private async loadInitialData() {
     console.log('📂 Loading initial data from static files and Supabase...');
-    
+
     try {
       // Check if Supabase is configured
       // Use NEXT_PUBLIC_* variables as primary since they're available in both server and client
       // Only access process.env on server side to avoid client-side errors
       let supabaseUrl, supabaseServiceKey;
-      
+
       // Server-side environment variable access
       if (typeof process !== 'undefined' && process.env) {
         supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -155,7 +155,7 @@ class UnifiedDataManager {
         console.log('   NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY ? '✓ Present' : '✗ Missing');
         console.log('   SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✓ Present' : '✗ Missing');
       }
-      
+
       // Also check window for client-side (in case of browser environment)
       if (typeof window !== 'undefined' && window.location) {
         // In browser environment, we can only access NEXT_PUBLIC_* variables
@@ -163,7 +163,7 @@ class UnifiedDataManager {
         console.log('🌐 Browser environment detected');
         console.log('   Window location:', window.location.origin);
       }
-      
+
       // ✅ PRODUCTION FIX: Check if we're in a browser environment and try to determine base URL
       let baseUrl = '';
       if (typeof window !== 'undefined' && window.location) {
@@ -171,35 +171,35 @@ class UnifiedDataManager {
         console.log('🌍 Detected browser base URL:', baseUrl);
       } else if (typeof process !== 'undefined' && process.env) {
         let rawBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || 'http://localhost:3000';
-        
+
         // Ensure the base URL has a protocol (http:// or https://)
         if (!rawBaseUrl.startsWith('http://') && !rawBaseUrl.startsWith('https://')) {
           rawBaseUrl = `https://${rawBaseUrl}`;
         }
-        
+
         baseUrl = rawBaseUrl;
         console.log('🖥️ Detected server base URL:', baseUrl);
       }
-      
+
       console.log('🔗 Base URL for API calls:', baseUrl);
-      
+
       // ✅ PRODUCTION FIX: Always attempt to fetch builders via API as primary method
       // This ensures data is loaded even if Supabase env vars are not available at build time
       try {
         console.log('🔄 Trying to fetch builders via API as primary method...');
         const apiEndpoint = `${baseUrl}/api/admin/builders?limit=1000&prioritize_real=true`;
         console.log('📡 API Endpoint:', apiEndpoint);
-        
+
         // Use fetch with proper error handling
-        const response = await fetch(apiEndpoint, { 
-          cache: "no-store",
+        const response = await fetch(apiEndpoint, {
+          next: { revalidate: 60 },
           headers: {
             'Content-Type': 'application/json',
             // Add authorization if needed
             ...(typeof window !== 'undefined' ? {} : { 'x-api-source': 'unified-platform' })
           }
         });
-        
+
         if (response.ok) {
           const buildersData = await response.json();
           console.log('✅ API fetch successful. Data structure:', {
@@ -207,11 +207,11 @@ class UnifiedDataManager {
             hasData: !!buildersData.data,
             buildersCount: buildersData.data?.builders?.length || 0
           });
-          
+
           if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
             const apiBuilders = buildersData.data.builders;
             console.log(`📊 Loaded ${apiBuilders.length} builders from API`);
-            
+
             // Transform builders to ExhibitionBuilder format
             const transformedBuilders = apiBuilders.map((builder: any) => {
               // Ensure all required fields are present for ExhibitionBuilder interface
@@ -222,7 +222,7 @@ class UnifiedDataManager {
                 slug: builder.slug || builder.id || '',
                 logo: builder.logo || '/images/builders/default-logo.png',
                 establishedYear: builder.established_year || new Date().getFullYear(),
-                
+
                 // Headquarters
                 headquarters: {
                   city: builder.headquarters_city || builder.city || 'Unknown',
@@ -233,7 +233,7 @@ class UnifiedDataManager {
                   longitude: builder.headquarters_longitude || builder.longitude || 0,
                   isHeadquarters: true
                 },
-                
+
                 // Service locations
                 serviceLocations: builder.service_locations || [
                   {
@@ -246,7 +246,7 @@ class UnifiedDataManager {
                     isHeadquarters: false
                   }
                 ],
-                
+
                 // Contact info
                 contactInfo: {
                   primaryEmail: builder.primary_email || builder.email || '',
@@ -255,28 +255,28 @@ class UnifiedDataManager {
                   contactPerson: builder.contact_person || builder.contact_name || '',
                   position: builder.position || ''
                 },
-                
+
                 // Services and specializations (empty arrays as defaults)
                 services: builder.services || [],
                 specializations: builder.specializations || [],
                 certifications: builder.certifications || [],
                 awards: builder.awards || [],
                 portfolio: builder.portfolio || [],
-                
+
                 // Stats
                 teamSize: builder.team_size || 0,
                 projectsCompleted: builder.projects_completed || builder.completed_projects || 0,
                 rating: builder.rating || 0,
                 reviewCount: builder.review_count || 0,
-                
+
                 // Response info
                 responseTime: builder.response_time || '24 hours',
                 languages: builder.languages || ['English'],
-                
+
                 // Status flags
                 verified: builder.verified || false,
                 premiumMember: builder.premium_member || builder.premiumMember || false,
-                
+
                 // Additional fields
                 tradeshowExperience: builder.tradeshow_experience || [],
                 priceRange: builder.price_range || { min: 0, max: 0, currency: 'USD' },
@@ -289,7 +289,7 @@ class UnifiedDataManager {
                 sustainability: builder.sustainability || {},
                 keyStrengths: builder.key_strengths || [],
                 recentProjects: builder.recent_projects || [],
-                
+
                 // Claim system
                 claimed: builder.claimed || false,
                 claimStatus: builder.claim_status || "unclaimed",
@@ -299,20 +299,20 @@ class UnifiedDataManager {
                 source: builder.source || '',
                 importedAt: builder.imported_at || '',
                 lastUpdated: builder.last_updated || builder.updated_at || new Date().toISOString(),
-                
+
                 // Lead routing
                 status: builder.status || "active",
                 plan: builder.plan || "free",
                 contactEmail: builder.contact_email || builder.primary_email || builder.email || ''
               };
             });
-            
+
             console.log(`📦 Transformed ${transformedBuilders.length} builders to ExhibitionBuilder format`);
-            
+
             // Update data
             this.data.builders = transformedBuilders;
             console.log(`💾 Updated platform data with ${this.data.builders.length} builders from API`);
-            
+
             // Early return to skip Supabase loading if API data was successfully loaded
             return;
           } else {
@@ -326,7 +326,7 @@ class UnifiedDataManager {
         console.error('❌ API fetch failed:', apiError);
         console.log('⚠️ Trying Supabase as fallback...');
       }
-      
+
       if (!supabaseUrl || !supabaseServiceKey) {
         console.warn('⚠️ Supabase not configured. Skipping Supabase data loading.');
         // Only log detailed environment variable info on server side
@@ -340,14 +340,14 @@ class UnifiedDataManager {
       } else {
         console.log('✅ Supabase is configured. Proceeding with data loading...');
         console.log('🔗 Supabase URL:', supabaseUrl);
-        
+
         // Load builders from Supabase
         console.log('🔄 Loading builders from Supabase...');
         const { getAllBuilders } = await import('@/lib/supabase/builders');
-        
+
         const supabaseBuilders = await getAllBuilders();
         console.log(`📊 Loaded ${supabaseBuilders.length} builders from Supabase`);
-        
+
         // Log if no builders were found
         if (supabaseBuilders.length === 0) {
           console.warn('⚠️ No builders found in Supabase. Check Supabase connection and data.');
@@ -356,23 +356,23 @@ class UnifiedDataManager {
           console.log('2. Incorrect Supabase configuration');
           console.log('3. Database connection issues');
           console.log('4. Row Level Security (RLS) restrictions');
-          
+
           // Try to diagnose the issue
           try {
             console.log('🔍 Attempting to diagnose Supabase connection...');
             const { getServerSupabase } = await import('@/lib/supabase');
             const sb = getServerSupabase();
-            
+
             if (sb) {
               console.log('✅ Supabase client initialized successfully');
-              
+
               // Try a simple query to test connection
               console.log('🔍 Testing connection with a simple query...');
               const { data: testData, error: testError } = await sb
                 .from('page_contents')
                 .select('id')
                 .limit(1);
-              
+
               if (testError) {
                 console.error('❌ Supabase connection test failed:', testError.message);
               } else {
@@ -385,7 +385,7 @@ class UnifiedDataManager {
             console.error('❌ Error during Supabase diagnostics:', diagnosticError);
           }
         }
-        
+
         // Transform builders to ExhibitionBuilder format
         const transformedBuilders = supabaseBuilders.map((builder: any) => {
           // Ensure all required fields are present for ExhibitionBuilder interface
@@ -396,7 +396,7 @@ class UnifiedDataManager {
             slug: builder.slug || builder.id || '',
             logo: builder.logo || '/images/builders/default-logo.png',
             establishedYear: builder.established_year || new Date().getFullYear(),
-            
+
             // Headquarters
             headquarters: {
               city: builder.headquarters_city || builder.city || 'Unknown',
@@ -407,7 +407,7 @@ class UnifiedDataManager {
               longitude: builder.headquarters_longitude || builder.longitude || 0,
               isHeadquarters: true
             },
-            
+
             // Service locations
             serviceLocations: builder.service_locations || [
               {
@@ -420,7 +420,7 @@ class UnifiedDataManager {
                 isHeadquarters: false
               }
             ],
-            
+
             // Contact info
             contactInfo: {
               primaryEmail: builder.primary_email || builder.email || '',
@@ -429,28 +429,28 @@ class UnifiedDataManager {
               contactPerson: builder.contact_person || builder.contact_name || '',
               position: builder.position || ''
             },
-            
+
             // Services and specializations (empty arrays as defaults)
             services: builder.services || [],
             specializations: builder.specializations || [],
             certifications: builder.certifications || [],
             awards: builder.awards || [],
             portfolio: builder.portfolio || [],
-            
+
             // Stats
             teamSize: builder.team_size || 0,
             projectsCompleted: builder.projects_completed || builder.completed_projects || 0,
             rating: builder.rating || 0,
             reviewCount: builder.review_count || 0,
-            
+
             // Response info
             responseTime: builder.response_time || '24 hours',
             languages: builder.languages || ['English'],
-            
+
             // Status flags
             verified: builder.verified || false,
             premiumMember: builder.premium_member || builder.premiumMember || false,
-            
+
             // Additional fields
             tradeshowExperience: builder.tradeshow_experience || [],
             priceRange: builder.price_range || { min: 0, max: 0, currency: 'USD' },
@@ -463,7 +463,7 @@ class UnifiedDataManager {
             sustainability: builder.sustainability || {},
             keyStrengths: builder.key_strengths || [],
             recentProjects: builder.recent_projects || [],
-            
+
             // Claim system
             claimed: builder.claimed || false,
             claimStatus: builder.claim_status || "unclaimed",
@@ -473,16 +473,16 @@ class UnifiedDataManager {
             source: builder.source || '',
             importedAt: builder.imported_at || '',
             lastUpdated: builder.last_updated || builder.updated_at || new Date().toISOString(),
-            
+
             // Lead routing
             status: builder.status || "active",
             plan: builder.plan || "free",
             contactEmail: builder.contact_email || builder.primary_email || builder.email || ''
           };
         });
-        
+
         console.log(`📦 Transformed ${transformedBuilders.length} builders to ExhibitionBuilder format`);
-        
+
         // Update data
         this.data.builders = transformedBuilders;
         console.log(`💾 Updated platform data with ${this.data.builders.length} builders`);
@@ -516,7 +516,7 @@ class UnifiedDataManager {
   // ✅ NEW: Subscribe to data changes
   subscribe(callback: (event: DataEvent) => void): () => void {
     this.subscribers.push(callback);
-    
+
     // Return unsubscribe function
     return () => {
       const index = this.subscribers.indexOf(callback);
@@ -547,18 +547,18 @@ class UnifiedDataManager {
   // ✅ NEW: Add lead
   addLead(lead: any): { success: boolean; data?: any; error?: string } {
     console.log('➕ Adding lead to unified system:', lead.id);
-    
+
     try {
       // Add timestamps
       lead.createdAt = lead.createdAt || new Date().toISOString();
       lead.updatedAt = new Date().toISOString();
-      
+
       // Add to memory
       this.data.leads.push(lead);
-      
+
       // Update stats
       this.data.stats.totalLeads = this.data.leads.length;
-      
+
       // Notify subscribers
       this.notifySubscribers({
         type: 'system_notification' as any,
@@ -582,11 +582,11 @@ class UnifiedDataManager {
       if (index === -1) {
         return { success: false, error: 'Lead not found' };
       }
-      
+
       // Update in memory
       updates.updatedAt = new Date().toISOString();
       this.data.leads[index] = { ...this.data.leads[index], ...updates };
-      
+
       this.notifySubscribers({
         type: 'system_notification' as any,
         data: { type: 'lead_updated', id, updates },
@@ -616,7 +616,7 @@ class UnifiedDataManager {
   // ✅ NEW: Search builders
   searchBuilders(query: string): ExhibitionBuilder[] {
     const searchTerm = query.toLowerCase();
-    return this.data.builders.filter(builder => 
+    return this.data.builders.filter(builder =>
       builder.companyName.toLowerCase().includes(searchTerm) ||
       (builder as any).description?.toLowerCase().includes(searchTerm) ||
       builder.companyDescription?.toLowerCase().includes(searchTerm) ||
@@ -632,15 +632,15 @@ class UnifiedDataManager {
       if (filters.country) {
         const builderCountryMatch = builder.headquarters?.country === filters.country ||
           builder.serviceLocations?.some(loc => loc.country === filters.country);
-        
+
         if (!builderCountryMatch) return false;
       }
-      
+
       // Other filters
       if (filters.verified !== undefined && builder.verified !== filters.verified) return false;
       if (filters.featured !== undefined && (builder as any).adminFeatured !== filters.featured) return false;
       if (filters.planType && builder.planType !== filters.planType) return false;
-      
+
       return true;
     });
   }
@@ -648,7 +648,7 @@ class UnifiedDataManager {
   // Builders Management  
   async addBuilder(builder: any, source: 'admin' | 'website' = 'admin'): Promise<{ success: boolean; data?: ExhibitionBuilder; error?: string }> {
     console.log('➕ Adding builder to unified system:', builder.companyName);
-    
+
     try {
       // Simple duplicate detection
       const existingBuilder = this.data.builders.find(b => b.id === builder.id);
@@ -738,20 +738,20 @@ class UnifiedDataManager {
 
       // Add to memory
       this.data.builders.push(normalized);
-      
+
       // Update stats
       this.data.stats.totalBuilders = this.data.builders.length;
       this.data.stats.verifiedBuilders = this.data.builders.filter(b => b.verified).length;
-      
+
       // Persist to Supabase if available
       try {
         console.log('🔄 Attempting to persist builder to Supabase...');
         const { getServerSupabase } = await import('@/lib/supabase');
         console.log('✅ Supabase module imported successfully');
-        
+
         const sb = getServerSupabase();
         console.log('🔍 Supabase client:', sb ? '✅ Available' : '❌ Not available');
-        
+
         if (sb) {
           // Ensure required fields are present
           const fallbackEmail = normalized.contactInfo.primaryEmail && normalized.contactInfo.primaryEmail.trim() !== ''
@@ -764,7 +764,7 @@ class UnifiedDataManager {
             slug: normalized.slug,
             primary_email: fallbackEmail
           });
-          
+
           // Add timeout for Supabase insert operation
           const insertPromise = sb.from('builder_profiles').insert({
             id: normalized.id,
@@ -787,12 +787,12 @@ class UnifiedDataManager {
             source: normalized.source || 'unified_platform',
             imported_at: normalized.importedAt || new Date().toISOString()
           });
-          
+
           // Timeout for Supabase operation
           const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => reject(new Error('Supabase insert operation timeout')), 30000);
           });
-          
+
           const { data: insertData, error: builderInsertError } = await Promise.race([insertPromise, timeoutPromise]) as any;
 
           if (builderInsertError) {
@@ -858,7 +858,7 @@ class UnifiedDataManager {
                 const locationsTimeoutPromise = new Promise((_, reject) => {
                   setTimeout(() => reject(new Error('Supabase service locations insert operation timeout')), 30000);
                 });
-                
+
                 const { data: locationData, error: locationsError } = await Promise.race([locationsInsertPromise, locationsTimeoutPromise]) as any;
 
                 if (locationsError) {
@@ -882,7 +882,7 @@ class UnifiedDataManager {
       } catch (persistErr) {
         console.error('❌ Failed to persist builder to Supabase:', persistErr);
       }
-      
+
       // Notify all subscribers
       this.notifySubscribers({
         type: 'builder_added',
@@ -905,10 +905,10 @@ class UnifiedDataManager {
       if (index === -1) {
         return { success: false, error: 'Builder not found' };
       }
-      
+
       // Update in memory
       this.data.builders[index] = { ...this.data.builders[index], ...updates };
-      
+
       this.notifySubscribers({
         type: 'builder_updated',
         data: { id, updates },
@@ -930,13 +930,13 @@ class UnifiedDataManager {
       if (index === -1) {
         return { success: false, error: 'Builder not found' };
       }
-      
+
       const deleted = this.data.builders.splice(index, 1)[0];
-      
+
       // Update stats
       this.data.stats.totalBuilders = this.data.builders.length;
       this.data.stats.verifiedBuilders = this.data.builders.filter(b => b.verified).length;
-      
+
       this.notifySubscribers({
         type: 'builder_deleted',
         data: deleted,
@@ -963,7 +963,7 @@ class UnifiedDataManager {
       users: [],
       stats: {}
     };
-    
+
     this.notifySubscribers({
       type: 'stats_updated',
       data: { message: 'All data cleared' },
@@ -979,7 +979,7 @@ class UnifiedDataManager {
     this.data.builders = [];
     this.data.stats.totalBuilders = 0;
     this.data.stats.verifiedBuilders = 0;
-    
+
     this.notifySubscribers({
       type: 'stats_updated',
       data: { message: 'Builders cleared' },
@@ -1001,14 +1001,14 @@ export function getUnifiedDataManager(): UnifiedDataManager {
     if (globalManager) {
       return globalManager;
     }
-    
+
     // Create new instance
     unifiedDataManager = new UnifiedDataManager();
     (global as any).unifiedDataManagerInstance = unifiedDataManager;
-    
+
     return unifiedDataManager;
   }
-  
+
   // Client-side: Use regular singleton pattern
   if (!unifiedDataManager) {
     unifiedDataManager = new UnifiedDataManager();
@@ -1022,10 +1022,10 @@ let forceInitializationAttempted = false;
 // ✅ NEW: Country-specific builder filtering
 function getBuildersByCountry(country: string): ExhibitionBuilder[] {
   console.log("📍 getBuildersByCountry called with:", country);
-  
+
   try {
     const normalized = country.toLowerCase().replace(/-/g, " ").trim();
-    
+
     // Handle country variations (UAE vs United Arab Emirates)
     const countryVariations = [normalized];
     if (normalized.includes("united arab emirates")) {
@@ -1033,36 +1033,36 @@ function getBuildersByCountry(country: string): ExhibitionBuilder[] {
     } else if (normalized === "uae") {
       countryVariations.push("united arab emirates");
     }
-    
+
     console.log("📍 Country variations for filtering:", countryVariations);
-    
+
     const manager = getUnifiedDataManager();
     const allBuilders = manager.getBuilders();
-    
+
     console.log("📍 Total builders in system:", allBuilders.length);
-    
+
     const filtered = allBuilders.filter(builder => {
       try {
         // Normalize builder country for comparison
         const builderCountry = (builder.headquarters?.country || '').toLowerCase().trim();
-        
+
         // Check if any country variation matches
-        const match = countryVariations.some(variation => 
+        const match = countryVariations.some(variation =>
           builderCountry.includes(variation)
         );
-        
+
         // Log first few builders for debugging
         if (allBuilders.indexOf(builder) < 3) {
           console.log("📍 Builder " + builder.companyName + ": country=\"" + builderCountry + "\", match=" + match);
         }
-        
+
         return match;
       } catch (filterError) {
         console.error("❌ Error filtering builder:", builder.companyName, filterError);
         return false;
       }
     });
-    
+
     console.log("📍 Filtered builders for country:", country, " -> ", filtered.length);
     return filtered;
   } catch (error) {
@@ -1084,17 +1084,17 @@ export const unifiedPlatformAPI = {
       return { builders: [], eventPlanners: [], events: [], leads: [], quotes: [], users: [], stats: {} };
     }
   },
-  
+
   // ✅ FIXED: Provide both sync and async versions with location filtering
   getBuilders: (location?: string) => {
     try {
       const manager = getUnifiedDataManager();
-      
+
       // ✅ PRODUCTION FIX: Force initialization if not already done
       if (!manager.isInitialized && !forceInitializationAttempted) {
         console.log('⚠️ Unified platform not initialized, forcing initialization...');
         forceInitializationAttempted = true;
-        
+
         // Try to initialize synchronously first
         try {
           // This might not work in all cases, but worth trying
@@ -1105,14 +1105,14 @@ export const unifiedPlatformAPI = {
           console.log('⚠️ Sync initialization failed, will try async');
         }
       }
-      
+
       // If location is provided, filter by country
       if (location) {
         const filteredBuilders = getBuildersByCountry(location);
         console.log("📊 getBuilders(" + location + ") returning " + filteredBuilders.length + " builders synchronously");
         return filteredBuilders;
       }
-      
+
       // Otherwise return all builders
       const builders = manager.getBuilders();
       console.log("📊 getBuilders() returning " + builders.length + " builders synchronously");
@@ -1122,19 +1122,19 @@ export const unifiedPlatformAPI = {
       return [];
     }
   },
-  
+
   getBuildersAsync: async (location?: string) => {
     try {
       const manager = getUnifiedDataManager();
       await manager.ensureInitialized();
-      
+
       // If location is provided, filter by country
       if (location) {
         const filteredBuilders = getBuildersByCountry(location);
         console.log("📊 getBuildersAsync(" + location + ") returning " + filteredBuilders.length + " builders after initialization");
         return filteredBuilders;
       }
-      
+
       // Otherwise return all builders
       const builders = manager.getBuilders();
       console.log("📊 getBuildersAsync() returning " + builders.length + " builders after initialization");
@@ -1154,7 +1154,7 @@ export const unifiedPlatformAPI = {
       return false;
     }
   },
-  
+
   // Data access
   getBuilderById: (id: string) => {
     try {
@@ -1186,10 +1186,10 @@ export const unifiedPlatformAPI = {
     } catch (error) {
       console.error('❌ Error in subscribe:', error);
       // Return a no-op unsubscribe function
-      return () => {};
+      return () => { };
     }
   },
-  
+
   // Builder operations
   addBuilder: (builder: ExhibitionBuilder, source?: 'admin' | 'website') => {
     try {
@@ -1231,7 +1231,7 @@ export const unifiedPlatformAPI = {
       return [];
     }
   },
-  
+
   // ✅ NEW: Lead operations
   addLead: (lead: any) => {
     try {
@@ -1249,7 +1249,7 @@ export const unifiedPlatformAPI = {
       return { success: false, error: 'Failed to update lead' };
     }
   },
-  
+
   // Utility
   clearAll: () => {
     try {

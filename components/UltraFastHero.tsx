@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { sanitizeHtml } from '@/lib/utils/html';
 import { getFontClass } from '@/lib/utils/fonts';
 
@@ -118,9 +119,9 @@ export default function UltraFastHero({
                   const href = button.isQuoteButton ? '/quote' : (button.href || '#');
                   return (
                     <div key={index} className="w-full sm:w-auto flex justify-center">
-                      <a href={href} className={`${heroBtnClass} w-full sm:w-auto min-w-[200px] text-white !important`}>
+                      <Link href={href} className={`${heroBtnClass} w-full sm:w-auto min-w-[200px] text-white !important`} prefetch={true}>
                         {label}
-                      </a>
+                      </Link>
                     </div>
                   );
                 })}

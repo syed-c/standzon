@@ -92,12 +92,12 @@ export interface BuilderService {
   name: string;
   description: string;
   category:
-    | "Design"
-    | "Construction"
-    | "Rental"
-    | "Technology"
-    | "Logistics"
-    | "Additional";
+  | "Design"
+  | "Construction"
+  | "Rental"
+  | "Technology"
+  | "Logistics"
+  | "Additional";
   priceFrom: number;
   currency: string;
   unit: string; // 'per sqm', 'per project', 'per day'
@@ -260,6 +260,12 @@ async function loadGMBImportedBuilders(): Promise<ExhibitionBuilder[]> {
     }
 
     // FALLBACK: Try to load from API endpoint
+    // ⚠️ On server/build, do NOT fetch from own API if file is missing (avoids build loops and relative URL errors)
+    if (typeof window === "undefined") {
+      console.log("ℹ️ Server-side: JSON file missing and skipping API fallback");
+      return [];
+    }
+
     const response = await fetch("/api/admin/gmb-integration?type=builders");
     const data = await response.json();
 

@@ -12,10 +12,10 @@ export default function ServerHomePageContent() {
       <Navigation />
 
       <main className="main-content">
-        {/* Helper for LCP: Loading state - Suspense removed for LCP Optimization */}
-        {/* <Suspense fallback={<HeroSkeleton />}> */}
-        <HomeHero />
-        {/* </Suspense> */}
+        {/* Helper for LCP: Loading state - Suspense enabled for Streaming/TBT Optimization */}
+        <Suspense fallback={<HeroSkeleton />}>
+          <HomeHero />
+        </Suspense>
 
         <Suspense fallback={<LeadsSkeleton />}>
           <HomeLeads />
