@@ -90,7 +90,7 @@ export default function UltraFastHero({
 
             {/* Stats */}
             {stats.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
                 {stats.map((stat, index) => (
                   <div key={index} className="text-center">
                     <div className="text-3xl md:text-4xl font-bold text-white mb-2">
@@ -112,7 +112,7 @@ export default function UltraFastHero({
                   const href = button.isQuoteButton ? '/quote' : (button.href || '#');
                   return (
                     <div key={index} className="w-full sm:w-auto">
-                      <a href={href} className={`${heroBtnClass} w-full sm:w-auto min-w-[200px]`}>
+                      <a href={href} className={`${heroBtnClass} w-full sm:w-auto min-w-[200px] text-white !important`}>
                         {label}
                       </a>
                     </div>

@@ -257,7 +257,28 @@ body {
     "Helvetica Neue",
     sans-serif;
   color: hsl(var(--foreground));
+  color: hsl(var(--foreground));
   background: hsl(var(--background));
+  overflow-x: hidden;
+  /* ✅ MOBILE POLISH: Prevent screen overflow */
+  width: 100%;
+}
+
+/* ✅ MOBILE POLISH: Button text safety */
+button {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* Default to single line */
+}
+
+/* Allow multiline for larger buttons if needed */
+button.multiline,
+.btn-multiline {
+  white-space: normal;
+  height: auto;
+  min-height: 44px;
 }
 
 /* Custom styles for ExhibitBay */
@@ -397,6 +418,13 @@ button[class*="outline"]:not([class*="text-"]) {
 }
 
 /* ✅ FIXED: Exception for hero section buttons - preserve white text */
+.hero-gradient button,
+.hero-gradient a.button,
+.hero-gradient .btn-primary,
+.hero-gradient .btn-outline {
+  color: white !important;
+}
+
 .hero-gradient button[class*="text-white"],
 .hero-gradient button[class*="text-white"] span,
 .hero-gradient button[class*="text-white"] .relative {

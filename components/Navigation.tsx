@@ -214,8 +214,8 @@ export default function Navigation() {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 w-full z-[100] transition-all duration-300 ${isScrolled
-        ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-md border-b border-gray-200/30 dark:border-slate-700/30'
-        : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-sm border-b border-gray-100/20 dark:border-slate-700/20'
+      ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-md border-b border-gray-200/30 dark:border-slate-700/30'
+      : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-sm border-b border-gray-100/20 dark:border-slate-700/20'
       }`}>
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16 w-full min-w-0">
@@ -377,17 +377,17 @@ export default function Navigation() {
           {/* Mobile menu button - Right */}
           <div className="lg:hidden flex items-center space-x-2">
             <Link href="/quote">
-              <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-3 py-1.5 rounded-lg shadow text-xs font-medium min-h-[36px]">
+              <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-3 py-1.5 rounded-lg shadow text-xs font-medium min-h-[44px]">
                 <SafeIcon IconComponent={FiZap} className="w-3 h-3 mr-1 flex-shrink-0" />
                 <span className="truncate">Quote</span>
               </Button>
             </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 min-h-[36px] min-w-[36px] flex items-center justify-center touch-active no-tap-highlight"
+              className="p-2 rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 min-h-[44px] min-w-[44px] flex items-center justify-center touch-active no-tap-highlight"
               aria-label="Toggle menu"
             >
-              {isOpen ? <SafeIcon IconComponent={FiX} className="w-4 h-4 flex-shrink-0" /> : <SafeIcon IconComponent={FiMenu} className="w-4 h-4 flex-shrink-0" />}
+              {isOpen ? <SafeIcon IconComponent={FiX} className="w-6 h-6 flex-shrink-0" /> : <SafeIcon IconComponent={FiMenu} className="w-6 h-6 flex-shrink-0" />}
             </button>
           </div>
         </div>

@@ -25,18 +25,17 @@ export default function SimpleNavigation() {
 
     handleScroll();
     window.addEventListener('scroll', handleScroll);
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${ 
-      isScrolled 
-        ? 'bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-200/30' 
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled
+        ? 'bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-200/30'
         : 'bg-white/90 backdrop-blur-md shadow-md'
-    }`}>
+      }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
@@ -57,10 +56,10 @@ export default function SimpleNavigation() {
             <Link href="/services" className="text-gray-800 hover:text-pink-600 font-medium transition-colors">Services</Link>
             <Link href="/blog" className="text-gray-800 hover:text-pink-600 font-medium transition-colors">Blog</Link>
             <Link href="/about" className="text-gray-800 hover:text-pink-600 font-medium transition-colors">About</Link>
-            
+
             {/* Account Dropdown */}
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setActiveDropdown(activeDropdown === 'account' ? null : 'account')}
                 className="flex items-center space-x-1 text-gray-800 hover:text-pink-600 font-medium transition-colors"
               >
@@ -68,7 +67,7 @@ export default function SimpleNavigation() {
                 <span>Account</span>
                 <SafeIcon IconComponent={FiChevronDown} className={`w-3 h-3 transition-transform ${activeDropdown === 'account' ? 'rotate-180' : ''}`} />
               </button>
-              
+
               {activeDropdown === 'account' && (
                 <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
                   <Link href="/auth/login" className="block px-4 py-2 text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">🔐 Login</Link>
@@ -90,13 +89,13 @@ export default function SimpleNavigation() {
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center space-x-3">
             <Link href="/quote">
-              <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-xl shadow-lg">
+              <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-xl shadow-lg min-h-[44px]">
                 Quote
               </Button>
             </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-xl transition-all duration-300 text-gray-700 hover:bg-pink-50 hover:text-pink-600 border border-gray-200"
+              className="p-2 rounded-xl transition-all duration-300 text-gray-700 hover:bg-pink-50 hover:text-pink-600 border border-gray-200 min-h-[44px] min-w-[44px] flex items-center justify-center"
             >
               {isOpen ? <SafeIcon IconComponent={FiX} className="w-6 h-6" /> : <SafeIcon IconComponent={FiMenu} className="w-6 h-6" />}
             </button>
@@ -109,7 +108,7 @@ export default function SimpleNavigation() {
         <div className="lg:hidden fixed top-0 left-0 w-full h-screen bg-white/98 backdrop-blur-xl shadow-2xl z-[200] animate-in slide-in-from-top duration-300 flex flex-col">
           {/* Header spacer */}
           <div className="h-20 flex-shrink-0 bg-gradient-to-r from-pink-50 to-rose-50 border-b border-pink-200"></div>
-          
+
           {/* Mobile menu items */}
           <div className="flex-1 px-4 pt-4 pb-6 space-y-2 overflow-y-auto">
             <Link href="/" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-all duration-200 rounded-xl font-medium">Home</Link>
@@ -119,7 +118,7 @@ export default function SimpleNavigation() {
             <Link href="/services" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-all duration-200 rounded-xl font-medium">Services</Link>
             <Link href="/blog" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-all duration-200 rounded-xl font-medium">Blog</Link>
             <Link href="/about" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-all duration-200 rounded-xl font-medium">About</Link>
-            
+
             <div className="mt-6 pt-6 border-t border-gray-200">
               <h3 className="px-4 text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Account</h3>
               <Link href="/auth/login" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-all duration-200 rounded-xl font-medium">🔐 Login</Link>
