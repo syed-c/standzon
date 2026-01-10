@@ -38,7 +38,16 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'cdn.discordapp.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'standsbay.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'standszone.com',
+      },
     ],
+    qualities: [25, 50, 75, 85, 90, 100],
   },
   // ✅ PERFORMANCE: Enable modern features
   serverExternalPackages: ['@react-email/render'],

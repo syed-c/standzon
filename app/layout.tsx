@@ -122,11 +122,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//www.google-analytics.com" />
 
         {/* ✅ PERFORMANCE: Preload critical resources */}
-        <link rel="preload" as="font" href="/fonts/inter-var.woff2" type="font/woff2" crossOrigin="anonymous" />
-
-        {/* ✅ PERFORMANCE: Preload hero background images for faster LCP - Managed via UltraFastHero priority */}
-        {/* <link rel="prefetch" href="/api/hero-images" /> */}
-        {/* <link rel="preload" as="image" href="/images/hero-bg-default.webp" /> */}
+        {/* Next.js Font handles preloading automatically */}
 
         {/* ✅ PERFORMANCE: Critical CSS for hero section */}
         <style>{`

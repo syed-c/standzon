@@ -238,6 +238,7 @@ export default function Navigation() {
                 height={28}
                 priority
                 className="h-7 w-auto transition-transform duration-300 group-hover:scale-105"
+                style={{ width: 'auto' }}
               />
               <span className="sr-only">StandsZone</span>
             </Link>

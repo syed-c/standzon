@@ -13,6 +13,8 @@ import {
   Shield, Award, CheckCircle2,
   ArrowRight, Zap, Target, AlertCircle
 } from 'lucide-react';
+import { convertToProxyUrl } from '@/lib/utils/imageProxyUtils';
+import Image from 'next/image';
 
 interface Builder {
   logo: string;
@@ -262,16 +264,16 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
 
         <div className="flex items-start gap-3">
           {builder.logo && (
-            <img
-              src={builder.logo}
-              alt={builder.companyName}
-              className="w-12 h-12 object-contain rounded-lg bg-gray-100 p-1"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.onerror = null; // prevents infinite loop
-                target.src = '/images/builders/default-logo.png';
-              }}
-            />
+            <div className="w-12 h-12 relative flex-shrink-0">
+              <Image
+                src={convertToProxyUrl(builder.logo)}
+                alt={builder.companyName}
+                width={48}
+                height={48}
+                className="w-12 h-12 object-contain rounded-lg bg-gray-100 p-1"
+                unoptimized={!builder.logo.startsWith('http')} // Optimize if it's a remote URL
+              />
+            </div>
           )}
           <CardTitle className="text-lg sm:text-xl leading-tight">
             {builder.companyName}
