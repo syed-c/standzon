@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,19 +9,44 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
+import {
   FileText, ArrowLeft, Save, Edit, Globe, MapPin, Calendar,
   Building2, Search, Plus, Eye, RefreshCw, Upload, Download
 } from 'lucide-react';
 import Link from 'next/link';
 import { tier1Countries } from '@/lib/data/countries';
-import { tradeShows } from '@/lib/data/tradeShows';
+import { TradeShow } from '@/lib/data/tradeShows';
+import { getSupabaseClient } from '@/lib/supabase/client';
+import { mapTradeShowDBToUI } from '@/lib/utils/tradeShowMapping';
 
 function ContentEditorClient() {
   const [activeTab, setActiveTab] = useState('countries');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [dbTradeShows, setDbTradeShows] = useState<TradeShow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTradeShows() {
+      try {
+        const supabase = getSupabaseClient();
+        const { data, error } = await supabase
+          .from('trade_shows')
+          .select('*')
+          .order('start_date', { ascending: false });
+
+        if (error) throw error;
+        setDbTradeShows((data || []).map(mapTradeShowDBToUI));
+      } catch (err) {
+        console.error('Error fetching trade shows:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTradeShows();
+  }, []);
 
   // Generate all platform pages
   const allPages = [
@@ -39,9 +64,9 @@ function ContentEditorClient() {
       status: 'published',
       data: country
     })),
-    
+
     // City pages
-    ...tier1Countries.flatMap(country => 
+    ...tier1Countries.flatMap(country =>
       country.majorCities.map(city => ({
         id: `city-${country.code}-${city.slug}`,
         type: 'city',
@@ -56,9 +81,9 @@ function ContentEditorClient() {
         data: { city, country }
       }))
     ),
-    
+
     // Trade show pages
-    ...tradeShows.map(show => ({
+    ...dbTradeShows.map(show => ({
       id: `tradeshow-${show.id}`,
       type: 'tradeshow',
       title: `Exhibition Stands for ${show.name}`,
@@ -76,9 +101,9 @@ function ContentEditorClient() {
   // Filter pages
   const filteredPages = allPages.filter(page => {
     const matchesSearch = page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         page.description.toLowerCase().includes(searchQuery.toLowerCase());
+      page.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTab = activeTab === 'all' || page.type === activeTab;
-    
+
     return matchesSearch && matchesTab;
   });
 
@@ -89,15 +114,15 @@ function ContentEditorClient() {
 
   const handleSavePage = () => {
     if (!selectedItem) return;
-    
+
     // In a real app, this would make an API call to save changes
-    
+
     // Update the page in the local array (for demo purposes)
     const index = allPages.findIndex(p => p.id === selectedItem.id);
     if (index !== -1) {
       Object.assign(allPages[index], selectedItem);
     }
-    
+
     setIsEditing(false);
     setSelectedItem(null);
     alert('Page updated successfully!');
@@ -309,7 +334,7 @@ function ContentEditorClient() {
                 <span>Edit {selectedItem.title}</span>
               </h2>
             </div>
-            
+
             <div className="p-6 space-y-6">
               {/* Basic Information */}
               <div className="space-y-4">
@@ -409,8 +434,8 @@ function ContentEditorClient() {
               {/* Status */}
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
-                <Select 
-                  value={selectedItem.status} 
+                <Select
+                  value={selectedItem.status}
                   onValueChange={(value) => setSelectedItem({
                     ...selectedItem,
                     status: value
@@ -455,7 +480,7 @@ function ContentEditorClient() {
                 </Badge>
               </h2>
             </div>
-            
+
             <div className="p-6 space-y-4">
               <div>
                 <h4 className="font-medium mb-2">URL</h4>
@@ -511,7 +536,7 @@ function LoadingComponent() {
           <div className="w-24 h-6 bg-gray-200 rounded"></div>
         </div>
       </div>
-      
+
       <div className="p-6 max-w-7xl mx-auto space-y-6">
         <div className="p-8 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>

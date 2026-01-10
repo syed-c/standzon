@@ -2,8 +2,8 @@ import React from 'react';
 import { Metadata } from 'next';
 import ExhibitionPage from '@/components/ExhibitionPage';
 import { notFound } from 'next/navigation';
-import { exhibitions } from '@/lib/data/exhibitions';
-import { tradeShows } from '@/lib/data/tradeShows';
+import { db } from '@/lib/supabase/database';
+import { mapTradeShowDBToExhibition } from '@/lib/utils/tradeShowMapping';
 
 interface TradeShowPageProps {
   params: {
@@ -11,143 +11,38 @@ interface TradeShowPageProps {
   };
 }
 
-// Unified function to get exhibition/trade show data
-const getExhibitionData = (slug: string) => {
-  // First check in comprehensive exhibitions database
-  const exhibition = exhibitions.find(ex => ex.slug === slug);
-  if (exhibition) {
-    return exhibition;
-  }
-
-  // If not found, check in tradeShows and convert to exhibition format
-  const tradeShow = tradeShows.find(show => show.slug === slug);
-  if (tradeShow) {
-    // Convert tradeShow to exhibition format for consistency
-    return {
-      id: tradeShow.id,
-      name: tradeShow.name,
-      slug: tradeShow.slug,
-      description: tradeShow.description,
-      shortDescription: tradeShow.description,
-      startDate: tradeShow.startDate,
-      endDate: tradeShow.endDate,
-      city: tradeShow.city,
-      country: tradeShow.country,
-      countryCode: tradeShow.countryCode,
-      venue: {
-        name: tradeShow.venue.name,
-        address: tradeShow.venue.address,
-        totalSpace: tradeShow.venue.totalSpace,
-        totalHalls: tradeShow.venue.hallCount,
-        facilities: tradeShow.venue.facilities,
-        publicTransport: tradeShow.venue.transportAccess ? [tradeShow.venue.transportAccess] : [],
-        parkingSpaces: tradeShow.venue.parkingSpaces,
-        rating: 4.5,
-        nearestAirport: 'International Airport',
-        distanceFromAirport: '15km'
-      },
-      organizer: {
-        name: tradeShow.organizerName,
-        email: tradeShow.organizerContact,
-        website: tradeShow.website,
-        headquarters: tradeShow.city,
-        establishedYear: 2000,
-        rating: tradeShow.previousEditionStats?.feedback || 4.2
-      },
-      industry: tradeShow.industries[0] || { name: 'General', slug: 'general' },
-      expectedAttendees: tradeShow.expectedVisitors,
-      expectedExhibitors: tradeShow.expectedExhibitors,
-      totalSpace: tradeShow.standSpace,
-      year: tradeShow.year,
-      status: new Date(tradeShow.startDate) > new Date() ? 'Upcoming' : 'Completed',
-      featured: tradeShow.significance === 'Major',
-      trending: false,
-      tags: [tradeShow.industries[0]?.name || 'Trade Show'],
-      keyFeatures: tradeShow.keyFeatures || [],
-      targetAudience: tradeShow.targetAudience || [],
-      website: tradeShow.website,
-      pricing: {
-        standardBooth: {
-          min: tradeShow.costs.standRental.min,
-          max: tradeShow.costs.standRental.max,
-          currency: tradeShow.costs.standRental.currency,
-          unit: tradeShow.costs.standRental.unit
-        },
-        premiumBooth: {
-          min: tradeShow.costs.standRental.max * 1.5,
-          max: tradeShow.costs.standRental.max * 2,
-          currency: tradeShow.costs.standRental.currency,
-          unit: tradeShow.costs.standRental.unit
-        },
-        cornerBooth: {
-          min: tradeShow.costs.standRental.max * 1.2,
-          max: tradeShow.costs.standRental.max * 1.8,
-          currency: tradeShow.costs.standRental.currency,
-          unit: tradeShow.costs.standRental.unit
-        },
-        earlyBirdDiscount: 10
-      },
-      registrationInfo: {
-        visitorRegistration: {
-          fee: 0,
-          currency: 'USD',
-          opens: tradeShow.startDate
-        },
-        exhibitorRegistration: {
-          fee: 500,
-          currency: tradeShow.costs.standRental.currency,
-          closes: tradeShow.startDate
-        }
-      },
-      sustainability: {
-        carbonNeutral: true,
-        wasteReduction: true,
-        digitalFirst: true,
-        sustainableCatering: true,
-        publicTransportIncentives: true,
-        environmentalGoals: ['Carbon Neutral', 'Zero Waste']
-      },
-      networkingOpportunities: tradeShow.networkingOpportunities || [],
-      specialEvents: []
-    };
-  }
-
-  return null;
-};
+// ISR: Revalidate every hour
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  // Generate params for both exhibitions and trade shows
-  const exhibitionParams = exhibitions.map((exhibition) => ({
-    slug: exhibition.slug
+  const dbTradeShows = await db.getTradeShows();
+  return dbTradeShows.map((show: any) => ({
+    slug: show.slug,
   }));
-  
-  const tradeShowParams = tradeShows.map((show) => ({
-    slug: show.slug
-  }));
-
-  return [...exhibitionParams, ...tradeShowParams];
 }
 
 export async function generateMetadata({ params }: TradeShowPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const exhibition = getExhibitionData(resolvedParams.slug);
+  const dbTradeShow = await db.getTradeShowBySlug(resolvedParams.slug);
 
-  if (!exhibition) {
+  if (!dbTradeShow) {
     return {
-      title: 'Exhibition Not Found - ExhibitBay',
-      description: 'The exhibition you are looking for could not be found.'
+      title: 'Trade Show Not Found | StandZone',
+      description: 'The trade show you are looking for could not be found.'
     };
   }
 
+  const exhibition = mapTradeShowDBToExhibition(dbTradeShow);
+
   return {
-    title: `${exhibition.name} | ExhibitBay - Find Exhibition Booth Builders`,
-    description: `${exhibition.description}. Find verified booth builders and event planners for ${exhibition.name} in ${exhibition.city}, ${exhibition.country}. Get quotes from top exhibition stand contractors.`,
+    title: `${exhibition.name} | StandZone - Exhibition Booth Builders`,
+    description: dbTradeShow.seo_description || `${exhibition.description}. Find verified booth builders for ${exhibition.name} in ${exhibition.city}, ${exhibition.country}. Get quotes from top exhibition stand contractors.`,
     keywords: [
       exhibition.name,
       exhibition.city,
       exhibition.country,
       exhibition.industry?.name || 'General Exhibition',
-      ...exhibition.tags,
+      ...(dbTradeShow.seo_keywords || exhibition.tags),
       'exhibition booth builders',
       'trade show stands',
       'booth construction',
@@ -161,33 +56,36 @@ export async function generateMetadata({ params }: TradeShowPageProps): Promise<
       type: 'website',
       locale: 'en_US',
       url: `https://standszone.com/trade-shows/${resolvedParams.slug}`,
-      siteName: 'StandsZone'
+      siteName: 'StandZone',
+      images: dbTradeShow.hero_image_url ? [{ url: dbTradeShow.hero_image_url }] : []
     },
     twitter: {
       card: 'summary_large_image',
       title: exhibition.name,
-      description: exhibition.shortDescription
+      description: exhibition.shortDescription,
+      images: dbTradeShow.hero_image_url ? [dbTradeShow.hero_image_url] : []
     },
     alternates: {
-      canonical: `https://standszone.com/trade-shows/${resolvedParams.slug}`
+      canonical: dbTradeShow.canonical_url || `https://standszone.com/trade-shows/${resolvedParams.slug}`
     }
   };
 }
 
 export default async function TradeShowPage({ params }: TradeShowPageProps) {
   const resolvedParams = await params;
-  const exhibition = getExhibitionData(resolvedParams.slug);
+  const dbTradeShow = await db.getTradeShowBySlug(resolvedParams.slug);
 
-  // If exhibition doesn't exist, show 404
-  if (!exhibition) {
+  if (!dbTradeShow) {
     notFound();
   }
 
-  console.log(`🎪 Loading unified exhibition page for: ${resolvedParams.slug} - ${exhibition.name}`);
+  const exhibition = mapTradeShowDBToExhibition(dbTradeShow);
+
+  console.log(`🎪 Loading dynamic trade show page from Supabase for: ${resolvedParams.slug} - ${exhibition.name}`);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ExhibitionPage exhibitionSlug={resolvedParams.slug} />
+      <ExhibitionPage exhibitionSlug={resolvedParams.slug} initialExhibition={exhibition} />
     </div>
   );
 }

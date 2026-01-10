@@ -312,6 +312,30 @@ export class DatabaseService {
     return data;
   }
 
+  // Trade Shows
+  async getTradeShows() {
+    if (!this.client) throw new Error('Supabase client not initialized');
+    const { data, error } = await this.client
+      .from('trade_shows')
+      .select('*')
+      .order('start_date', { ascending: true });
+
+    if (error) throw error;
+    return data;
+  }
+
+  async getTradeShowBySlug(slug: string) {
+    if (!this.client) throw new Error('Supabase client not initialized');
+    const { data, error } = await this.client
+      .from('trade_shows')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
   // Leads
   async getLeads() {
     if (!this.client) throw new Error('Supabase client not initialized');

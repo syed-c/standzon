@@ -1,0 +1,37 @@
+export interface TradeShowDB {
+    id: string;
+    title: string;
+    slug: string;
+    short_description: string | null;
+    long_description: string | null;
+    hero_image_url: string | null;
+    tags: string[];
+    start_date: string | null;
+    end_date: string | null;
+    location_city: string | null;
+    location_country: string | null;
+    venue_name: string | null;
+    expected_attendees: number | null;
+    exhibitors_count: number | null;
+    organizer_name: string | null;
+    organizer_website: string | null;
+    organizer_rating: number | null;
+    booth_pricing_min: number | null;
+    booth_pricing_max: number | null;
+    booth_pricing_currency: string;
+    registration_url: string | null;
+    exhibitor_registration_fee: string | null;
+    exhibitor_registration_deadline: string | null;
+    venue_facilities: string[];
+    transportation: string[];
+    sustainability: string[];
+    environmental_goals: string[];
+    target_audience: string[];
+    key_features: string[];
+    seo_title: string | null;
+    seo_description: string | null;
+    seo_keywords: string[];
+    canonical_url: string | null;
+    created_at: string;
+    updated_at: string;
+}

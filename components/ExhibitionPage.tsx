@@ -5,14 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { 
+import {
   Calendar, MapPin, Users, Building, Globe, ExternalLink, Phone, Mail,
   Clock, Award, Star, TrendingUp, FileText, MessageSquare, Share2,
-  CheckCircle, AlertCircle, Info, Plane, Car, Train, Wifi, 
-  Shield, Leaf, Heart, Target, Trophy, Bookmark, DollarSign
+  CheckCircle, AlertCircle, Info, Plane, Car, Train, Wifi,
+  Shield, Leaf, Heart, Target, Trophy, Bookmark, DollarSign, ArrowLeft
 } from 'lucide-react';
-import { exhibitions } from '@/lib/data/exhibitions';
-import { tradeShows } from '@/lib/data/tradeShows';
+import { Exhibition } from '@/lib/data/exhibitions';
 import { exhibitionBuilders, BuilderMatchingService } from '@/lib/data/exhibitionBuilders';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -20,164 +19,36 @@ import Link from 'next/link';
 
 interface ExhibitionPageProps {
   exhibitionSlug: string;
+  initialExhibition?: Exhibition;
 }
 
-export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) {
-  // Get exhibition data from unified sources (exhibitions and trade shows)
-  let exhibition = exhibitions.find(ex => ex.slug === exhibitionSlug);
-  
-  // If not found in exhibitions, check trade shows and convert format
+export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: ExhibitionPageProps) {
+  // Use provided exhibition data
+  const exhibition = initialExhibition;
+
+  // If exhibition doesn't exist, show 404 handled by parent
   if (!exhibition) {
-    const tradeShow = tradeShows.find(show => show.slug === exhibitionSlug);
-    if (tradeShow) {
-      // Convert tradeShow to exhibition format for consistency
-      exhibition = {
-        id: tradeShow.id,
-        name: tradeShow.name,
-        slug: tradeShow.slug,
-        description: tradeShow.description,
-        shortDescription: tradeShow.description,
-        startDate: tradeShow.startDate,
-        endDate: tradeShow.endDate,
-        city: tradeShow.city,
-        country: tradeShow.country,
-        countryCode: tradeShow.countryCode,
-        venue: {
-          name: tradeShow.venue.name,
-          address: tradeShow.venue.address,
-          city: tradeShow.city,
-          country: tradeShow.country,
-          website: tradeShow.website,
-          totalSpace: tradeShow.venue.totalSpace,
-          totalHalls: tradeShow.venue.hallCount,
-          facilities: tradeShow.venue.facilities,
-          publicTransport: Array.isArray(tradeShow.venue.transportAccess) ? tradeShow.venue.transportAccess : (tradeShow.venue.transportAccess ? [tradeShow.venue.transportAccess] : []),
-          parkingSpaces: tradeShow.venue.parkingSpaces,
-          rating: 4.5,
-          nearestAirport: 'International Airport',
-          distanceFromAirport: '15km'
-        },
-        organizer: {
-          name: tradeShow.organizerName,
-          email: tradeShow.organizerContact,
-          phone: '+1-555-0123',
-          website: tradeShow.website,
-          headquarters: tradeShow.city,
-          establishedYear: 2000,
-          rating: tradeShow.previousEditionStats?.feedback || 4.2,
-          otherEvents: []
-        },
-        industry: tradeShow.industries[0] || { name: 'General', slug: 'general' },
-        expectedAttendees: tradeShow.expectedVisitors,
-        expectedExhibitors: tradeShow.expectedExhibitors,
-        totalSpace: tradeShow.standSpace,
-        year: tradeShow.year,
-        status: new Date(tradeShow.startDate) > new Date() ? 'Upcoming' : 'Completed',
-        featured: tradeShow.significance === 'Major',
-        trending: false,
-        tags: [tradeShow.industries[0]?.name || 'Trade Show'],
-        keyFeatures: tradeShow.keyFeatures || [],
-        targetAudience: tradeShow.targetAudience || [],
-        website: tradeShow.website,
-        pricing: {
-          currency: tradeShow.costs.standRental.currency,
-          standardBooth: {
-            min: tradeShow.costs.standRental.min,
-            max: tradeShow.costs.standRental.max,
-            currency: tradeShow.costs.standRental.currency,
-            unit: tradeShow.costs.standRental.unit
-          },
-          premiumBooth: {
-            min: Math.round(tradeShow.costs.standRental.max * 1.5),
-            max: Math.round(tradeShow.costs.standRental.max * 2),
-            currency: tradeShow.costs.standRental.currency,
-            unit: tradeShow.costs.standRental.unit
-          },
-          cornerBooth: {
-            min: Math.round(tradeShow.costs.standRental.max * 1.2),
-            max: Math.round(tradeShow.costs.standRental.max * 1.8),
-            currency: tradeShow.costs.standRental.currency,
-            unit: tradeShow.costs.standRental.unit
-          },
-          islandBooth: {
-            min: Math.round(tradeShow.costs.standRental.max * 2),
-            max: Math.round(tradeShow.costs.standRental.max * 3),
-            currency: tradeShow.costs.standRental.currency,
-            unit: tradeShow.costs.standRental.unit
-          },
-          shellScheme: true,
-          spaceOnly: true,
-          earlyBirdDiscount: 10
-        },
-        registrationInfo: {
-          visitorRegistration: {
-            opens: tradeShow.startDate,
-            closes: tradeShow.endDate,
-            fee: 0,
-            currency: 'USD',
-            freeOptions: ['Online Registration', 'Group Discounts']
-          },
-          exhibitorRegistration: {
-            opens: tradeShow.startDate,
-            closes: tradeShow.startDate,
-            fee: 500,
-            currency: tradeShow.costs.standRental.currency,
-            requirements: ['Valid Business License', 'Insurance Coverage']
-          },
-          deadlines: {
-            earlyBird: tradeShow.startDate,
-            final: tradeShow.startDate,
-            onSite: true
-          }
-        },
-        sustainability: {
-          carbonNeutral: true,
-          wasteReduction: true,
-          digitalFirst: true,
-          sustainableCatering: true,
-          publicTransportIncentives: true,
-          environmentalGoals: ['Carbon Neutral', 'Zero Waste'],
-          greenCertifications: ['LEED Certified', 'ISO 14001']
-        },
-        networkingOpportunities: tradeShow.networkingOpportunities || [],
-        specialEvents: [],
-        hallsUsed: tradeShow.venue.hallCount || 10,
-        images: ['/images/exhibitions/default-1.jpg'],
-        logo: '/images/exhibitions/default-logo.png',
-        socialMedia: {
-          website: tradeShow.website,
-          hashtag: `#${tradeShow.slug.replace(/-/g, '')}`
-        },
-        contactInfo: {
-          generalInfo: tradeShow.organizerContact,
-          exhibitorServices: tradeShow.organizerContact,
-          visitorServices: tradeShow.organizerContact,
-          media: tradeShow.organizerContact,
-          emergencyContact: '+1-555-0123'
-        },
-        linkedVendors: [],
-        previousEditions: [],
-        accessibility: {
-          wheelchairAccessible: true,
-          assistedListening: true,
-          signLanguage: false,
-          brailleSignage: true,
-          accessibleParking: true,
-          services: ['Wheelchair access', 'Accessible restrooms']
-        },
-        covid19Measures: ['Enhanced cleaning', 'Health screening'],
-        awards: [],
-        mediaPartners: [],
-        sponsorshipLevels: [],
-        newEvent: false
-      };
-    }
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Exhibition Not Found</h1>
+          <p className="text-gray-600 mb-6">The requested exhibition could not be found in our database.</p>
+          <Link href="/trade-shows">
+            <Button className="bg-primary-blue">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Trade Shows
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   console.log(`🎪 Loading unified exhibition data for: ${exhibitionSlug}`, exhibition ? 'Found' : 'Not found');
 
   // Get recommended vendors based on exhibition location
-  const recommendedVendors = exhibition ? 
+  const recommendedVendors = exhibition ?
     BuilderMatchingService.getBuildersByLocation(exhibition.city, exhibition.country).slice(0, 5) : [];
 
   console.log(`📋 Found ${recommendedVendors.length} builders for ${exhibition?.city}, ${exhibition?.country}`);
@@ -212,11 +83,11 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
   const formatDateRange = (start: string, end: string) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
-    const options: Intl.DateTimeFormatOptions = { 
-      month: 'short', 
-      day: 'numeric' 
+    const options: Intl.DateTimeFormatOptions = {
+      month: 'short',
+      day: 'numeric'
     };
-    
+
     if (startDate.getFullYear() === endDate.getFullYear()) {
       return `${startDate.toLocaleDateString('en-US', options)} - ${endDate.toLocaleDateString('en-US', options)}, ${startDate.getFullYear()}`;
     } else {
@@ -247,7 +118,7 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
     const title = encodeURIComponent(exhibition.name);
     const location = encodeURIComponent(`${exhibition.venue.name}, ${exhibition.city}, ${exhibition.country}`);
     const details = encodeURIComponent(exhibition.shortDescription);
-    
+
     const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&location=${location}&details=${details}`;
     window.open(googleCalendarUrl, '_blank');
   };
@@ -294,11 +165,11 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                     </Badge>
                   )}
                 </div>
-                
+
                 <h1 className="text-4xl lg:text-5xl font-bold mb-4" data-macaly="exhibition-title">
                   {exhibition.name}
                 </h1>
-                
+
                 <p className="text-xl opacity-90 mb-6" data-macaly="exhibition-description">
                   {exhibition.shortDescription}
                 </p>
@@ -311,7 +182,7 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                       <p className="font-semibold">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-3 bg-white/10 rounded-lg p-3">
                     <MapPin className="h-5 w-5" />
                     <div>
@@ -319,7 +190,7 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                       <p className="font-semibold">{exhibition.city}, {exhibition.country}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-3 bg-white/10 rounded-lg p-3">
                     <Users className="h-5 w-5" />
                     <div>
@@ -335,21 +206,21 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                   <CardContent className="p-6">
                     <h3 className="text-lg font-semibold mb-4 text-white">Quick Actions</h3>
                     <div className="space-y-3">
-                      <Button 
+                      <Button
                         className="w-full bg-white text-gray-900 hover:bg-gray-100"
                         onClick={handleFindBoothBuilders}
                       >
                         <MessageSquare className="h-4 w-4 mr-2" />
                         Find Booth Builders
                       </Button>
-                      <Button 
+                      <Button
                         className="w-full bg-white/20 text-white border-white/30 hover:bg-white/30"
                         onClick={handleAddToCalendar}
                       >
                         <Calendar className="h-4 w-4 mr-2" />
                         Add to Calendar
                       </Button>
-                      <Button 
+                      <Button
                         className="w-full bg-white/20 text-white border-white/30 hover:bg-white/30"
                         onClick={handleShareExhibition}
                       >
@@ -387,10 +258,10 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
+
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
-              
+
               {/* About Exhibition */}
               <Card>
                 <CardHeader>
@@ -400,22 +271,22 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                   <p className="text-gray-700 mb-6" data-macaly="exhibition-full-description">
                     {exhibition.description}
                   </p>
-                  
+
                   <h4 className="font-semibold text-gray-900 mb-3">Key Features</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {exhibition.keyFeatures.map((feature, index) => (
+                    {exhibition.keyFeatures.map((feature: string, index: number) => (
                       <div key={index} className="flex items-start space-x-2">
                         <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                         <span className="text-sm text-gray-700">{feature}</span>
                       </div>
                     ))}
                   </div>
-                  
+
                   {exhibition.targetAudience && exhibition.targetAudience.length > 0 && (
                     <div className="mt-6">
                       <h4 className="font-semibold text-gray-900 mb-3">Target Audience</h4>
                       <div className="flex flex-wrap gap-2">
-                        {exhibition.targetAudience.map((audience, index) => (
+                        {exhibition.targetAudience.map((audience: string, index: number) => (
                           <Badge key={index} variant="secondary" className="text-xs">
                             <Target className="h-3 w-3 mr-1" />
                             {audience}
@@ -451,12 +322,12 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <h5 className="font-medium text-gray-900 mb-2">Venue Facilities</h5>
                         <div className="space-y-1">
-                          {exhibition.venue.facilities.map((facility, index) => (
+                          {exhibition.venue.facilities.map((facility: string, index: number) => (
                             <div key={index} className="flex items-center space-x-2">
                               <CheckCircle className="h-4 w-4 text-green-500" />
                               <span className="text-sm text-gray-700">{facility}</span>
@@ -464,11 +335,11 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                           ))}
                         </div>
                       </div>
-                      
+
                       <div>
                         <h5 className="font-medium text-gray-900 mb-2">Transportation</h5>
                         <div className="space-y-1">
-                          {exhibition.venue.publicTransport.map((transport, index) => (
+                          {exhibition.venue.publicTransport.map((transport: string, index: number) => (
                             <div key={index} className="flex items-center space-x-2">
                               <CheckCircle className="h-4 w-4 text-green-500" />
                               <span className="text-sm text-gray-700">{transport}</span>
@@ -492,7 +363,7 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {exhibition.specialEvents.map((event, index) => (
+                      {exhibition.specialEvents.map((event: any, index: number) => (
                         <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                           <div className="flex items-center justify-between mb-2">
                             <h4 className="font-semibold text-gray-900">{event.name}</h4>
@@ -562,7 +433,7 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                         <span className="text-sm text-gray-700">Digital First</span>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
                         {exhibition.sustainability.sustainableCatering ? (
@@ -582,12 +453,12 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                       </div>
                     </div>
                   </div>
-                  
+
                   {exhibition.sustainability.environmentalGoals && exhibition.sustainability.environmentalGoals.length > 0 && (
                     <div className="mt-4">
                       <h5 className="font-medium text-gray-900 mb-2">Environmental Goals</h5>
                       <div className="flex flex-wrap gap-2">
-                        {exhibition.sustainability.environmentalGoals.map((goal, index) => (
+                        {exhibition.sustainability.environmentalGoals.map((goal: string, index: number) => (
                           <Badge key={index} variant="outline" className="text-xs">
                             {goal}
                           </Badge>
@@ -655,7 +526,7 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                         <p>No local vendors found yet.</p>
                       </div>
                     )}
-                    
+
                     {/* Browse All Vendors Button - Now Functional */}
                     <div className="pt-4 border-t">
                       <Link href="/builders" className="w-full">
@@ -671,7 +542,7 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
 
             {/* Sidebar */}
             <div className="lg:col-span-1 space-y-6">
-              
+
               {/* Pricing Information */}
               <Card>
                 <CardHeader>
@@ -688,7 +559,7 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                       {exhibition.pricing.standardBooth.currency} {exhibition.pricing.standardBooth.min} - {exhibition.pricing.standardBooth.max}
                     </div>
                   </div>
-                  
+
                   <div className="p-4 bg-rose-50 rounded-lg">
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-medium">Premium Booth</span>
@@ -742,9 +613,9 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                         <span className="text-sm text-gray-600">{exhibition.organizer.rating} organizer rating</span>
                       </div>
                     </div>
-                    
-                    <Button 
-                      variant="outline" 
+
+                    <Button
+                      variant="outline"
                       className="w-full text-gray-900"
                       onClick={() => window.open(exhibition.organizer.website, '_blank')}
                     >
@@ -765,7 +636,7 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                     <div>
                       <h4 className="font-medium text-gray-900">Visitor Registration</h4>
                       <p className="text-sm text-gray-600">
-                        {exhibition.registrationInfo.visitorRegistration.fee > 0 
+                        {exhibition.registrationInfo.visitorRegistration.fee > 0
                           ? `${exhibition.registrationInfo.visitorRegistration.currency} ${exhibition.registrationInfo.visitorRegistration.fee}`
                           : 'Free'}
                       </p>
@@ -773,7 +644,7 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                         Opens: {formatDate(exhibition.registrationInfo.visitorRegistration.opens)}
                       </p>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-medium text-gray-900">Exhibitor Registration</h4>
                       <p className="text-sm text-gray-600">
@@ -784,8 +655,8 @@ export default function ExhibitionPage({ exhibitionSlug }: ExhibitionPageProps) 
                       </p>
                     </div>
 
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="w-full text-gray-900"
                       onClick={() => window.open(exhibition.website, '_blank')}
                     >
