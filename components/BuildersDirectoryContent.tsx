@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import TradeStyleBanner from "@/components/TradeStyleBanner";
+import dynamic from "next/dynamic";
+const TradeStyleBanner = dynamic(() => import("@/components/TradeStyleBanner"), {
+  loading: () => <div className="h-48 bg-slate-100 animate-pulse rounded-xl" />,
+  ssr: false
+});
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +36,7 @@ import {
 } from "react-icons/fi";
 import { builderStats } from "@/lib/data/exhibitionBuilders";
 import { GLOBAL_EXHIBITION_DATA } from "@/lib/data/globalCities";
-import PublicQuoteRequest from "@/components/PublicQuoteRequest";
+// Unused import removed: PublicQuoteRequest
 
 // Add null checks for icons to prevent runtime errors
 const SafeIcon = ({ IconComponent, ...props }: { IconComponent: any } & React.SVGProps<SVGSVGElement>) => {
@@ -268,9 +272,9 @@ export default function BuildersDirectoryContent() {
             averageRating:
               allBuilders.length > 0
                 ? allBuilders.reduce(
-                    (sum, builder) => sum + (builder.rating || 0),
-                    0
-                  ) / allBuilders.length
+                  (sum, builder) => sum + (builder.rating || 0),
+                  0
+                ) / allBuilders.length
                 : 0,
             totalProjectsCompleted: allBuilders.reduce(
               (sum, builder) =>
@@ -327,7 +331,7 @@ export default function BuildersDirectoryContent() {
 
     // Load data once on mount only
     loadRealTimeData();
-    
+
     // Removed auto-refresh to prevent unwanted page reloads
     // Data will refresh when user navigates back to this page
   }, []);
@@ -425,9 +429,9 @@ export default function BuildersDirectoryContent() {
           averageRating:
             allBuilders.length > 0
               ? allBuilders.reduce(
-                  (sum, builder) => sum + (builder.rating || 0),
-                  0
-                ) / allBuilders.length
+                (sum, builder) => sum + (builder.rating || 0),
+                0
+              ) / allBuilders.length
               : 0,
           totalProjectsCompleted: allBuilders.reduce(
             (sum, builder) =>
@@ -524,7 +528,7 @@ export default function BuildersDirectoryContent() {
         builder.headquarters.country === selectedCountry ||
         (builder.serviceLocations && builder.serviceLocations.some(loc => loc.country === selectedCountry));
       const matchesCity =
-        selectedCity === "all" || 
+        selectedCity === "all" ||
         builder.headquarters.city === selectedCity ||
         (builder.serviceLocations && builder.serviceLocations.some(loc => loc.cities.includes(selectedCity)));
       const matchesRating = builder.rating >= minRating[0];
@@ -568,13 +572,13 @@ export default function BuildersDirectoryContent() {
 
   return (
     <div className="font-inter min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      
+
       {/* Hero Section - Matching location pages style */}
       <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white pt-24 pb-20">
         <div className="absolute inset-0 opacity-20">
           <div className="w-full h-full bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-pink-500/10"></div>
         </div>
-        
+
         <div className="relative container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex justify-center mb-6">
@@ -583,18 +587,18 @@ export default function BuildersDirectoryContent() {
                 Global Directory
               </Badge>
             </div>
-            
+
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               <span className="block">Exhibition Stand Builders</span>
               <span className="block bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
                 Directory
               </span>
             </h1>
-            
+
             <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
               Find verified exhibition stand builders worldwide. Connect with professionals who deliver exceptional results.
             </p>
-            
+
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
@@ -604,7 +608,7 @@ export default function BuildersDirectoryContent() {
                 <div className="text-2xl font-bold">{realTimeStats.totalBuilders}</div>
                 <div className="text-slate-300 text-sm">Total Builders</div>
               </div>
-              
+
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
                 <div className="flex items-center justify-center mb-3">
                   <SafeIcon IconComponent={FiShield} className="w-8 h-8 text-green-400" />
@@ -612,7 +616,7 @@ export default function BuildersDirectoryContent() {
                 <div className="text-2xl font-bold">{realTimeStats.verifiedBuilders}</div>
                 <div className="text-slate-300 text-sm">Verified Builders</div>
               </div>
-              
+
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
                 <div className="flex items-center justify-center mb-3">
                   <SafeIcon IconComponent={FiGlobe} className="w-8 h-8 text-purple-400" />
@@ -620,7 +624,7 @@ export default function BuildersDirectoryContent() {
                 <div className="text-2xl font-bold">{realTimeStats.totalCountries}</div>
                 <div className="text-slate-300 text-sm">Countries</div>
               </div>
-              
+
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
                 <div className="flex items-center justify-center mb-3">
                   <SafeIcon IconComponent={FiStar} className="w-8 h-8 text-yellow-400" />
@@ -631,7 +635,7 @@ export default function BuildersDirectoryContent() {
                 <div className="text-slate-300 text-sm">Avg Rating</div>
               </div>
             </div>
-            
+
             {/* CTA */}
             <div className="max-w-2xl mx-auto">
               <Link href="/quote">
@@ -653,10 +657,10 @@ export default function BuildersDirectoryContent() {
             <h2 className="text-2xl font-bold text-slate-900">
               Browse Exhibition Builders
             </h2>
-            
+
             <div className="flex items-center space-x-3">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => setShowFilters(!showFilters)}
                 className="border-slate-300 text-slate-700 hover:bg-slate-100"
@@ -664,7 +668,7 @@ export default function BuildersDirectoryContent() {
                 <SafeIcon IconComponent={FiFilter} className="w-4 h-4 mr-2" />
                 {showFilters ? 'Hide Filters' : 'Show Filters'}
               </Button>
-              
+
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Sort by" />
@@ -678,7 +682,7 @@ export default function BuildersDirectoryContent() {
               </Select>
             </div>
           </div>
-          
+
           {/* Search and Filters */}
           {showFilters && (
             <Card className="mb-6 border-slate-200 shadow-sm">
@@ -696,7 +700,7 @@ export default function BuildersDirectoryContent() {
                       />
                     </div>
                   </div>
-                  
+
                   {/* Country Filter */}
                   <div>
                     <Select value={selectedCountry} onValueChange={setSelectedCountry}>
@@ -713,7 +717,7 @@ export default function BuildersDirectoryContent() {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   {/* City Filter */}
                   <div>
                     <Select value={selectedCity} onValueChange={setSelectedCity}>
@@ -730,7 +734,7 @@ export default function BuildersDirectoryContent() {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   {/* Rating Filter */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
@@ -750,7 +754,7 @@ export default function BuildersDirectoryContent() {
             </Card>
           )}
         </div>
-        
+
         {/* Loading State */}
         {loading && (
           <div className="flex items-center justify-center py-12">
@@ -760,7 +764,7 @@ export default function BuildersDirectoryContent() {
             </div>
           </div>
         )}
-        
+
         {/* Empty State */}
         {!loading && currentBuilders.length === 0 && (
           <div className="text-center py-12">
@@ -769,7 +773,7 @@ export default function BuildersDirectoryContent() {
             </div>
             <h3 className="text-xl font-semibold text-slate-900 mb-2">No builders found</h3>
             <p className="text-slate-600 mb-6">Try adjusting your search or filter criteria</p>
-            <Button 
+            <Button
               onClick={() => {
                 setSearchTerm("");
                 setSelectedCountry("all");
@@ -782,14 +786,14 @@ export default function BuildersDirectoryContent() {
             </Button>
           </div>
         )}
-        
+
         {/* Builders Grid */}
         {!loading && currentBuilders.length > 0 && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {currentBuilders.map((builder) => (
-                <Card 
-                  key={builder.id} 
+                <Card
+                  key={builder.id}
                   className="border-slate-200 hover:border-pink-300 hover:shadow-lg transition-all duration-200 overflow-hidden"
                 >
                   <CardContent className="p-0">
@@ -819,16 +823,16 @@ export default function BuildersDirectoryContent() {
                           </Badge>
                         )}
                       </div>
-                      
+
                       {/* Rating and Stats */}
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-1">
                           <div className="flex">
                             {[...Array(5)].map((_, i) => (
-                              <SafeIcon 
-                                key={i} 
-                                IconComponent={FiStar} 
-                                className={`w-4 h-4 ${i < Math.floor(builder.rating) ? 'text-yellow-400 fill-current' : 'text-slate-300'}`} 
+                              <SafeIcon
+                                key={i}
+                                IconComponent={FiStar}
+                                className={`w-4 h-4 ${i < Math.floor(builder.rating) ? 'text-yellow-400 fill-current' : 'text-slate-300'}`}
                               />
                             ))}
                           </div>
@@ -840,12 +844,12 @@ export default function BuildersDirectoryContent() {
                           {builder.reviewCount} reviews
                         </div>
                       </div>
-                      
+
                       {/* Description */}
                       <p className="text-sm text-slate-600 mb-4 line-clamp-2">
                         {builder.companyDescription || "Professional exhibition stand builder with years of experience."}
                       </p>
-                      
+
                       {/* Key Stats */}
                       <div className="grid grid-cols-2 gap-3 mb-4">
                         <div className="bg-slate-50 rounded-lg p-2 text-center">
@@ -861,7 +865,7 @@ export default function BuildersDirectoryContent() {
                           </div>
                         </div>
                       </div>
-                      
+
                       {/* Key Strengths */}
                       {builder.keyStrengths && builder.keyStrengths.length > 0 && (
                         <div className="mb-4">
@@ -880,29 +884,29 @@ export default function BuildersDirectoryContent() {
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Action Buttons */}
                     <div className="border-t border-slate-100 p-4 bg-slate-50">
                       <div className="flex space-x-2">
-                        <Link 
-                          href={`/builders/${builder.slug}`} 
+                        <Link
+                          href={`/builders/${builder.slug}`}
                           className="flex-1"
                         >
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
+                          <Button
+                            variant="outline"
+                            size="sm"
                             className="w-full border-slate-300 text-slate-700 hover:bg-slate-100"
                           >
                             <SafeIcon IconComponent={FiEye} className="w-4 h-4 mr-1" />
                             View Profile
                           </Button>
                         </Link>
-                        <Link 
+                        <Link
                           href={`/quote?builder=${builder.id}`}
                           className="flex-1"
                         >
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             className="w-full bg-pink-500 hover:bg-pink-600 text-white"
                           >
                             <SafeIcon IconComponent={FiArrowRight} className="w-4 h-4 mr-1" />
@@ -915,7 +919,7 @@ export default function BuildersDirectoryContent() {
                 </Card>
               ))}
             </div>
-            
+
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-slate-200 pt-6">
@@ -932,7 +936,7 @@ export default function BuildersDirectoryContent() {
                   >
                     Previous
                   </Button>
-                  
+
                   <div className="flex items-center space-x-1">
                     {[...Array(Math.min(5, totalPages))].map((_, i) => {
                       const pageNum = i + 1;
@@ -942,8 +946,8 @@ export default function BuildersDirectoryContent() {
                           variant={currentPage === pageNum ? "default" : "outline"}
                           size="sm"
                           onClick={() => setCurrentPage(pageNum)}
-                          className={currentPage === pageNum 
-                            ? "bg-pink-500 hover:bg-pink-600 text-white" 
+                          className={currentPage === pageNum
+                            ? "bg-pink-500 hover:bg-pink-600 text-white"
                             : "border-slate-300 text-slate-700 hover:bg-slate-100"
                           }
                         >
@@ -980,7 +984,7 @@ export default function BuildersDirectoryContent() {
                       </>
                     )}
                   </div>
-                  
+
                   <Button
                     variant="outline"
                     size="sm"
@@ -996,7 +1000,7 @@ export default function BuildersDirectoryContent() {
           </>
         )}
       </div>
-      
+
       {/* Featured Section */}
       <section className="bg-gradient-to-br from-slate-900 to-slate-800 text-white py-16">
         <div className="container mx-auto px-6">
@@ -1008,7 +1012,7 @@ export default function BuildersDirectoryContent() {
               Our platform connects you with pre-vetted exhibition stand builders who deliver exceptional results.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -1019,7 +1023,7 @@ export default function BuildersDirectoryContent() {
                 Every builder undergoes a rigorous verification process to ensure quality and reliability.
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <SafeIcon IconComponent={FiAward} className="w-8 h-8 text-blue-400" />
@@ -1029,7 +1033,7 @@ export default function BuildersDirectoryContent() {
                 Our builders have won industry recognition for innovative designs and exceptional craftsmanship.
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <SafeIcon IconComponent={FiClock} className="w-8 h-8 text-purple-400" />
@@ -1042,7 +1046,7 @@ export default function BuildersDirectoryContent() {
           </div>
         </div>
       </section>
-      
+
       {/* CTA Section */}
       <section className="py-16 bg-gradient-to-br from-pink-50 to-rose-50">
         <div className="container mx-auto px-6">
@@ -1070,8 +1074,8 @@ export default function BuildersDirectoryContent() {
           </div>
         </div>
       </section>
-      
-      <TradeStyleBanner 
+
+      <TradeStyleBanner
         mainHeading="Find Exhibition Stand"
         highlightHeading="Builders Worldwide"
         description="Connect with verified professionals who specialize in creating stunning exhibition stands for trade shows and events."

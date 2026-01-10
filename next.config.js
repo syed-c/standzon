@@ -7,7 +7,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   // ✅ PERFORMANCE: Enable image optimization
-  images: { 
+  images: {
     unoptimized: false,
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 31536000, // 1 year
@@ -62,7 +62,7 @@ const nextConfig = {
       };
       config.cache = false;
     }
-    
+
     // Add performance optimizations
     config.resolve.fallback = {
       ...(config.resolve.fallback || {}),
@@ -71,7 +71,7 @@ const nextConfig = {
       os: false,
       crypto: false,
     };
-    
+
     // ✅ PERFORMANCE: Optimize bundle splitting
     if (!isServer) {
       config.optimization.splitChunks = {
@@ -121,13 +121,13 @@ const nextConfig = {
         },
       };
     }
-    
+
     // Add performance optimizations
     if (!dev) {
       // Enable tree shaking
       config.optimization.usedExports = true;
       config.optimization.providedExports = true;
-      
+
       // Enable minimizer for production
       if (Array.isArray(config.optimization.minimizer)) {
         config.optimization.minimizer = config.optimization.minimizer.filter(
@@ -135,13 +135,19 @@ const nextConfig = {
         );
       }
     }
-    
+
     return config;
   },
   experimental: {
     // ✅ PERFORMANCE: Enable modern features
     optimizeCss: true,
-    optimizePackageImports: ['lucide-react', 'recharts'],
+    optimizePackageImports: [
+      'lucide-react',
+      'recharts',
+      'react-icons',
+      'lodash',
+      'date-fns'
+    ],
     // Enable React Server Components
     serverComponentsExternalPackages: ['@react-email/render'],
   },

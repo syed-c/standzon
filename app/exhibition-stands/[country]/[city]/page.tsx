@@ -17,8 +17,8 @@ import { getCitiesByCountry } from "@/lib/supabase/client";
 import { getCitiesByCountry as getGlobalCitiesByCountry } from "@/lib/data/globalExhibitionDatabase";
 import ServerPageWithBreadcrumbs from "@/components/ServerPageWithBreadcrumbs";
 
-// ✅ FIX #1: Force dynamic rendering to prevent build-time evaluation
-export const dynamic = 'force-dynamic';
+// ✅ PERFORMANCE: Use ISR with 1-hour revalidation
+export const revalidate = 3600;
 
 interface CityPageProps {
   params: Promise<{
@@ -99,18 +99,18 @@ export async function generateMetadata({
       const sb = getServerSupabase();
       if (sb) {
         const cityPageId = `${countrySlug}-${citySlug}`;
-        
+
         const result = await sb
           .from("page_contents")
           .select("content")
           .eq("id", cityPageId)
           .single();
-          
+
         if (!result.error && result.data?.content) {
           const content = result.data.content;
           const seo = content.seo || {};
           const hero = content.hero || {};
-          
+
           cmsMetadata = {
             title: seo.metaTitle || hero.title || `Exhibition Stand Builders in ${cityName}, ${countryName} | Professional Trade Show Displays`,
             description: seo.metaDescription || `Find professional exhibition stand builders in ${cityName}, ${countryName}. Custom trade show displays, booth design, and comprehensive exhibition services.`,
@@ -177,9 +177,9 @@ async function getCityPageContent(countrySlug: string, citySlug: string) {
     const sb = getServerSupabase();
     if (sb) {
       console.log("🔍 Server-side: Fetching CMS data for city:", citySlug, "in country:", countrySlug);
-      
+
       const cityPageId = `${countrySlug}-${citySlug}`;
-      
+
       const result = await sb
         .from("page_contents")
         .select("content")
@@ -207,13 +207,13 @@ async function getCityPageContent(countrySlug: string, citySlug: string) {
 // New function to extract and format CMS content properly
 function formatCmsContent(cmsContent: any, countrySlug: string, citySlug: string, countryName: string, cityName: string) {
   if (!cmsContent) return null;
-  
+
   console.log("🔍 Formatting CMS content for:", countrySlug, citySlug);
-  
+
   // Extract the specific city content if it's nested
   const cityPageId = `${countrySlug}-${citySlug}`;
   let citySpecificContent = cmsContent?.sections?.cityPages?.[cityPageId] || cmsContent;
-  
+
   // NEW: Handle the specific nested structure for hero description
   // sections.cityPages["united-arab-emirates-dubai"].countryPages.dubai.heroDescription
   if (cmsContent?.sections?.cityPages?.[cityPageId]?.countryPages?.[citySlug]?.heroDescription) {
@@ -223,7 +223,7 @@ function formatCmsContent(cmsContent: any, countrySlug: string, citySlug: string
       heroDescription: cmsContent.sections.cityPages[cityPageId].countryPages[citySlug].heroDescription
     };
   }
-  
+
   // Ensure we have the right structure
   const formattedContent = {
     id: `${countrySlug}-${citySlug}`,
@@ -260,42 +260,42 @@ function formatCmsContent(cmsContent: any, countrySlug: string, citySlug: string
       showMap: citySpecificContent?.design?.showMap !== undefined ? citySpecificContent?.design?.showMap : true,
     },
   };
-  
+
   // Ensure all content fields are strings, not objects
   const safeExtractText = (content: any): string => {
     if (typeof content === 'string') return content;
     if (typeof content === 'object' && content !== null) {
       // Try common properties in order of preference
-      return content.description || 
-             content.text || 
-             content.heading || 
-             content.title || 
-             content.content ||
-             JSON.stringify(content);
+      return content.description ||
+        content.text ||
+        content.heading ||
+        content.title ||
+        content.content ||
+        JSON.stringify(content);
     }
     return String(content);
   };
-  
+
   // Safely extract all content fields
   formattedContent.title = safeExtractText(formattedContent.title);
   formattedContent.metaTitle = safeExtractText(formattedContent.metaTitle);
   formattedContent.metaDescription = safeExtractText(formattedContent.metaDescription);
   formattedContent.description = safeExtractText(formattedContent.description);
   formattedContent.heroContent = safeExtractText(formattedContent.heroContent);
-  
+
   // Ensure SEO keywords is an array of strings
   if (!Array.isArray(formattedContent.seoKeywords)) {
     formattedContent.seoKeywords = [safeExtractText(formattedContent.seoKeywords)];
   } else {
     formattedContent.seoKeywords = formattedContent.seoKeywords.map(keyword => safeExtractText(keyword));
   }
-  
+
   // Ensure hero fields are strings
   formattedContent.hero.title = safeExtractText(formattedContent.hero.title);
   formattedContent.hero.description = safeExtractText(formattedContent.hero.description);
   formattedContent.hero.ctaText = safeExtractText(formattedContent.hero.ctaText);
   formattedContent.hero.subtitle = safeExtractText(formattedContent.hero.subtitle);
-  
+
   // Ensure content fields are strings
   formattedContent.content.introduction = safeExtractText(formattedContent.content.introduction);
   formattedContent.content.whyChooseSection = safeExtractText(formattedContent.content.whyChooseSection);
@@ -303,7 +303,7 @@ function formatCmsContent(cmsContent: any, countrySlug: string, citySlug: string
   formattedContent.content.venueInformation = safeExtractText(formattedContent.content.venueInformation);
   formattedContent.content.builderAdvantages = safeExtractText(formattedContent.content.builderAdvantages);
   formattedContent.content.conclusion = safeExtractText(formattedContent.content.conclusion);
-  
+
   console.log("✅ Formatted CMS content:", JSON.stringify(formattedContent, null, 2));
   return formattedContent;
 }
@@ -358,18 +358,18 @@ export default async function CityPage({ params }: CityPageProps) {
 
   // Try to get CMS content
   const cmsContent = await getCityPageContent(countrySlug, citySlug);
-  
+
   // Get country code for fetching cities (same as country pages)
   const countryCode = getCountryCodeByName(countryName);
   console.log(`🔍 Country code for ${countryName}: ${countryCode}`);
-  
+
   // Fetch cities from Supabase (same approach as country pages)
   let cities: any[] = [];
   try {
     if (countryCode) {
       const rawCities = await getCitiesByCountry(countryCode);
       console.log(`✅ Fetched ${rawCities.length} cities for ${countryName} (${countryCode}) from Supabase`);
-      
+
       // Transform cities data to match expected format
       cities = rawCities.map((city: any) => ({
         name: city.city_name,
@@ -382,14 +382,14 @@ export default async function CityPage({ params }: CityPageProps) {
   } catch (error) {
     console.error(`❌ Error fetching cities for ${countryName}:`, error);
   }
-  
+
   // If no cities from Supabase, fallback to global database
   if (cities.length === 0) {
     console.log(`🔄 Falling back to global database for cities in ${countryName}`);
     try {
       const globalCities = getGlobalCitiesByCountry(countrySlug);
       console.log(`✅ Found ${globalCities.length} cities for ${countryName} in global database`);
-      
+
       // Transform global cities data to match expected format and deduplicate
       const cityMap = new Map();
       globalCities.forEach((city: any) => {
@@ -402,14 +402,14 @@ export default async function CityPage({ params }: CityPageProps) {
           });
         }
       });
-      
+
       cities = Array.from(cityMap.values());
       console.log(`✅ Deduplicated to ${cities.length} unique cities for ${countryName}`);
     } catch (error) {
       console.error(`❌ Error fetching cities from global database for ${countryName}:`, error);
     }
   }
-  
+
   // Create default content structure similar to country pages
   const defaultContent = {
     id: `${countrySlug}-${citySlug}`,
@@ -424,10 +424,10 @@ export default async function CityPage({ params }: CityPageProps) {
       `${cityName} booth design`,
     ]
   };
-  
+
   // Format CMS content properly
   const formattedCmsContent = formatCmsContent(cmsContent, countrySlug, citySlug, countryName, cityName);
-  
+
   // Merge CMS content with default content (similar to country page approach)
   const mergedContent = {
     ...defaultContent,
@@ -439,28 +439,28 @@ export default async function CityPage({ params }: CityPageProps) {
   try {
     // Use absolute URL for server-side fetch
     let baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-    
+
     // Ensure the base URL has a protocol (http:// or https://)
     if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
       baseUrl = `https://${baseUrl}`;
     }
-    
+
     console.log(`🔍 Fetching builders from: ${baseUrl}/api/admin/builders?limit=1000&prioritize_real=true`);
-    
+
     const response = await fetch(
       `${baseUrl}/api/admin/builders?limit=1000&prioritize_real=true`,
-      { 
+      {
         cache: "no-store"
       }
     );
-    
+
     if (!response.ok) {
       throw new Error(`Builders API returned ${response.status}: ${response.statusText}`);
     }
-    
+
     const buildersData = await response.json();
     console.log(`✅ Builders API response received. Success: ${buildersData.success}, Builders count: ${buildersData.data?.builders?.length || 0}`);
-    
+
     if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
       // Handle country name variations (UAE vs United Arab Emirates)
       const normalizedCountryName = countryName.toLowerCase();
@@ -472,7 +472,7 @@ export default async function CityPage({ params }: CityPageProps) {
       }
 
       console.log('🔍 DEBUG: City page country variations for filtering:', countryVariations);
-      
+
       // Filter builders for this city and country
       const filteredBuilders = buildersData.data.builders.filter((builder: any) => {
         // Normalize strings for comparison
@@ -480,28 +480,28 @@ export default async function CityPage({ params }: CityPageProps) {
           if (!str) return '';
           return str.toString().toLowerCase().trim();
         };
-        
+
         const normalizedCity = normalizeString(cityName);
-        
+
         // Check headquarters (handle different field names)
         const headquartersCity = normalizeString(
-          builder.headquarters_city || 
-          builder.headquarters?.city || 
+          builder.headquarters_city ||
+          builder.headquarters?.city ||
           ''
         );
         const headquartersCountry = normalizeString(
-          builder.headquarters_country || 
-          builder.headquarters?.country || 
-          builder.headquartersCountry || 
+          builder.headquarters_country ||
+          builder.headquarters?.country ||
+          builder.headquartersCountry ||
           ''
         );
-        
-        const headquartersMatch = 
+
+        const headquartersMatch =
           (headquartersCity === normalizedCity || headquartersCity.includes(normalizedCity)) &&
-          countryVariations.some(variation => 
+          countryVariations.some(variation =>
             headquartersCountry === variation || headquartersCountry.includes(variation)
           );
-        
+
         // Check service locations
         const serviceLocations = builder.service_locations || builder.serviceLocations || [];
         const serviceLocationMatch = serviceLocations.some((loc: any) => {
@@ -509,12 +509,12 @@ export default async function CityPage({ params }: CityPageProps) {
           const serviceCountry = normalizeString(loc.country);
           return (
             (serviceCity === normalizedCity || serviceCity.includes(normalizedCity)) &&
-            countryVariations.some(variation => 
+            countryVariations.some(variation =>
               serviceCountry === variation || serviceCountry.includes(variation)
             )
           );
         });
-        
+
         // Log for debugging first builder
         if (buildersData.data.builders.indexOf(builder) === 0) {
           console.log('🔍 DEBUG: City page filtering for first builder:', {
@@ -528,10 +528,10 @@ export default async function CityPage({ params }: CityPageProps) {
             finalResult: headquartersMatch || serviceLocationMatch
           });
         }
-        
+
         return headquartersMatch || serviceLocationMatch;
       });
-      
+
       // Deduplicate builders by ID
       const builderMap = new Map();
       filteredBuilders.forEach((builder: any) => {
@@ -539,9 +539,9 @@ export default async function CityPage({ params }: CityPageProps) {
           builderMap.set(builder.id, builder);
         }
       });
-      
+
       const uniqueBuilders = Array.from(builderMap.values());
-      
+
       // Log before transformation
       console.log('🔍 DEBUG: Before transformation - unique builders count:', uniqueBuilders.length);
       if (uniqueBuilders.length > 0) {
@@ -552,7 +552,7 @@ export default async function CityPage({ params }: CityPageProps) {
           headquarters_country: uniqueBuilders[0].headquarters_country
         });
       }
-      
+
       // Transform builders to match expected interface (same as in BuildersDirectoryContent)
       builders = uniqueBuilders.map((b: any) => {
         const transformed = {
@@ -616,7 +616,7 @@ export default async function CityPage({ params }: CityPageProps) {
             b.source === "GMB_API" ||
             false,
         };
-        
+
         // Log first few transformations
         if (uniqueBuilders.indexOf(b) < 3) {
           console.log(`🔍 DEBUG: Transformed builder ${b.company_name || b.companyName}:`, {
@@ -625,10 +625,10 @@ export default async function CityPage({ params }: CityPageProps) {
             headquarters: transformed.headquarters
           });
         }
-        
+
         return transformed;
       });
-      
+
       console.log('🔍 DEBUG: After transformation - builders count:', builders.length);
     } else {
       console.warn('⚠️ No builders data received or invalid format:', {
