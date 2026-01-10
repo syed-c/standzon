@@ -16,14 +16,14 @@ const buttonVariants = cva(
           'border-2 border-[rgba(255,255,255,0.25)] bg-[#29344D] text-[#FFFFFF] hover:bg-[#3C4A6B] hover:text-[#FFFFFF] hover:border-[rgba(255,255,255,0.5)] shadow-md hover:shadow-lg active:bg-[#3C4A6B] active:scale-[0.98]',
         secondary:
           'bg-[#29344D] text-[#FFFFFF] hover:bg-[#3C4A6B] shadow-md hover:shadow-lg active:bg-[#3C4A6B] active:scale-[0.98]',
-        ghost: 'text-[#E2E8F0] hover:bg-[#29344D] hover:text-[#FFFFFF] active:bg-[#29344D] active:scale-[0.98]',
-        link: 'text-[#3C4A6B] underline-offset-4 hover:text-[#FFFFFF] active:text-[#FFFFFF] active:scale-[0.98]',
+        ghost: 'text-[#000000] hover:bg-[#29344D] hover:text-[#000000] active:bg-[#29344D] active:scale-[0.98]',
+        link: 'text-[#000000] underline-offset-4 hover:text-[#000000] active:text-[#000000] active:scale-[0.98]',
       },
       size: {
         default: 'h-10 px-4 py-2 min-h-[44px]',
         sm: 'h-9 rounded-lg px-3 min-h-[40px] text-xs',
         lg: 'h-11 rounded-xl px-8 min-h-[48px]',
-        icon: 'h-10 w-10 min-h-[44px] min-w-[44px]',
+        icon: 'h-10 w-10 min-h-[44px] min-w-[44px] text-[#000000] color-[#000000]',
       },
     },
     defaultVariants: {
@@ -35,7 +35,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
 
