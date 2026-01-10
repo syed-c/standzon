@@ -5,14 +5,11 @@ import React from 'react';
 import Image from 'next/image';
 import logoImg from '@/components/zonelogo2.png';
 import { FiPhone, FiMail, FiMapPin, FiLinkedin, FiTwitter, FiInstagram, FiFacebook, FiExternalLink } from 'react-icons/fi';
-// import { useQuery } from 'convex/react';
-// import { api } from '@/convex/_generated/api';
 
 export default function Footer() {
   console.log("Footer: Component rendered");
 
-  // Fetch site settings for dynamic content
-  // const settings = useQuery(api.siteSettings.getSiteSettings, {});
+  // const settings = null;
 
   // Fallback data if settings are not loaded yet
   const fallbackData = {

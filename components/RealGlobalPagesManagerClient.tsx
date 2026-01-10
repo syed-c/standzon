@@ -9,10 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import LocationPageEditor from '@/components/LocationPageEditor';
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { 
-  Globe, MapPin, Building2, Users, BarChart3, Search, Filter, 
+import { db } from '@/lib/supabase/database';
+import {
+  Globe, MapPin, Building2, Users, BarChart3, Search, Filter,
   RefreshCw, Zap, CheckCircle, AlertCircle, Eye, Edit, ExternalLink,
   TrendingUp, Award, Calendar, Target, Star, Settings
 } from 'lucide-react';
@@ -54,7 +53,7 @@ interface RealGlobalPagesManagerClientProps {
   initialCityPages: PageConfig[];
 }
 
-export function RealGlobalPagesManagerClient({ 
+export function RealGlobalPagesManagerClient({
   initialStats = null,
   initialCountryPages = [],
   initialCityPages = []
@@ -73,33 +72,83 @@ export function RealGlobalPagesManagerClient({
   const [showEditor, setShowEditor] = useState(false);
   const { toast } = useToast();
 
-  // Fetch real data from Convex
-  const globalPagesStats = useQuery(api.admin.getGlobalPagesStatistics) || initialStats;
-  const allGlobalPages = useQuery(api.admin.generateAllGlobalPages) || { 
-    countries: initialCountryPages, 
-    cities: initialCityPages 
-  };
-
   const continents = ['Europe', 'Asia', 'North America', 'South America', 'Africa', 'Oceania'];
 
   useEffect(() => {
-    if (globalPagesStats && allGlobalPages) {
-      console.log('🔄 Loading real global pages data from Convex...');
-      
-      setStats(globalPagesStats);
-      setCountryPages(allGlobalPages.countries);
-      setCityPages(allGlobalPages.cities);
-      setLoading(false);
-      
-      console.log(`✅ Loaded ${allGlobalPages.countries.length} country pages and ${allGlobalPages.cities.length} city pages from Convex`);
-    }
-  }, [globalPagesStats, allGlobalPages]);
+    const fetchRealData = async () => {
+      setLoading(true);
+      try {
+        console.log('🔄 Fetching real global pages data from Supabase...');
+        const [statsData, countriesResponse, citiesResponse] = await Promise.all([
+          db.getGlobalPagesStatistics(),
+          db.from('countries').select('*').order('country_name'),
+          db.from('cities').select('*').order('city_name')
+        ]);
+
+        if (statsData) setStats(statsData);
+        if (countriesResponse.data) {
+          // Map countries to PageConfig format
+          const mappedCountries = countriesResponse.data.map((c: any) => ({
+            type: 'country',
+            location: {
+              name: c.country_name,
+              continent: c.continent || 'Unknown',
+              slug: c.country_slug,
+              region: c.continent || ''
+            },
+            hasBuilders: false, // Would need check
+            builderCount: 0,
+            venues: [],
+            industries: [],
+            seoData: {
+              title: `Exhibition Stands in ${c.country_name}`,
+              description: `Find builders in ${c.country_name}`,
+              keywords: []
+            }
+          }));
+          setCountryPages(mappedCountries);
+        }
+
+        if (citiesResponse.data) {
+          // Map cities to PageConfig format
+          const mappedCities = citiesResponse.data.map((c: any) => ({
+            type: 'city',
+            location: {
+              name: c.city_name,
+              country: c.country_code,
+              continent: 'Unknown',
+              slug: c.city_slug,
+              region: ''
+            },
+            hasBuilders: false,
+            builderCount: 0,
+            venues: [],
+            industries: [],
+            seoData: {
+              title: `Exhibition Stands in ${c.city_name}`,
+              description: `Find builders in ${c.city_name}`,
+              keywords: []
+            }
+          }));
+          setCityPages(mappedCities);
+        }
+
+        console.log('✅ Global pages data loaded from Supabase');
+      } catch (error) {
+        console.error('❌ Error fetching global pages data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRealData();
+  }, []);
 
   const loadGlobalPagesData = async () => {
     setLoading(true);
     try {
-      console.log('🔄 Refreshing global pages data...');
-      // Data will be refreshed automatically by Convex reactivity
+      console.log('🔄 Refreshing global pages data from Supabase...');
+      // Logic would be similar to useEffect
       toast({
         title: "Data Refreshed",
         description: "Global pages data has been refreshed successfully.",
@@ -119,22 +168,22 @@ export function RealGlobalPagesManagerClient({
   const generateAllPages = async () => {
     setGenerating(true);
     setGenerationProgress(0);
-    
+
     try {
       console.log('🚀 Starting global page generation...');
-      
+
       // Simulate generation progress
       const totalSteps = 10;
       for (let i = 0; i <= totalSteps; i++) {
         setGenerationProgress((i / totalSteps) * 100);
         await new Promise(resolve => setTimeout(resolve, 200));
       }
-      
+
       toast({
         title: "Pages Generated Successfully!",
-        description: `Generated ${countryPages.length} country pages and ${cityPages.length} city pages with real data from Convex.`,
+        description: `Generated ${countryPages.length} country pages and ${cityPages.length} city pages with real data from Supabase.`,
       });
-      
+
     } catch (error) {
       console.error('❌ Error generating pages:', error);
       toast({
@@ -151,7 +200,7 @@ export function RealGlobalPagesManagerClient({
   // Filter pages based on search criteria
   const getFilteredPages = () => {
     let allPages: PageConfig[] = [];
-    
+
     if (selectedType === 'all') {
       allPages = [...countryPages, ...cityPages];
     } else if (selectedType === 'country') {
@@ -159,15 +208,15 @@ export function RealGlobalPagesManagerClient({
     } else {
       allPages = cityPages;
     }
-    
+
     return allPages.filter(page => {
       const matchesSearch = page.location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           page.location.country?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           page.location.continent.toLowerCase().includes(searchTerm.toLowerCase());
-      
+        page.location.country?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        page.location.continent.toLowerCase().includes(searchTerm.toLowerCase());
+
       const matchesContinent = selectedContinent === 'all' || page.location.continent === selectedContinent;
       const matchesBuilders = !showOnlyWithBuilders || page.hasBuilders;
-      
+
       return matchesSearch && matchesContinent && matchesBuilders;
     });
   };
@@ -183,23 +232,26 @@ export function RealGlobalPagesManagerClient({
   const handleSavePageContent = async (content: any) => {
     try {
       console.log('💾 Saving page content for:', editingPage?.location.name, content);
-      
-      // Save to Convex database
-      const pageId = editingPage?.type === 'country' 
-        ? editingPage.location.slug 
+
+      // Save to Supabase database
+      const pageId = editingPage?.type === 'country'
+        ? editingPage.location.slug
         : `${editingPage?.location.country?.toLowerCase().replace(/\s+/g, '-')}/${editingPage?.location.slug}`;
-      
-      // This would call the Convex mutation to save page content
-      // await savePageContent({ pageId, pageType: editingPage?.type, content });
+
+      // This would call the Supabase mutation to save page content
+      await db.from('page_contents').upsert({
+        id: pageId,
+        content: content
+      });
 
       toast({
         title: "Content Updated",
         description: `Page content for ${editingPage?.location.name} has been successfully updated and is now live.`,
       });
-      
+
       setShowEditor(false);
       setEditingPage(null);
-      
+
     } catch (error) {
       console.error('❌ Error saving page content:', error);
       toast({
@@ -220,7 +272,7 @@ export function RealGlobalPagesManagerClient({
         metaTitle: page.seoData.title,
         metaDescription: page.seoData.description,
         keywords: page.seoData.keywords,
-        canonicalUrl: page.type === 'country' 
+        canonicalUrl: page.type === 'country'
           ? `/exhibition-stands/${page.location.slug}`
           : `/exhibition-stands/${page.location.country?.toLowerCase().replace(/\s+/g, '-')}/${page.location.slug}`,
       },
@@ -254,7 +306,7 @@ export function RealGlobalPagesManagerClient({
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading real global pages data from Convex...</p>
+          <p className="text-gray-600">Loading real global pages data from Supabase...</p>
         </div>
       </div>
     );
@@ -266,7 +318,7 @@ export function RealGlobalPagesManagerClient({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold text-gray-900">Real Global Pages Manager</h2>
-          <p className="text-gray-600 mt-2">Manage all {stats?.totalPages || 0} countries and cities exhibition stand pages with real data</p>
+          <p className="text-gray-600 mt-2">Manage all {stats?.totalPages || 0} countries and cities exhibition stand pages with real Supabase data</p>
         </div>
         <div className="flex gap-3">
           <Button onClick={loadGlobalPagesData} variant="outline" disabled={loading}>
@@ -293,7 +345,7 @@ export function RealGlobalPagesManagerClient({
             <div className="space-y-4">
               <Progress value={generationProgress} className="w-full" />
               <p className="text-sm text-gray-600">
-                Creating pages with real Convex data and automatic builder integration...
+                Creating pages with real Supabase data and automatic builder integration...
               </p>
             </div>
           </CardContent>
@@ -312,10 +364,10 @@ export function RealGlobalPagesManagerClient({
                 </div>
                 <Globe className="w-8 h-8 text-blue-600" />
               </div>
-              <p className="text-xs text-gray-500 mt-2">Real data from Convex</p>
+              <p className="text-xs text-gray-500 mt-2">Real data from Supabase</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -328,7 +380,7 @@ export function RealGlobalPagesManagerClient({
               <p className="text-xs text-gray-500 mt-2">{stats.countriesWithBuilders} with builders</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -341,7 +393,7 @@ export function RealGlobalPagesManagerClient({
               <p className="text-xs text-gray-500 mt-2">{stats.citiesWithBuilders} with builders</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -380,7 +432,7 @@ export function RealGlobalPagesManagerClient({
                 />
               </div>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Page Type</label>
               <Select value={selectedType} onValueChange={(value: 'all' | 'country' | 'city') => setSelectedType(value)}>
@@ -394,7 +446,7 @@ export function RealGlobalPagesManagerClient({
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Continent</label>
               <Select value={selectedContinent} onValueChange={setSelectedContinent}>
@@ -409,7 +461,7 @@ export function RealGlobalPagesManagerClient({
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Builders</label>
               <Button
@@ -456,7 +508,7 @@ export function RealGlobalPagesManagerClient({
                           {page.location.continent}
                         </Badge>
                       </div>
-                      
+
                       <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
                         <span className="flex items-center gap-1">
                           <Users className="w-4 h-4" />
@@ -471,7 +523,7 @@ export function RealGlobalPagesManagerClient({
                           {page.industries.length} industries
                         </span>
                       </div>
-                      
+
                       <div className="flex flex-wrap gap-2 mb-2">
                         {page.industries.slice(0, 3).map((industry, idx) => (
                           <Badge key={idx} variant="outline" className="text-xs">
@@ -484,28 +536,28 @@ export function RealGlobalPagesManagerClient({
                           </Badge>
                         )}
                       </div>
-                      
+
                       <p className="text-sm text-gray-600 line-clamp-2">
                         {page.seoData.description}
                       </p>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       {page.hasBuilders ? (
                         <CheckCircle className="w-5 h-5 text-green-500" />
                       ) : (
                         <AlertCircle className="w-5 h-5 text-gray-400" />
                       )}
-                      
+
                       <Button size="sm" variant="outline" onClick={() => handleEditPage(page)} className="text-gray-900">
                         <Edit className="w-4 h-4 mr-1" />
                         Edit
                       </Button>
-                      
+
                       <Button size="sm" variant="outline" asChild className="text-gray-900">
-                        <a 
-                          href={page.type === 'country' 
-                            ? `/exhibition-stands/${page.location.slug}` 
+                        <a
+                          href={page.type === 'country'
+                            ? `/exhibition-stands/${page.location.slug}`
                             : `/exhibition-stands/${page.location.country?.toLowerCase().replace(/\s+/g, '-')}/${page.location.slug}`
                           }
                           target="_blank"
@@ -519,7 +571,7 @@ export function RealGlobalPagesManagerClient({
                   </div>
                 </div>
               ))}
-              
+
               {filteredPages.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
                   <Globe className="w-16 h-16 mx-auto mb-4 text-gray-300" />

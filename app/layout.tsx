@@ -9,7 +9,6 @@ import CriticalResourcePreloader from '@/components/CriticalResourcePreloader';
 import DeferredAnalytics from '@/components/DeferredAnalytics';
 import DeferredMonitoring from '@/components/DeferredMonitoring';
 import NonCriticalScripts from '@/components/NonCriticalScripts';
-import { ConvexClientProvider } from '@/components/ConvexProvider';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import AppWrapper from '@/components/AppWrapper';
 // GlobalTypography temporarily disabled due to dev chunk issue
@@ -180,17 +179,15 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} ${poppins.className} ${roboto.variable} ${montserrat.variable} ${redHatDisplay.variable} h-full m-0 p-0`} suppressHydrationWarning>
         <ThemeProvider>
-          <ConvexClientProvider>
-            <CriticalResourcePreloader />
-            {/* <GlobalTypography /> */}
-            <AppWrapper>
-              {children}
-            </AppWrapper>
-            <Toaster />
-            <DeferredAnalytics />
-            <DeferredMonitoring />
-            <NonCriticalScripts />
-          </ConvexClientProvider>
+          <CriticalResourcePreloader />
+          {/* <GlobalTypography /> */}
+          <AppWrapper>
+            {children}
+          </AppWrapper>
+          <Toaster />
+          <DeferredAnalytics />
+          <DeferredMonitoring />
+          <NonCriticalScripts />
         </ThemeProvider>
       </body>
     </html>

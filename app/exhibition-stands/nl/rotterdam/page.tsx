@@ -1,6 +1,4 @@
 import { Metadata } from 'next';
-import { preloadQuery } from "convex/nextjs";
-import { api } from "@/convex/_generated/api";
 import CountryCityPage from '@/components/CountryCityPage';
 import ServerPageWithBreadcrumbs from '@/components/ServerPageWithBreadcrumbs';
 

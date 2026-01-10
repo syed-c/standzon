@@ -12,10 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { useQuery } from "convex/react";
-// @ts-ignore - Convex API types not available
-import { api } from "@/convex/_generated/api";
-import { 
+import { db } from '@/lib/supabase/database';
+import {
   Plus, Edit, Trash2, Save, X, Search, Filter, MoreVertical,
   Globe, Building, MapPin, Calendar, Users, Award, TrendingUp,
   BarChart3, PieChart, Activity, RefreshCw, Download, Upload,
@@ -59,7 +57,7 @@ interface RealSuperAdminLocationManagerClientProps {
   initialLocationStats: LocationStats | null;
 }
 
-export function RealSuperAdminLocationManagerClient({ 
+export function RealSuperAdminLocationManagerClient({
   initialCountries = [],
   initialCities = [],
   initialLocationStats = null
@@ -72,13 +70,10 @@ export function RealSuperAdminLocationManagerClient({
   const [editType, setEditType] = useState<'country' | 'city' | null>(null);
   const { toast } = useToast();
 
-  // Fetch real data from Convex
-  // @ts-ignore - Convex API types not available
-  const countries = useQuery(api.admin.getAllCountries) || initialCountries;
-  // @ts-ignore - Convex API types not available
-  const cities = useQuery(api.admin.getAllCities) || initialCities;
-  // @ts-ignore - Convex API types not available
-  const locationStats = useQuery(api.locations.getLocationStats) || initialLocationStats;
+  // Data state
+  const [countries, setCountries] = useState<Country[]>(initialCountries);
+  const [cities, setCities] = useState<City[]>(initialCities);
+  const [loading, setLoading] = useState(false);
 
   // Calculate statistics from real data
   const [stats, setStats] = useState<LocationStats>({
@@ -93,40 +88,59 @@ export function RealSuperAdminLocationManagerClient({
   });
 
   useEffect(() => {
-    if (locationStats) {
-      console.log('📊 Loading real location statistics from Convex...');
-      setStats({
-        totalCountries: locationStats.totalCountries,
-        totalCities: locationStats.totalCities,
-        totalBuilders: locationStats.totalBuilders,
-        totalEvents: locationStats.totalTradeShows,
-        activeCountries: locationStats.activeCountries,
-        activeCities: locationStats.activeCities,
-        verifiedBuilders: locationStats.verifiedBuilders,
-        claimedBuilders: locationStats.claimedBuilders
-      });
-      console.log('✅ Real location statistics loaded');
-    }
-  }, [locationStats]);
+    const fetchRealData = async () => {
+      setLoading(true);
+      try {
+        console.log('📊 Fetching real location data from Supabase...');
+        const [countriesData, citiesData, statsData] = await Promise.all([
+          db.from('countries').select('*').order('country_name'),
+          db.from('cities').select('*').order('city_name'),
+          db.getLocationStats()
+        ]);
+
+        if (countriesData.data) setCountries(countriesData.data);
+        if (citiesData.data) setCities(citiesData.data);
+        if (statsData) {
+          setStats({
+            totalCountries: statsData.totalCountries,
+            totalCities: statsData.totalCities,
+            totalBuilders: statsData.totalBuilders,
+            totalEvents: statsData.totalTradeShows,
+            activeCountries: statsData.activeCountries,
+            activeCities: statsData.activeCities,
+            verifiedBuilders: statsData.verifiedBuilders,
+            claimedBuilders: statsData.claimedBuilders
+          });
+        }
+        console.log('✅ Real location data loaded from Supabase');
+      } catch (error) {
+        console.error('❌ Error fetching data from Supabase:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRealData();
+  }, []);
 
   // Filter data based on search and continent
   const filteredCountries = countries?.filter((country: Country) => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       country.countryName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       country.continent?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesContinent = !selectedContinent || country.continent === selectedContinent;
-    
+
     return matchesSearch && matchesContinent;
   }) || [];
 
   const filteredCities = cities?.filter((city: City) => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       city.cityName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       city.countryName.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesContinent = !selectedContinent; // We'd need to map cities to continents
-    
+
     return matchesSearch && matchesContinent;
   }) || [];
 
@@ -166,26 +180,26 @@ export function RealSuperAdminLocationManagerClient({
       stats: stats,
       exportedAt: new Date().toISOString()
     };
-    
+
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `real-location-data-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
-    
+
     toast({
       title: "Data Exported",
       description: "Real location data has been exported successfully.",
     });
   };
 
-  if (!countries || !cities || !locationStats) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading real location data from Convex...</p>
+          <p className="text-gray-600">Loading real location data from Supabase...</p>
         </div>
       </div>
     );
@@ -197,7 +211,7 @@ export function RealSuperAdminLocationManagerClient({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Real Global Location Manager</h1>
-          <p className="text-gray-600">Manage countries, cities, and exhibition destinations with real Convex data</p>
+          <p className="text-gray-600">Manage countries, cities, and exhibition destinations with real Supabase data</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={exportData}>
@@ -329,7 +343,7 @@ export function RealSuperAdminLocationManagerClient({
             <CardHeader>
               <CardTitle>Countries Management</CardTitle>
               <CardDescription>
-                Manage exhibition countries with real data from Convex database
+                Manage exhibition countries with real data from Supabase database
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -368,15 +382,15 @@ export function RealSuperAdminLocationManagerClient({
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleEdit(country, 'country')}
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleDelete(country, 'country')}
                           >
@@ -398,7 +412,7 @@ export function RealSuperAdminLocationManagerClient({
             <CardHeader>
               <CardTitle>Cities Management</CardTitle>
               <CardDescription>
-                Manage exhibition cities with real data from Convex database
+                Manage exhibition cities with real data from Supabase database
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -435,15 +449,15 @@ export function RealSuperAdminLocationManagerClient({
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleEdit(city, 'city')}
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleDelete(city, 'city')}
                           >
@@ -466,7 +480,7 @@ export function RealSuperAdminLocationManagerClient({
             <Card>
               <CardHeader>
                 <CardTitle>Database Statistics</CardTitle>
-                <CardDescription>Real-time data from Convex database</CardDescription>
+                <CardDescription>Real-time data from Supabase database</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -575,18 +589,18 @@ export function RealSuperAdminLocationManagerClient({
               Edit {editType === 'country' ? 'Country' : 'City'}: {editingItem?.countryName || editingItem?.cityName}
             </DialogTitle>
             <DialogDescription>
-              Modify location information in the Convex database
+              Modify location information in the Supabase database
             </DialogDescription>
           </DialogHeader>
-          
+
           {editingItem && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="edit-name">Name</Label>
-                  <Input 
-                    id="edit-name" 
-                    value={editingItem.countryName || editingItem.cityName} 
+                  <Input
+                    id="edit-name"
+                    value={editingItem.countryName || editingItem.cityName}
                   />
                 </div>
                 {editType === 'country' && (
@@ -596,7 +610,7 @@ export function RealSuperAdminLocationManagerClient({
                   </div>
                 )}
               </div>
-              
+
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
                   Cancel
