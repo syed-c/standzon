@@ -12,6 +12,11 @@
     "debug:builder-flow": "node scripts/debug-builder-flow.js",
     "generate:sitemap": "node scripts/generate-full-sitemap.js"
   },
+  "browserslist": [
+    "defaults",
+    "not ie 11",
+    "not chrome < 90"
+  ],
   "dependencies": {
     "@floating-ui/core": "^1.7.3",
     "@floating-ui/dom": "^1.7.3",

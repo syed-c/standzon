@@ -27,11 +27,16 @@ export default function Navigation() {
 
   useEffect(() => {
     console.log("Navigation: Setting up scroll listener");
+    console.log("Navigation: Setting up scroll listener");
     const handleScroll = () => {
-      // Throttle scroll updates to standard refresh rate (approx 60fps)
-      if (window.scrollY > 10 !== isScrolled) {
-        setIsScrolled(window.scrollY > 10);
-      }
+      // Optimize: Use requestAnimationFrame to prevent forced reflows
+      // by decoupling the read (window.scrollY) from the write (setState)
+      requestAnimationFrame(() => {
+        const isScrolledDown = window.scrollY > 10;
+        if (isScrolledDown !== isScrolled) {
+          setIsScrolled(isScrolledDown);
+        }
+      });
     };
 
     // Check for logged in user

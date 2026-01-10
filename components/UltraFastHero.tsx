@@ -44,7 +44,6 @@ export default function UltraFastHero({
             alt="Exhibition Stand Builder"
             fill
             priority
-            fetchPriority="high"
             decoding="async"
             className="object-cover"
             style={{ opacity: Math.max(0, Math.min(1, bgOpacity)) }}
