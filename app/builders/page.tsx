@@ -16,7 +16,13 @@ export const metadata: Metadata = siteMetadata['/builders'] || {
   },
 };
 
+import { Suspense } from 'react';
+
 // Server component shell that renders the client component
 export default function BuildersPage() {
-  return <BuildersDirectoryContent />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center">Loading builders...</div>}>
+      <BuildersDirectoryContent />
+    </Suspense>
+  );
 }

@@ -121,12 +121,12 @@ export function mapTradeShowDBToExhibition(dbData: TradeShowDB): Exhibition {
         },
         organizer: {
             name: tradeShow.organizerName,
-            email: tradeShow.organizerContact || 'info@organizer.com',
+            email: 'info@organizer.com',
             phone: '+1-555-0123',
             website: tradeShow.website,
             headquarters: tradeShow.city,
             establishedYear: 2000,
-            rating: tradeShow.previousEditionStats?.feedback || 4.2,
+            rating: Number(dbData.organizer_rating) || 4.2,
             otherEvents: []
         },
         industry: tradeShow.industries[0] || { id: 'general', name: 'General', slug: 'general', description: '', subcategories: [], color: '', icon: '', annualGrowthRate: 0, averageBoothCost: 0, popularCountries: [] },
@@ -144,28 +144,28 @@ export function mapTradeShowDBToExhibition(dbData: TradeShowDB): Exhibition {
         pricing: {
             currency: tradeShow.costs.standRental.currency,
             standardBooth: {
-                min: tradeShow.costs.standRental.min,
-                max: tradeShow.costs.standRental.max,
-                currency: tradeShow.costs.standRental.currency,
-                unit: tradeShow.costs.standRental.unit
+                min: Number(dbData.booth_pricing_min) || 0,
+                max: Number(dbData.booth_pricing_max) || 0,
+                currency: dbData.booth_pricing_currency || "USD",
+                unit: "sqm"
             },
             premiumBooth: {
-                min: Math.round(tradeShow.costs.standRental.max * 1.5),
-                max: Math.round(tradeShow.costs.standRental.max * 2),
-                currency: tradeShow.costs.standRental.currency,
-                unit: tradeShow.costs.standRental.unit
+                min: Math.round((Number(dbData.booth_pricing_max) || 0) * 1.5),
+                max: Math.round((Number(dbData.booth_pricing_max) || 0) * 2),
+                currency: dbData.booth_pricing_currency || "USD",
+                unit: "sqm"
             },
             cornerBooth: {
-                min: Math.round(tradeShow.costs.standRental.max * 1.2),
-                max: Math.round(tradeShow.costs.standRental.max * 1.8),
-                currency: tradeShow.costs.standRental.currency,
-                unit: tradeShow.costs.standRental.unit
+                min: Math.round((Number(dbData.booth_pricing_max) || 0) * 1.2),
+                max: Math.round((Number(dbData.booth_pricing_max) || 0) * 1.8),
+                currency: dbData.booth_pricing_currency || "USD",
+                unit: "sqm"
             },
             islandBooth: {
-                min: Math.round(tradeShow.costs.standRental.max * 2),
-                max: Math.round(tradeShow.costs.standRental.max * 3),
-                currency: tradeShow.costs.standRental.currency,
-                unit: tradeShow.costs.standRental.unit
+                min: Math.round((Number(dbData.booth_pricing_max) || 0) * 2),
+                max: Math.round((Number(dbData.booth_pricing_max) || 0) * 3),
+                currency: dbData.booth_pricing_currency || "USD",
+                unit: "sqm"
             },
             shellScheme: true,
             spaceOnly: true,
@@ -181,24 +181,24 @@ export function mapTradeShowDBToExhibition(dbData: TradeShowDB): Exhibition {
             },
             exhibitorRegistration: {
                 opens: tradeShow.startDate,
-                closes: tradeShow.startDate,
-                fee: 500,
-                currency: tradeShow.costs.standRental.currency,
+                closes: dbData.exhibitor_registration_deadline || tradeShow.startDate,
+                fee: 0,
+                currency: dbData.booth_pricing_currency || 'USD',
                 requirements: ['Valid Business License', 'Insurance Coverage']
             },
             deadlines: {
                 earlyBird: tradeShow.startDate,
-                final: tradeShow.startDate,
+                final: dbData.exhibitor_registration_deadline || tradeShow.startDate,
                 onSite: true
             }
         },
         sustainability: {
-            carbonNeutral: dbData.sustainability?.includes('Carbon Neutral') || true,
-            wasteReduction: dbData.sustainability?.includes('Waste Reduction') || true,
-            digitalFirst: dbData.sustainability?.includes('Digital First') || true,
-            sustainableCatering: dbData.sustainability?.includes('Sustainable Catering') || true,
-            publicTransportIncentives: dbData.sustainability?.includes('Public Transport') || true,
-            environmentalGoals: dbData.environmental_goals || ['Carbon Neutral', 'Zero Waste'],
+            carbonNeutral: dbData.sustainability?.some(s => s.toLowerCase().includes('carbon neutral')) || false,
+            wasteReduction: dbData.sustainability?.some(s => s.toLowerCase().includes('waste')) || false,
+            digitalFirst: dbData.sustainability?.some(s => s.toLowerCase().includes('digital')) || false,
+            sustainableCatering: dbData.sustainability?.some(s => s.toLowerCase().includes('catering')) || false,
+            publicTransportIncentives: dbData.sustainability?.some(s => s.toLowerCase().includes('transport')) || false,
+            environmentalGoals: dbData.environmental_goals || [],
             greenCertifications: ['LEED Certified', 'ISO 14001']
         },
         networkingOpportunities: tradeShow.networkingOpportunities || [],

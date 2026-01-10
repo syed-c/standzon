@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 const TradeStyleBanner = dynamic(() => import("@/components/TradeStyleBanner"), {
   loading: () => <div className="h-48 bg-slate-100 animate-pulse rounded-xl" />,
@@ -141,7 +142,11 @@ interface BuilderTransformed {
 }
 
 export default function BuildersDirectoryContent() {
-  console.log("🚀 Builders Directory: Page loaded, initializing");
+  const searchParams = useSearchParams();
+  const initialCountry = searchParams?.get('country') || "all";
+  const initialCity = searchParams?.get('city') || "all";
+
+  console.log("🚀 Builders Directory: Page loaded, initial filters:", { initialCountry, initialCity });
 
   const [saved, setSaved] = useState<any>(null);
   useEffect(() => {
@@ -487,8 +492,8 @@ export default function BuildersDirectoryContent() {
 
   // Filters and sorting states
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState("all");
-  const [selectedCity, setSelectedCity] = useState("all");
+  const [selectedCountry, setSelectedCountry] = useState(initialCountry);
+  const [selectedCity, setSelectedCity] = useState(initialCity);
   const [minRating, setMinRating] = useState([0]);
   const [showFilters, setShowFilters] = useState(true);
   const [sortBy, setSortBy] = useState("rating");
