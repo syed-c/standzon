@@ -267,10 +267,23 @@ body {
 /* ✅ MOBILE POLISH: Button text safety */
 button {
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  /* legacy support */
+  white-space: normal;
+  /* Allow text to wrap on small screens */
+  min-height: 44px;
+  /* Ensure touch target size */
+  height: auto;
+  line-height: 1.25;
+  /* Better line height for wrapped text */
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Optional: Single line for very specific icon-only buttons if needed */
+button.icon-only {
   white-space: nowrap;
-  /* Default to single line */
 }
 
 /* Allow multiline for larger buttons if needed */

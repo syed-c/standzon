@@ -1,6 +1,6 @@
 import React from 'react';
 import { generateBreadcrumbs } from '@/lib/utils/breadcrumbUtils';
-import StaticNavigationHeader from '@/components/StaticNavigationHeader';
+// import StaticNavigationHeader from '@/components/StaticNavigationHeader'; // Removed for consolidation
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import ClientNavigationWrapper from '@/components/ClientNavigationWrapper';
@@ -17,12 +17,11 @@ export default function ServerGlobalLayoutProvider({ children, pathname }: Serve
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Render static header on the server */}
-      <StaticNavigationHeader />
-      
+      {/* Static header removed to prevent double-header issue. Using ClientNavigationWrapper for consistent unified header. */}
+
       {/* Dynamic parts handled by client component */}
       <ClientNavigationWrapper pathname={pathname} showBreadcrumbs={showBreadcrumbs} breadcrumbs={breadcrumbs} />
-      
+
       <main className="flex-grow">
         {children}
       </main>

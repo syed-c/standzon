@@ -104,7 +104,7 @@ export default function Footer() {
     <footer className="bg-gray-900 text-white w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Main Footer Content */}
-        <div className="py-12 md:py-16 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 gap-y-10 w-full">
+        <div className="py-12 md:py-16 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 gap-y-12 w-full">
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="mb-4">

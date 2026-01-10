@@ -90,10 +90,10 @@ export default function UltraFastHero({
 
             {/* Stats */}
             {stats.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
                 {stats.map((stat, index) => (
                   <div key={index} className="text-center">
-                    <div className="text-3xl md:text-4xl font-bold text-white mb-2">
+                    <div className="text-3xl md:text-3xl lg:text-4xl font-bold text-white mb-2">
                       {stat.value}
                     </div>
                     <div className="text-blue-100 text-sm md:text-base">
