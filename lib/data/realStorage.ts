@@ -39,9 +39,9 @@ class PlatformDataStorage {
           position: 'Contact Manager'
         },
         services: [
-          { 
-            id: 'custom-design', 
-            name: 'Custom Design', 
+          {
+            id: 'custom-design',
+            name: 'Custom Design',
             category: 'Design',
             description: 'Custom exhibition stand design',
             priceFrom: 5000,
@@ -50,9 +50,9 @@ class PlatformDataStorage {
             popular: true,
             turnoverTime: '4-6 weeks'
           },
-          { 
-            id: 'modular-systems', 
-            name: 'Modular Systems', 
+          {
+            id: 'modular-systems',
+            name: 'Modular Systems',
             category: 'Construction',
             description: 'Modular exhibition systems',
             priceFrom: 3000,
@@ -70,7 +70,7 @@ class PlatformDataStorage {
         portfolio: [
           {
             id: 'project-001',
-            projectName: 'CeBIT 2024 Tech Pavilion',
+            projectName: 'CeBIT 2026 Tech Pavilion',
             tradeShow: 'CeBIT 2024',
             year: 2024,
             city: 'Hannover',
@@ -187,7 +187,7 @@ class PlatformDataStorage {
 
     builders.forEach(builder => {
       // Check for duplicates by email
-      const existingBuilder = this.builders.find(b => 
+      const existingBuilder = this.builders.find(b =>
         b.contactInfo.primaryEmail.toLowerCase() === builder.contactInfo.primaryEmail.toLowerCase()
       );
 
@@ -243,7 +243,7 @@ class PlatformDataStorage {
       if (filters.country && builder.headquarters.country !== filters.country) return false;
       if (filters.city && !builder.serviceLocations.some(loc => loc.city === filters.city)) return false;
       if (filters.verified !== undefined && builder.verified !== filters.verified) return false;
-      if (filters.serviceType && !builder.services.some(service => 
+      if (filters.serviceType && !builder.services.some(service =>
         service.name.toLowerCase().includes(filters.serviceType!.toLowerCase())
       )) return false;
       return true;
@@ -272,7 +272,7 @@ class PlatformDataStorage {
       timestamp: string;
       status: 'success' | 'info' | 'warning';
     }> = [];
-    
+
     // Recent builder additions
     const recentBuilders = this.builders.slice(-3);
     recentBuilders.forEach(builder => {
@@ -307,18 +307,18 @@ export const realStorageAPI = {
   getBuilderById: (id: string) => getStorageInstance().getBuilderById(id),
   updateBuilder: (id: string, updates: Partial<ExhibitionBuilder>) => getStorageInstance().updateBuilder(id, updates),
   deleteBuilder: (id: string) => getStorageInstance().deleteBuilder(id),
-  
+
   // Bulk operations
   addBuilders: (builders: ExhibitionBuilder[]) => getStorageInstance().addBuilders(builders),
-  
+
   // Search and filter
   searchBuilders: (query: string) => getStorageInstance().searchBuilders(query),
   filterBuilders: (filters: any) => getStorageInstance().filterBuilders(filters),
-  
+
   // Statistics
   getStats: () => getStorageInstance().getStats(),
   getRecentActivity: () => getStorageInstance().getRecentActivity(),
-  
+
   // Utility
   clearAll: () => getStorageInstance().clearAll()
 };

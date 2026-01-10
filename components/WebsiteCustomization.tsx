@@ -8,15 +8,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Monitor, 
-  Smartphone, 
-  Save, 
-  Eye, 
-  Edit3, 
-  Palette, 
-  Type, 
-  Image, 
+import {
+  Monitor,
+  Smartphone,
+  Save,
+  Eye,
+  Edit3,
+  Palette,
+  Type,
+  Image,
   Link,
   RefreshCw,
   Plus,
@@ -178,7 +178,7 @@ export default function WebsiteCustomization({ onSave }: WebsiteCustomizationPro
           instagram: '#',
           facebook: '#'
         },
-        copyright: '© 2024 ExhibitBay. All rights reserved.',
+        copyright: '© 2026 ExhibitBay. All rights reserved.',
         backgroundColor: '#1a202c',
         textColor: '#ffffff'
       },
@@ -189,13 +189,13 @@ export default function WebsiteCustomization({ onSave }: WebsiteCustomizationPro
   console.log('WebsiteCustomization: Component loaded');
 
   const handleSectionUpdate = (sectionId: string, field: string, value: any) => {
-    setSections(prev => prev.map(section => 
-      section.id === sectionId 
-        ? { 
-            ...section, 
-            content: { ...section.content, [field]: value },
-            lastModified: new Date().toISOString()
-          }
+    setSections(prev => prev.map(section =>
+      section.id === sectionId
+        ? {
+          ...section,
+          content: { ...section.content, [field]: value },
+          lastModified: new Date().toISOString()
+        }
         : section
     ));
   };
@@ -203,15 +203,15 @@ export default function WebsiteCustomization({ onSave }: WebsiteCustomizationPro
   const handleNestedUpdate = (sectionId: string, path: string[], value: any) => {
     setSections(prev => prev.map(section => {
       if (section.id !== sectionId) return section;
-      
+
       const newContent = { ...section.content };
       let current = newContent;
-      
+
       for (let i = 0; i < path.length - 1; i++) {
         current = current[path[i]];
       }
       current[path[path.length - 1]] = value;
-      
+
       return {
         ...section,
         content: newContent,
@@ -221,8 +221,8 @@ export default function WebsiteCustomization({ onSave }: WebsiteCustomizationPro
   };
 
   const toggleSection = (sectionId: string) => {
-    setSections(prev => prev.map(section => 
-      section.id === sectionId 
+    setSections(prev => prev.map(section =>
+      section.id === sectionId
         ? { ...section, isEnabled: !section.isEnabled }
         : section
     ));
@@ -231,7 +231,7 @@ export default function WebsiteCustomization({ onSave }: WebsiteCustomizationPro
   const saveChanges = async () => {
     setIsSaving(true);
     console.log('Saving website customization changes:', sections);
-    
+
     try {
       await onSave(sections);
       console.log('Changes saved successfully');
@@ -273,7 +273,7 @@ export default function WebsiteCustomization({ onSave }: WebsiteCustomizationPro
               Mobile
             </Button>
           </div>
-          
+
           <Button
             variant="outline"
             onClick={() => setIsPreviewMode(!isPreviewMode)}
@@ -281,7 +281,7 @@ export default function WebsiteCustomization({ onSave }: WebsiteCustomizationPro
             <Eye className="h-4 w-4 mr-2" />
             {isPreviewMode ? 'Edit Mode' : 'Preview Mode'}
           </Button>
-          
+
           <Button
             onClick={saveChanges}
             disabled={isSaving}
@@ -319,11 +319,10 @@ export default function WebsiteCustomization({ onSave }: WebsiteCustomizationPro
               {sections.map((section) => (
                 <div
                   key={section.id}
-                  className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                    activeSection === section.id
+                  className={`p-3 rounded-lg border cursor-pointer transition-all ${activeSection === section.id
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                    }`}
                   onClick={() => setActiveSection(section.id)}
                 >
                   <div className="flex items-center justify-between">

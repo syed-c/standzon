@@ -198,7 +198,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
               <p className="text-gray-400 text-sm text-center md:text-left">
-                {footerData?.bottom?.copyright || `© 2024 ${siteData.companyName || fallbackData.companyName}. All rights reserved.`}
+                {footerData?.bottom?.copyright || `© 2026 ${siteData.companyName || fallbackData.companyName}. All rights reserved.`}
               </p>
               <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6 text-sm">
                 {(footerData?.bottom?.links || [
