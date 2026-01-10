@@ -9,21 +9,21 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-[#3C4A6B] text-[#FFFFFF] hover:bg-[#55689A] shadow-lg hover:shadow-xl active:bg-[#55689A] active:scale-[0.98]',
+        default: 'bg-[#FFFFFF] text-[#000000] border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm hover:shadow-md active:bg-[#F1F5F9] active:scale-[0.98]',
         destructive:
-          'bg-[#FF5C5C] text-[#FFFFFF] hover:bg-[#FF7070] shadow-lg hover:shadow-xl active:bg-[#FF7070] active:scale-[0.98]',
+          'bg-[#FFFFFF] text-[#EF4444] border border-[#EF4444] hover:bg-[#FEF2F2] shadow-sm hover:shadow-md active:bg-[#FEE2E2] active:scale-[0.98]',
         outline:
-          'border-2 border-[rgba(255,255,255,0.25)] bg-[#29344D] text-[#FFFFFF] hover:bg-[#3C4A6B] hover:text-[#FFFFFF] hover:border-[rgba(255,255,255,0.5)] shadow-md hover:shadow-lg active:bg-[#3C4A6B] active:scale-[0.98]',
+          'border-2 border-[#E2E8F0] bg-[#FFFFFF] text-[#000000] hover:bg-[#F8FAFC] hover:text-[#000000] hover:border-[#CBD5E1] shadow-sm hover:shadow-md active:bg-[#F1F5F9] active:scale-[0.98]',
         secondary:
-          'bg-[#29344D] text-[#FFFFFF] hover:bg-[#3C4A6B] shadow-md hover:shadow-lg active:bg-[#3C4A6B] active:scale-[0.98]',
-        ghost: 'text-[#000000] hover:bg-[#29344D] hover:text-[#000000] active:bg-[#29344D] active:scale-[0.98]',
-        link: 'text-[#000000] underline-offset-4 hover:text-[#000000] active:text-[#000000] active:scale-[0.98]',
+          'bg-[#FFFFFF] text-[#000000] border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm hover:shadow-md active:bg-[#F1F5F9] active:scale-[0.98]',
+        ghost: 'text-[#000000] hover:bg-[#F8FAFC] hover:text-[#000000] active:bg-[#F1F5F9] active:scale-[0.98]',
+        link: 'text-[#000000] underline-offset-4 hover:text-[#000000] opacity-80 hover:opacity-100 active:scale-[0.98]',
       },
       size: {
         default: 'h-10 px-4 py-2 min-h-[44px]',
         sm: 'h-9 rounded-lg px-3 min-h-[40px] text-xs',
         lg: 'h-11 rounded-xl px-8 min-h-[48px]',
-        icon: 'h-10 w-10 min-h-[44px] min-w-[44px] text-[#000000] color-[#000000]',
+        icon: 'h-10 w-10 min-h-[44px] min-w-[44px] text-[#000000]',
       },
     },
     defaultVariants: {
