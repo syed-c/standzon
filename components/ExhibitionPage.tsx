@@ -300,7 +300,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-2 border-b pb-1">Venue Facilities</h4>
+                      <h3 className="font-semibold text-gray-900 mb-2 border-b pb-1 text-lg">Venue Facilities</h3>
                       <div className="space-y-1">
                         {exhibition.venue.facilities.map((facility: string, index: number) => (
                           <div key={index} className="flex items-center space-x-2">
@@ -312,7 +312,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
                     </div>
 
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-2 border-b pb-1">Transportation</h4>
+                      <h3 className="font-semibold text-gray-900 mb-2 border-b pb-1 text-lg">Transportation</h3>
                       <div className="space-y-1">
                         {exhibition.venue.publicTransport.map((transport: string, index: number) => (
                           <div key={index} className="flex items-center space-x-2">
@@ -377,7 +377,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Leaf className="h-5 w-5" />
-                  <h3 className="text-xl font-bold">Sustainability</h3>
+                  <h2 className="text-2xl font-bold">Sustainability</h2>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -431,7 +431,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
 
                 {exhibition.sustainability.environmentalGoals && exhibition.sustainability.environmentalGoals.length > 0 && (
                   <div className="mt-4">
-                    <h4 className="font-semibold text-gray-900 mb-2 border-b pb-1">Environmental Goals</h4>
+                    <h3 className="font-semibold text-gray-900 mb-2 border-b pb-1 text-lg">Environmental Goals</h3>
                     <div className="flex flex-wrap gap-2">
                       {exhibition.sustainability.environmentalGoals.map((goal: string, index: number) => (
                         <Badge key={index} variant="secondary" className="text-xs pointer-events-none hover:bg-secondary">
@@ -449,7 +449,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Award className="h-5 w-5" />
-                  <h3 className="text-xl font-bold">Recommended Vendors</h3>
+                  <h2 className="text-2xl font-bold">Recommended Vendors</h2>
                 </CardTitle>
                 <CardDescription>
                   Experienced booth builders and event planners for this exhibition
