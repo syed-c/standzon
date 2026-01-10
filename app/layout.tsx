@@ -15,7 +15,7 @@ import AppWrapper from '@/components/AppWrapper';
 // GlobalTypography temporarily disabled due to dev chunk issue
 
 // Font optimization: Reduce font weights and enable swap
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
   display: 'optional', // Use optional for better performance
   preload: true,
@@ -88,48 +88,48 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth h-full m-0 p-0" suppressHydrationWarning>
-        <head>
-          {/* ✅ FAVICON: Add favicon */}
-          <link rel="icon" type="image/png" href="/favicon.png" />
-          
-          {/* ✅ PWA: Add manifest for installable app */}
-          <link rel="manifest" href="/manifest.json" />
-          
-          {/* ✅ PWA: Add theme color for mobile browsers */}
-          <meta name="theme-color" content="#1e40af" />
-          
-          {/* ✅ PWA: Add mobile-web-app-capable meta tag */}
-          <meta name="mobile-web-app-capable" content="yes" />
-          
-          {/* ✅ PWA: Add apple mobile web app meta tags */}
-          <meta name="apple-mobile-web-app-title" content="StandsZone" />
-          <meta name="apple-mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-          
-          {/* ✅ RESPONSIVE: Add viewport meta tag for responsive design */}
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-          
-          {/* ✅ SEO: Add robots meta tag */}
-          <meta name="robots" content="index, follow, max-image-preview:large, max-video-preview:-1, max-snippet:-1" />
-          
-          {/* ✅ PERFORMANCE: Critical resource optimization */}
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-          <link rel="preconnect" href="https://api.mapbox.com" />
-          <link rel="dns-prefetch" href="//vercel.live" />
-          <link rel="dns-prefetch" href="//vitals.vercel-insights.com" />
-          <link rel="dns-prefetch" href="//www.google-analytics.com" />
-          
-          {/* ✅ PERFORMANCE: Preload critical resources */}
-          <link rel="preload" as="font" href="/fonts/inter-var.woff2" type="font/woff2" crossOrigin="anonymous" />
-          
-          {/* ✅ PERFORMANCE: Preload hero background images for faster LCP */}
-          <link rel="prefetch" href="/api/hero-images" />
-          <link rel="preload" as="image" href="/images/hero-bg-default.webp" />
-          
-          {/* ✅ PERFORMANCE: Critical CSS for hero section */}
-          <style>{`
+      <head>
+        {/* ✅ FAVICON: Add favicon */}
+        <link rel="icon" type="image/png" href="/favicon.png" />
+
+        {/* ✅ PWA: Add manifest for installable app */}
+        <link rel="manifest" href="/manifest.json" />
+
+        {/* ✅ PWA: Add theme color for mobile browsers */}
+        <meta name="theme-color" content="#1e40af" />
+
+        {/* ✅ PWA: Add mobile-web-app-capable meta tag */}
+        <meta name="mobile-web-app-capable" content="yes" />
+
+        {/* ✅ PWA: Add apple mobile web app meta tags */}
+        <meta name="apple-mobile-web-app-title" content="StandsZone" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+        {/* ✅ RESPONSIVE: Add viewport meta tag for responsive design */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+
+        {/* ✅ SEO: Add robots meta tag */}
+        <meta name="robots" content="index, follow, max-image-preview:large, max-video-preview:-1, max-snippet:-1" />
+
+        {/* ✅ PERFORMANCE: Critical resource optimization */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+        <link rel="preconnect" href="https://api.mapbox.com" />
+        <link rel="dns-prefetch" href="//vercel.live" />
+        <link rel="dns-prefetch" href="//vitals.vercel-insights.com" />
+        <link rel="dns-prefetch" href="//www.google-analytics.com" />
+
+        {/* ✅ PERFORMANCE: Preload critical resources */}
+        <link rel="preload" as="font" href="/fonts/inter-var.woff2" type="font/woff2" crossOrigin="anonymous" />
+
+        {/* ✅ PERFORMANCE: Preload hero background images for faster LCP - Managed via UltraFastHero priority */}
+        {/* <link rel="prefetch" href="/api/hero-images" /> */}
+        {/* <link rel="preload" as="image" href="/images/hero-bg-default.webp" /> */}
+
+        {/* ✅ PERFORMANCE: Critical CSS for hero section */}
+        <style>{`
             /* Critical hero styles */
             .hero-gradient {
               background: linear-gradient(135deg, #1e293b 0%, #1e40af 50%, #1e293b 100%);
@@ -159,9 +159,9 @@ export default function RootLayout({
               50% { opacity: 0.5; }
             }
           `}</style>
-          
-          {/* ✅ PERFORMANCE: Inline critical CSS */}
-          <style>{`
+
+        {/* ✅ PERFORMANCE: Inline critical CSS */}
+        <style>{`
             /* Critical CSS for header and navigation */
             .nav-container { display: flex; align-items: center; justify-content: space-between; }
             .header-gradient { background: linear-gradient(135deg, #1e40af 0%, #1e293b 100%); }
@@ -179,24 +179,24 @@ export default function RootLayout({
             /* Optimized scroll behavior */
             html { scroll-behavior: smooth; scroll-padding-top: 4rem; }
           `}</style>
-          
-          {/* Note: Removed preload links that were causing warnings in development */}
-        </head>
-        <body className={`${inter.className} ${poppins.className} ${roboto.variable} ${montserrat.variable} ${redHatDisplay.variable} h-full m-0 p-0`} suppressHydrationWarning>
-          <ThemeProvider>
-            <ConvexClientProvider>
-              <CriticalResourcePreloader />
-              {/* <GlobalTypography /> */}
-              <AppWrapper>
-                {children}
-              </AppWrapper>
-              <Toaster />
-              <DeferredAnalytics />
-              <DeferredMonitoring />
-              <NonCriticalScripts />
-            </ConvexClientProvider>
-          </ThemeProvider>
-        </body>
+
+        {/* Note: Removed preload links that were causing warnings in development */}
+      </head>
+      <body className={`${inter.className} ${poppins.className} ${roboto.variable} ${montserrat.variable} ${redHatDisplay.variable} h-full m-0 p-0`} suppressHydrationWarning>
+        <ThemeProvider>
+          <ConvexClientProvider>
+            <CriticalResourcePreloader />
+            {/* <GlobalTypography /> */}
+            <AppWrapper>
+              {children}
+            </AppWrapper>
+            <Toaster />
+            <DeferredAnalytics />
+            <DeferredMonitoring />
+            <NonCriticalScripts />
+          </ConvexClientProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

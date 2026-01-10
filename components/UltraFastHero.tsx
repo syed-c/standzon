@@ -12,6 +12,7 @@ interface UltraFastHeroProps {
   headingFont?: string; // tailwind key: arial | helvetica | trebuchet | poppins | ''
   bgImage?: string;
   bgOpacity?: number;
+  blurDataURL?: string;
 }
 
 export default function UltraFastHero({
@@ -22,7 +23,8 @@ export default function UltraFastHero({
   buttons = [],
   headingFont = '',
   bgImage,
-  bgOpacity = 0.25
+  bgOpacity = 0.25,
+  blurDataURL,
 }: UltraFastHeroProps) {
   // Map CMS value to static Tailwind classes so they are not purged
   const headingFontClass = headingFont ? getFontClass(headingFont as any) : undefined;
@@ -41,10 +43,14 @@ export default function UltraFastHero({
             alt="Exhibition Stand Builder"
             fill
             priority
+            fetchPriority="high"
+            decoding="async"
             className="object-cover"
             style={{ opacity: Math.max(0, Math.min(1, bgOpacity)) }}
             sizes="100vw"
             quality={85}
+            placeholder={blurDataURL ? "blur" : "empty"}
+            blurDataURL={blurDataURL}
           />
         </div>
       )}

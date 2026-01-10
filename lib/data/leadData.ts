@@ -1,5 +1,7 @@
+import { cache } from 'react';
+
 // Server-side function to fetch recent leads
-export async function getRecentLeads(limit: number = 10) {
+export const getRecentLeads = cache(async (limit: number = 10) => {
   // In a real implementation, this would fetch from a database
   // For now, returning mock data
   const mockLeads = [
@@ -86,4 +88,4 @@ export async function getRecentLeads(limit: number = 10) {
   ];
 
   return mockLeads.slice(0, limit);
-}
+});

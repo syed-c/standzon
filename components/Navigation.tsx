@@ -28,7 +28,10 @@ export default function Navigation() {
   useEffect(() => {
     console.log("Navigation: Setting up scroll listener");
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      // Throttle scroll updates to standard refresh rate (approx 60fps)
+      if (window.scrollY > 10 !== isScrolled) {
+        setIsScrolled(window.scrollY > 10);
+      }
     };
 
     // Check for logged in user
@@ -52,7 +55,8 @@ export default function Navigation() {
     handleScroll();
     checkAuthStatus();
 
-    window.addEventListener('scroll', handleScroll);
+    // Use passive listener for better scroll performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('storage', checkAuthStatus); // Listen for auth changes
 
     return () => {
@@ -60,7 +64,7 @@ export default function Navigation() {
       window.removeEventListener('storage', checkAuthStatus);
       if (dropdownTimeout) clearTimeout(dropdownTimeout);
     };
-  }, [dropdownTimeout]);
+  }, [dropdownTimeout, isScrolled]);
 
   // Lock background scroll when mobile menu is open
   useEffect(() => {
@@ -263,6 +267,7 @@ export default function Navigation() {
                             <Link
                               key={subItem.label}
                               href={subItem.href}
+                              prefetch={true}
                               className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100/50 dark:hover:bg-slate-700/80 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-150 truncate"
                               onClick={() => {
                                 setActiveDropdown(null);
@@ -278,6 +283,7 @@ export default function Navigation() {
                   ) : (
                     <Link
                       href={item.href}
+                      prefetch={true}
                       className="px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 whitespace-nowrap truncate max-w-[120px] flex-shrink-0"
                     >
                       <span className="truncate">{item.label}</span>

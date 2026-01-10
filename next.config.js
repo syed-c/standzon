@@ -40,12 +40,21 @@ const nextConfig = {
       },
     ],
   },
+  // ✅ PERFORMANCE: Enable modern features
+  serverExternalPackages: ['@react-email/render'],
   experimental: {
-    // Enable React Server Components
-    serverComponentsExternalPackages: ['@react-email/render'],
     // Enable SWC transforms
-    swcPlugins: [
-      ['next-superjson-plugin', {}]
+    // swcPlugins: [
+    //   ['next-superjson-plugin', {}]
+    // ],
+    // ✅ PERFORMANCE: Enable modern features
+    optimizeCss: true,
+    optimizePackageImports: [
+      'lucide-react',
+      'recharts',
+      'react-icons',
+      'lodash',
+      'date-fns'
     ],
   },
   devIndicators: false,
@@ -138,19 +147,7 @@ const nextConfig = {
 
     return config;
   },
-  experimental: {
-    // ✅ PERFORMANCE: Enable modern features
-    optimizeCss: true,
-    optimizePackageImports: [
-      'lucide-react',
-      'recharts',
-      'react-icons',
-      'lodash',
-      'date-fns'
-    ],
-    // Enable React Server Components
-    serverComponentsExternalPackages: ['@react-email/render'],
-  },
+
   // ✅ PERFORMANCE: Additional performance optimizations
   compiler: {
     removeConsole: {
