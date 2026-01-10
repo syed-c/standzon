@@ -35,8 +35,8 @@ export async function generateMetadata({ params }: TradeShowPageProps): Promise<
   const exhibition = mapTradeShowDBToExhibition(dbTradeShow);
 
   return {
-    title: `${exhibition.name} | StandZone - Exhibition Booth Builders`,
-    description: dbTradeShow.seo_description || `${exhibition.description}. Find verified booth builders for ${exhibition.name} in ${exhibition.city}, ${exhibition.country}. Get quotes from top exhibition stand contractors.`,
+    title: `${exhibition.name} (${exhibition.year}) - Verified Booth Builders in ${exhibition.city} | StandZone`,
+    description: dbTradeShow.seo_description || `Find verified exhibition stand builders for ${exhibition.name} in ${exhibition.city}, ${exhibition.country}. Get matched with top-rated contractors and receive free quotes for your booth design. ${exhibition.shortDescription}`,
     keywords: [
       exhibition.name,
       exhibition.city,

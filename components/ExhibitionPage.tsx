@@ -141,7 +141,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
                 )}
               </div>
 
-              <h1 className="text-4xl lg:text-5xl font-bold mb-4" data-macaly="exhibition-title">
+              <h1 className="text-3xl lg:text-5xl font-bold mb-4 break-words" data-macaly="exhibition-title">
                 {exhibition.name}
               </h1>
 
@@ -182,7 +182,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
                   <h3 className="text-lg font-semibold mb-4 text-white">Quick Actions</h3>
                   <div className="space-y-3">
                     <Button
-                      className="w-full bg-white text-gray-900 hover:bg-gray-100"
+                      className="w-full bg-white text-black hover:bg-gray-100"
                       onClick={handleFindBoothBuilders}
                     >
                       <MessageSquare className="h-4 w-4 mr-2" />
@@ -240,14 +240,14 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
             {/* About Exhibition */}
             <Card>
               <CardHeader>
-                <CardTitle>About This Exhibition</CardTitle>
+                <CardTitle><h2 className="text-2xl font-bold">About This Exhibition</h2></CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-700 mb-6" data-macaly="exhibition-full-description">
+                <p className="text-gray-700 mb-6 break-words" data-macaly="exhibition-full-description">
                   {exhibition.description}
                 </p>
 
-                <h4 className="font-semibold text-gray-900 mb-3">Key Features</h4>
+                <h3 className="font-semibold text-gray-900 mb-3 text-xl">Key Features</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {exhibition.keyFeatures.map((feature: string, index: number) => (
                     <div key={index} className="flex items-start space-x-2">
@@ -259,7 +259,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
 
                 {exhibition.targetAudience && exhibition.targetAudience.length > 0 && (
                   <div className="mt-6">
-                    <h4 className="font-semibold text-gray-900 mb-3">Target Audience</h4>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-xl">Target Audience</h3>
                     <div className="flex flex-wrap gap-2">
                       {exhibition.targetAudience.map((audience: string, index: number) => (
                         <Badge key={index} variant="secondary" className="text-xs">
@@ -278,14 +278,14 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Building className="h-5 w-5" />
-                  <span>Venue Information</span>
+                  <h2 className="text-2xl font-bold">Venue Information</h2>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-semibold text-gray-900">{exhibition.venue.name}</h4>
-                    <p className="text-gray-600">{exhibition.venue.address}</p>
+                    <h3 className="font-bold text-gray-900 text-xl break-words">{exhibition.venue.name}</h3>
+                    <p className="text-gray-600 break-words">{exhibition.venue.address}</p>
                     <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
                       <div className="flex items-center space-x-1">
                         <Star className="h-4 w-4 text-yellow-400 fill-current" />
@@ -300,7 +300,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <h5 className="font-medium text-gray-900 mb-2">Venue Facilities</h5>
+                      <h4 className="font-semibold text-gray-900 mb-2 border-b pb-1">Venue Facilities</h4>
                       <div className="space-y-1">
                         {exhibition.venue.facilities.map((facility: string, index: number) => (
                           <div key={index} className="flex items-center space-x-2">
@@ -312,7 +312,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
                     </div>
 
                     <div>
-                      <h5 className="font-medium text-gray-900 mb-2">Transportation</h5>
+                      <h4 className="font-semibold text-gray-900 mb-2 border-b pb-1">Transportation</h4>
                       <div className="space-y-1">
                         {exhibition.venue.publicTransport.map((transport: string, index: number) => (
                           <div key={index} className="flex items-center space-x-2">
@@ -377,7 +377,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Leaf className="h-5 w-5" />
-                  <span>Sustainability</span>
+                  <h3 className="text-xl font-bold">Sustainability</h3>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -431,10 +431,10 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
 
                 {exhibition.sustainability.environmentalGoals && exhibition.sustainability.environmentalGoals.length > 0 && (
                   <div className="mt-4">
-                    <h5 className="font-medium text-gray-900 mb-2">Environmental Goals</h5>
+                    <h4 className="font-semibold text-gray-900 mb-2 border-b pb-1">Environmental Goals</h4>
                     <div className="flex flex-wrap gap-2">
                       {exhibition.sustainability.environmentalGoals.map((goal: string, index: number) => (
-                        <Badge key={index} variant="outline" className="text-xs">
+                        <Badge key={index} variant="secondary" className="text-xs pointer-events-none hover:bg-secondary">
                           {goal}
                         </Badge>
                       ))}
@@ -449,7 +449,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Award className="h-5 w-5" />
-                  <span>Recommended Vendors</span>
+                  <h3 className="text-xl font-bold">Recommended Vendors</h3>
                 </CardTitle>
                 <CardDescription>
                   Experienced booth builders and event planners for this exhibition
@@ -460,14 +460,14 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
                   {/* Show actual builders from the location */}
                   {recommendedVendors.length > 0 ? (
                     recommendedVendors.map((builder) => (
-                      <div key={builder.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
+                      <div key={builder.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg hover:shadow-md transition-all gap-4">
                         <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
+                          <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-lg flex-shrink-0 flex items-center justify-center">
                             <Building className="h-6 w-6 text-white" />
                           </div>
-                          <div>
-                            <h4 className="font-semibold text-gray-900">{builder.companyName}</h4>
-                            <div className="flex items-center space-x-4 text-sm text-gray-600">
+                          <div className="min-w-0">
+                            <h4 className="font-semibold text-gray-900 break-words">{builder.companyName}</h4>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600">
                               <span>Exhibition Stand Builder</span>
                               <div className="flex items-center space-x-1">
                                 <Star className="h-4 w-4 text-yellow-400 fill-current" />
@@ -475,20 +475,20 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
                               </div>
                               <span>{builder.projectsCompleted} projects</span>
                               {builder.verified && (
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline" className="text-[10px] h-4">
                                   Verified
                                 </Badge>
                               )}
                             </div>
                           </div>
                         </div>
-                        <div className="flex space-x-2">
-                          <Link href={`/builders/${builder.slug}`}>
-                            <Button size="sm" variant="outline" className="text-gray-900">
+                        <div className="flex space-x-2 sm:shrink-0">
+                          <Link href={`/builders/${builder.slug}`} className="flex-1 sm:flex-none">
+                            <Button size="sm" variant="outline" className="w-full text-gray-900">
                               View Profile
                             </Button>
                           </Link>
-                          <Button size="sm" className="bg-pink-600 text-white">
+                          <Button size="sm" className="flex-1 sm:flex-none bg-pink-600 text-white">
                             <MessageSquare className="h-4 w-4 mr-1" />
                             Contact
                           </Button>
@@ -575,12 +575,12 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
             {/* Organizer Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Organizer</CardTitle>
+                <CardTitle><h2 className="text-2xl font-bold">Organizer Informations</h2></CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div>
-                    <h4 className="font-semibold text-gray-900">{exhibition.organizer.name}</h4>
+                    <h3 className="font-bold text-gray-900 text-xl">{exhibition.organizer.name}</h3>
                     <p className="text-sm text-gray-600">{exhibition.organizer.headquarters}</p>
                     <p className="text-sm text-gray-600">Since {exhibition.organizer.establishedYear}</p>
                     <div className="flex items-center space-x-2 mt-1">
@@ -604,12 +604,12 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
             {/* Registration Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Registration</CardTitle>
+                <CardTitle><h2 className="text-2xl font-bold">Registration</h2></CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-medium text-gray-900">Visitor Registration</h4>
+                    <h3 className="font-semibold text-gray-900 text-lg">Visitor Registration</h3>
                     <p className="text-sm text-gray-600">
                       {exhibition.registrationInfo.visitorRegistration.fee > 0
                         ? `${exhibition.registrationInfo.visitorRegistration.currency} ${exhibition.registrationInfo.visitorRegistration.fee}`
@@ -621,7 +621,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
                   </div>
 
                   <div>
-                    <h4 className="font-medium text-gray-900">Exhibitor Registration</h4>
+                    <h3 className="font-semibold text-gray-900 text-lg">Exhibitor Registration</h3>
                     <p className="text-sm text-gray-600">
                       {exhibition.registrationInfo.exhibitorRegistration.currency} {exhibition.registrationInfo.exhibitorRegistration.fee}
                     </p>
@@ -648,7 +648,7 @@ export default function ExhibitionPage({ exhibitionSlug, initialExhibition }: Ex
                 <div className="flex items-start space-x-3">
                   <Info className="h-5 w-5 text-pink-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="font-medium text-pink-900 mb-1">Contact Policy</h4>
+                    <h2 className="font-bold text-pink-900 mb-1 text-xl">Contact Policy</h2>
                     <p className="text-sm text-pink-800">
                       All vendor contact goes through our secure platform. No direct contact information is shared publicly for your privacy and security.
                     </p>
