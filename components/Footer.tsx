@@ -104,7 +104,7 @@ export default function Footer() {
     <footer className="bg-gray-900 text-white w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Main Footer Content */}
-        <div className="py-12 md:py-16 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 gap-y-12 w-full">
+        <div className="py-12 md:py-16 grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-8 gap-y-12 w-full">
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="mb-4">
@@ -157,7 +157,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {services.map((service: any, index: number) => (
                 <li key={index}>
-                  <a href={service.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight block truncate">
+                  <a href={service.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight flex items-center min-h-[44px] py-2">
                     {service.label || service}
                   </a>
                 </li>
@@ -171,7 +171,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {locations.map((location: any, index: number) => (
                 <li key={index}>
-                  <a href={location.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight block truncate">
+                  <a href={location.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight flex items-center min-h-[44px] py-2">
                     {location.label || location}
                   </a>
                 </li>
@@ -185,7 +185,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {resources.map((resource: any, index: number) => (
                 <li key={index}>
-                  <a href={resource.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight block truncate">
+                  <a href={resource.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight flex items-center min-h-[44px] py-2">
                     {resource.label || resource}
                   </a>
                 </li>
@@ -210,7 +210,7 @@ export default function Footer() {
                   { label: 'Cookie Policy', href: '/legal/cookie-policy' },
                   { label: 'Sitemap', href: 'https://standszone.com/sitemap.xml' },
                 ]).map((l: any, i: number) => (
-                  <a key={i} href={l.href} className="text-gray-400 hover:text-pink-400 transition-colors touch-active no-tap-highlight whitespace-nowrap">
+                  <a key={i} href={l.href} className="text-gray-400 hover:text-pink-400 transition-colors touch-active no-tap-highlight whitespace-nowrap min-h-[44px] flex items-center">
                     {l.label}
                   </a>
                 ))}

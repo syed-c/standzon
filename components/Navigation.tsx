@@ -213,7 +213,7 @@ export default function Navigation() {
   };
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 w-full z-[100] transition-all duration-300 ${isScrolled
+    <nav className={`fixed top-0 left-0 right-0 w-full z-[1000] transition-all duration-300 ${isScrolled
       ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-md border-b border-gray-200/30 dark:border-slate-700/30'
       : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-sm border-b border-gray-100/20 dark:border-slate-700/20'
       }`}>
@@ -395,9 +395,26 @@ export default function Navigation() {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="lg:hidden fixed inset-0 w-full h-screen bg-white dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl z-[9998] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden">
-          {/* Header spacer */}
-          <div className="h-16 flex-shrink-0 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-700 w-full"></div>
+        <div className="lg:hidden fixed inset-0 w-full h-screen bg-white dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl z-[1001] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden">
+          {/* Header inside menu */}
+          <div className="h-16 flex-shrink-0 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-700 w-full flex items-center justify-between px-4">
+            <div className="flex items-center">
+              <Image
+                src={logoImg}
+                alt="StandsZone"
+                width={110}
+                height={28}
+                className="h-7 w-auto"
+              />
+            </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800"
+              aria-label="Close menu"
+            >
+              <SafeIcon IconComponent={FiX} className="w-6 h-6" />
+            </button>
+          </div>
 
           {/* Scrollable content area */}
           <div className="flex-1 px-4 pt-4 pb-6 space-y-3 overflow-y-auto w-full">
@@ -414,26 +431,32 @@ export default function Navigation() {
             {/* Main Navigation */}
             {mainNavItems.map((item) => (
               <div key={item.label} className="space-y-1">
-                <Link
-                  href={item.href}
-                  className="block px-3 py-3 text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base truncate"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.label}
-                </Link>
-                {item.submenu && (
-                  <div className="ml-3 space-y-1 bg-gray-50 dark:bg-slate-800/40 rounded-lg p-2">
-                    {item.submenu.map((subItem) => (
-                      <Link
-                        key={subItem.label}
-                        href={subItem.href}
-                        className="block px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-700/60 transition-all duration-150 rounded-md truncate"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {subItem.label}
-                      </Link>
-                    ))}
+                {item.submenu ? (
+                  <div className="space-y-1">
+                    <div className="px-3 py-2 text-gray-800 dark:text-gray-100 font-bold text-lg">
+                      {item.label}
+                    </div>
+                    <div className="ml-3 border-l-2 border-gray-100 dark:border-slate-800 pl-3 space-y-2">
+                      {item.submenu.map((subItem) => (
+                        <Link
+                          key={subItem.label}
+                          href={subItem.href}
+                          className="block py-2 text-base text-gray-600 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          {subItem.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
+                ) : (
+                  <Link
+                    href={item.href}
+                    className="block px-3 py-3 text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base truncate"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
                 )}
               </div>
             ))}

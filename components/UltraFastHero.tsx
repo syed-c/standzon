@@ -26,7 +26,7 @@ export default function UltraFastHero({
 }: UltraFastHeroProps) {
   // Map CMS value to static Tailwind classes so they are not purged
   const headingFontClass = headingFont ? getFontClass(headingFont as any) : undefined;
-  const heroBtnClass = "inline-flex items-center justify-center gap-2 px-6 py-3 text-white font-semibold border border-white/80 rounded-full bg-gradient-to-r from-[#E11D74] to-[#F1558E] active:from-[#C31860] active:to-[#E44080] transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300";
+  const heroBtnClass = "inline-flex items-center justify-center gap-2 px-6 py-3 text-white font-semibold border border-white/80 rounded-full bg-gradient-to-r from-[#E11D74] to-[#F1558E] active:from-[#C31860] active:to-[#E44080] transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300 whitespace-normal text-center h-auto min-h-[44px] max-w-full";
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-24 md:pt-0">
       {/* ✅ PERFORMANCE: CSS-only gradient background (no images) */}
@@ -90,7 +90,7 @@ export default function UltraFastHero({
 
             {/* Stats */}
             {stats.length > 0 && (
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 max-w-5xl mx-auto">
                 {stats.map((stat, index) => (
                   <div key={index} className="text-center">
                     <div className="text-3xl md:text-3xl lg:text-4xl font-bold text-white mb-2">
@@ -111,7 +111,7 @@ export default function UltraFastHero({
                   const label = (button.text || '').replace(/[→»›⟶⟹➡️]/g, '').trim();
                   const href = button.isQuoteButton ? '/quote' : (button.href || '#');
                   return (
-                    <div key={index} className="w-full sm:w-auto">
+                    <div key={index} className="w-full sm:w-auto flex justify-center">
                       <a href={href} className={`${heroBtnClass} w-full sm:w-auto min-w-[200px] text-white !important`}>
                         {label}
                       </a>

@@ -262,6 +262,7 @@ body {
   overflow-x: hidden;
   /* ✅ MOBILE POLISH: Prevent screen overflow */
   width: 100%;
+  position: relative;
 }
 
 /* ✅ MOBILE POLISH: Button text safety */
