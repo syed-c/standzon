@@ -120,15 +120,18 @@ export default async function HomeRest() {
                     <h2 className={["text-3xl md:text-4xl lg:text-5xl font-bold mb-6", finalCtaFont ? `font-${finalCtaFont}` : ''].join(' ')}>
                         {finalCta.heading}
                     </h2>
-                    <p className="text-lg md:text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed" dangerouslySetInnerHTML={{ __html: finalCta.paragraph }} />
+                    <p className="text-lg md:text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed" dangerouslySetInnerHTML={{ __html: finalCta.paragraph || "" }} />
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         {((finalButtonsFromTop.length > 0 ? finalButtonsFromTop : finalCta.buttons) || []).map((b: { text?: string; href?: string }, i: number) => (
-                            <Link key={i} href={b.href || "#"} prefetch={true}>
-                                <button className={i === 0
-                                    ? "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg transition-all duration-300"
-                                    : "bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white hover:bg-white/20 hover:border-white/50 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300"}>
-                                    {b.text || (i === 0 ? "Get Free Quotes Now" : "Learn More")}
-                                </button>
+                            <Link
+                                key={i}
+                                href={b.href || "#"}
+                                prefetch={true}
+                                className={i === 0
+                                    ? "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg transition-all duration-300 inline-block"
+                                    : "bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white hover:bg-white/20 hover:border-white/50 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 inline-block"}
+                            >
+                                {b.text || (i === 0 ? "Get Free Quotes Now" : "Learn More")}
                             </Link>
                         ))}
                     </div>

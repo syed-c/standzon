@@ -41,9 +41,12 @@ export interface PageContent {
     };
   };
   // Section-aware structured content for precise editing
+  // Section-aware structured content for precise editing
   sections?: {
-    hero?: { heading?: string; description?: string };
+    typography?: { headingFont?: string; bodyFont?: string };
+    hero?: { heading?: string; description?: string; headingFont?: string; bgImage?: string; bgOpacity?: number };
     heroButtons?: Array<{ text?: string; href?: string }>;
+    leadsIntro?: { heading?: string; paragraph?: string; headingFont?: string };
     mission?: { heading?: string; paragraph?: string };
     vision?: { heading?: string; paragraph?: string };
     coreValues?: Array<{ heading?: string; paragraph?: string }>;
@@ -51,20 +54,20 @@ export interface PageContent {
     team?: Array<{ name?: string; role?: string; bio?: string }>;
     cta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
     // Home specific sections
-    readyLeads?: { heading?: string; paragraph?: string };
+    readyLeads?: { heading?: string; paragraph?: string; headingFont?: string; buttons?: Array<{ text?: string; href?: string }> };
     globalPresence?: { heading?: string; paragraph?: string };
     moreCountries?: { heading?: string; paragraph?: string };
     expandingMarkets?: { heading?: string; paragraph?: string };
-    readyStart?: { heading?: string; paragraph?: string };
+    readyStart?: { heading?: string; paragraph?: string; headingFont?: string };
     clientSay?: { heading?: string; paragraph?: string };
-    finalCta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
+    finalCta?: { heading?: string; paragraph?: string; headingFont?: string; buttons?: Array<{ text?: string; href?: string }> };
     reviews?: Array<{ name?: string; role?: string; rating?: number; text?: string; image?: string }>;
     // Custom Booth specific sections
     whyChooseCustom?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
     designProcess?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
-    customDesignServices?: { 
-      heading?: string; 
-      paragraph?: string; 
+    customDesignServices?: {
+      heading?: string;
+      paragraph?: string;
       serviceCards?: Array<{
         title?: string;
         description?: string;
@@ -77,15 +80,15 @@ export interface PageContent {
       }>;
     };
     customBoothCta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
-    
+
     // Service Pages specific sections (cloned from custom-booth structure)
-    boothRental?: { 
+    boothRental?: {
       hero?: { heading?: string; description?: string };
       whyChoose?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
       process?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
-      services?: { 
-        heading?: string; 
-        paragraph?: string; 
+      services?: {
+        heading?: string;
+        paragraph?: string;
         serviceCards?: Array<{
           title?: string;
           description?: string;
@@ -99,14 +102,14 @@ export interface PageContent {
       };
       cta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
     };
-    
-    renderingConcept?: { 
+
+    renderingConcept?: {
       hero?: { heading?: string; description?: string };
       whyChoose?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
       process?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
-      services?: { 
-        heading?: string; 
-        paragraph?: string; 
+      services?: {
+        heading?: string;
+        paragraph?: string;
         serviceCards?: Array<{
           title?: string;
           description?: string;
@@ -120,14 +123,14 @@ export interface PageContent {
       };
       cta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
     };
-    
-    installationDismantle?: { 
+
+    installationDismantle?: {
       hero?: { heading?: string; description?: string };
       whyChoose?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
       process?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
-      services?: { 
-        heading?: string; 
-        paragraph?: string; 
+      services?: {
+        heading?: string;
+        paragraph?: string;
         serviceCards?: Array<{
           title?: string;
           description?: string;
@@ -141,14 +144,14 @@ export interface PageContent {
       };
       cta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
     };
-    
-    projectManagement?: { 
+
+    projectManagement?: {
       hero?: { heading?: string; description?: string };
       whyChoose?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
       process?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
-      services?: { 
-        heading?: string; 
-        paragraph?: string; 
+      services?: {
+        heading?: string;
+        paragraph?: string;
         serviceCards?: Array<{
           title?: string;
           description?: string;
@@ -162,14 +165,14 @@ export interface PageContent {
       };
       cta?: { heading?: string; paragraph?: string; buttons?: Array<{ text?: string; href?: string }> };
     };
-    
-    graphicsPrinting?: { 
+
+    graphicsPrinting?: {
       hero?: { heading?: string; description?: string };
       whyChoose?: { heading?: string; paragraph?: string; features?: Array<{ heading?: string; paragraph?: string }> };
       process?: { heading?: string; paragraph?: string; steps?: Array<{ heading?: string; paragraph?: string }> };
-      services?: { 
-        heading?: string; 
-        paragraph?: string; 
+      services?: {
+        heading?: string;
+        paragraph?: string;
         serviceCards?: Array<{
           title?: string;
           description?: string;
@@ -211,6 +214,8 @@ export interface PageContent {
     showStats: boolean;
     showMap: boolean;
   };
+  buttons?: Array<{ section?: string; text?: string; link?: string; href?: string }>;
+  reviews?: Array<{ name?: string; role?: string; rating?: number; text?: string; image?: string }>;
   lastModified: string;
 }
 
@@ -252,7 +257,7 @@ class PlatformStorage {
       const filePath = this.getDataFilePath();
       this.ensureDataDir();
       fs.writeFileSync(filePath, JSON.stringify(map, null, 2), 'utf-8');
-    } catch {}
+    } catch { }
   }
 
   constructor() {
@@ -311,7 +316,7 @@ class PlatformStorage {
 
     builders.forEach(builder => {
       // Check for duplicates by email
-      const existingBuilder = this.builders.find(b => 
+      const existingBuilder = this.builders.find(b =>
         b.contactInfo.primaryEmail.toLowerCase() === builder.contactInfo.primaryEmail.toLowerCase()
       );
 
@@ -394,7 +399,7 @@ class PlatformStorage {
       if (filters.country && builder.headquarters.country !== filters.country) return false;
       if (filters.city && !builder.serviceLocations.some(loc => loc.city === filters.city)) return false;
       if (filters.verified !== undefined && builder.verified !== filters.verified) return false;
-      if (filters.serviceType && !builder.services.some(service => 
+      if (filters.serviceType && !builder.services.some(service =>
         service.name.toLowerCase().includes(filters.serviceType!.toLowerCase())
       )) return false;
       return true;
@@ -434,7 +439,7 @@ class PlatformStorage {
   getPageContent(pageId: string): PageContent | undefined {
     // Normalize pageId to lowercase for case-insensitive lookup
     const normalizedPageId = pageId.toLowerCase().trim();
-    
+
     // Always prefer on-disk content in production/serverless
     const all = this.readAllFromFile();
     if (all[normalizedPageId]) return all[normalizedPageId];
@@ -486,7 +491,7 @@ class PlatformStorage {
       timestamp: string;
       status: 'success' | 'info' | 'warning';
     }> = [];
-    
+
     // Recent builder additions
     const recentBuilders = this.builders.slice(-3);
     recentBuilders.forEach(builder => {
@@ -516,25 +521,25 @@ export const storageAPI = {
   deleteBuilder: (id: string) => platformStorage.deleteBuilder(id),
   deleteBuilders: (ids: string[]) => platformStorage.deleteBuilders(ids),
   deleteAllBuilders: () => platformStorage.deleteAllBuilders(),
-  
+
   // Bulk operations
   addBuilders: (builders: ExhibitionBuilder[]) => platformStorage.addBuilders(builders),
-  
+
   // Search and filter
   searchBuilders: (query: string) => platformStorage.searchBuilders(query),
   filterBuilders: (filters: any) => platformStorage.filterBuilders(filters),
-  
+
   // Statistics
   getStats: () => platformStorage.getStats(),
   getRecentActivity: () => platformStorage.getRecentActivity(),
-  
+
   // Page content management
   savePageContent: (pageId: string, content: PageContent) => platformStorage.savePageContent(pageId, content),
   getPageContent: (pageId: string) => platformStorage.getPageContent(pageId),
   getAllPageContents: () => platformStorage.getAllPageContents(),
   deletePageContent: (pageId: string) => platformStorage.deletePageContent(pageId),
   hasPageContent: (pageId: string) => platformStorage.hasPageContent(pageId),
-  
+
   // Utility
   clearAll: () => platformStorage.clearAll()
 };
@@ -547,24 +552,24 @@ export async function getServerPageContent(pageId: string): Promise<PageContent 
     if (content) {
       return content;
     }
-    
+
     // If not found in storage, try to fetch from the database
     // This is a server-side function that can access Supabase directly
     const { getServerSupabase } = await import('@/lib/supabase');
     const sb = getServerSupabase();
-    
+
     if (sb) {
       const result = await sb
         .from('page_contents')
         .select('content')
         .eq('id', pageId)
         .maybeSingle();
-      
+
       if (result.data?.content) {
         return result.data.content;
       }
     }
-    
+
     return null;
   } catch (error) {
     console.error('Error fetching page content on server:', error);

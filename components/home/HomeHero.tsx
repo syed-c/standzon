@@ -10,7 +10,7 @@ export default async function HomeHero() {
     const heroDescriptionRaw = saved?.sections?.hero?.description || "";
     const heroDescription = sanitizeHtml(heroDescriptionRaw);
     const heroBgImage = saved?.sections?.hero?.bgImage || '';
-    const heroBgOpacity = typeof saved?.sections?.hero?.bgOpacity === 'number' ? saved!.sections!.hero!.bgOpacity : 0.25;
+    const heroBgOpacity = (saved?.sections?.hero?.bgOpacity && typeof saved.sections.hero.bgOpacity === 'number') ? saved.sections.hero.bgOpacity : 0.25;
 
     return (
         <UltraFastHero
