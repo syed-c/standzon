@@ -1,5 +1,6 @@
 import { TradeShowDB } from "@/lib/supabase/types/tradeShows";
-import { TradeShow, Venue, Industry, CostBreakdown } from "@/lib/data/tradeShows";
+import { TradeShow, Venue, CostBreakdown } from "@/lib/data/tradeShows";
+import { Industry } from "@/lib/data/industries";
 import { Exhibition } from "@/lib/data/exhibitions";
 
 export function mapTradeShowDBToUI(dbData: TradeShowDB): TradeShow {
@@ -26,22 +27,35 @@ export function mapTradeShowDBToUI(dbData: TradeShowDB): TradeShow {
         city: dbData.location_city || "",
         country: dbData.location_country || "",
         countryCode: "", // We might need a lookup or add to schema
-        industries: (dbData.tags || []).map(tag => ({
-            id: tag.toLowerCase(),
-            name: tag,
-            slug: tag.toLowerCase(),
-            description: "",
-            subcategories: [],
-            color: "#3B82F6", // Default color
-            icon: "📊",
-            annualGrowthRate: 0,
-            averageBoothCost: 0,
-            popularCountries: [],
-        })),
+        industries: (() => {
+            const rawTags = dbData.tags;
+            let tags: string[] = [];
+            if (Array.isArray(rawTags)) {
+                tags = rawTags;
+            } else if (typeof rawTags === 'string' && (rawTags as string).startsWith('{') && (rawTags as string).endsWith('}')) {
+                // Handle Postgres array format {tag1,tag2}
+                tags = (rawTags as string).replace(/{|}/g, '').split(',').map((t: string) => t.trim().replace(/^"|"$/g, ''));
+            } else if (typeof rawTags === 'string') {
+                tags = [rawTags];
+            }
+
+            return (tags || []).filter(Boolean).map(tag => ({
+                id: tag.toLowerCase().replace(/\s+/g, '-'),
+                name: tag,
+                slug: tag.toLowerCase().replace(/\s+/g, '-'),
+                description: "",
+                subcategories: [],
+                color: "#3B82F6", // Default color
+                icon: "📊",
+                annualGrowthRate: 0,
+                averageBoothCost: 0,
+                popularCountries: [],
+            }));
+        })(),
         description: dbData.long_description || dbData.short_description || "",
         website: dbData.organizer_website || "",
-        expectedVisitors: dbData.expected_attendees || 0,
-        expectedExhibitors: dbData.exhibitors_count || 0,
+        expectedVisitors: Number(dbData.expected_attendees) || 0,
+        expectedExhibitors: Number(dbData.exhibitors_count) || 0,
         standSpace: 0,
         ticketPrice: "Check Website",
         organizerName: dbData.organizer_name || "",
@@ -61,8 +75,8 @@ export function mapTradeShowDBToUI(dbData: TradeShowDB): TradeShow {
         networkingOpportunities: [],
         costs: {
             standRental: {
-                min: dbData.booth_pricing_min || 0,
-                max: dbData.booth_pricing_max || 0,
+                min: Number(dbData.booth_pricing_min) || 0,
+                max: Number(dbData.booth_pricing_max) || 0,
                 unit: "per sqm",
                 currency: dbData.booth_pricing_currency || "USD",
             },

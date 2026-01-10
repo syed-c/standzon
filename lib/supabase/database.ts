@@ -5,7 +5,7 @@
  * and provides a unified interface to Supabase as the single source of truth.
  */
 
-import { supabase, supabaseAdmin } from '@/lib/supabase/client';
+import { supabase, supabaseAdmin, getSupabaseAdminClient } from '@/lib/supabase/client';
 
 // Database service class
 export class DatabaseService {
@@ -13,9 +13,15 @@ export class DatabaseService {
 
   constructor() {
     // Use admin client if available (bypasses RLS), otherwise use regular client
-    this.client = supabaseAdmin || supabase;
-    if (!this.client) {
-      console.warn('Supabase admin client not available, some admin features may not work properly.');
+    const admin = getSupabaseAdminClient();
+    this.client = admin || supabase;
+
+    if (admin) {
+      console.log('✅ Supabase initialized with Admin (Service Role) client');
+    } else if (supabase) {
+      console.log('⚠️ Supabase initialized with Regular (Anon) client - RLS is active');
+    } else {
+      console.error('❌ Supabase client initialization FAILED - no client available');
     }
   }
 
@@ -315,12 +321,17 @@ export class DatabaseService {
   // Trade Shows
   async getTradeShows() {
     if (!this.client) throw new Error('Supabase client not initialized');
+    console.log('Fetching trade shows from Supabase...');
     const { data, error } = await this.client
       .from('trade_shows')
       .select('*')
       .order('start_date', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error fetching trade shows from Supabase:', error);
+      throw error;
+    }
+    console.log(`Fetched ${data?.length || 0} trade shows from Supabase`);
     return data;
   }
 

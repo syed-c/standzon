@@ -10,12 +10,15 @@ export const metadata: Metadata = {
   keywords: ["trade shows", "exhibitions", "expo directory", "exhibition stands", "booth builders"],
 };
 
-// ISR: Revalidate every hour
-export const revalidate = 3600;
+// ISR: Disabled temporarily for debugging, usually 3600
+export const revalidate = 0;
 
 export default async function TradeShowsPage() {
   const dbTradeShows = await db.getTradeShows();
-  const tradeShows = dbTradeShows.map(mapTradeShowDBToUI);
+  console.log(`🔍 TradeShowsPage: Fetched ${dbTradeShows?.length || 0} shows from Supabase`);
+
+  const tradeShows = (dbTradeShows || []).map(mapTradeShowDBToUI);
+  console.log(`🔍 TradeShowsPage: Mapped ${tradeShows.length} shows for UI`);
 
   return <TradeShowsClient initialTradeShows={tradeShows} industries={industries} />;
 }

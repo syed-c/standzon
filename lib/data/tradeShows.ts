@@ -1,6 +1,7 @@
 // Trade show interfaces and utilities (Data migrated to Supabase)
 
 import { Industry } from "./industries";
+export type { Industry };
 
 export interface TradeShow {
   id: string;
