@@ -51,10 +51,10 @@ export default function Navigation() {
 
     handleScroll();
     checkAuthStatus();
-    
+
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('storage', checkAuthStatus); // Listen for auth changes
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('storage', checkAuthStatus);
@@ -75,8 +75,8 @@ export default function Navigation() {
   // Updated navigation structure according to requirements
   const mainNavItems = [
     { label: 'Home', href: '/' },
-    { 
-      label: 'Find Builders', 
+    {
+      label: 'Find Builders',
       href: '/builders',
       submenu: [
         { label: 'All Builders Directory', href: '/builders' },
@@ -85,8 +85,8 @@ export default function Navigation() {
         { label: 'Verified Only', href: '/builders?verified=true' },
       ]
     },
-    { 
-      label: 'Trade Shows', 
+    {
+      label: 'Trade Shows',
       href: '/trade-shows',
       submenu: [
         { label: 'All Trade Shows & Exhibitions', href: '/trade-shows' },
@@ -96,8 +96,8 @@ export default function Navigation() {
         { label: 'Upcoming Events', href: '/trade-shows?status=upcoming' },
       ]
     },
-    { 
-      label: 'Locations', 
+    {
+      label: 'Locations',
       href: '/exhibition-stands',
       submenu: [
         { label: 'Browse Builders by Location', href: '/exhibition-stands' },
@@ -107,8 +107,8 @@ export default function Navigation() {
         { label: 'France Builders', href: '/exhibition-stands/france' },
       ]
     },
-    { 
-      label: 'Services', 
+    {
+      label: 'Services',
       href: '/services',
       submenu: [
         { label: 'Custom Stand Design', href: '/custom-booth' },
@@ -124,14 +124,14 @@ export default function Navigation() {
   ];
 
   // Account dropdown menu - dynamic based on auth status
-  const getAccountItems = (): Array<{label: string; href: string; isGreeting?: boolean}> => {
+  const getAccountItems = (): Array<{ label: string; href: string; isGreeting?: boolean }> => {
     if (currentUser) {
       // Authenticated user options
       const baseItems = [
-        { 
-          label: `👋 ${currentUser.name || currentUser.email}`, 
-          href: '#', 
-          isGreeting: true 
+        {
+          label: `👋 ${currentUser.name || currentUser.email}`,
+          href: '#',
+          isGreeting: true
         }
       ];
 
@@ -152,7 +152,7 @@ export default function Navigation() {
       }
       // Remove messaging link from account menu
       // baseItems.push({ label: '📧 Messages', href: '/messaging', isGreeting: false });
-      
+
       return baseItems;
     } else {
       // Only builder and admin authentication - no client registration
@@ -213,23 +213,22 @@ export default function Navigation() {
   };
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 w-full z-[100] transition-all duration-300 ${ 
-      isScrolled 
-        ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-md border-b border-gray-200/30 dark:border-slate-700/30' 
+    <nav className={`fixed top-0 left-0 right-0 w-full z-[100] transition-all duration-300 ${isScrolled
+        ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-md border-b border-gray-200/30 dark:border-slate-700/30'
         : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-sm border-b border-gray-100/20 dark:border-slate-700/20'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      }`}>
+      <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16 w-full min-w-0">
           {/* Logo - Left */}
           <div className="flex-shrink-0 flex items-center w-32">
             <Link href="/" className="group flex items-center">
-              <Image 
-                src={logoImg} 
-                alt="StandsZone" 
-                width={110} 
-                height={28} 
-                priority 
-                className="h-7 w-auto transition-transform duration-300 group-hover:scale-105" 
+              <Image
+                src={logoImg}
+                alt="StandsZone"
+                width={110}
+                height={28}
+                priority
+                className="h-7 w-auto transition-transform duration-300 group-hover:scale-105"
               />
               <span className="sr-only">StandsZone</span>
             </Link>
@@ -251,12 +250,11 @@ export default function Navigation() {
                         onClick={() => handleDropdownClick(item.label)}
                       >
                         <span className="truncate max-w-[120px]">{item.label}</span>
-                        <SafeIcon IconComponent={FiChevronDown} className={`w-3 h-3 transition-transform duration-200 flex-shrink-0 ${
-                          activeDropdown === item.label ? 'rotate-180' : ''
-                        }`} />
+                        <SafeIcon IconComponent={FiChevronDown} className={`w-3 h-3 transition-transform duration-200 flex-shrink-0 ${activeDropdown === item.label ? 'rotate-180' : ''
+                          }`} />
                       </button>
                       {activeDropdown === item.label && (
-                        <div 
+                        <div
                           className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-56 bg-white dark:bg-slate-800 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
                           onMouseEnter={handleDropdownMouseEnter}
                           onMouseLeave={handleDropdownMouseLeave}
@@ -311,7 +309,7 @@ export default function Navigation() {
                 </Link>
               </div>
             ) : (
-              <div 
+              <div
                 className="relative"
                 onMouseEnter={() => handleMouseEnter('Account')}
                 onMouseLeave={handleMouseLeave}
@@ -323,12 +321,11 @@ export default function Navigation() {
                   <SafeIcon IconComponent={FiUser} className="w-3 h-3 flex-shrink-0" />
                   <span className="truncate hidden xl:inline">Account</span>
                   <span className="xl:hidden">Acc</span>
-                  <SafeIcon IconComponent={FiChevronDown} className={`w-2.5 h-2.5 transition-transform duration-200 flex-shrink-0 ${
-                    activeDropdown === 'Account' ? 'rotate-180' : ''
-                  }`} />
+                  <SafeIcon IconComponent={FiChevronDown} className={`w-2.5 h-2.5 transition-transform duration-200 flex-shrink-0 ${activeDropdown === 'Account' ? 'rotate-180' : ''
+                    }`} />
                 </button>
                 {activeDropdown === 'Account' && (
-                  <div 
+                  <div
                     className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-800 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
                     onMouseEnter={handleDropdownMouseEnter}
                     onMouseLeave={handleDropdownMouseLeave}
@@ -401,7 +398,7 @@ export default function Navigation() {
         <div className="lg:hidden fixed inset-0 w-full h-screen bg-white dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl z-[9998] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden">
           {/* Header spacer */}
           <div className="h-16 flex-shrink-0 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-700 w-full"></div>
-          
+
           {/* Scrollable content area */}
           <div className="flex-1 px-4 pt-4 pb-6 space-y-3 overflow-y-auto w-full">
             {/* Mobile Get Quote at Top */}

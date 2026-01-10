@@ -1,112 +1,10 @@
 {
   "_metadata": {
-    "timestamp": "2026-01-09T12:36:05.463Z",
+    "timestamp": "2026-01-10T08:20:19.176Z",
     "version": "1.0",
-    "checksum": "-3312637c"
+    "checksum": "45a553c4"
   },
   "data": [
-    {
-      "id": "cfa6c77c-3139-4a69-966f-2c8cb2d9c1df",
-      "timestamp": "2025-11-26T14:20:32.195Z",
-      "user": "system",
-      "action": "db_change",
-      "resource": "activity_logs",
-      "details": "File update operation on activity_logs.json",
-      "severity": "info",
-      "dbChange": {
-        "table": "activity_logs",
-        "operation": "UPDATE",
-        "changes": {
-          "newDataSize": 2001,
-          "oldDataSize": 2000
-        }
-      }
-    },
-    {
-      "id": "07f8b396-1f88-461f-bdcd-b5fd3e19c42a",
-      "timestamp": "2025-11-26T14:20:32.221Z",
-      "user": "system",
-      "action": "db_change",
-      "resource": "activity_logs",
-      "details": "File update operation on activity_logs.json",
-      "severity": "info",
-      "dbChange": {
-        "table": "activity_logs",
-        "operation": "UPDATE",
-        "changes": {
-          "newDataSize": 2000,
-          "oldDataSize": 2000
-        }
-      }
-    },
-    {
-      "id": "1b80aa9c-8115-4932-8e8d-e49cef5749fe",
-      "timestamp": "2025-11-26T14:20:32.247Z",
-      "user": "system",
-      "action": "db_change",
-      "resource": "activity_logs",
-      "details": "File update operation on activity_logs.json",
-      "severity": "info",
-      "dbChange": {
-        "table": "activity_logs",
-        "operation": "UPDATE",
-        "changes": {
-          "newDataSize": 2001,
-          "oldDataSize": 2000
-        }
-      }
-    },
-    {
-      "id": "5e31b8b5-eb8a-4d78-a784-c6f557e1c996",
-      "timestamp": "2025-11-26T14:20:32.274Z",
-      "user": "system",
-      "action": "db_change",
-      "resource": "activity_logs",
-      "details": "File update operation on activity_logs.json",
-      "severity": "info",
-      "dbChange": {
-        "table": "activity_logs",
-        "operation": "UPDATE",
-        "changes": {
-          "newDataSize": 2000,
-          "oldDataSize": 2000
-        }
-      }
-    },
-    {
-      "id": "dd3a7c7a-7da2-4c70-bfe7-43b3ffa68f55",
-      "timestamp": "2025-11-26T14:20:32.311Z",
-      "user": "system",
-      "action": "db_change",
-      "resource": "activity_logs",
-      "details": "File update operation on activity_logs.json",
-      "severity": "info",
-      "dbChange": {
-        "table": "activity_logs",
-        "operation": "UPDATE",
-        "changes": {
-          "newDataSize": 2001,
-          "oldDataSize": 2000
-        }
-      }
-    },
-    {
-      "id": "2cd06e11-88cf-45e4-9ec8-dbff5b56cb39",
-      "timestamp": "2025-11-26T14:20:32.338Z",
-      "user": "system",
-      "action": "db_change",
-      "resource": "activity_logs",
-      "details": "File update operation on activity_logs.json",
-      "severity": "info",
-      "dbChange": {
-        "table": "activity_logs",
-        "operation": "UPDATE",
-        "changes": {
-          "newDataSize": 2000,
-          "oldDataSize": 2000
-        }
-      }
-    },
     {
       "id": "82c5bb81-b7c8-45f4-8893-058c858d1d87",
       "timestamp": "2025-11-26T14:20:32.364Z",
@@ -33977,6 +33875,108 @@
     {
       "id": "e65c3f8f-0c8a-49b2-a0fe-bbadf95f3eed",
       "timestamp": "2026-01-09T12:36:05.437Z",
+      "user": "system",
+      "action": "db_change",
+      "resource": "_recovery_log",
+      "details": "File update operation on _recovery_log.json",
+      "severity": "info",
+      "dbChange": {
+        "table": "_recovery_log",
+        "operation": "UPDATE",
+        "changes": {
+          "newDataSize": "object",
+          "oldDataSize": "object"
+        }
+      }
+    },
+    {
+      "id": "5557fc73-c559-49f4-bee3-3b603ccdfc82",
+      "timestamp": "2026-01-10T08:14:11.071Z",
+      "user": "system",
+      "action": "db_change",
+      "resource": "_recovery_log",
+      "details": "File update operation on _recovery_log.json",
+      "severity": "info",
+      "dbChange": {
+        "table": "_recovery_log",
+        "operation": "UPDATE",
+        "changes": {
+          "newDataSize": "object",
+          "oldDataSize": "object"
+        }
+      }
+    },
+    {
+      "id": "cf844b8f-0b61-4654-a3e4-74509ab15cd5",
+      "timestamp": "2026-01-10T08:14:30.349Z",
+      "user": "system",
+      "action": "db_change",
+      "resource": "_recovery_log",
+      "details": "File update operation on _recovery_log.json",
+      "severity": "info",
+      "dbChange": {
+        "table": "_recovery_log",
+        "operation": "UPDATE",
+        "changes": {
+          "newDataSize": "object",
+          "oldDataSize": "object"
+        }
+      }
+    },
+    {
+      "id": "2b82f497-17ad-454d-9920-f09178b67944",
+      "timestamp": "2026-01-10T08:15:35.548Z",
+      "user": "system",
+      "action": "db_change",
+      "resource": "_recovery_log",
+      "details": "File update operation on _recovery_log.json",
+      "severity": "info",
+      "dbChange": {
+        "table": "_recovery_log",
+        "operation": "UPDATE",
+        "changes": {
+          "newDataSize": "object",
+          "oldDataSize": "object"
+        }
+      }
+    },
+    {
+      "id": "e1c69cbd-10fe-41c4-91f3-ff2139f03b07",
+      "timestamp": "2026-01-10T08:15:49.460Z",
+      "user": "system",
+      "action": "db_change",
+      "resource": "_recovery_log",
+      "details": "File update operation on _recovery_log.json",
+      "severity": "info",
+      "dbChange": {
+        "table": "_recovery_log",
+        "operation": "UPDATE",
+        "changes": {
+          "newDataSize": "object",
+          "oldDataSize": "object"
+        }
+      }
+    },
+    {
+      "id": "34f91c42-f5be-41be-84e9-f718df5e6ae1",
+      "timestamp": "2026-01-10T08:16:00.827Z",
+      "user": "system",
+      "action": "db_change",
+      "resource": "_recovery_log",
+      "details": "File update operation on _recovery_log.json",
+      "severity": "info",
+      "dbChange": {
+        "table": "_recovery_log",
+        "operation": "UPDATE",
+        "changes": {
+          "newDataSize": "object",
+          "oldDataSize": "object"
+        }
+      }
+    },
+    {
+      "id": "b5bf9036-d502-4032-85df-65cb15d0b552",
+      "timestamp": "2026-01-10T08:20:19.166Z",
       "user": "system",
       "action": "db_change",
       "resource": "_recovery_log",

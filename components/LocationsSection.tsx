@@ -277,7 +277,7 @@ export default function LocationsSection({
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             {globalPresence?.paragraph || 'With operations spanning five continents, we deliver world-class exhibition solutions while maintaining deep local market knowledge and cultural understanding.'}
           </p>
-          
+
           {/* Global Stats */}
           <div className="flex flex-wrap justify-center gap-8 mt-12">
             <div className="text-center">
@@ -305,11 +305,10 @@ export default function LocationsSection({
             <button
               key={continent}
               onClick={() => setActiveTab(continent)}
-              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-gray-900 ${
-                activeTab === continent
+              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-gray-900 ${activeTab === continent
                   ? `bg-gradient-to-r ${data.color} text-white shadow-lg transform scale-105`
                   : 'bg-white text-black hover:bg-gray-50 border border-gray-200 hover:border-pink-300'
-              } touch-active no-tap-highlight`}
+                } touch-active no-tap-highlight`}
             >
               <span className="text-xl">{data.icon}</span>
               <span>{continent}</span>
@@ -322,7 +321,7 @@ export default function LocationsSection({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {currentContinent.countries.map((country) => (
               <Card key={country.name} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white/90 backdrop-blur-sm hover:bg-white overflow-hidden">
-                <CardContent className="p-8">
+                <CardContent className="p-6 sm:p-8">
                   {/* Country Header with Flag */}
                   <div className="text-center mb-6">
                     <div className="text-6xl mb-4 transform group-hover:scale-110 transition-transform duration-300 text-black">
@@ -333,7 +332,7 @@ export default function LocationsSection({
                       {country.builders} Builders Available
                     </Badge>
                   </div>
-                  
+
                   {/* Stats Row */}
                   <div className="flex items-center justify-center space-x-6 mb-6">
                     <div className="text-center">
@@ -352,7 +351,7 @@ export default function LocationsSection({
                       <div className="text-xs text-gray-500">cities</div>
                     </div>
                   </div>
-                  
+
                   {/* Cities */}
                   <div className="flex flex-wrap justify-center gap-2 mb-6">
                     {country.cities.slice(0, 4).map((city) => (
@@ -366,7 +365,7 @@ export default function LocationsSection({
                       </Badge>
                     )}
                   </div>
-                  
+
                   {/* CTA Button */}
                   <Link href={country.href}>
                     <Button className={`w-full bg-gradient-to-r ${currentContinent.color} text-white group transform transition-all duration-300 border-0 shadow-md font-semibold touch-active no-tap-highlight`}>
@@ -391,11 +390,11 @@ export default function LocationsSection({
               {moreCountries?.paragraph || 'Discover exhibition stand builders across all major markets in this region. Click on any country to explore local professionals and get instant quotes.'}
             </p>
           </div>
-          
+
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {currentContinent.interlinkingCountries.map((country, index) => (
-              <Link 
-                key={country} 
+              <Link
+                key={country}
                 href={`/exhibition-stands/${country.toLowerCase().replace(/\s+/g, '-')}`}
                 className="group"
               >
@@ -410,7 +409,7 @@ export default function LocationsSection({
               </Link>
             ))}
           </div>
-          
+
           <div className="text-center mt-8">
             <Link href="/exhibition-stands">
               <Button className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-8 py-3 rounded-xl font-semibold border-0 shadow-lg touch-active no-tap-highlight">

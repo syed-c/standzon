@@ -106,8 +106,8 @@ export default function RootLayout({
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-status-bar-style" content="default" />
           
-          {/* ✅ RESPONSIVE: Add viewport meta tag */}
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+          {/* ✅ RESPONSIVE: Add viewport meta tag for responsive design */}
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
           
           {/* ✅ SEO: Add robots meta tag */}
           <meta name="robots" content="index, follow, max-image-preview:large, max-video-preview:-1, max-snippet:-1" />

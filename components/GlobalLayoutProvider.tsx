@@ -30,11 +30,15 @@ export default function GlobalLayoutProvider({ children }: GlobalLayoutProviderP
       <Navigation />
       {showBreadcrumbs && (
         <div className="sticky top-16 z-10 bg-white">
-          <BreadcrumbNavigation items={breadcrumbs} />
+          <div className="responsive-container">
+            <BreadcrumbNavigation items={breadcrumbs} />
+          </div>
         </div>
       )}
       <main className="flex-grow">
-        {children}
+        <div className="responsive-container">
+          {children}
+        </div>
       </main>
       <Footer />
       <WhatsAppFloat />

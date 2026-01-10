@@ -8,8 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import PublicQuoteRequest from './PublicQuoteRequest';
 import { ProfileClaimSystem } from './ProfileClaimSystem';
-import { 
-  Quote, Star, MapPin, Users, Clock, 
+import {
+  Quote, Star, MapPin, Users, Clock,
   Shield, Award, CheckCircle2,
   ArrowRight, Zap, Target, AlertCircle
 } from 'lucide-react';
@@ -106,7 +106,7 @@ function getClaimStatusBadge(builder: any) {
   const claimed = (builder as any).claimed;
   const claimStatus = (builder as any).claimStatus || 'unclaimed';
   const verified = builder.verified;
-  
+
   if (verified) {
     return (
       <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
@@ -115,7 +115,7 @@ function getClaimStatusBadge(builder: any) {
       </Badge>
     );
   }
-  
+
   if (claimed && claimStatus === 'verified') {
     return (
       <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
@@ -124,7 +124,7 @@ function getClaimStatusBadge(builder: any) {
       </Badge>
     );
   }
-  
+
   if (claimStatus === 'pending') {
     return (
       <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 text-xs">
@@ -133,7 +133,7 @@ function getClaimStatusBadge(builder: any) {
       </Badge>
     );
   }
-  
+
   if (!claimed || claimStatus === 'unclaimed') {
     return (
       <Badge className="bg-orange-100 text-orange-800 border-orange-200 text-xs">
@@ -142,7 +142,7 @@ function getClaimStatusBadge(builder: any) {
       </Badge>
     );
   }
-  
+
   return null;
 }
 
@@ -162,7 +162,7 @@ function BuilderContactControls({ builder, location }: { builder: Builder; locat
   return (
     <div className="space-y-3 sm:space-y-4">
       {/* Primary CTA - Request Quote */}
-      <PublicQuoteRequest 
+      <PublicQuoteRequest
         builderId={builder.id}
         location={`${builder.headquarters?.city || builder.headquarters_city || 'Unknown City'}, ${builder.headquarters?.country || builder.headquarters_country || 'Unknown Country'}`}
         buttonText="Request Quote"
@@ -170,7 +170,7 @@ function BuilderContactControls({ builder, location }: { builder: Builder; locat
       />
 
       {/* Profile Claim System - Now with privacy protection */}
-      <ProfileClaimSystem 
+      <ProfileClaimSystem
         builder={{
           id: builder.id,
           companyName: builder.companyName,
@@ -218,11 +218,11 @@ function getRelevantServiceLocation(builder: Builder, currentPageLocation?: { co
   // Find the service location that matches the current page
   const matchingLocation = builder.serviceLocations.find(loc => {
     const countryMatch = loc.country.toLowerCase() === currentPageLocation.country.toLowerCase();
-    
+
     if (currentPageLocation.city) {
       // If we're on a city page, check if the city is in this location's cities
       const cities = getServiceLocationCities(loc);
-      return countryMatch && cities.some(city => 
+      return countryMatch && cities.some(city =>
         city.toLowerCase() === currentPageLocation.city!.toLowerCase()
       );
     } else {
@@ -236,9 +236,9 @@ function getRelevantServiceLocation(builder: Builder, currentPageLocation?: { co
 
 export function BuilderCard({ builder, showLeadForm = true, location, currentPageLocation }: BuilderCardProps) {
   const relevantLocation = getRelevantServiceLocation(builder, currentPageLocation);
-  
+
   return (
-    <Card className="h-full flex flex-col hover:shadow-lg transition-all duration-300 border-0 shadow-md">
+    <Card className="h-full flex flex-col hover:shadow-lg transition-all duration-300 border-0 shadow-md w-full">
       <CardHeader className="pb-4 sm:pb-6 flex-shrink-0">
         <div className="flex items-start justify-between mb-3 sm:mb-4">
           <div className="flex items-center gap-2">
@@ -248,7 +248,7 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
               <span className="text-sm text-gray-500">({builder.reviewCount})</span>
             </div>
           </div>
-          
+
           <div className="flex gap-1 flex-wrap">
             {builder.verified && !(builder as any).claimed && (
               <Badge className="bg-blue-100 text-blue-800 text-xs">
@@ -262,8 +262,8 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
 
         <div className="flex items-start gap-3">
           {builder.logo && (
-            <img 
-              src={builder.logo} 
+            <img
+              src={builder.logo}
               alt={builder.companyName}
               className="w-12 h-12 object-contain rounded-lg bg-gray-100 p-1"
               onError={(e) => {
@@ -277,7 +277,7 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
             {builder.companyName}
           </CardTitle>
         </div>
-        
+
         <div className="space-y-2 text-sm text-gray-600">
           <div className="flex items-center gap-2">
             <MapPin className="w-3 h-3 flex-shrink-0" />
@@ -295,7 +295,7 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
                 ))
               ) : (
                 <span>
-                  {builder.headquarters?.city || builder.headquarters_city || 'Unknown City'}, 
+                  {builder.headquarters?.city || builder.headquarters_city || 'Unknown City'},
                   {builder.headquarters?.country || builder.headquarters_country || 'Unknown Country'}
                 </span>
               )}
@@ -320,9 +320,9 @@ export function BuilderCard({ builder, showLeadForm = true, location, currentPag
         {/* Specializations */}
         <div className="flex flex-wrap gap-1 mb-4">
           {(builder.specializations || []).slice(0, 2).map((spec) => (
-            <Badge 
-              key={spec.id} 
-              variant="secondary" 
+            <Badge
+              key={spec.id}
+              variant="secondary"
               className="text-xs"
               style={{ backgroundColor: spec.color + '20', color: spec.color }}
             >

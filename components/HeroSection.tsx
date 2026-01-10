@@ -10,7 +10,7 @@ import { ArrowRight, Users, Building, CheckCircle } from "lucide-react";
 export function HeroSection() {
   return (
     <section
-      className="relative h-[80vh] flex items-center justify-center overflow-hidden pt-20"
+      className="relative min-h-[80vh] h-auto flex items-center justify-center overflow-hidden py-20 pb-24"
       style={{
         background:
           "linear-gradient(135deg, #7c2d92 0%, #db2777 50%, #ec4899 100%)",
@@ -29,10 +29,10 @@ export function HeroSection() {
         ></div>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in">
+      <div className="relative z-10 container mx-auto px-4 text-center animate-fade-in">
         {/* Main Heading */}
         <h1
-          className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight"
+          className="text-h1 font-bold text-white mb-6 leading-tight"
           data-macaly="hero-title"
         >
           We Build Your Stand in
@@ -44,7 +44,7 @@ export function HeroSection() {
 
         {/* Description */}
         <p
-          className="text-lg sm:text-xl lg:text-2xl text-gray-100 mb-8 max-w-3xl mx-auto leading-relaxed"
+          className="text-fluid-lg text-gray-100 mb-8 max-w-3xl mx-auto leading-relaxed"
           data-macaly="hero-description"
         >
           Get competitive quotes from verified exhibition stand builders. We

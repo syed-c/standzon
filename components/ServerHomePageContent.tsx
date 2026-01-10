@@ -248,10 +248,7 @@ export default async function ServerHomePageContent() {
         </section>
       </main>
       
-      {/* ✅ PERFORMANCE: Lazy load Footer */}
-      <Suspense fallback={<div className="h-32 bg-gray-900 animate-pulse"></div>}>
-        <Footer />
-      </Suspense>
+      {/* Footer is handled by ServerGlobalLayoutProvider */}
     </div>
   );
 }
