@@ -250,7 +250,7 @@ export const en: Translations = {
     social: {
       title: 'Follow Us'
     },
-    copyright: '© 2024 StandsZone. All rights reserved.'
+    copyright: '© 2026 StandsZone. All rights reserved.'
   },
   
   time: {

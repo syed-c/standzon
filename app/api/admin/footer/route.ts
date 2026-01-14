@@ -50,7 +50,7 @@ const DEFAULT_FOOTER_SETTINGS = {
     }
   },
   bottom: {
-    copyright: "© 2024 StandsZone. All rights reserved.",
+    copyright: "© 2026 StandsZone. All rights reserved.",
     links: [
       { label: "Privacy Policy", href: "/legal/privacy-policy" },
       { label: "Terms of Service", href: "/legal/terms-of-service" },
@@ -172,7 +172,7 @@ export async function PUT(request: NextRequest) {
         resources: { heading: body.columns?.resources?.heading || "Resources", items: body.columns?.resources?.items || [] },
       },
       bottom: {
-        copyright: body.bottom?.copyright || "© 2024 StandsZone. All rights reserved.",
+        copyright: body.bottom?.copyright || "© 2026 StandsZone. All rights reserved.",
         links: bottomLinks,
       },
       social: body.social || [

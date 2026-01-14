@@ -9,15 +9,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-[#FFFFFF] text-[#000000] border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm hover:shadow-md active:bg-[#F1F5F9] active:scale-[0.98]',
+        default: 'bg-[#FFFFFF] !text-[#000000] border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm hover:shadow-md active:bg-[#F1F5F9] active:scale-[0.98]',
         destructive:
-          'bg-[#FFFFFF] text-[#EF4444] border border-[#EF4444] hover:bg-[#FEF2F2] shadow-sm hover:shadow-md active:bg-[#FEE2E2] active:scale-[0.98]',
+          'bg-[#FFFFFF] !text-[#EF4444] border border-[#EF4444] hover:bg-[#FEF2F2] shadow-sm hover:shadow-md active:bg-[#FEE2E2] active:scale-[0.98]',
         outline:
-          'border-2 border-[#E2E8F0] bg-[#FFFFFF] text-[#000000] hover:bg-[#F8FAFC] hover:text-[#000000] hover:border-[#CBD5E1] shadow-sm hover:shadow-md active:bg-[#F1F5F9] active:scale-[0.98]',
+          'border-2 border-[#E2E8F0] bg-[#FFFFFF] !text-[#000000] hover:bg-[#F8FAFC] hover:!text-[#000000] hover:border-[#CBD5E1] shadow-sm hover:shadow-md active:bg-[#F1F5F9] active:scale-[0.98]',
         secondary:
-          'bg-[#FFFFFF] text-[#000000] border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm hover:shadow-md active:bg-[#F1F5F9] active:scale-[0.98]',
-        ghost: 'text-[#000000] hover:bg-[#F8FAFC] hover:text-[#000000] active:bg-[#F1F5F9] active:scale-[0.98]',
-        link: 'text-[#000000] underline-offset-4 hover:text-[#000000] opacity-80 hover:opacity-100 active:scale-[0.98]',
+          'bg-[#FFFFFF] !text-[#000000] border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm hover:shadow-md active:bg-[#F1F5F9] active:scale-[0.98]',
+        ghost: '!text-[#000000] hover:bg-[#F8FAFC] hover:!text-[#000000] active:bg-[#F1F5F9] active:scale-[0.98]',
+        link: '!text-[#000000] underline-offset-4 hover:!text-[#000000] opacity-80 hover:opacity-100 active:scale-[0.98]',
       },
       size: {
         default: 'h-10 px-4 py-2 min-h-[44px]',

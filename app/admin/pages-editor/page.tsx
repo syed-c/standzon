@@ -62,7 +62,7 @@ export default function AdminPagesEditor() {
       resources: { heading: 'Resources', items: [] as Array<{ label: string; href: string }> },
     },
     bottom: {
-      copyright: '© 2024 StandsZone. All rights reserved.',
+      copyright: '© 2026 StandsZone. All rights reserved.',
       links: [
         { label: 'Privacy Policy', href: '/legal/privacy-policy' },
         { label: 'Terms of Service', href: '/legal/terms-of-service' },

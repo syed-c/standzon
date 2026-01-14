@@ -306,15 +306,23 @@ export default function Navigation() {
             {!currentUser ? (
               <div className="flex items-center space-x-1">
                 <Link href="/auth/login?type=builder">
-                  <Button variant="ghost" size="sm" className="text-gray-900 dark:text-gray-100 text-xs px-2 py-1 rounded-lg hover:bg-gray-200/50 dark:hover:bg-slate-800/50">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="!bg-transparent !text-white !border-white text-xs px-2 py-1 rounded-lg hover:!bg-white/10 hover:!text-white transition-all duration-300"
+                  >
                     <SafeIcon IconComponent={FiUser} className="w-3 h-3 mr-1 flex-shrink-0" />
                     <span className="hidden xl:inline">Builder Login</span>
                     <span className="xl:hidden">Login</span>
                   </Button>
                 </Link>
-                <span className="text-gray-300 dark:text-slate-600 hidden xl:inline">|</span>
+                <span className="text-white/40 hidden xl:inline mx-1">|</span>
                 <Link href="/builder/register">
-                  <Button variant="ghost" size="sm" className="text-gray-900 dark:text-gray-100 text-xs px-2 py-1 rounded-lg hover:bg-gray-200/50 dark:hover:bg-slate-800/50">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="!bg-transparent !text-white !border-white text-xs px-2 py-1 rounded-lg hover:!bg-white/10 hover:!text-white transition-all duration-300"
+                  >
                     <span className="hidden xl:inline">Join as Builder</span>
                     <span className="xl:hidden">Join</span>
                   </Button>
