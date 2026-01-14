@@ -13,5 +13,9 @@ Disallow: /auth/
 # Prevent crawling of debug pages
 Disallow: /debug/
 
+# Prevent crawling of builder profiles and dashboard
+Disallow: /builders/
+Disallow: /builder/
+
 Sitemap: https://standszone.com/sitemap.xml
 Sitemap: https://standszone.com/trade-shows-sitemap.xml

@@ -2,6 +2,21 @@ import { notFound } from "next/navigation";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import BuilderProfileClient from "./BuilderProfileClient";
 import { getServerSupabase } from '@/lib/supabase';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  return {
+    robots: {
+      index: false,
+      follow: true,
+      nocache: true,
+      googleBot: {
+        index: false,
+        follow: true,
+      },
+    },
+  };
+}
 
 // Server component wrapper that handles params
 export default async function BuilderProfilePage({
@@ -10,7 +25,7 @@ export default async function BuilderProfilePage({
   params: { slug: string };
 }) {
   console.log("🚀 BuilderProfilePage: Starting");
-  
+
   const { slug } = params;
   console.log("✅ Params resolved, slug:", slug);
   console.log("✅ Slug length:", slug.length);
@@ -28,19 +43,19 @@ export default async function BuilderProfilePage({
     try {
       const sb = getServerSupabase();
       console.log("🔍 Supabase client available:", !!sb);
-      
+
       if (sb) {
         console.log("🔍 Server: Querying Supabase for builder with slug:", slug);
-        
+
         // Use simple query first to avoid complex join issues
         const { data: supabaseBuilder, error } = await sb
           .from('builder_profiles')
           .select('*')
           .eq('slug', slug)
           .maybeSingle(); // Use maybeSingle instead of single to handle cases where no data is found
-        
+
         console.log("🔍 Supabase query result:", { data: supabaseBuilder, error });
-        
+
         if (error) {
           console.log("❌ Server: Supabase error:", error);
         } else if (supabaseBuilder) {
@@ -52,7 +67,7 @@ export default async function BuilderProfilePage({
               .select('*')
               .eq('builder_id', supabaseBuilder.id)
               .order('year', { ascending: false });
-            
+
             portfolio = (portfolioData || []).map((item: any) => ({
               id: item.id,
               title: item.project_name,
@@ -77,7 +92,7 @@ export default async function BuilderProfilePage({
               .from('builder_services')
               .select('*')
               .eq('builder_id', supabaseBuilder.id);
-            
+
             services = (servicesData || []).map((item: any) => ({
               id: item.id,
               name: item.name,
@@ -100,7 +115,7 @@ export default async function BuilderProfilePage({
               .from('builder_service_locations')
               .select('*')
               .eq('builder_id', supabaseBuilder.id);
-            
+
             // Group by country
             const countryMap = new Map();
             (locationsData || []).forEach((loc: any) => {
@@ -111,7 +126,7 @@ export default async function BuilderProfilePage({
                 countryMap.get(loc.country).push(loc.city);
               }
             });
-            
+
             // Convert to the expected format
             countryMap.forEach((cities: string[], country: string) => {
               serviceLocations.push({
@@ -119,7 +134,7 @@ export default async function BuilderProfilePage({
                 cities: [...new Set(cities)] // Remove duplicates
               });
             });
-            
+
             // If no service locations, use headquarters
             if (serviceLocations.length === 0) {
               serviceLocations.push({
@@ -208,9 +223,9 @@ export default async function BuilderProfilePage({
             .select('*')
             .eq('slug', slug)
             .maybeSingle();
-          
+
           console.log("🔍 Builders table query result:", { data: buildersTableData, error: buildersError });
-          
+
           if (buildersError) {
             console.log("❌ Server: Builders table error:", buildersError);
           } else if (buildersTableData) {
@@ -275,7 +290,7 @@ export default async function BuilderProfilePage({
         const { data: allBuilders, error } = await sb
           .from('builder_profiles')
           .select('*');
-        
+
         if (!error && allBuilders) {
           const similarBuilder = allBuilders.find(b => b.slug && b.slug.includes(slug.substring(0, Math.min(20, slug.length))));
           if (similarBuilder) {
@@ -286,7 +301,7 @@ export default async function BuilderProfilePage({
     } catch (error) {
       console.error("❌ Server: Error in fuzzy search:", error);
     }
-    
+
     notFound();
   }
 
