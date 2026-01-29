@@ -20,7 +20,7 @@ export default function RecentLeadsSection({
 
   // Try to fetch real leads data from Supabase
   const [recentLeads, setRecentLeads] = useState<any[]>([]);
-  
+
   useEffect(() => {
     const fetchLeads = async () => {
       try {
@@ -43,7 +43,7 @@ export default function RecentLeadsSection({
         setIsLoading(false);
       }
     };
-    
+
     fetchLeads();
   }, []);
 
@@ -154,27 +154,27 @@ export default function RecentLeadsSection({
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "new":
-        return "bg-blue-100 text-blue-800 border-blue-200";
+        return "bg-blue-100 text-blue-900 border-blue-200";
       case "assigned":
-        return "bg-purple-100 text-purple-800 border-purple-200";
+        return "bg-purple-100 text-purple-900 border-purple-200";
       case "contacted":
-        return "bg-indigo-100 text-indigo-800 border-indigo-200";
+        return "bg-indigo-100 text-indigo-900 border-indigo-200";
       case "quoted":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-green-100 text-green-900 border-green-200";
       case "converted":
-        return "bg-teal-100 text-teal-800 border-teal-200";
+        return "bg-teal-100 text-teal-900 border-teal-200";
       case "lost":
-        return "bg-red-100 text-red-800 border-red-200";
+        return "bg-red-100 text-red-900 border-red-200";
       case "cancelled":
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-gray-100 text-gray-900 border-gray-200";
       case "open":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-green-100 text-green-900 border-green-200";
       case "matched":
-        return "bg-blue-100 text-blue-800 border-blue-200";
+        return "bg-blue-100 text-blue-900 border-blue-200";
       case "responded":
-        return "bg-purple-100 text-purple-800 border-purple-200";
+        return "bg-purple-100 text-purple-900 border-purple-200";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-gray-100 text-gray-900 border-gray-200";
     }
   };
 
@@ -217,7 +217,7 @@ export default function RecentLeadsSection({
         )}
       </div>
 
-      <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-emerald-100">
+      <div className="bg-white text-gray-900 rounded-2xl shadow-xl overflow-hidden border border-emerald-100">
         {/* Header */}
         <div className="px-3 md:px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-600">
           <div className="grid grid-cols-4 gap-1 md:gap-2 text-xs font-semibold text-white">
@@ -282,9 +282,9 @@ export default function RecentLeadsSection({
             {(ctaButtons && ctaButtons.length > 0
               ? ctaButtons
               : [
-                  { text: "Join as Builder", href: "/builders" },
-                  { text: "Learn More", href: "/about" },
-                ]
+                { text: "Join as Builder", href: "/builders" },
+                { text: "Learn More", href: "/about" },
+              ]
             ).map((b, i) => (
               <a
                 key={i}

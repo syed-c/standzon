@@ -413,227 +413,23 @@ button {
 }
 
 /* ✅ FIXED: Default button styling for buttons without explicit colors */
-button:not([class*="bg-"]):not([class*="text-"]):not([class*="gradient"]) {
-  color: inherit;
-}
-
-/* ✅ FIXED: Ensure outline buttons always have visible text */
-/* ✅ FIXED: Ensure outline buttons always have visible text */
-button[class*="outline"]:not([class*="text-"]) {
-  color: inherit;
-}
-
-/* On dark backgrounds, usually we want white text for outline */
-.dark button[class*="outline"]:not([class*="text-"]),
-.bg-slate-900 button[class*="outline"]:not([class*="text-"]),
-.bg-gray-900 button[class*="outline"]:not([class*="text-"]) {
-  color: #fff;
-}
-
-/* ✅ FIXED: Exception for hero section buttons - preserve white text */
-.hero-gradient button,
-.hero-gradient a.button,
-.hero-gradient .btn-primary,
-.hero-gradient .btn-outline {
-  color: white;
-}
-
-.hero-gradient button[class*="text-white"],
-.hero-gradient button[class*="text-white"] span,
-.hero-gradient button[class*="text-white"] .relative {
-  color: white;
-}
-
-/* Hero description styles for country and city pages */
-[data-macaly="hero-description"],
-.exhibition-stands-page p.text-lg,
-.exhibition-stands-page p.text-xl,
-section p.text-white\/80,
-section p.text-slate-300 {
-  font-size: 18px !important;
-  max-width: 100% !important;
-  line-height: 1.75rem;
-}
-
-/* ✅ FIXED: Ensure buttons with explicit white text stay white */
-button[class*="text-white"],
-button[class*="text-white"] span,
-button[class*="text-white"] .relative {
-  color: white;
-}
-
-/* ✅ FIXED: Ensure gradient buttons have white text */
-button[class*="gradient"],
-button[class*="bg-pink"],
-button[class*="bg-rose"],
-button[class*="bg-primary"] {
-  color: white;
-}
-
-/* ✅ FIXED: Ensure buttons with blue text on white backgrounds are visible */
-button[class*="bg-white"][class*="text-blue"] {
-  background-color: white;
-  color: #1d4ed8;
-  /* Darker blue for better contrast */
-}
-
-button[class*="bg-white"][class*="text-blue-primary"] {
-  background-color: white;
-  color: #1d4ed8;
-  /* Darker blue for better contrast */
-}
-
-/* ✅ FIXED: Ensure buttons with white text on blue backgrounds have proper contrast */
-button[class*="bg-blue"][class*="text-white"],
-button[class*="bg-blue-primary"][class*="text-white"] {
-  background-color: #1d4ed8;
-  /* Darker blue for better contrast */
-  color: white;
-}
-
-/* ✅ FIXED: Only remove white backgrounds from buttons that don't have explicit text colors AND are not outline buttons */
-button[class*="bg-white"]:not([class*="text-"]):not([class*="text-blue"]):not([class*="text-gray"]):not([class*="text-black"]):not([class*="outline"]) {
-  background-color: transparent;
-}
-
-button[class*="hover:bg-white"]:not([class*="text-"]):not([class*="text-blue"]):not([class*="text-gray"]):not([class*="text-black"]):not([class*="outline"]) {
-  background-color: transparent;
-}
-
-/* Also cover semi-transparent white backgrounds on buttons */
-button[class*="bg-white/"]:not([class*="text-"]):not([class*="text-blue"]):not([class*="text-gray"]):not([class*="text-black"]):not([class*="outline"]) {
-  background-color: transparent;
-}
-
-button[class*="hover:bg-white/"]:not([class*="text-"]):not([class*="text-blue"]):not([class*="text-gray"]):not([class*="text-black"]):not([class*="outline"]) {
-  background-color: transparent;
-}
-
-/* ✅ FIXED: Ensure hover states preserve text color */
-button[class*="text-white"],
-button[class*="text-white"] span,
-button[class*="gradient"],
-button[class*="bg-pink"],
-button[class*="bg-rose"],
-button[class*="bg-primary"] {
-  color: white;
-}
-
-/* ✅ FIXED: Ensure outline buttons maintain visibility - removed hover effect */
-button[class*="outline"] {
-  border-color: currentColor;
-  color: inherit;
-}
-
-button[class*="outline"] span {
-  color: inherit;
-}
-
-/* ✅ FIXED: Ensure white buttons with borders stay visible - removed hover effect */
-/* ✅ FIXED: Ensure white buttons with borders stay visible - default to dark text */
-button[class*="bg-white"] {
-  background-color: white;
-  border-color: #d1d5db;
-  color: inherit;
-}
-
-button[class*="bg-white"][class*="text-"] {
-  color: inherit;
-}
-
-/* ✅ FIXED: Ensure all buttons maintain text visibility - removed hover effect */
-button {
-  color: inherit;
-}
-
-button span {
-  color: inherit;
-}
-
-/* ✅ FIXED: Specific rule for outline buttons to maintain borders */
-button[class*="outline"] {
-  border-width: 2px !important;
-  border-style: solid !important;
-}
-
-/* ✅ FIXED: Ensure buttons with white/20 backgrounds maintain visibility */
-button[class*="bg-white/20"] {
-  background-color: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-/* ✅ FIXED: Ensure buttons with hover:bg-white/20 maintain text visibility */
-button[class*="hover:bg-white/20"] {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #374151;
-  /* gray-700 for visibility */
-}
-
-button[class*="hover:bg-white/20"] span {
-  color: #374151;
-}
-
-/* ✅ CRITICAL FIX: Override any conflicting rules for location page buttons */
-button[class*="hover:bg-white/20"][class*="text-white"] {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #374151;
-}
-
-button[class*="hover:bg-white/20"][class*="text-white"] span {
-  color: #374151;
-}
-
-/* ✅ CRITICAL FIX: Specific rule for outline buttons with white text */
-button[class*="outline"][class*="text-white"] {
-  color: #374151;
-}
-
-button[class*="outline"][class*="text-white"] span {
-  color: #374151;
-}
-
-/* ✅ CRITICAL FIX: Override all conflicting rules for white buttons */
-button[class*="hover:text-gray-900"] {
-  color: #374151;
-}
-
-button[class*="hover:text-gray-900"] span {
-  color: #374151;
-}
-
-/* ✅ CRITICAL FIX: Ensure all text elements have proper contrast */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: inherit;
-}
-
-p,
-span,
-div {
-  color: inherit;
-}
 
 /* ✅ CRITICAL FIX: Ensure form elements are visible */
 input,
 textarea,
 select {
-  color: #374151 !important;
-  background-color: white !important;
+  @apply text-gray-900 bg-white border-gray-200;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #9ca3af !important;
+  @apply text-gray-400;
 }
 
 /* ✅ CRITICAL FIX: Ensure card content is visible */
 .card,
 .card-content {
-  color: #374151;
+  color: inherit;
 }
 
 /* ✅ CRITICAL FIX: Ensure badge text is visible */
