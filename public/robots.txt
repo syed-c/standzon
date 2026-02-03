@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Prevent crawling of admin pages
+Disallow: /admin/
+
+# Prevent crawling of API endpoints
+Disallow: /api/
+
+# Prevent crawling of sensitive authentication pages
+Disallow: /auth/
+
+# Prevent crawling of debug pages
+Disallow: /debug/
+
+# Prevent crawling of builder profiles and dashboard
+# Builders are now public assets for SEO
+Allow: /builders/
+Allow: /builder/
+
+Sitemap: https://standszone.com/sitemap.xml
+Sitemap: https://standszone.com/trade-shows-sitemap.xml

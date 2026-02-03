@@ -1,0 +1,33 @@
+/* Theme Transition Styles */
+.transition-colors {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.duration-300 {
+  transition-duration: 300ms;
+}
+
+/* Ensure all interactive elements have smooth transitions */
+button, a, input, select, textarea {
+  transition: all 0.3s ease;
+}
+
+/* Card transition enhancements */
+.card, .glass-card, .stat-card, .table-container {
+  transition: all 0.3s ease;
+}
+
+/* Button transition enhancements */
+.button-primary, .button-secondary, .premium-gradient-button, .premium-icon-button {
+  transition: all 0.3s ease;
+}
+
+/* Sidebar transition enhancements */
+.sidebar-link, .topbar-button {
+  transition: all 0.3s ease;
+}
+
+/* Badge transition enhancements */
+.badge {
+  transition: all 0.3s ease;
+}

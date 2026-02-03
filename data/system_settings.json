@@ -1,0 +1,39 @@
+{
+  "_metadata": {
+    "timestamp": "2025-07-26T09:16:18.201Z",
+    "version": "1.0",
+    "checksum": "-2b1a816b"
+  },
+  "data": {
+    "smtp": {
+      "enabled": true
+    },
+    "sms": {
+      "enabled": false
+    },
+    "payments": {
+      "stripe": {
+        "enabled": false
+      },
+      "razorpay": {
+        "enabled": false
+      }
+    },
+    "platform": {
+      "name": "ExhibitBay",
+      "version": "1.0.0",
+      "environment": "development",
+      "maintenanceMode": false
+    },
+    "backup": {
+      "enabled": true,
+      "interval": 3600000
+    },
+    "recovery": {
+      "enabled": true,
+      "autoRecover": true
+    },
+    "updatedAt": "2025-07-26T09:16:18.201Z",
+    "_persistenceVersion": "1.0"
+  }
+}

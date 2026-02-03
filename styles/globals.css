@@ -1,0 +1,13 @@
+/* Admin heading scale (smaller inside /admin) */
+.admin-content h1 { @apply text-xl font-semibold; }
+.admin-content h2 { @apply text-lg font-semibold; }
+.admin-content h3 { @apply text-base font-medium; }
+
+/* Pages Editor specific typography */
+.pages-editor h1 { @apply text-lg font-semibold; }
+.pages-editor h2 { @apply text-base font-semibold; }
+.pages-editor h3 { @apply text-sm font-medium; }
+.pages-editor .text-3xl { @apply text-xl; }
+.pages-editor .text-2xl { @apply text-lg; }
+.pages-editor .text-xl { @apply text-base; }
+
