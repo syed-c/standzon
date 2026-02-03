@@ -848,6 +848,7 @@ a:focus {
 
 .dark .admin-dashboard .gradient-text {
 
+
   @apply bg-gradient-to-r from-[#FFFFFF] to-[#AAB4C5] bg-clip-text text-transparent;
 }
 
@@ -888,76 +889,6 @@ a:focus {
  * Responsive Design System for StandsZone
  * Implements mobile-first responsive design with fluid typography and spacing
  */
-
-/* Fluid Typography System */
-:root {
-  --fluid-min-screen: 360px;
-  --fluid-max-screen: 1440px;
-  --fluid-min-h1: 1.5rem;
-  --fluid-max-h1: 3rem;
-  --fluid-min-h2: 1.25rem;
-  --fluid-max-h2: 2.25rem;
-  --fluid-min-h3: 1.125rem;
-  --fluid-max-h3: 1.75rem;
-  --fluid-min-body: 0.875rem;
-  --fluid-max-body: 1rem;
-}
-
-/* Apply fluid typography using clamp */
-.fluid-h1 {
-  font-size: clamp(var(--fluid-min-h1), calc(0.75rem + ((1vw - 0.36rem) * 1.63)), var(--fluid-max-h1));
-  line-height: 1.2;
-}
-
-.fluid-h2 {
-  font-size: clamp(var(--fluid-min-h2), calc(0.875rem + ((1vw - 0.36rem) * 1.03)), var(--fluid-max-h2));
-  line-height: 1.3;
-}
-
-.fluid-h3 {
-  font-size: clamp(var(--fluid-min-h3), calc(1rem + ((1vw - 0.36rem) * 0.41)), var(--fluid-max-h3));
-  line-height: 1.4;
-}
-
-.fluid-body {
-  font-size: clamp(var(--fluid-min-body), calc(0.8125rem + ((1vw - 0.36rem) * 0.35)), var(--fluid-max-body));
-  line-height: 1.6;
-}
-
-/* Fluid Spacing System */
-.fluid-spacing-xs {
-  margin: clamp(0.25rem, calc(0.25rem + ((1vw - 0.36rem) * 0.27)), 0.5rem);
-  padding: clamp(0.25rem, calc(0.25rem + ((1vw - 0.36rem) * 0.27)), 0.5rem);
-}
-
-.fluid-spacing-sm {
-  margin: clamp(0.5rem, calc(0.5rem + ((1vw - 0.36rem) * 0.55)), 0.75rem);
-  padding: clamp(0.5rem, calc(0.5rem + ((1vw - 0.36rem) * 0.55)), 0.75rem);
-}
-
-.fluid-spacing-md {
-  margin: clamp(0.75rem, calc(0.75rem + ((1vw - 0.36rem) * 0.82)), 1rem);
-  padding: clamp(0.75rem, calc(0.75rem + ((1vw - 0.36rem) * 0.82)), 1rem);
-}
-
-.fluid-spacing-lg {
-  margin: clamp(1rem, calc(1rem + ((1vw - 0.36rem) * 1.1)), 1.5rem);
-  padding: clamp(1rem, calc(1rem + ((1vw - 0.36rem) * 1.1)), 1.5rem);
-}
-
-.fluid-spacing-xl {
-  margin: clamp(1.5rem, calc(1.5rem + ((1vw - 0.36rem) * 1.64)), 2rem);
-  padding: clamp(1.5rem, calc(1.5rem + ((1vw - 0.36rem) * 1.64)), 2rem);
-}
-
-.fluid-spacing-2xl {
-  margin: clamp(2rem, calc(2rem + ((1vw - 0.36rem) * 2.2)), 3rem);
-  padding: clamp(2rem, calc(2rem + ((1vw - 0.36rem) * 2.2)), 3rem);
-}
-
-/* Container System */
-/* Responsive Design System for StandsZone */
-/* Implements mobile-first responsive design with fluid typography and spacing */
 
 /* Fluid Typography System */
 :root {

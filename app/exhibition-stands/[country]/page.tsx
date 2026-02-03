@@ -36,6 +36,8 @@ async function getCountryPageContent(countrySlug: string) {
     if (sb) {
       console.log("🔍 Server-side: Fetching CMS data for country:", countrySlug);
 
+
+
       const result = await sb
         .from("page_contents")
         .select("content")
@@ -63,6 +65,8 @@ async function getCountryPageContent(countrySlug: string) {
 export async function generateMetadata({ params }: { params: Promise<{ country: string }> }): Promise<Metadata> {
   const { country: countrySlug } = await params;
   const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
+
+
 
   // Better error handling for missing country data
   if (!countryInfo) {
@@ -95,10 +99,14 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
         .eq('id', countrySlug)
         .single();
 
+
+
       if (!result.error && result.data?.content) {
         const content = result.data.content;
         const seo = content.seo || {};
         const hero = content.hero || {};
+
+
 
         cmsMetadata = {
           title: seo.metaTitle || hero.title || `Exhibition Stand Builders in ${countryInfo.name} | Professional Trade Show Displays`,
@@ -132,9 +140,8 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
         'max-snippet': -1,
       },
     },
-    alternates: {
-      canonical: `https://standszone.com/exhibition-stands/${countrySlug}`,
-    },
+
+
     openGraph: {
       title,
       description,
@@ -155,6 +162,7 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
 export default async function CountryPage({ params }: { params: Promise<{ country: string }> }) {
   const { country: countrySlug } = await params;
   const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
+
 
   // Better error handling to prevent 5xx errors
   if (!countryInfo) {
@@ -177,6 +185,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
       const rawCities = await getCitiesByCountry(countryCode);
       console.log(`✅ Fetched ${rawCities.length} cities for ${countryInfo.name} (${countryCode}) from Supabase`);
 
+
+
       // Transform cities data to match expected format
       cities = rawCities.map((city: any) => ({
         name: city.city_name,
@@ -190,12 +200,16 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
     console.error(`❌ Error fetching cities for ${countryInfo.name}:`, error);
   }
 
+
+
   // If no cities from Supabase, fallback to global database
   if (cities.length === 0) {
     console.log(`🔄 Falling back to global database for cities in ${countryInfo.name}`);
     try {
       const globalCities = getGlobalCitiesByCountry(countrySlug);
       console.log(`✅ Found ${globalCities.length} cities for ${countryInfo.name} in global database`);
+
+
 
       // Transform global cities data to match expected format and deduplicate
       const cityMap = new Map();
@@ -209,6 +223,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
           });
         }
       });
+
+
 
       cities = Array.from(cityMap.values());
       console.log(`✅ Deduplicated to ${cities.length} unique cities for ${countryInfo.name}`);
@@ -228,9 +244,11 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
     let baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
     // Ensure the base URL has a protocol (http:// or https://)
+
     if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
       baseUrl = `https://${baseUrl}`;
     }
+
 
     console.log(`🔍 Fetching builders from: ${baseUrl}/api/admin/builders?limit=1000&prioritize_real=true`);
 
@@ -250,20 +268,28 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
         throw new Error('Supabase client not available');
       }
 
+
+
       const { data: buildersData, error: buildersError } = await sb
         .from('builders')
         .select('*')
         .is('deleted_at', null); // Only get non-deleted builders
+
+
 
       if (buildersError) {
         console.error('❌ Error querying builders table:', buildersError);
         // Try the builder_profiles table as fallback
         console.warn('⚠️ No data in builders table or error occurred, trying builder_profiles table...');
 
+
+
         const { data: profilesData, error: profilesError } = await sb
           .from('builder_profiles')
           .select('*')
           .is('deleted_at', null);
+
+
 
         if (profilesError) {
           console.error('❌ Error querying builder_profiles table:', profilesError);
@@ -277,6 +303,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
         builders = buildersData || [];
       }
 
+
+
       // Filter builders for this country
       console.log('🔍 Filtering builders for country:', countryInfo.name);
       const normalizedCountryName = countryInfo.name.toLowerCase();
@@ -286,6 +314,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
       } else if (normalizedCountryName === "uae") {
         countryVariations.push("united arab emirates");
       }
+
+
 
       // Filter builders by location
       builders = builders.filter((builder: any) => {
@@ -308,6 +338,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
       });
 
       console.log(`📍 Filtered to ${builders.length} builders for country: ${countryInfo.name}`);
+
+
 
       // Transform builders to match Builder interface
       builders = builders.map((b: any) => ({
@@ -365,6 +397,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
       const buildersData = await response.json();
       console.log(`✅ Builders API response received. Success: ${buildersData.success}, Builders count: ${buildersData.data?.builders?.length || 0}`);
 
+
+
       if (buildersData.success && buildersData.data && Array.isArray(buildersData.data.builders)) {
         // Handle country name variations (UAE vs United Arab Emirates)
         const normalizedCountryName = countryInfo.name.toLowerCase();
@@ -377,6 +411,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
 
         console.log('🔍 DEBUG: Country variations for filtering:', countryVariations);
 
+
+
         // Filter builders for this country (with variations)
         const filteredBuilders = buildersData.data.builders.filter((builder: any) => {
           // Normalize strings for comparison
@@ -384,6 +420,7 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
             if (!str) return '';
             return str.toString().toLowerCase().trim();
           };
+
 
           // Check headquarters country (handle different field names)
           const headquartersCountry = normalizeString(
@@ -418,6 +455,7 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
             });
           }
 
+
           return headquartersMatch || serviceLocationMatch;
         });
 
@@ -428,6 +466,7 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
             builderMap.set(builder.id, builder);
           }
         });
+
 
         const uniqueBuilders = Array.from(builderMap.values());
 
@@ -441,6 +480,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
             headquarters_country: uniqueBuilders[0].headquarters_country
           });
         }
+
+
 
         // Transform builders to match expected interface (same as in BuildersDirectoryContent)
         builders = uniqueBuilders.map((b: any) => {
@@ -529,6 +570,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
             contactEmail: b.contact_email || b.primary_email || b.primaryEmail || ""
           };
 
+
+
           // Log first few transformations
           if (uniqueBuilders.indexOf(b) < 3) {
             console.log(`🔍 DEBUG: Transformed builder ${b.company_name || b.companyName}:`, {
@@ -537,6 +580,7 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
               headquarters: transformed.headquarters
             });
           }
+
 
           return transformed;
         });
@@ -554,6 +598,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
     console.error("❌ Error loading builders from API:", error);
   }
 
+
+
   // If API failed or returned no builders, fallback to direct Supabase query
   if (builders.length === 0) {
     try {
@@ -564,6 +610,7 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
         throw new Error('Supabase client not available');
       }
 
+
       console.log('🔍 Using client type: Admin (bypasses RLS)');
       console.log('🔍 Querying builders table...');
 
@@ -573,15 +620,21 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
         .select('*')
         .is('deleted_at', null); // Only get non-deleted builders
 
+
+
       if (buildersError) {
         console.error('❌ Error querying builders table:', buildersError);
         // Try the builder_profiles table as fallback
         console.warn('⚠️ No data in builders table or error occurred, trying builder_profiles table...');
 
+
+
         const { data: profilesData, error: profilesError } = await sb
           .from('builder_profiles')
           .select('*')
           .is('deleted_at', null);
+
+
 
         if (profilesError) {
           console.error('❌ Error querying builder_profiles table:', profilesError);
@@ -594,6 +647,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
         builders = buildersData || [];
       }
 
+
+
       // Filter builders for this country
       console.log('🔍 Filtering builders for country:', countryInfo.name);
       const normalizedCountryName = countryInfo.name.toLowerCase();
@@ -603,6 +658,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
       } else if (normalizedCountryName === "uae") {
         countryVariations.push("united arab emirates");
       }
+
+
 
       // Filter builders by location
       builders = builders.filter((builder: any) => {
@@ -625,6 +682,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
       });
 
       console.log(`📍 Filtered to ${builders.length} builders for country: ${countryInfo.name}`);
+
+
 
       // Transform builders to match Builder interface
       builders = builders.map((b: any) => ({
@@ -664,6 +723,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
     }
   }
 
+
+
   // DEBUG: Log builders info
   console.log("🔍 DEBUG: Server-side builders count:", builders.length);
   if (builders.length > 0) {
@@ -677,6 +738,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
     console.log("⚠️ DEBUG: No builders to send to client component");
   }
 
+
+
   const defaultContent = {
     id: `${countrySlug}-main`,
     title: `Exhibition Stand Builders in ${countryInfo.name}`,
@@ -686,6 +749,8 @@ export default async function CountryPage({ params }: { params: Promise<{ countr
     heroContent: `Partner with ${countryInfo.name}'s premier exhibition stand builders for trade show success across the country.`,
     seoKeywords: [`${countryInfo.name} exhibition stands`, `${countryInfo.name} trade show builders`, `${countryInfo.name} exhibition builders`, `${countryInfo.name} booth design`, `${countryInfo.name} exhibition services`]
   };
+
+
 
   const countryBlock = cmsContent?.sections?.countryPages?.[countrySlug] || cmsContent || null;
   const mergedContent = {

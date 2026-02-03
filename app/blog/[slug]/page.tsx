@@ -106,12 +106,13 @@ export default function BlogDetailPage({ params }: { params: { slug: string } })
                 {/* Article Content */}
                 <div className="py-12 md:py-16">
                     <div
-                        className="prose prose-lg max-w-none dark:prose-invert
-              [&_h2]:font-bold [&_h2]:text-3xl [&_h2]:mt-12 [&_h2]:mb-6 [&_h2]:leading-tight [&_h2]:tracking-tight
-              [&_h3]:font-bold [&_h3]:text-2xl [&_h3]:mt-10 [&_h3]:mb-4
-              [&_p]:leading-relaxed [&_p]:mb-6 [&_p]:text-base
-              [&_ul]:my-6 [&_li]:leading-relaxed
-              [&_strong]:font-semibold"
+                        className="prose prose-lg max-w-none text-slate-900 dark:text-slate-100 dark:prose-invert
+              [&_h2]:text-slate-900 dark:[&_h2]:text-white [&_h2]:font-bold [&_h2]:text-3xl [&_h2]:mt-12 [&_h2]:mb-6 [&_h2]:leading-tight [&_h2]:tracking-tight
+              [&_h3]:text-slate-900 dark:[&_h3]:text-white [&_h3]:font-bold [&_h3]:text-2xl [&_h3]:mt-10 [&_h3]:mb-4
+              [&_p]:text-slate-900 dark:[&_p]:text-slate-200 [&_p]:leading-relaxed [&_p]:mb-6 [&_p]:text-base
+              [&_ul]:my-6 [&_li]:text-slate-900 dark:[&_li]:text-slate-200 [&_li]:leading-relaxed
+              [&_strong]:text-slate-900 dark:[&_strong]:text-white [&_strong]:font-semibold
+              [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:hover:text-blue-800 [&_a]:underline"
                         dangerouslySetInnerHTML={{ __html: article.content }}
                     />
                 </div>

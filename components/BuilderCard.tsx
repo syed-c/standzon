@@ -13,6 +13,8 @@ const ProfileClaimSystem = dynamic(
   () => import('./ProfileClaimSystem').then((mod) => mod.ProfileClaimSystem),
   { ssr: false }
 );
+
+
 import {
   Quote, Star, MapPin, Users, Clock,
   Shield, Award, CheckCircle2,

@@ -163,7 +163,7 @@ export default async function ServerCountryCityPage({
       }
 
       // Filter builders by location if provided
-      builders = allBuilders.filter((builder: any) => {
+      const filteredBuilders = allBuilders.filter((builder: any) => {
         // Check headquarters country
         const headquartersCountry = (builder.headquarters_country || builder.country || '').toLowerCase().trim();
         const countryMatch = countryVariations.some(variation =>
@@ -196,7 +196,7 @@ export default async function ServerCountryCityPage({
       });
 
       // Transform builders to match Builder interface
-      builders = builders.map((b: any) => ({
+      builders = filteredBuilders.map((b: any) => ({
         id: b.id,
         companyName: b.company_name || b.companyName || "",
         slug: b.slug ||
@@ -224,8 +224,8 @@ export default async function ServerCountryCityPage({
         companyDescription: b.description || b.company_description || "",
         keyStrengths: b.key_strengths || [],
         featured: b.featured || false,
-        logo: b.logo || b.profile_image || b.image_url || b.avatar || b.photo || b.logo_url || b.brand_logo || "/images/builders/default-logo.png", // Add all possible logo fields
-        portfolio: b.portfolio || b.gallery_images || b.images || [], // Add portfolio field for gallery images
+        logo: b.logo || b.profile_image || b.image_url || b.avatar || b.photo || b.logo_url || b.brand_logo || "/images/builders/default-logo.png",
+        portfolio: b.portfolio || b.gallery_images || b.images || [],
       }));
     } catch (error) {
       console.error("Error loading builders on server:", error);
@@ -247,6 +247,7 @@ export default async function ServerCountryCityPage({
     ...defaultContent,
     ...(pageContent || {})
   };
+
 
   // Calculate pagination
   const effectiveItemsPerPage = itemsPerPage || BUILDERS_PER_PAGE; // Use constant instead of hardcoded 6
@@ -287,6 +288,8 @@ export default async function ServerCountryCityPage({
                   builders.length) *
                 10
               ) / 10
+
+
               : 4.8,
           completedProjects: builders.reduce(
             (sum, b) => sum + b.projectsCompleted,
@@ -301,11 +304,15 @@ export default async function ServerCountryCityPage({
       // Removed event handlers to comply with server component restrictions
       // searchTerm, onSearchTermChange, and other event handlers are removed
       // onContentUpdate is removed since isEditable is false
+
+
       />
 
       {/* Pagination Controls (immediately after builders) */}
       {Math.ceil(builders.length / effectiveItemsPerPage) > 1 && (
         <section className="py-6 bg-white dark:bg-slate-900">
+
+
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap items-center justify-center gap-2">
               <Button
@@ -322,6 +329,8 @@ export default async function ServerCountryCityPage({
                   if (Math.ceil(builders.length / effectiveItemsPerPage) > 10) {
                     if (pageNum === 1 || pageNum === Math.ceil(builders.length / effectiveItemsPerPage) ||
                       (pageNum >= effectiveCurrentPage - 1 && pageNum <= effectiveCurrentPage + 1)) {
+
+
                       return (
                         <Button
                           key={i}
@@ -330,6 +339,8 @@ export default async function ServerCountryCityPage({
                           className={
                             effectiveCurrentPage === pageNum
                               ? "min-w-[40px]"
+
+
                               : "text-gray-900 border-gray-300 min-w-[40px]"
                           }
                         >
@@ -351,6 +362,8 @@ export default async function ServerCountryCityPage({
                       className={
                         effectiveCurrentPage === pageNum
                           ? "min-w-[40px]"
+
+
                           : "text-gray-900 border-gray-300 min-w-[40px]"
                       }
                     >
@@ -376,6 +389,8 @@ export default async function ServerCountryCityPage({
       )
       }
 
+
+
       {/* Cities Section placed after builders + pagination - hidden on city pages and specific countries */}
       {(() => {
         // For city pages, we want to hide the cities section completely
@@ -391,6 +406,8 @@ export default async function ServerCountryCityPage({
                   Cities in {country}
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300 mt-2">
+
+
                   Browse local pages for major cities across {country}
                 </p>
               </div>
@@ -434,6 +451,7 @@ export default async function ServerCountryCityPage({
                     .replace(/\s+/g, "-")
                     .replace(/[^a-z0-9-]/g, "");
 
+
                   // Check nested structure in pageContent
                   if (pageContent?.sections?.countryPages?.[countrySlug]?.servicesHeading) {
                     const headingRaw = pageContent.sections.countryPages[countrySlug].servicesHeading;
@@ -449,6 +467,7 @@ export default async function ServerCountryCityPage({
                     .toLowerCase()
                     .replace(/\s+/g, "-")
                     .replace(/[^a-z0-9-]/g, "");
+
 
                   // Check various possible structures in cmsContent
                   if (cmsContent?.sections?.countryPages?.[countrySlug]?.servicesHeading) {
@@ -474,6 +493,8 @@ export default async function ServerCountryCityPage({
             </h2>
             <div
               className="prose max-w-none leading-relaxed text-gray-900 dark:text-gray-300 prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-900 dark:prose-p:text-gray-300 prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-li:text-gray-900 dark:prose-li:text-gray-300"
+
+
               dangerouslySetInnerHTML={{
                 __html: (() => {
                   // Extract content from CMS structure
@@ -486,6 +507,7 @@ export default async function ServerCountryCityPage({
                       .toLowerCase()
                       .replace(/\s+/g, "-")
                       .replace(/[^a-z0-9-]/g, "");
+
 
                     // Check nested structure in pageContent
                     if (pageContent?.sections?.countryPages?.[countrySlug]?.servicesParagraph) {
@@ -503,6 +525,7 @@ export default async function ServerCountryCityPage({
                       .toLowerCase()
                       .replace(/\s+/g, "-")
                       .replace(/[^a-z0-9-]/g, "");
+
 
                     // Check various possible structures in cmsContent
                     if (cmsContent?.sections?.countryPages?.[countrySlug]?.servicesParagraph) {
@@ -534,6 +557,8 @@ export default async function ServerCountryCityPage({
         <section className="py-12 bg-white dark:bg-slate-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+
+
               {(() => {
                 const countrySlug = country
                   .toLowerCase()
@@ -544,6 +569,7 @@ export default async function ServerCountryCityPage({
                   .replace(/\s+/g, "-")
                   .replace(/[^a-z0-9-]/g, "");
                 const key = `${countrySlug}-${citySlug}`;
+
 
                 // Try multiple sources for city content
                 let contentSource = null;
@@ -585,6 +611,8 @@ export default async function ServerCountryCityPage({
             </h2>
             <div
               className="prose max-w-none leading-relaxed text-gray-900 dark:text-gray-300 prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-900 dark:prose-p:text-gray-300 prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-li:text-gray-900 dark:prose-li:text-gray-300"
+
+
               dangerouslySetInnerHTML={{
                 __html: (() => {
                   const countrySlug = country
@@ -596,6 +624,7 @@ export default async function ServerCountryCityPage({
                     .replace(/\s+/g, "-")
                     .replace(/[^a-z0-9-]/g, "");
                   const key = `${countrySlug}-${citySlug}`;
+
 
                   // Try multiple sources for city content
                   let contentSource = null;
@@ -631,11 +660,14 @@ export default async function ServerCountryCityPage({
                       ?.servicesParagraph ||
                     (cmsContent as any)?.servicesParagraph;
 
+
                   // Ensure paragraph is a string, not an object
                   const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description ||
                     `<p>${city}, ${country} provides access to top-tier exhibition stand builders who specialize in creating impactful displays for trade shows and exhibitions. Our local experts combine creativity with technical excellence to deliver solutions that exceed expectations.</p>
                      <p>Whether you need a modular booth, custom island display, or specialty activation, ${city}'s exhibition stand builders offer comprehensive services from concept to installation, ensuring your brand stands out in competitive environments.</p>`
                     : paragraphRaw ||
+
+
                     `<p>${city}, ${country} provides access to top-tier exhibition stand builders who specialize in creating impactful displays for trade shows and exhibitions. Our local experts combine creativity with technical excellence to deliver solutions that exceed expectations.</p>
                      <p>Whether you need a modular booth, custom island display, or specialty activation, ${city}'s exhibition stand builders offer comprehensive services from concept to installation, ensuring your brand stands out in competitive environments.</p>`;
                   return paragraph.replace(/\r?\n/g, "<br/>");
@@ -654,6 +686,8 @@ export default async function ServerCountryCityPage({
                 {`Get Free Quotes from ${city} Builders`}
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">
+
+
                 Submit your requirements and receive competitive quotes from
                 verified local builders
               </p>
@@ -673,6 +707,8 @@ export default async function ServerCountryCityPage({
                                   country === 'India' ? 'IN' :
                                     country === 'Singapore' ? 'SG' :
                                       country === 'China' ? 'CN' : 'US'}
+
+
                 cityName={city}
                 buttonText="Get Free Quote"
                 size="lg"
@@ -683,7 +719,151 @@ export default async function ServerCountryCityPage({
         </section>
       )}
 
+      {/* Bottom CTA moved to the very bottom - now sourced from CMS/Supabase */}
+      <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
+        <div className="container mx-auto px-6 text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              {(() => {
+                const countrySlug = country
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^a-z0-9-]/g, "");
+                const citySlug = city
+                  ? city
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "")
+                  : "";
+                const key = city ? `${countrySlug}-${citySlug}` : "";
+                const countryBlock =
+                  (pageContent as any)?.sections?.countryPages?.[countrySlug] ||
+                  (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
+                  (cmsContent as any) ||
+                  {};
+                const rawCity = city
+                  ? (pageContent as any)?.sections?.cityPages?.[key]
+                  : null;
+                const nestedCity = city && citySlug
+                  ? (rawCity as any)?.countryPages?.[citySlug] ? (rawCity as any).countryPages[citySlug] : rawCity
+                  : null;
+                const cityBlock = city
+                  ? nestedCity ||
+                  (cmsContent as any)?.sections?.cityPages?.[key] ||
+                  (cmsContent as any) ||
+                  {}
+                  : null;
+                const block = city ? cityBlock || {} : countryBlock || {};
+
+                // Fix: Ensure we're not passing objects directly to JSX
+                const headingRaw =
+                  (block as any)?.finalCtaHeading ||
+                  `Ready to Find Your Perfect Builder in ${city || country}?`;
+
+                // Ensure values are strings, not objects
+                const heading = typeof headingRaw === 'object' ? headingRaw?.heading || headingRaw : headingRaw;
+                return heading;
+              })()}
+            </h2>
+            <p className="text-xl text-slate-300 mb-8">
+              {(() => {
+                const countrySlug = country
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^a-z0-9-]/g, "");
+                const citySlug = city
+                  ? city
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "")
+                  : "";
+                const key = city ? `${countrySlug}-${citySlug}` : "";
+                const countryBlock =
+                  (pageContent as any)?.sections?.countryPages?.[countrySlug] ||
+                  (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
+                  (cmsContent as any) ||
+                  {};
+                const rawCity = city
+                  ? (pageContent as any)?.sections?.cityPages?.[key]
+                  : null;
+                const nestedCity = city && citySlug
+                  ? (rawCity as any)?.countryPages?.[citySlug] ? (rawCity as any).countryPages[citySlug] : rawCity
+                  : null;
+                const cityBlock = city
+                  ? nestedCity ||
+                  (cmsContent as any)?.sections?.cityPages?.[key] ||
+                  (cmsContent as any) ||
+                  {}
+                  : null;
+                const block = city ? cityBlock || {} : countryBlock || {};
+
+                // Fix: Ensure we're not passing objects directly to JSX
+                const paragraphRaw =
+                  (block as any)?.finalCtaParagraph ||
+                  "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.";
+
+                // Ensure values are strings, not objects
+                const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || paragraphRaw : paragraphRaw;
+                return paragraph;
+              })()}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button className="text-lg px-8 py-4 text-black">
+                {(() => {
+                  const countrySlug = country
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "");
+                  const citySlug = city
+                    ? city
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")
+                      .replace(/[^a-z0-9-]/g, "")
+                    : "";
+                  const key = city ? `${countrySlug}-${citySlug}` : "";
+                  const countryBlock =
+                    (pageContent as any)?.sections?.countryPages?.[countrySlug] ||
+                    (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
+                    (cmsContent as any) ||
+                    {};
+                  const rawCity = city
+                    ? (pageContent as any)?.sections?.cityPages?.[key]
+                    : null;
+                  const nestedCity = city && citySlug
+                    ? (rawCity as any)?.countryPages?.[citySlug] || rawCity
+                    : null;
+                  const cityBlock = city
+                    ? nestedCity ||
+                    (cmsContent as any)?.sections?.cityPages?.[key] ||
+                    (cmsContent as any) ||
+                    {}
+                    : null;
+                  const block = city ? cityBlock || {} : countryBlock || {};
+
+                  // Fix: Ensure we're not passing objects directly to JSX
+                  const buttonTextRaw =
+                    (block as any)?.finalCtaButtonText || "Start Getting Quotes";
+
+                  // Ensure values are strings, not objects
+                  const buttonText = typeof buttonTextRaw === 'object' ? buttonTextRaw?.text || buttonTextRaw : buttonTextRaw;
+                  return buttonText;
+                })()}
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg"
+              // onClick handler removed to comply with server component restrictions
+              >
+                Back to Top
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Cities section was moved to top */}
-    </div>
+    </div >
+
   );
 }

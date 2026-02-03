@@ -1293,6 +1293,149 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
         </section>
       )}
       {/* Bottom CTA moved to the very bottom - now sourced from CMS/Supabase */}
+      <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
+        <div className="container mx-auto px-6 text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              {(() => {
+                const countrySlug = country
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^a-z0-9-]/g, "");
+                const citySlug = city
+                  ? city
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "")
+                  : "";
+                const key = city ? `${countrySlug}-${citySlug}` : "";
+                const countryBlock =
+                  (savedPageContent as any)?.sections?.countryPages?.[countrySlug] ||
+                  (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
+                  (cmsContent as any) ||
+                  {};
+                const rawCity = city
+                  ? (savedPageContent as any)?.sections?.cityPages?.[key]
+                  : null;
+                const nestedCity = city && citySlug
+                  ? (rawCity as any)?.countryPages?.[citySlug] ? (rawCity as any).countryPages[citySlug] : rawCity
+                  : null;
+                const cityBlock = city
+                  ? nestedCity ||
+                  (cmsContent as any)?.sections?.cityPages?.[key] ||
+                  (cmsContent as any) ||
+                  {}
+                  : null;
+                const block = city ? cityBlock || {} : countryBlock || {};
+
+                // Fix: Ensure we're not passing objects directly to JSX
+                const headingRaw =
+                  (block as any)?.finalCtaHeading ||
+                  `Ready to Find Your Perfect Builder in ${city || country}?`;
+
+                // Ensure values are strings, not objects
+                const heading = typeof headingRaw === 'object' ? headingRaw?.heading || headingRaw : headingRaw;
+                return heading;
+              })()}
+            </h2>
+            <p className="text-xl text-slate-300 mb-8">
+              {(() => {
+                const countrySlug = country
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^a-z0-9-]/g, "");
+                const citySlug = city
+                  ? city
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "")
+                  : "";
+                const key = city ? `${countrySlug}-${citySlug}` : "";
+                const countryBlock =
+                  (savedPageContent as any)?.sections?.countryPages?.[countrySlug] ||
+                  (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
+                  (cmsContent as any) ||
+                  {};
+                const rawCity = city
+                  ? (savedPageContent as any)?.sections?.cityPages?.[key]
+                  : null;
+                const nestedCity = city && citySlug
+                  ? (rawCity as any)?.countryPages?.[citySlug] ? (rawCity as any).countryPages[citySlug] : rawCity
+                  : null;
+                const cityBlock = city
+                  ? nestedCity ||
+                  (cmsContent as any)?.sections?.cityPages?.[key] ||
+                  (cmsContent as any) ||
+                  {}
+                  : null;
+                const block = city ? cityBlock || {} : countryBlock || {};
+
+                // Fix: Ensure we're not passing objects directly to JSX
+                const paragraphRaw =
+                  (block as any)?.finalCtaParagraph ||
+                  "Get competitive quotes from verified local builders. Compare proposals and choose the best fit for your exhibition needs.";
+
+                // Ensure values are strings, not objects
+                const paragraph = typeof paragraphRaw === 'object' ? paragraphRaw?.description || paragraphRaw : paragraphRaw;
+                return paragraph;
+              })()}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button className="text-lg px-8 py-4 text-black">
+                {(() => {
+                  const countrySlug = country
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "");
+                  const citySlug = city
+                    ? city
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")
+                      .replace(/[^a-z0-9-]/g, "")
+                    : "";
+                  const key = city ? `${countrySlug}-${citySlug}` : "";
+                  const countryBlock =
+                    (savedPageContent as any)?.sections?.countryPages?.[countrySlug] ||
+                    (cmsContent as any)?.sections?.countryPages?.[countrySlug] ||
+                    (cmsContent as any) ||
+                    {};
+                  const rawCity = city
+                    ? (savedPageContent as any)?.sections?.cityPages?.[key]
+                    : null;
+                  const nestedCity = city
+                    ? (rawCity as any)?.countryPages?.[citySlug] || rawCity
+                    : null;
+                  const cityBlock = city
+                    ? nestedCity ||
+                    (cmsContent as any)?.sections?.cityPages?.[key] ||
+                    (cmsContent as any) ||
+                    {}
+                    : null;
+                  const block = city ? cityBlock || {} : countryBlock || {};
+
+                  // Fix: Ensure we're not passing objects directly to JSX
+                  const buttonTextRaw =
+                    (block as any)?.finalCtaButtonText || "Start Getting Quotes";
+
+                  // Ensure values are strings, not objects
+                  const buttonText = typeof buttonTextRaw === 'object' ? buttonTextRaw?.text || buttonTextRaw : buttonTextRaw;
+                  return buttonText;
+                })()}
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg"
+                onClick={() =>
+                  window.scrollTo({ top: 0, behavior: "smooth" })
+                }
+              >
+                Back to Top
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Cities section was moved to top */}
     </>
