@@ -73,6 +73,12 @@ function sanitizeHtml(html?: string): string {
     // Process opening tags
     result = result.replace(/<([a-zA-Z]+)([^>]*)>/g, (match, tag, attrs) => {
       const lowerTag = tag.toLowerCase();
+
+      // Transform h1 to h2 for heading hierarchy
+      if (lowerTag === 'h1') {
+        return '<h2>';
+      }
+
       if (!allowedTags.includes(lowerTag)) {
         return '';
       }
@@ -93,6 +99,12 @@ function sanitizeHtml(html?: string): string {
     // Process closing tags
     result = result.replace(/<\/([a-zA-Z]+)>/g, (match, tag) => {
       const lowerTag = tag.toLowerCase();
+
+      // Transform closing h1 to h2
+      if (lowerTag === 'h1') {
+        return '</h2>';
+      }
+
       if (!allowedTags.includes(lowerTag)) {
         return '';
       }

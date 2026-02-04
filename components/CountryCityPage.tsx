@@ -111,6 +111,7 @@ interface CountryCityPageProps {
   cities?: any[];
   showQuoteForm?: boolean;
   cmsContent?: any;
+  currentPage?: number;
 }
 
 const BUILDERS_PER_PAGE = 6;
@@ -126,6 +127,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
   cities = [],
   showQuoteForm = true,
   cmsContent,
+  currentPage: propCurrentPage = 1,
 }) => {
   const [builders, setBuilders] = useState<Builder[]>(initialBuilders);
   const [filteredBuilders, setFilteredBuilders] = useState<Builder[]>(initialBuilders);
@@ -133,7 +135,12 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"rating" | "projects" | "name" | "plan">("rating");
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(propCurrentPage);
+
+  // Sync state if prop changes (e.g. on navigation)
+  useEffect(() => {
+    setCurrentPage(propCurrentPage);
+  }, [propCurrentPage]);
   const [pageContent, setPageContent] = useState<any>(initialContent || {});
   const [savedPageContent, setSavedPageContent] = useState<any>(null);
   const [isLoadingContent, setIsLoadingContent] = useState(false);

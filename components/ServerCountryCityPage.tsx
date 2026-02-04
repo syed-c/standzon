@@ -110,6 +110,8 @@ interface ServerCountryCityPageProps {
   serverCmsContent?: any;
   currentPage?: number;
   itemsPerPage?: number;
+  totalBuilders?: number;
+  totalPages?: number;
 }
 
 const BUILDERS_PER_PAGE = 6;
@@ -127,7 +129,9 @@ export default async function ServerCountryCityPage({
   cmsContent,
   serverCmsContent,
   currentPage,
-  itemsPerPage
+  itemsPerPage,
+  totalBuilders: propTotalBuilders,
+  totalPages: propTotalPages
 }: ServerCountryCityPageProps) {
   // Fetch CMS content on the server
   let pageContent = serverCmsContent || cmsContent || initialContent || {};
@@ -308,86 +312,100 @@ export default async function ServerCountryCityPage({
 
       />
 
-      {/* Pagination Controls (immediately after builders) */}
-      {Math.ceil(builders.length / effectiveItemsPerPage) > 1 && (
-        <section className="py-6 bg-white dark:bg-slate-900">
+      {/* Pagination Controls (immediately after builders) - Now using Links for SEO */}
+      {(() => {
+        const effectiveTotalPages = propTotalPages || Math.ceil(builders.length / effectiveItemsPerPage);
+        const effectiveTotalBuilders = propTotalBuilders || builders.length;
 
+        if (effectiveTotalPages <= 1) return null;
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-gray-900 border-gray-300 min-w-[80px]"
-                disabled={effectiveCurrentPage <= 1}
-              >
-                Previous
-              </Button>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {Array.from({ length: Math.min(Math.ceil(builders.length / effectiveItemsPerPage), 10) }, (_, i) => {
-                  const pageNum = i + 1;
-                  if (Math.ceil(builders.length / effectiveItemsPerPage) > 10) {
-                    if (pageNum === 1 || pageNum === Math.ceil(builders.length / effectiveItemsPerPage) ||
-                      (pageNum >= effectiveCurrentPage - 1 && pageNum <= effectiveCurrentPage + 1)) {
+        // Determine base URL for pagination links
+        const baseUrl = city
+          ? `/exhibition-stands/${normalizeCountrySlug(country)}/${normalizeCitySlug(city)}`
+          : `/exhibition-stands/${normalizeCountrySlug(country)}`;
 
+        return (
+          <section className="py-6 bg-white dark:bg-slate-900">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {effectiveCurrentPage > 1 ? (
+                  <a
+                    href={`${baseUrl}?page=${effectiveCurrentPage - 1}`}
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-gray-300 bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 text-gray-900 min-w-[80px]"
+                  >
+                    Previous
+                  </a>
+                ) : (
+                  <span className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 min-w-[80px] opacity-50 cursor-not-allowed border border-gray-300 text-gray-900">
+                    Previous
+                  </span>
+                )}
 
-                      return (
-                        <Button
-                          key={i}
-                          variant={effectiveCurrentPage === pageNum ? "default" : "outline"}
-                          size="sm"
-                          className={
-                            effectiveCurrentPage === pageNum
-                              ? "min-w-[40px]"
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {Array.from({ length: Math.min(effectiveTotalPages, 10) }, (_, i) => {
+                    const pageNum = i + 1;
 
-
-                              : "text-gray-900 border-gray-300 min-w-[40px]"
-                          }
-                        >
-                          {pageNum}
-                        </Button>
-                      );
-                    } else if (pageNum === 2 || pageNum === Math.ceil(builders.length / effectiveItemsPerPage) - 1) {
-                      return (
-                        <span key={i} className="px-2 py-1 text-gray-500">...</span>
-                      );
-                    }
-                    return null;
-                  }
-                  return (
-                    <Button
-                      key={i}
-                      variant={effectiveCurrentPage === pageNum ? "default" : "outline"}
-                      size="sm"
-                      className={
-                        effectiveCurrentPage === pageNum
-                          ? "min-w-[40px]"
-
-
-                          : "text-gray-900 border-gray-300 min-w-[40px]"
+                    // Smart pagination: show first, last, current, and adjacent pages
+                    if (effectiveTotalPages > 10) {
+                      if (pageNum === 1 || pageNum === effectiveTotalPages ||
+                        (pageNum >= effectiveCurrentPage - 1 && pageNum <= effectiveCurrentPage + 1)) {
+                        return (
+                          <a
+                            key={i}
+                            href={`${baseUrl}?page=${pageNum}`}
+                            className={
+                              effectiveCurrentPage === pageNum
+                                ? "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3 min-w-[40px]"
+                                : "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-gray-300 bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-gray-900 min-w-[40px]"
+                            }
+                          >
+                            {pageNum}
+                          </a>
+                        );
+                      } else if (pageNum === 2 || pageNum === effectiveTotalPages - 1) {
+                        return (
+                          <span key={i} className="px-2 py-1 text-gray-500">...</span>
+                        );
                       }
-                    >
-                      {pageNum}
-                    </Button>
-                  );
-                })}
+                      return null;
+                    }
+
+                    return (
+                      <a
+                        key={i}
+                        href={`${baseUrl}?page=${pageNum}`}
+                        className={
+                          effectiveCurrentPage === pageNum
+                            ? "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3 min-w-[40px]"
+                            : "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-gray-300 bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-gray-900 min-w-[40px]"
+                        }
+                      >
+                        {pageNum}
+                      </a>
+                    );
+                  })}
+                </div>
+
+                {effectiveCurrentPage < effectiveTotalPages ? (
+                  <a
+                    href={`${baseUrl}?page=${effectiveCurrentPage + 1}`}
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-gray-300 bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 text-gray-900 min-w-[80px]"
+                  >
+                    Next
+                  </a>
+                ) : (
+                  <span className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 min-w-[80px] opacity-50 cursor-not-allowed border border-gray-300 text-gray-900">
+                    Next
+                  </span>
+                )}
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-gray-900 border-gray-300 min-w-[80px]"
-                disabled={effectiveCurrentPage >= Math.ceil(builders.length / effectiveItemsPerPage)}
-              >
-                Next
-              </Button>
+              <div className="text-center text-sm text-gray-500 mt-2">
+                Page {effectiveCurrentPage} of {effectiveTotalPages} ({effectiveTotalBuilders.toLocaleString()} builders)
+              </div>
             </div>
-            <div className="text-center text-sm text-gray-500 mt-2">
-              Page {effectiveCurrentPage} of {Math.ceil(builders.length / effectiveItemsPerPage)}
-            </div>
-          </div>
-        </section>
-      )
-      }
+          </section>
+        );
+      })()}
 
 
 
