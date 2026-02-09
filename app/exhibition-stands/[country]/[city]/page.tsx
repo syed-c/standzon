@@ -98,7 +98,7 @@ export async function generateMetadata({
 
     // ✅ FIX #3: Validate that we can fetch meaningful data before generating metadata
     let hasMeaningfulData = false;
-    
+
     // Check if we can get builders for this city
     try {
       const { getFilteredBuilders } = await import('@/lib/supabase/builders');
@@ -108,7 +108,7 @@ export async function generateMetadata({
         page: 1,
         itemsPerPage: 1
       });
-      
+
       if (builderResult.total > 0) {
         hasMeaningfulData = true;
       }
@@ -380,19 +380,67 @@ export default async function CityPage({ params, searchParams }: CityPageProps) 
     notFound();
   }
 
-  // ✅ FIX #6: Get city data from global database or comprehensive location data
+  // ✅ FIX #6: Validate city exists before proceeding (strict validation to match metadata)
   const cityData = getGlobalCityBySlug(countrySlug, adjustedCitySlug) || getComprehensiveCityBySlug(countrySlug, adjustedCitySlug);
-
-  // ✅ FIX #7: Return 404 if city doesn't exist
   if (!cityData) {
-    console.log("❌ City not found:", citySlug, "in country:", countrySlug);
+    console.log(
+      "❌ City not found in page:",
+      citySlug,
+      "in country:",
+      countrySlug
+    );
     notFound();
   }
 
   const cityName = ('name' in cityData) ? cityData.name : cityData.cityName;
   const countryName = toTitle(countrySlug);
 
-  // ✅ FIX #8: Try to get CMS content
+  // ✅ FIX #7: Validate that we can fetch meaningful data before rendering page
+  let hasMeaningfulData = false;
+
+  // Check if we can get builders for this city
+  try {
+    const { getFilteredBuilders } = await import('@/lib/supabase/builders');
+    const builderResult = await getFilteredBuilders({
+      country: countryName,
+      city: cityName,
+      page: 1,
+      itemsPerPage: 1
+    });
+
+    if (builderResult.total > 0) {
+      hasMeaningfulData = true;
+    }
+  } catch (error) {
+    console.log("⚠️ Could not verify builder data for page:", error);
+  }
+
+  // Check if CMS content exists
+  try {
+    const sb = getServerSupabase();
+    if (sb) {
+      const cityPageId = `${countrySlug}-${citySlug}`;
+      const result = await sb
+        .from("page_contents")
+        .select("content")
+        .eq("id", cityPageId)
+        .single();
+
+      if (!result.error && result.data?.content) {
+        hasMeaningfulData = true;
+      }
+    }
+  } catch (error) {
+    console.log("⚠️ Could not verify CMS data for page:", error);
+  }
+
+  // ✅ FIX #8: If no meaningful data, don't render page - trigger 404 instead
+  if (!hasMeaningfulData) {
+    console.warn(`⚠️ Soft 404 page: No meaningful data for ${cityName}, ${countryName}`);
+    notFound();
+  }
+
+  // ✅ FIX #9: Try to get CMS content (only after validation passes)
   const cmsContent = await getCityPageContent(countrySlug, citySlug);
 
   // Get country code for fetching cities (same as country pages)
@@ -522,24 +570,7 @@ export default async function CityPage({ params, searchParams }: CityPageProps) 
     ...(formattedCmsContent || {})
   };
 
-  // ✅ FIX #10: Comprehensive Soft 404 prevention
-  const hasBuilders = totalBuilders > 0;
-  const hasCmsContent = !!cmsContent;
-  const hasMeaningfulData = hasBuilders || hasCmsContent;
-
-  if (!hasMeaningfulData) {
-    console.warn(`⚠️ Soft 404: No builders and no CMS content for ${cityName}, ${countryName}.`);
-    notFound();
-  }
-
-  // ✅ FIX #11: Additional quality check - ensure CMS content has meaningful text
-  if (hasCmsContent && !hasBuilders) {
-    const cmsTextLength = JSON.stringify(cmsContent).length;
-    if (cmsTextLength < 500) { // Arbitrary threshold for meaningful content
-      console.warn(`⚠️ Soft 404: CMS content too minimal for ${cityName}, ${countryName} (${cmsTextLength} chars).`);
-      notFound();
-    }
-  }
+    
 
   return (
     <ServerPageWithBreadcrumbs pathname={`/exhibition-stands/${countrySlug}/${citySlug}`}>
