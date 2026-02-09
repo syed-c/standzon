@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "NODE_ENV=production next build",
-    "build:fast": "NODE_ENV=production next build --no-lint --no-turbopack",
+    "build:fast": "NODE_ENV=production next build --no-lint",
     "build:optimized": "NODE_ENV=production next build --experimental-build-mode compile",
     "start": "next start",
     "lint": "next lint --quiet",
