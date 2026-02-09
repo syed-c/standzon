@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSupabase } from '@/lib/supabase';
+// import { getServerSupabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
+  // Temporary disable Supabase integration for build
+  return NextResponse.json({ success: false, error: 'Gallery upload temporarily disabled' }, { status: 503 });
   try {
     // Log the incoming request for debugging
     console.log('Gallery upload request received');

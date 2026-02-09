@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FiCalendar, FiClock, FiArrowRight, FiBookOpen, FiCompass, FiTrendingUp, FiDollarSign, FiZap, FiLeaf, FiUsers } from 'react-icons/fi';
+import { FiCalendar, FiClock, FiArrowRight, FiBookOpen, FiCompass, FiTrendingUp, FiDollarSign, FiZap, FiUsers } from 'react-icons/fi';
+import { FiAward } from 'react-icons/fi';
 import { getFeaturedArticles, blogArticles, categories } from '@/lib/blog-data';
 
 export const metadata = {
@@ -20,7 +21,7 @@ const topicIcons = {
   "Costs & Budgeting": FiDollarSign,
   "Design & Trends": FiZap,
   "Technology & Innovation": FiZap,
-  "Sustainability": FiLeaf,
+  "Sustainability": FiAward,
   "Contractor Selection": FiUsers
 };
 
