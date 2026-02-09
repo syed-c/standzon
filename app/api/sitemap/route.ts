@@ -41,8 +41,12 @@ function generateSitemapXml(): string {
 `;
   });
 
-  // Add ALL country pages from the CMS
-  GLOBAL_EXHIBITION_DATA.countries.forEach(country => {
+  // Add country pages (limit to top countries to prevent timeout)
+  const topCountries = GLOBAL_EXHIBITION_DATA.countries
+    .sort((a, b) => b.exhibitionRanking - a.exhibitionRanking)
+    .slice(0, 50); // Limit to top 50 countries
+  
+  topCountries.forEach(country => {
     xml += `  <url>
     <loc>${BASE_URL}/exhibition-stands/${country.slug}</loc>
     <changefreq>weekly</changefreq>
@@ -51,8 +55,12 @@ function generateSitemapXml(): string {
 `;
   });
 
-  // Add ALL city pages from the CMS
-  GLOBAL_EXHIBITION_DATA.cities.forEach(city => {
+  // Add major city pages (limit to prevent timeout)
+  const majorCities = GLOBAL_EXHIBITION_DATA.cities
+    .filter(city => city.isCapital || city.annualEvents > 100)
+    .slice(0, 100); // Limit to 100 major cities
+  
+  majorCities.forEach(city => {
     // Find the country slug for this city
     const country = GLOBAL_EXHIBITION_DATA.countries.find(c => c.name === city.country);
     if (country) {

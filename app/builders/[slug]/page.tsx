@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import BuilderProfileClient from "./BuilderProfileClient";
 import { getServerSupabase } from '@/lib/supabase';
+import { getFallbackData } from '@/lib/fallback-data';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
