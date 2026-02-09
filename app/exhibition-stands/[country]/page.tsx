@@ -65,8 +65,10 @@ async function getCountryPageContent(countrySlug: string) {
   }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ country: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: { params: Promise<{ country: string }>; searchParams: Promise<{ page?: string }> }): Promise<Metadata> {
   const { country: countrySlug } = await params;
+  const { page } = await searchParams;
+  const currentPageNum = parseInt(page || "1", 10);
   const countryInfo = COUNTRY_DATA[countrySlug as keyof typeof COUNTRY_DATA];
 
 
@@ -129,13 +131,23 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
   const keywords = cmsMetadata?.keywords || [`exhibition stands ${countryInfo.name}`, `booth builders ${countryInfo.name}`, `trade show displays ${countryInfo.name}`, `${countryInfo.name} exhibition builders`, `${countryInfo.name} booth design`, `${countryInfo.name} exhibition stands`];
 
   return {
-    title,
+    title: isPaginated ? `${title} - Page ${currentPageNum}` : title,
     description,
     keywords,
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
+    // Handle pagination for SEO: canonical and robots tags
+  const isPaginated = currentPageNum > 1;
+  const canonicalUrl = `https://standszone.com/exhibition-stands/${countrySlug}`;
+  
+  robots: {
+      index: !isPaginated, // Don't index paginated pages
+      follow: true,        // But allow following links
+      googleBot: isPaginated ? {
+        index: false,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      } : {
         index: true,
         follow: true,
         'max-video-preview': -1,
@@ -146,18 +158,18 @@ export async function generateMetadata({ params }: { params: Promise<{ country: 
 
 
     openGraph: {
-      title,
+      title: isPaginated ? `${title} - Page ${currentPageNum}` : title,
       description,
       type: 'website',
       locale: 'en_US',
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: isPaginated ? `${title} - Page ${currentPageNum}` : title,
       description,
     },
     alternates: {
-      canonical: `https://standszone.com/exhibition-stands/${countrySlug}`,
+      canonical: canonicalUrl,
     },
   };
 }
