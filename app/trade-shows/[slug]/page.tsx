@@ -4,8 +4,6 @@ import ExhibitionPage from '@/components/ExhibitionPage';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/supabase/database';
 import { mapTradeShowDBToExhibition } from '@/lib/utils/tradeShowMapping';
-import { handleSSRError, withSSRGuard } from '@/lib/ssr-error-handler';
-import { getFallbackTradeShowData } from '@/lib/fallback-data';
 
 interface TradeShowPageProps {
   params: {
@@ -16,11 +14,15 @@ interface TradeShowPageProps {
 // ISR: Revalidate every hour
 export const revalidate = 3600;
 
-// Safe static params generation
+// Safe generateStaticParams with error handling
 export async function generateStaticParams() {
   try {
     const dbTradeShows = await db.getTradeShows();
-    return (dbTradeShows || []).map((show: any) => ({
+    if (!dbTradeShows || dbTradeShows.length === 0) {
+      console.warn('⚠️ No trade shows found, returning empty params');
+      return [];
+    }
+    return dbTradeShows.map((show: any) => ({
       slug: show.slug,
     }));
   } catch (error) {
@@ -31,20 +33,16 @@ export async function generateStaticParams() {
 
 // Crash-proof metadata generation
 export async function generateMetadata({ params }: TradeShowPageProps): Promise<Metadata> {
-  return withSSRGuard(async () => {
+  try {
     const resolvedParams = await params;
     
-    // Validate params first
-    if (!resolvedParams?.slug || typeof resolvedParams.slug !== 'string') {
-      console.warn('⚠️ Invalid slug parameter');
-      notFound();
-    }
-
-    // Safe Supabase fetch with timeout
-    const dbTradeShow = await handleSSRError(
-      () => db.getTradeShowBySlug(resolvedParams.slug),
-      `Trade show fetch failed for slug: ${resolvedParams.slug}`
-    );
+    // Safe Supabase query with timeout
+    const dbTradeShow = await Promise.race([
+      db.getTradeShowBySlug(resolvedParams.slug),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 5000)
+      )
+    ]).catch(() => null);
 
     // Immediate 404 for non-existent trade shows
     if (!dbTradeShow) {
@@ -53,22 +51,8 @@ export async function generateMetadata({ params }: TradeShowPageProps): Promise<
     }
 
     // Validate critical data before generating metadata
-    const criticalFields = ['location_city', 'title', 'location_country', 'start_date', 'end_date'];
-    const missingFields = criticalFields.filter(field => !dbTradeShow[field as keyof typeof dbTradeShow]);
-    
-    if (missingFields.length > 0) {
-      console.warn(`⚠️ Soft 404 metadata: Trade show ${resolvedParams.slug} missing critical fields:`, missingFields);
-      notFound();
-    }
-
-    // Validate data quality
-    const hasMeaningfulContent = 
-      (dbTradeShow.description && dbTradeShow.description.length > 100) ||
-      (dbTradeShow.seo_description && dbTradeShow.seo_description.length > 50) ||
-      dbTradeShow.hero_image_url;
-
-    if (!hasMeaningfulContent) {
-      console.warn(`⚠️ Soft 404: Trade show ${resolvedParams.slug} has insufficient content.`);
+    if (!dbTradeShow.location_city || !dbTradeShow.title) {
+      console.warn(`⚠️ Soft 404 metadata: Trade show ${resolvedParams.slug} missing critical data.`);
       notFound();
     }
 
@@ -109,38 +93,36 @@ export async function generateMetadata({ params }: TradeShowPageProps): Promise<
         canonical: dbTradeShow.canonical_url || `https://standszone.com/trade-shows/${resolvedParams.slug}`
       }
     };
-  }, {
-    fallbackMetadata: {
+  } catch (error) {
+    console.error('❌ Metadata generation failed:', error);
+    // Return minimal safe metadata on error
+    return {
       title: 'Trade Show - StandZone',
       description: 'Find verified exhibition stand builders for trade shows worldwide.',
-    }
-  });
+    };
+  }
 }
 
-// Crash-proof page component
+// Crash-proof main page component
 export default async function TradeShowPage({ params }: TradeShowPageProps) {
-  return withSSRGuard(async () => {
+  try {
     const resolvedParams = await params;
     
-    // Validate params
-    if (!resolvedParams?.slug || typeof resolvedParams.slug !== 'string') {
-      console.warn('⚠️ Invalid slug parameter in page component');
-      notFound();
-    }
-
-    // Safe Supabase fetch
-    const dbTradeShow = await handleSSRError(
-      () => db.getTradeShowBySlug(resolvedParams.slug),
-      `Trade show page fetch failed for slug: ${resolvedParams.slug}`
-    );
+    // Safe Supabase query with timeout protection
+    const dbTradeShow = await Promise.race([
+      db.getTradeShowBySlug(resolvedParams.slug),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Database timeout')), 5000)
+      )
+    ]).catch(() => null);
 
     // Immediate 404 for non-existent trade shows
     if (!dbTradeShow) {
-      console.warn(`⚠️ Trade show not found in page component: ${resolvedParams.slug}`);
+      console.warn(`⚠️ Trade show not found: ${resolvedParams.slug}`);
       notFound();
     }
 
-    // Comprehensive data validation
+    // Comprehensive data validation to prevent Soft 404
     const criticalFields = [
       'location_city',
       'title',
@@ -152,18 +134,18 @@ export default async function TradeShowPage({ params }: TradeShowPageProps) {
     const missingFields = criticalFields.filter(field => !dbTradeShow[field as keyof typeof dbTradeShow]);
     
     if (missingFields.length > 0) {
-      console.warn(`⚠️ Soft 404: Trade show ${resolvedParams.slug} missing critical fields in page:`, missingFields);
+      console.warn(`⚠️ Soft 404: Trade show ${resolvedParams.slug} missing critical fields:`, missingFields);
       notFound();
     }
 
-    // Validate data quality
+    // Validate data quality - check for placeholder/minimal content
     const hasMeaningfulContent = 
       (dbTradeShow.description && dbTradeShow.description.length > 100) ||
       (dbTradeShow.seo_description && dbTradeShow.seo_description.length > 50) ||
       dbTradeShow.hero_image_url;
 
     if (!hasMeaningfulContent) {
-      console.warn(`⚠️ Soft 404: Trade show ${resolvedParams.slug} has insufficient content in page.`);
+      console.warn(`⚠️ Soft 404: Trade show ${resolvedParams.slug} has insufficient content.`);
       notFound();
     }
 
@@ -171,32 +153,32 @@ export default async function TradeShowPage({ params }: TradeShowPageProps) {
 
     console.log(`🎪 Loading dynamic trade show page from Supabase for: ${resolvedParams.slug} - ${exhibition.name}`);
 
-    // Safe JSON-LD construction
+    // Construct JSON-LD Structured Data
     const jsonLd = {
       '@context': 'https://schema.org',
       '@type': 'ExhibitionEvent',
-      name: exhibition.name || 'Trade Show',
-      description: exhibition.description || exhibition.shortDescription || '',
-      startDate: exhibition.startDate || '',
-      endDate: exhibition.endDate || '',
+      name: exhibition.name,
+      description: exhibition.description,
+      startDate: exhibition.startDate,
+      endDate: exhibition.endDate,
       location: {
         '@type': 'Place',
-        name: exhibition.venue?.name || 'Exhibition Venue',
+        name: exhibition.venue.name,
         address: {
           '@type': 'PostalAddress',
-          addressLocality: exhibition.city || 'Unknown City',
-          addressCountry: exhibition.country || 'Unknown Country'
+          addressLocality: exhibition.city,
+          addressCountry: exhibition.country
         }
       },
       organizer: {
         '@type': 'Organization',
-        name: exhibition.organizer?.name || 'Event Organizer',
-        url: exhibition.organizer?.website || ''
+        name: exhibition.organizer.name,
+        url: exhibition.organizer.website
       },
-      image: exhibition.images || [],
+      image: exhibition.images,
       offers: {
         '@type': 'Offer',
-        url: exhibition.website || '',
+        url: exhibition.website,
         availability: 'https://schema.org/InStock'
       }
     };
@@ -210,14 +192,9 @@ export default async function TradeShowPage({ params }: TradeShowPageProps) {
         <ExhibitionPage exhibitionSlug={resolvedParams.slug} initialExhibition={exhibition} />
       </div>
     );
-  }, {
-    fallbackComponent: (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Trade Show Information</h1>
-          <p className="text-gray-600">This trade show page is temporarily unavailable.</p>
-        </div>
-      </div>
-    )
-  });
+  } catch (error) {
+    console.error('❌ TradeShowPage SSR error:', error);
+    // Safe fallback - return 404 on any SSR failure
+    notFound();
+  }
 }
