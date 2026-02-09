@@ -24,19 +24,5 @@
         }
       ]
     }
-  ],
-  "caching": {
-    "manual": true
-  },
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next",
-      "config": {
-        "buildCommand": "npm run build:fast",
-        "devCommand": "npm run dev",
-        "installCommand": "npm ci --prefer-offline --no-audit"
-      }
-    }
   ]
 }
