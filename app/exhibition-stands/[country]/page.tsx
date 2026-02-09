@@ -125,6 +125,10 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
     // Continue with fallback metadata even if CMS fails
   }
 
+  // Handle pagination for SEO: canonical and robots tags
+  const isPaginated = currentPageNum > 1;
+  const canonicalUrl = `https://standszone.com/exhibition-stands/${countrySlug}`;
+  
   // Use CMS metadata if available, otherwise fall back to default
   const title = cmsMetadata?.title || `Exhibition Stand Builders in ${countryInfo.name} | Professional Trade Show Displays`;
   const description = cmsMetadata?.description || `Find professional exhibition stand builders across ${countryInfo.name}. Custom trade show displays, booth design, and comprehensive exhibition services.`;
@@ -134,11 +138,7 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
     title: isPaginated ? `${title} - Page ${currentPageNum}` : title,
     description,
     keywords,
-    // Handle pagination for SEO: canonical and robots tags
-  const isPaginated = currentPageNum > 1;
-  const canonicalUrl = `https://standszone.com/exhibition-stands/${countrySlug}`;
-  
-  robots: {
+    robots: {
       index: !isPaginated, // Don't index paginated pages
       follow: true,        // But allow following links
       googleBot: isPaginated ? {
@@ -155,8 +155,6 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
         'max-snippet': -1,
       },
     },
-
-
     openGraph: {
       title: isPaginated ? `${title} - Page ${currentPageNum}` : title,
       description,
