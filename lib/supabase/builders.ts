@@ -332,8 +332,7 @@ export async function getFilteredBuilders(options: {
       query = query.ilike('headquarters_city', `%${normalizedCity}%`);
     }
 
-    // Exclude deleted records
-    query = query.is('deleted_at', null);
+    // No deleted_at column in builders table - skip this filter
 
     // Get total count first
     const { count, error: countError } = await query;
