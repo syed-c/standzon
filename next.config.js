@@ -65,14 +65,6 @@ const nextConfig = {
       'lodash',
       'date-fns'
     ],
-    // 🔥 BUILD OPTIMIZATION: Speed up builds
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-        },
-      },
-    },
     // Reduce build time by limiting concurrent operations
     workerThreads: false,
     cpus: 2, // Limit CPU usage to prevent resource contention
@@ -156,17 +148,7 @@ const nextConfig = {
       // Enable tree shaking
       config.optimization.usedExports = true;
       config.optimization.providedExports = true;
-
-      // Speed up module resolution
-      config.resolve.modules = [config.resolve.modules, './node_modules'];
       
-      // Add memory-based caching for faster rebuilds
-      if (config.cache && typeof config.cache === 'object') {
-        config.cache.type = 'memory';
-        config.cache.maxMemoryGenerations = 1;
-        config.cache.maxAge = 30000; // 30 seconds
-      }
-
       // Enable minimizer for production
       if (Array.isArray(config.optimization.minimizer)) {
         config.optimization.minimizer = config.optimization.minimizer.filter(
@@ -193,120 +175,6 @@ const nextConfig = {
   compress: true,
   // 🔥 BUILD OPTIMIZATION: Faster builds
   trailingSlash: false,
-  // Reduce file watching during builds
-  webpack: (config, { dev, isServer, nextRuntime }) => {
-    // Original webpack config with additional optimizations
-    if (dev && !isServer) {
-      config.watchOptions = {
-        poll: 3000,
-        aggregateTimeout: 1000,
-        ignored: ['**/node_modules/**', '**/.git/**', '**/.next/**'],
-      };
-      config.cache = false;
-    }
-
-    // Add performance optimizations
-    config.resolve.fallback = {
-      ...(config.resolve.fallback || {}),
-      fs: false,
-      path: false,
-      os: false,
-      crypto: false,
-    };
-
-    // 🔥 BUILD OPTIMIZATION: Faster builds
-    if (!dev) {
-      // Disable expensive checks in production
-      config.optimization.minimize = true;
-      config.optimization.minimizer = config.optimization.minimizer || [];
-      
-      // Speed up module resolution
-      config.resolve.modules = [config.resolve.modules, './node_modules'];
-      
-      // Add cache plugins for faster rebuilds
-      if (config.cache && typeof config.cache === 'object') {
-        config.cache.type = 'memory';
-        config.cache.maxMemoryGenerations = 1;
-        config.cache.maxAge = 30000; // 30 seconds
-      }
-    }
-
-    // 🔥 BUILD OPTIMIZATION: Optimize bundle splitting
-    if (!isServer) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          default: false,
-          vendors: false,
-          // Create separate chunks for heavy libraries
-          recharts: {
-            name: 'recharts',
-            test: /[\\/]node_modules[\\/](recharts)[\\/]/,
-            chunks: 'all',
-            priority: 20,
-          },
-          lucide: {
-            name: 'lucide',
-            test: /[\\/]node_modules[\\/](lucide-react)[\\/]/,
-            chunks: 'all',
-            priority: 20,
-          },
-          ui: {
-            name: 'ui',
-            test: /[\\/]components[\\/]ui[\\/]/,
-            chunks: 'all',
-            priority: 15,
-          },
-          admin: {
-            name: 'admin',
-            test: /[\\/]components[\\/].*[Aa]dmin.*[\\/]/,
-            chunks: 'all',
-            priority: 10,
-          },
-          common: {
-            name: 'common',
-            minChunks: 2,
-            chunks: 'all',
-            priority: 5,
-          },
-          // Optimize CSS chunks
-          styles: {
-            name: 'styles',
-            type: 'css/mini-extract',
-            chunks: 'all',
-            enforce: true,
-            priority: 30,
-          },
-        },
-      };
-    }
-
-    // 🔥 BUILD OPTIMIZATION: Additional performance optimizations for faster builds
-    if (!dev) {
-      // Enable tree shaking
-      config.optimization.usedExports = true;
-      config.optimization.providedExports = true;
-
-      // Speed up module resolution
-      config.resolve.modules = [config.resolve.modules, './node_modules'];
-      
-      // Add memory-based caching for faster rebuilds
-      if (config.cache && typeof config.cache === 'object') {
-        config.cache.type = 'memory';
-        config.cache.maxMemoryGenerations = 1;
-        config.cache.maxAge = 30000; // 30 seconds
-      }
-
-      // Enable minimizer for production
-      if (Array.isArray(config.optimization.minimizer)) {
-        config.optimization.minimizer = config.optimization.minimizer.filter(
-          (minimizer) => minimizer && typeof minimizer !== 'string'
-        );
-      }
-    }
-
-    return config;
-  },
   // ✅ PERFORMANCE: Enable caching headers
   async headers() {
     return [
