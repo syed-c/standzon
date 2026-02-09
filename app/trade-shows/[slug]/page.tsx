@@ -17,6 +17,13 @@ export const revalidate = 3600;
 // Safe generateStaticParams with error handling
 export async function generateStaticParams() {
   try {
+    // During build time, environment variables might not be available or database might be unreachable
+    // Only attempt to fetch data if we're not in build phase or if database is properly configured
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.warn('⚠️ Supabase not configured, skipping static generation');
+      return [];
+    }
+    
     const dbTradeShows = await db.getTradeShows();
     if (!dbTradeShows || dbTradeShows.length === 0) {
       console.warn('⚠️ No trade shows found, returning empty params');

@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "NODE_ENV=production next build",
-    "build:fast": "NODE_ENV=production next build --no-lint",
-    "build:optimized": "NODE_ENV=production next build --experimental-build-mode compile",
+    "build": "NODE_ENV=production NEXT_PUBLIC_BUILD_MODE=true next build",
+    "build:fast": "NODE_ENV=production NEXT_PUBLIC_BUILD_MODE=true next build --no-lint",
+    "build:optimized": "NODE_ENV=production NEXT_PUBLIC_BUILD_MODE=true next build --experimental-build-mode compile",
     "start": "next start",
     "lint": "next lint --quiet",
     "lint:fix": "next lint --fix",

@@ -173,6 +173,8 @@ const nextConfig = {
   output: 'standalone',
   // Enable compression for production builds
   compress: true,
+  // 🔥 BUILD OPTIMIZATION: Reduce static page generation time
+  staticPageGenerationTimeout: 120, // 2 minutes instead of default 60
   // 🔥 BUILD OPTIMIZATION: Faster builds
   trailingSlash: false,
   // ✅ PERFORMANCE: Enable caching headers
