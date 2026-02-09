@@ -915,7 +915,7 @@ export default async function ServerEnhancedLocationPage({
                 </h2>
                 <div className="text-gray-600">
                   {resolvedCmsBlock?.buildersIntro ? (
-                    <p className="prose max-w-none" dangerouslySetInnerHTML={{
+                    <div className="prose max-w-none text-gray-600 prose-p:text-gray-600 prose-headings:text-gray-900 prose-li:text-gray-600 prose-strong:text-gray-900" dangerouslySetInnerHTML={{
                       __html: sanitizeHtml((() => {
                         let content = resolvedCmsBlock?.buildersIntro;
 
@@ -1044,7 +1044,7 @@ export default async function ServerEnhancedLocationPage({
                     return content || `Exhibition Stand Builders in ${displayLocation}: Services, Costs, and Tips`;
                   })()}
                 </h2>
-                <div className="prose max-w-none" dangerouslySetInnerHTML={{
+                <div className="prose max-w-none text-gray-600 prose-p:text-gray-600 prose-headings:text-gray-900 prose-li:text-gray-600 prose-strong:text-gray-900" dangerouslySetInnerHTML={{
                   __html: sanitizeHtml((() => {
                     let content = resolvedCmsBlock?.servicesParagraph;
 

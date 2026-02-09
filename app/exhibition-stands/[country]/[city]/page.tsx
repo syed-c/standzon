@@ -74,14 +74,14 @@ export async function generateMetadata({
     const countrySlug = normalize(country);
     const citySlug = normalize(city);
 
-    // Validate country exists - check both sources
+    // ✅ FIX #1: Validate country exists before proceeding
     const countryData = getGlobalCountryBySlug(countrySlug) || getComprehensiveCountryBySlug(countrySlug);
     if (!countryData) {
       console.log("❌ Country not found in metadata:", countrySlug);
       notFound();
     }
 
-    // Try to get city data from global database or comprehensive location data
+    // ✅ FIX #2: Validate city exists before proceeding
     const cityData = getGlobalCityBySlug(countrySlug, citySlug) || getComprehensiveCityBySlug(countrySlug, citySlug);
     if (!cityData) {
       console.log(
@@ -95,6 +95,51 @@ export async function generateMetadata({
 
     const cityName = ('name' in cityData) ? cityData.name : cityData.cityName;
     const countryName = toTitle(countrySlug);
+
+    // ✅ FIX #3: Validate that we can fetch meaningful data before generating metadata
+    let hasMeaningfulData = false;
+    
+    // Check if we can get builders for this city
+    try {
+      const { getFilteredBuilders } = await import('@/lib/supabase/builders');
+      const builderResult = await getFilteredBuilders({
+        country: countryName,
+        city: cityName,
+        page: 1,
+        itemsPerPage: 1
+      });
+      
+      if (builderResult.total > 0) {
+        hasMeaningfulData = true;
+      }
+    } catch (error) {
+      console.log("⚠️ Could not verify builder data for metadata:", error);
+    }
+
+    // Check if CMS content exists
+    try {
+      const sb = getServerSupabase();
+      if (sb) {
+        const cityPageId = `${countrySlug}-${citySlug}`;
+        const result = await sb
+          .from("page_contents")
+          .select("content")
+          .eq("id", cityPageId)
+          .single();
+
+        if (!result.error && result.data?.content) {
+          hasMeaningfulData = true;
+        }
+      }
+    } catch (error) {
+      console.log("⚠️ Could not verify CMS data for metadata:", error);
+    }
+
+    // ✅ FIX #4: If no meaningful data, don't generate metadata - trigger 404 instead
+    if (!hasMeaningfulData) {
+      console.warn(`⚠️ Soft 404 metadata: No meaningful data for ${cityName}, ${countryName}`);
+      notFound();
+    }
 
     // Try to fetch CMS content for metadata
     let cmsMetadata = null;
@@ -156,21 +201,7 @@ export async function generateMetadata({
     };
   } catch (error) {
     console.error("❌ generateMetadata error:", error);
-    return {
-      title: "Exhibition Stand Builders",
-      description: "Find professional exhibition stand builders worldwide.",
-      robots: {
-        index: true,
-        follow: true,
-        googleBot: {
-          index: true,
-          follow: true,
-          'max-video-preview': -1,
-          'max-image-preview': 'large',
-          'max-snippet': -1,
-        },
-      },
-    };
+    notFound();
   }
 }
 
@@ -334,7 +365,7 @@ export default async function CityPage({ params, searchParams }: CityPageProps) 
     city: citySlug,
   });
 
-  // Validate country exists - check both sources
+  // ✅ FIX #5: Validate country exists - check both sources
   const countryData = getGlobalCountryBySlug(countrySlug) || getComprehensiveCountryBySlug(countrySlug);
   if (!countryData) {
     console.log("❌ Country not found:", countrySlug);
@@ -349,10 +380,10 @@ export default async function CityPage({ params, searchParams }: CityPageProps) 
     notFound();
   }
 
-  // Get city data from global database or comprehensive location data
+  // ✅ FIX #6: Get city data from global database or comprehensive location data
   const cityData = getGlobalCityBySlug(countrySlug, adjustedCitySlug) || getComprehensiveCityBySlug(countrySlug, adjustedCitySlug);
 
-  // Return 404 if city doesn't exist
+  // ✅ FIX #7: Return 404 if city doesn't exist
   if (!cityData) {
     console.log("❌ City not found:", citySlug, "in country:", countrySlug);
     notFound();
@@ -361,7 +392,7 @@ export default async function CityPage({ params, searchParams }: CityPageProps) 
   const cityName = ('name' in cityData) ? cityData.name : cityData.cityName;
   const countryName = toTitle(countrySlug);
 
-  // Try to get CMS content
+  // ✅ FIX #8: Try to get CMS content
   const cmsContent = await getCityPageContent(countrySlug, citySlug);
 
   // Get country code for fetching cities (same as country pages)
@@ -415,31 +446,7 @@ export default async function CityPage({ params, searchParams }: CityPageProps) 
     }
   }
 
-  // Create default content structure similar to country pages
-  const defaultContent = {
-    id: `${countrySlug}-${citySlug}`,
-    title: `Exhibition Stand Builders in ${cityName}, ${countryName}`,
-    metaTitle: `${cityName} Exhibition Stand Builders | ${countryName}`,
-    metaDescription: `Professional exhibition stand builders in ${cityName}, ${countryName}. Get custom trade show displays and booth design services.`,
-    description: `Discover professional exhibition stand builders in ${cityName}, ${countryName}. Our verified contractors specialize in custom trade show displays, booth design, and comprehensive exhibition services.`,
-    heroContent: `Connect with ${cityName}'s leading exhibition stand builders for your next trade show project.`,
-    seoKeywords: [
-      `${cityName} exhibition stands`,
-      `${cityName} trade show builders`,
-      `${cityName} booth design`,
-    ]
-  };
-
-  // Format CMS content properly
-  const formattedCmsContent = formatCmsContent(cmsContent, countrySlug, citySlug, countryName, cityName);
-
-  // Merge CMS content with default content (similar to country page approach)
-  const mergedContent = {
-    ...defaultContent,
-    ...(formattedCmsContent || {})
-  };
-
-  // Fetch builders directly from Supabase using optimized query
+  // ✅ FIX #9: Fetch builders directly from Supabase using optimized query
   let builders: any[] = [];
   let totalBuilders = 0;
   let totalPages = 0;
@@ -491,10 +498,47 @@ export default async function CityPage({ params, searchParams }: CityPageProps) 
     builders = [];
   }
 
-  // Soft 404 prevention: if no builders and no CMS content, return 404
-  if (totalBuilders === 0 && !cmsContent) {
+  // Create default content structure similar to country pages
+  const defaultContent = {
+    id: `${countrySlug}-${citySlug}`,
+    title: `Exhibition Stand Builders in ${cityName}, ${countryName}`,
+    metaTitle: `${cityName} Exhibition Stand Builders | ${countryName}`,
+    metaDescription: `Professional exhibition stand builders in ${cityName}, ${countryName}. Get custom trade show displays and booth design services.`,
+    description: `Discover professional exhibition stand builders in ${cityName}, ${countryName}. Our verified contractors specialize in custom trade show displays, booth design, and comprehensive exhibition services.`,
+    heroContent: `Connect with ${cityName}'s leading exhibition stand builders for your next trade show project.`,
+    seoKeywords: [
+      `${cityName} exhibition stands`,
+      `${cityName} trade show builders`,
+      `${cityName} booth design`,
+    ]
+  };
+
+  // Format CMS content properly
+  const formattedCmsContent = formatCmsContent(cmsContent, countrySlug, citySlug, countryName, cityName);
+
+  // Merge CMS content with default content (similar to country page approach)
+  const mergedContent = {
+    ...defaultContent,
+    ...(formattedCmsContent || {})
+  };
+
+  // ✅ FIX #10: Comprehensive Soft 404 prevention
+  const hasBuilders = totalBuilders > 0;
+  const hasCmsContent = !!cmsContent;
+  const hasMeaningfulData = hasBuilders || hasCmsContent;
+
+  if (!hasMeaningfulData) {
     console.warn(`⚠️ Soft 404: No builders and no CMS content for ${cityName}, ${countryName}.`);
     notFound();
+  }
+
+  // ✅ FIX #11: Additional quality check - ensure CMS content has meaningful text
+  if (hasCmsContent && !hasBuilders) {
+    const cmsTextLength = JSON.stringify(cmsContent).length;
+    if (cmsTextLength < 500) { // Arbitrary threshold for meaningful content
+      console.warn(`⚠️ Soft 404: CMS content too minimal for ${cityName}, ${countryName} (${cmsTextLength} chars).`);
+      notFound();
+    }
   }
 
   return (

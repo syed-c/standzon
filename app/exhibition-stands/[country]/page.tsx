@@ -294,9 +294,23 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
     ...(countryBlock || {})
   };
 
-  if (totalBuilders === 0 && !cmsContent) {
-    console.warn(`⚠️ Soft 404: No builders and no CMS content for ${countryInfo.name}.`);
+  // ✅ FIX: Enhanced Soft 404 prevention - stricter validation
+  const hasMeaningfulContent = totalBuilders > 0 || (cmsContent && cmsContent.content);
+  const hasValidMetadata = cmsContent?.seo?.metaTitle && cmsContent?.seo?.metaDescription;
+  
+  // Return 404 for pages with no real value
+  if (!hasMeaningfulContent) {
+    console.warn(`⚠️ Soft 404: No meaningful content for ${countryInfo.name}. Builders: ${totalBuilders}, CMS: ${!!cmsContent}`);
     notFound();
+  }
+  
+  // Additional validation: if we have CMS content but it's minimal/placeholder
+  if (cmsContent && !hasValidMetadata) {
+    const contentLength = JSON.stringify(cmsContent).length;
+    if (contentLength < 500) { // Arbitrary threshold for meaningful content
+      console.warn(`⚠️ Soft 404: CMS content too minimal (${contentLength} chars) for ${countryInfo.name}`);
+      notFound();
+    }
   }
 
   return (

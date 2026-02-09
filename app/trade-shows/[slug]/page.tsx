@@ -25,11 +25,15 @@ export async function generateMetadata({ params }: TradeShowPageProps): Promise<
   const resolvedParams = await params;
   const dbTradeShow = await db.getTradeShowBySlug(resolvedParams.slug);
 
+  // ✅ FIX #1: Return 404 metadata for invalid trade shows
   if (!dbTradeShow) {
-    return {
-      title: 'Trade Show Not Found | StandZone',
-      description: 'The trade show you are looking for could not be found.'
-    };
+    notFound();
+  }
+
+  // ✅ FIX #2: Validate critical data before generating metadata
+  if (!dbTradeShow.location_city || !dbTradeShow.title) {
+    console.warn(`⚠️ Soft 404 metadata: Trade show ${resolvedParams.slug} missing critical data.`);
+    notFound();
   }
 
   const exhibition = mapTradeShowDBToExhibition(dbTradeShow);
@@ -75,13 +79,36 @@ export default async function TradeShowPage({ params }: TradeShowPageProps) {
   const resolvedParams = await params;
   const dbTradeShow = await db.getTradeShowBySlug(resolvedParams.slug);
 
+  // ✅ FIX #3: Immediate 404 for non-existent trade shows
   if (!dbTradeShow) {
+    console.warn(`⚠️ Trade show not found: ${resolvedParams.slug}`);
     notFound();
   }
 
-  // ✅ FIX: Soft 404 protection - Ensure trade show has critical data
-  if (!dbTradeShow.city || !dbTradeShow.name) {
-    console.warn(`⚠️ Soft 404: Trade show ${resolvedParams.slug} missing critical data.`);
+  // ✅ FIX #4: Comprehensive data validation to prevent Soft 404
+  const criticalFields = [
+    'location_city',
+    'title',
+    'location_country',
+    'start_date',
+    'end_date'
+  ];
+
+  const missingFields = criticalFields.filter(field => !dbTradeShow[field as keyof typeof dbTradeShow]);
+  
+  if (missingFields.length > 0) {
+    console.warn(`⚠️ Soft 404: Trade show ${resolvedParams.slug} missing critical fields:`, missingFields);
+    notFound();
+  }
+
+  // ✅ FIX #5: Validate data quality - check for placeholder/minimal content
+  const hasMeaningfulContent = 
+    (dbTradeShow.description && dbTradeShow.description.length > 100) ||
+    (dbTradeShow.seo_description && dbTradeShow.seo_description.length > 50) ||
+    dbTradeShow.hero_image_url;
+
+  if (!hasMeaningfulContent) {
+    console.warn(`⚠️ Soft 404: Trade show ${resolvedParams.slug} has insufficient content.`);
     notFound();
   }
 
@@ -89,8 +116,42 @@ export default async function TradeShowPage({ params }: TradeShowPageProps) {
 
   console.log(`🎪 Loading dynamic trade show page from Supabase for: ${resolvedParams.slug} - ${exhibition.name}`);
 
+  // Construct JSON-LD Structured Data
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ExhibitionEvent',
+    name: exhibition.name,
+    description: exhibition.description,
+    startDate: exhibition.startDate,
+    endDate: exhibition.endDate,
+    location: {
+      '@type': 'Place',
+      name: exhibition.venue.name,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: exhibition.city,
+        addressCountry: exhibition.country
+      }
+    },
+    organizer: {
+      '@type': 'Organization',
+      name: exhibition.organizer.name,
+      url: exhibition.organizer.website
+    },
+    image: exhibition.images,
+    offers: {
+      '@type': 'Offer',
+      url: exhibition.website,
+      availability: 'https://schema.org/InStock'
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <ExhibitionPage exhibitionSlug={resolvedParams.slug} initialExhibition={exhibition} />
     </div>
   );
