@@ -538,6 +538,7 @@ export default async function CityPage({ params, searchParams }: CityPageProps) 
       featured: b.featured || false,
       logo: b.logo || b.profile_image || "/images/builders/default-logo.png",
       planType: b.plan_type || b.planType || "free",
+      portfolio: b.portfolio || b.gallery_images || b.images || [],
     }));
 
     console.log(`📍 Fetched ${builders.length} builders for city: ${cityName} (page ${currentPageNum}/${totalPages}, total: ${totalBuilders})`);

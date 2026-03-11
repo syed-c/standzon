@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import PublicQuoteRequest from '@/components/PublicQuoteRequest';
 import { BuilderCard } from '@/components/BuilderCard';
 import {
-  MapPin, Building, Users, Star, ArrowRight,
+  MapPin, Building, Building2, Users, Star, ArrowRight,
   TrendingUp, Award, CheckCircle, Zap, Globe,
   Calendar, DollarSign, Clock, Shield
 } from 'lucide-react';
@@ -33,6 +33,8 @@ export interface ServerEnhancedLocationPageProps {
   isEditable?: boolean;
   searchTerm?: string;
   suppressPostBuildersContent?: boolean;
+  suppressBuilders?: boolean;
+  buildersSlot?: React.ReactNode;
   locationStats?: {
     totalBuilders?: number;
     averageRating?: number;
@@ -133,6 +135,8 @@ export default async function ServerEnhancedLocationPage({
   isEditable = false,
   searchTerm,
   suppressPostBuildersContent = false,
+  suppressBuilders = false,
+  buildersSlot,
   locationStats,
   upcomingEvents = [],
   serverCmsContent,
@@ -329,930 +333,607 @@ export default async function ServerEnhancedLocationPage({
 
   // --- render ---
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      {/* HERO */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white pt-24 pb-20">
-        <div className="absolute inset-0 opacity-20">
-          <div className="w-full h-full bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-pink-500/10" />
+    <div className="min-h-screen bg-[#f6f6f8] font-sans">
+
+      {/* ── HERO ── */}
+      <section className="relative bg-[#0f172a] py-20 overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1e3886]/30 via-transparent to-[#c0123d]/20" />
+          <div className="absolute inset-0 opacity-[0.04]"
+            style={{ backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`, backgroundSize: '32px 32px' }} />
         </div>
-        <div className="relative container mx-auto px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="flex justify-center mb-6">
-              <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-lg px-4 py-2">
-                <MapPin className="w-5 h-5 mr-2 inline-block align-middle" />
-                <span className="align-middle">{displayLocation}</span>
-              </Badge>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              <span className="block">Exhibition Stand Builders</span>
-              <span className="block bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-                in {displayLocation}
-              </span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-3xl">
+            <span className="inline-block px-3 py-1 bg-[#1e3886]/20 border border-[#1e3886]/40 text-white rounded-full text-xs font-black tracking-widest uppercase mb-5">
+              {isCity ? `${finalCountryName} Exhibition Hub` : 'World-Class Exhibition Logistics'}
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight mb-6 tracking-tight">
+              {isCity ? (
+                <>Exhibition Stand Builders <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">in {finalLocationName}.</span></>
+              ) : (
+                <>Global Directory of <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">Verified Stand Builders.</span></>
+              )}
             </h1>
-
-            <p className="text-xl md:text-2xl text-slate-300 mb-8 leading-relaxed">
+            <p className="text-lg text-slate-300 mb-10 leading-relaxed max-w-2xl">
               {(() => {
-                // First try to get hero description from CMS - prioritize heroDescription field over hero.description
-                let heroContent = resolvedCmsBlock?.heroDescription ||
-                  resolvedCmsBlock?.hero?.description ||
-                  resolvedCmsBlock?.hero;
-
-                // If we still don't have content, try other common fields
-                if (!heroContent && resolvedCmsBlock) {
-                  heroContent = resolvedCmsBlock.description ||
-                    resolvedCmsBlock.content?.introduction ||
-                    resolvedCmsBlock.heroContent ||
-                    resolvedCmsBlock.content?.hero?.description ||
-                    pageContent?.hero?.description ||
-                    pageContent?.content?.introduction;
-                }
-
-                // Handle nested structure for hero description
-                // content.countryPages.city.heroDescription
-                if (!heroContent && resolvedCmsBlock?.countryPages) {
-                  // Try to find hero description in nested country pages
-                  const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                  for (const key of countryPageKeys) {
-                    const countryPage = resolvedCmsBlock.countryPages[key];
-                    if (countryPage && countryPage.heroDescription) {
-                      heroContent = countryPage.heroDescription;
-                      break;
-                    }
-                  }
-                }
-
-                // Handle the specific nested structure for hero description
-                // Check if we have serverCmsContent with the nested structure
-                if (!heroContent && cmsData?.sections?.cityPages) {
-                  const cityPageKeys = Object.keys(cmsData.sections.cityPages);
-                  for (const pageKey of cityPageKeys) {
-                    const countryPages = cmsData.sections.cityPages[pageKey]?.countryPages;
-                    if (countryPages) {
-                      const countryPageKeys = Object.keys(countryPages);
-                      for (const countryKey of countryPageKeys) {
-                        const countryPage = countryPages[countryKey];
-                        if (countryPage && countryPage.heroDescription) {
-                          heroContent = countryPage.heroDescription;
-                          break;
-                        }
-                      }
-                      if (heroContent) break;
-                    }
-                  }
-                }
-
-                // Handle case where content might be in nested structure
-                if (!heroContent && resolvedCmsBlock?.countryPages) {
-                  // Try to find hero content in nested country pages
-                  const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                  for (const key of countryPageKeys) {
-                    const countryPage = resolvedCmsBlock.countryPages[key];
-                    if (countryPage) {
-                      heroContent = countryPage.heroDescription ||
-                        countryPage.hero ||
-                        countryPage.description ||
-                        countryPage.content?.introduction;
-                      if (heroContent) break;
-                    }
-                  }
-                }
-
-                // Handle even deeper nested structure
-                if (!heroContent && resolvedCmsBlock?.countryPages) {
-                  const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                  for (const key of countryPageKeys) {
-                    const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                    if (nestedCountryPages) {
-                      const nestedKeys = Object.keys(nestedCountryPages);
-                      for (const nestedKey of nestedKeys) {
-                        const nestedPage = nestedCountryPages[nestedKey];
-                        if (nestedPage) {
-                          heroContent = nestedPage.heroDescription ||
-                            nestedPage.hero ||
-                            nestedPage.description ||
-                            nestedPage.content?.introduction;
-                          if (heroContent) break;
-                        }
-                      }
-                      if (heroContent) break;
-                    }
-                  }
-                }
-
-                // Handle the specific structure we saw in the logs:
-                // sections.cityPages[country-city].cityPages[country-city].countryPages.city
-                if (!heroContent && resolvedCmsBlock?.cityPages) {
-                  const cityPageKeys = Object.keys(resolvedCmsBlock.cityPages);
-                  for (const key of cityPageKeys) {
-                    const nestedCityPages = resolvedCmsBlock.cityPages[key]?.countryPages;
-                    if (nestedCityPages) {
-                      const nestedKeys = Object.keys(nestedCityPages);
-                      for (const nestedKey of nestedKeys) {
-                        const nestedPage = nestedCityPages[nestedKey];
-                        if (nestedPage) {
-                          heroContent = nestedPage.heroDescription ||
-                            nestedPage.hero ||
-                            nestedPage.description ||
-                            nestedPage.content?.introduction;
-                          if (heroContent) break;
-                        }
-                      }
-                      if (heroContent) break;
-                    }
-                  }
-                }
-
-                // Handle even more specific nested structure for hero description
-                // content.sections.cityPages[country-city].countryPages.city.heroDescription
-                if (!heroContent && cmsData?.sections?.cityPages) {
-                  const cityPageKeys = Object.keys(cmsData.sections.cityPages);
-                  for (const key of cityPageKeys) {
-                    const countryPages = cmsData.sections.cityPages[key]?.countryPages;
-                    if (countryPages) {
-                      const countryPageKeys = Object.keys(countryPages);
-                      for (const countryKey of countryPageKeys) {
-                        const countryPage = countryPages[countryKey];
-                        if (countryPage && countryPage.heroDescription) {
-                          heroContent = countryPage.heroDescription;
-                          break;
-                        }
-                      }
-                      if (heroContent) break;
-                    }
-                  }
-                }
-
-                // NEW: Handle the specific structure we identified in the test script
-                // sections.cityPages["united-arab-emirates-dubai"].countryPages.dubai.heroDescription
-                if (!heroContent && cmsData?.sections?.cityPages) {
-                  const cityPageKeys = Object.keys(cmsData.sections.cityPages);
-                  for (const pageKey of cityPageKeys) {
-                    const countryPages = cmsData.sections.cityPages[pageKey]?.countryPages;
-                    if (countryPages) {
-                      const countryPageKeys = Object.keys(countryPages);
-                      for (const countryKey of countryPageKeys) {
-                        const countryPage = countryPages[countryKey];
-                        if (countryPage && countryPage.heroDescription) {
-                          heroContent = countryPage.heroDescription;
-                          break;
-                        }
-                      }
-                      if (heroContent) break;
-                    }
-                  }
-                }
-
-                // Handle object content properly
+                let heroContent = resolvedCmsBlock?.heroDescription || resolvedCmsBlock?.hero?.description || resolvedCmsBlock?.hero;
+                if (!heroContent && resolvedCmsBlock) heroContent = resolvedCmsBlock.description || resolvedCmsBlock.content?.introduction || resolvedCmsBlock.heroContent;
                 const extractText = (content: any): string => {
                   if (typeof content === 'string') return content;
-                  if (typeof content === 'object' && content !== null) {
-                    // Try common properties in order of preference
-                    return content.description ||
-                      content.text ||
-                      content.heading ||
-                      content.title ||
-                      content.content ||
-                      JSON.stringify(content);
-                  }
-                  return String(content);
+                  if (typeof content === 'object' && content !== null) return content.description || content.text || content.heading || '';
+                  return String(content || '');
                 };
-
                 heroContent = extractText(heroContent);
-
-                // Return the content or fallback
-                return heroContent || `Find trusted exhibition stand builders in ${displayLocation}.`;
+                return heroContent || `Source the top 1% of exhibition contractors for ${displayLocation}. Data-driven matching for high-stakes brand activations.`;
               })()}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 text-white">
+
+            {/* Search bar */}
+            <div className="bg-white p-2 rounded-xl shadow-2xl flex flex-col md:flex-row gap-2 mb-5">
+              <div className="flex-1 flex items-center px-4 border-b md:border-b-0 md:border-r border-slate-100">
+                <svg className="w-5 h-5 text-slate-400 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <input className="w-full border-none focus:outline-none text-slate-900 py-3.5 text-sm" placeholder="Industry or Stand Type" type="text" />
+              </div>
+              <div className="flex-1 flex items-center px-4">
+                <MapPin className="w-5 h-5 text-slate-400 mr-3 shrink-0" />
+                <input className="w-full border-none focus:outline-none text-slate-900 py-3.5 text-sm" placeholder={`City or Region in ${finalCountryName || displayLocation}`} type="text" defaultValue={displayLocation} />
+              </div>
               <PublicQuoteRequest
                 location={displayLocation}
-                buttonText={`Get Quotes from ${displayLocation} Builders`}
-                className="text-lg px-8 py-4"
+                buttonText="Search Directory"
+                className="bg-[#c0123d] hover:bg-[#a01030] text-white font-black px-7 py-3.5 h-auto rounded-lg border-0 shrink-0 text-sm"
               />
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg"
-                id="scroll-to-builders-btn"
-              >
-                Browse Local Builders
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 text-center">
-                <div className="flex items-center justify-center mb-2"><Building className="w-6 h-6 text-blue-400" /></div>
-                <div className="text-xl font-bold">{stats.totalBuilders}+</div>
-                <div className="text-slate-300 text-xs">Verified Builders</div>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 text-center">
-                <div className="flex items-center justify-center mb-2"><Star className="w-6 h-6 text-yellow-400" /></div>
-                <div className="text-xl font-bold">{stats.averageRating}</div>
-                <div className="text-slate-300 text-xs">Average Rating</div>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 text-center">
-                <div className="flex items-center justify-center mb-2"><Award className="w-6 h-6 text-green-400" /></div>
-                <div className="text-xl font-bold">{stats.completedProjects.toLocaleString()}</div>
-                <div className="text-slate-300 text-xs">Projects Completed</div>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 text-center">
-                <div className="flex items-center justify-center mb-2"><DollarSign className="w-6 h-6 text-purple-400" /></div>
-                <div className="text-xl font-bold">${stats.averagePrice}</div>
-                <div className="text-slate-300 text-xs">Avg. Price/sqm</div>
-              </div>
+            <div className="flex gap-5 text-xs text-slate-400 uppercase font-black tracking-wider flex-wrap">
+              <span>Popular:</span>
+              <a href="#builders-grid" className="hover:text-white transition-colors">GITEX Global</a>
+              <a href="#builders-grid" className="hover:text-white transition-colors">Arab Health</a>
+              <a href="#builders-grid" className="hover:text-white transition-colors">Big 5 Construct</a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* WHY CHOOSE LOCAL */}
-      <section className="py-16">
-        <div className="container mx-auto px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {(() => {
-                  let content = resolvedCmsBlock?.whyChooseHeading;
+      {/* ── STATS RIBBON ── */}
+      <div className="bg-white border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-7 grid grid-cols-2 md:grid-cols-4 gap-8">
+          {[
+            { val: `${stats.totalBuilders}+`, label: 'Vetted Builders' },
+            { val: stats.averageRating || '4.8', label: 'Avg. Rating' },
+            { val: stats.completedProjects > 0 ? `${stats.completedProjects.toLocaleString()}+` : '15k+', label: 'Stands Built' },
+            { val: '24h', label: 'Quote Response' }
+          ].map((s, i) => (
+            <div key={i} className="flex flex-col items-center md:items-start">
+              <span className="text-2xl md:text-3xl font-black text-[#0f172a]">{s.val}</span>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-0.5">{s.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
-                  // Handle nested structure for whyChooseHeading
-                  if (!content && resolvedCmsBlock?.countryPages) {
-                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                    for (const key of countryPageKeys) {
-                      if (resolvedCmsBlock.countryPages[key]?.whyChooseHeading) {
-                        content = resolvedCmsBlock.countryPages[key].whyChooseHeading;
-                        break;
+      {/* ── BUILDERS SLOT (injected from parent) ── */}
+      {buildersSlot}
+
+      {/* ── VERIFIED BUILDERS LIST (internal, only when not suppressed) ── */}
+      {!suppressBuilders && filteredBuilders.length > 0 && (
+        <section id="builders-grid" className="py-20 bg-[#f6f6f8]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-black text-[#0f172a] uppercase tracking-tight mb-2">
+                  {(() => {
+                    let content = resolvedCmsBlock?.buildersHeading;
+                    if (!content && resolvedCmsBlock?.countryPages) {
+                      for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
+                        if (resolvedCmsBlock.countryPages[key]?.buildersHeading) { content = resolvedCmsBlock.countryPages[key].buildersHeading; break; }
                       }
                     }
-                  }
-
-                  // Handle deeper nested structure
-                  if (!content && resolvedCmsBlock?.countryPages) {
-                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                    for (const key of countryPageKeys) {
-                      const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                      if (nestedCountryPages) {
-                        const nestedKeys = Object.keys(nestedCountryPages);
-                        for (const nestedKey of nestedKeys) {
-                          if (nestedCountryPages[nestedKey]?.whyChooseHeading) {
-                            content = nestedCountryPages[nestedKey].whyChooseHeading;
-                            break;
-                          }
-                        }
-                        if (content) break;
-                      }
-                    }
-                  }
-
-                  if (typeof content === 'object' && content !== null) {
-                    return content.heading || content.title || JSON.stringify(content);
-                  }
-                  return content || `Why Choose Local Builders in ${displayLocation}?`;
-                })()}
-              </h2>              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                {(() => {
-                  let content = resolvedCmsBlock?.whyChooseParagraph;
-
-                  // Handle nested structure for whyChooseParagraph
-                  if (!content && resolvedCmsBlock?.countryPages) {
-                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                    for (const key of countryPageKeys) {
-                      if (resolvedCmsBlock.countryPages[key]?.whyChooseParagraph) {
-                        content = resolvedCmsBlock.countryPages[key].whyChooseParagraph;
-                        break;
-                      }
-                    }
-                  }
-
-                  // Handle deeper nested structure
-                  if (!content && resolvedCmsBlock?.countryPages) {
-                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                    for (const key of countryPageKeys) {
-                      const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                      if (nestedCountryPages) {
-                        const nestedKeys = Object.keys(nestedCountryPages);
-                        for (const nestedKey of nestedKeys) {
-                          if (nestedCountryPages[nestedKey]?.whyChooseParagraph) {
-                            content = nestedCountryPages[nestedKey].whyChooseParagraph;
-                            break;
-                          }
-                        }
-                        if (content) break;
-                      }
-                    }
-                  }
-
-                  if (typeof content === 'object' && content !== null) {
-                    return content.description || content.text || JSON.stringify(content);
-                  }
-                  return content || `Local builders offer unique advantages including market knowledge, logistical expertise, and established vendor relationships.`;
-                })()}
-              </p>
+                    if (typeof content === 'object' && content !== null) return content.heading || content.title || `Verified Builders in ${displayLocation}`;
+                    return content || `Verified Premier Builders in ${displayLocation}`;
+                  })()}
+                </h2>
+                <p className="text-slate-600 text-sm">Top-rated contractors with verified project history and client testimonials.</p>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold hover:border-[#1e3886] transition-colors">Filter by Rating</button>
+                <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold hover:border-[#1e3886] transition-colors">{isCity ? 'City Specialists' : 'Country Specialists'}</button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-              {(() => {
-                let infoCards = resolvedCmsBlock?.infoCards;
+            {/* Premium list-style builder cards */}
+            <div className="space-y-5">
+              {filteredBuilders.map((b: any, idx: number) => {
+                const logo = b.logo || b.profile_image || b.image_url;
+                const portfolioImg = b.portfolio?.[0]?.image || b.portfolio?.[0]?.imageUrl || b.portfolio?.[0] || logo;
+                const rating = b.rating || 4.8;
+                const reviewCount = b.reviewCount || b.review_count || 0;
+                const isPremium = b.premiumMember || b.premium_member || b.planType === 'professional' || b.planType === 'enterprise';
+                const isVerified = b.verified || b.isVerified;
+                const hq = b.headquarters?.city || b.headquarters_city || b.city || displayLocation;
+                const hqCountry = b.headquarters?.country || b.headquarters_country || b.country || '';
+                const estYear = b.establishedYear || b.established_year || '';
+                const desc = b.companyDescription || b.description || b.company_description || '';
+                const projDone = b.projectsCompleted || b.projects_completed || 0;
+                const responseTime = b.responseTime || b.response_time || 'Within 24 hours';
+                const badgeLabel = idx === 0 ? 'Verified Platinum' : isPremium ? 'Recommended' : isVerified ? 'Verified' : '';
+                const badgeBg = idx === 0 ? 'bg-emerald-500' : 'bg-[#1e3886]';
 
-                // Handle nested structure for infoCards
-                if (!infoCards && resolvedCmsBlock?.countryPages) {
-                  const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                  for (const key of countryPageKeys) {
-                    if (resolvedCmsBlock.countryPages[key]?.infoCards) {
-                      infoCards = resolvedCmsBlock.countryPages[key].infoCards;
-                      break;
-                    }
-                  }
-                }
+                return (
+                  <div key={b.id || b.slug || idx} className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col lg:flex-row gap-6 hover:shadow-xl transition-shadow duration-300 group">
+                    {/* Image */}
+                    <div className="lg:w-56 h-44 rounded-lg overflow-hidden bg-slate-100 relative shrink-0">
+                      {portfolioImg ? (
+                        <Image
+                          src={convertToProxyUrl(typeof portfolioImg === 'string' ? portfolioImg : (portfolioImg as any).image || (portfolioImg as any).url || '')}
+                          alt={b.companyName}
+                          fill
+                          sizes="224px"
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                          <Building className="w-12 h-12 text-slate-400" />
+                        </div>
+                      )}
+                      {badgeLabel && (
+                        <div className={`absolute top-3 left-3 ${badgeBg} text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-tight`}>
+                          {badgeLabel}
+                        </div>
+                      )}
+                    </div>
 
-                // Handle deeper nested structure
-                if (!infoCards && resolvedCmsBlock?.countryPages) {
-                  const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                  for (const key of countryPageKeys) {
-                    const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                    if (nestedCountryPages) {
-                      const nestedKeys = Object.keys(nestedCountryPages);
-                      for (const nestedKey of nestedKeys) {
-                        if (nestedCountryPages[nestedKey]?.infoCards) {
-                          infoCards = nestedCountryPages[nestedKey].infoCards;
-                          break;
-                        }
-                      }
-                      if (infoCards) break;
-                    }
-                  }
-                }
-
-                let cards = [
-                  {
-                    title: 'Local Market Knowledge',
-                    text: `Understand local regulations, venue requirements and cultural preferences specific to ${displayLocation}.`
-                  },
-                  {
-                    title: 'Faster Project Delivery',
-                    text: 'Reduced logistics time and faster response for urgent modifications.'
-                  },
-                  {
-                    title: 'Cost-Effective Solutions',
-                    text: 'Lower transport costs and local supplier networks.'
-                  }
-                ];
-
-                // Handle case where infoCards is an object instead of array
-                if (Array.isArray(infoCards)) {
-                  cards = infoCards.map(card => {
-                    if (typeof card === 'object' && card !== null) {
-                      return {
-                        title: typeof card.title === 'object' ?
-                          (card.title.heading || card.title.title || JSON.stringify(card.title)) :
-                          card.title,
-                        text: typeof card.text === 'object' ?
-                          (card.text.description || card.text.text || JSON.stringify(card.text)) :
-                          card.text
-                      };
-                    }
-                    return card;
-                  });
-                }
-
-                return cards;
-              })().map((card: any, idx: number) => (
-                <div key={idx} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${idx === 0 ? 'bg-blue-100' : idx === 1 ? 'bg-green-100' : 'bg-purple-100'}`}>
-                    {idx === 0 ? <MapPin className="w-6 h-6 text-blue-600" /> : idx === 1 ? <Clock className="w-6 h-6 text-green-600" /> : <DollarSign className="w-6 h-6 text-purple-600" />}
-                  </div>
-                  <h3 className="text-lg font-semibold mb-3 text-gray-900">{card.title}</h3>
-                  <p className="text-gray-600 text-sm">{card.text}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-2xl p-8 text-white text-center">
-              <h3 className="text-2xl font-bold mb-4">Get Quotes from {displayLocation} Experts</h3>
-              <p className="text-lg mb-6 opacity-90">
-                {(() => {
-                  let content = resolvedCmsBlock?.quotesParagraph;
-
-                  // Handle nested structure for quotesParagraph
-                  if (!content && resolvedCmsBlock?.countryPages) {
-                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                    for (const key of countryPageKeys) {
-                      if (resolvedCmsBlock.countryPages[key]?.quotesParagraph) {
-                        content = resolvedCmsBlock.countryPages[key].quotesParagraph;
-                        break;
-                      }
-                    }
-                  }
-
-                  // Handle deeper nested structure
-                  if (!content && resolvedCmsBlock?.countryPages) {
-                    const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                    for (const key of countryPageKeys) {
-                      const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                      if (nestedCountryPages) {
-                        const nestedKeys = Object.keys(nestedCountryPages);
-                        for (const nestedKey of nestedKeys) {
-                          if (nestedCountryPages[nestedKey]?.quotesParagraph) {
-                            content = nestedCountryPages[nestedKey].quotesParagraph;
-                            break;
-                          }
-                        }
-                        if (content) break;
-                      }
-                    }
-                  }
-
-                  if (typeof content === 'object' && content !== null) {
-                    return content.description || content.text || JSON.stringify(content);
-                  }
-                  return content || `Connect with verified local builders. Quotes within 24 hours.`;
-                })()}
-              </p>
-              <PublicQuoteRequest location={displayLocation} buttonText="Get Local Quotes Now" className="bg-white text-black hover:bg-gray-100 text-lg px-8 py-4" />
-            </div>
-
-            <div className="mt-10">
-              <h2 className="text-2xl font-bold text-center mb-6">Exhibition Booth Highlights</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto px-4">
-                {(() => {
-                  // Extract portfolio images from builders
-                  let portfolioImages: string[] = [];
-                  if (Array.isArray(filteredBuilders)) {
-                    filteredBuilders.forEach(builder => {
-                      if (builder.portfolio && Array.isArray(builder.portfolio)) {
-                        // If portfolio items are objects with image URLs
-                        builder.portfolio.forEach((item: any) => {
-                          if (typeof item === 'string') {
-                            // Direct image URL
-                            portfolioImages.push(item);
-                          } else if (typeof item === 'object' && item !== null) {
-                            // Object with image property - could be 'image', 'imageUrl', 'url', etc.
-                            if (item.image) portfolioImages.push(item.image);
-                            else if (item.imageUrl) portfolioImages.push(item.imageUrl);
-                            else if (item.url) portfolioImages.push(item.url);
-                            else if (item.src) portfolioImages.push(item.src);
-                          }
-                        });
-                      }
-                    });
-                  }
-
-                  // Show placeholder if no portfolio images
-                  if (portfolioImages.length === 0) {
-                    return Array.from({ length: 8 }, (_, i) => (
-                      <div key={i} className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl shadow-lg flex items-center justify-center">
-                        <div className="text-center p-4">
-                          <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 mx-auto mb-2" />
-                          <div className="h-4 bg-gray-300 rounded w-3/4 mx-auto mb-1"></div>
-                          <div className="h-3 bg-gray-300 rounded w-1/2 mx-auto"></div>
+                    {/* Body */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start mb-2 gap-4">
+                        <div>
+                          <h3 className="text-lg font-black text-[#0f172a] group-hover:text-[#1e3886] transition-colors leading-tight">{b.companyName}</h3>
+                          <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-3 h-3" /> {hq}{hqCountry && hqCountry !== hq ? `, ${hqCountry}` : ''}{estYear ? ` • Est. ${estYear}` : ''}
+                          </p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className="flex items-center text-yellow-500">
+                            <Star className="w-4 h-4 fill-current" />
+                            <span className="text-base font-black ml-1 text-[#0f172a]">{rating}</span>
+                          </div>
+                          {reviewCount > 0 && <span className="text-[10px] text-slate-400 uppercase font-bold">{reviewCount} Reviews</span>}
                         </div>
                       </div>
-                    ));
-                  }
+                      {desc && <p className="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-2">{desc}</p>}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {[
+                          { label: 'Projects Done', val: projDone > 0 ? `${projDone.toLocaleString()}+` : 'Available', color: '' },
+                          { label: 'Response', val: responseTime, color: '' },
+                          { label: 'Status', val: isVerified ? 'Verified' : 'Active', color: isVerified ? 'text-emerald-600' : '' },
+                          { label: 'Plan', val: (b.planType || 'Standard').charAt(0).toUpperCase() + (b.planType || 'Standard').slice(1), color: isPremium ? 'text-[#1e3886]' : '' }
+                        ].map((stat, si) => (
+                          <div key={si} className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                            <span className="block text-[9px] uppercase font-black text-slate-400 mb-0.5">{stat.label}</span>
+                            <span className={`text-xs font-black text-[#0f172a] ${stat.color}`}>{stat.val}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-                  // Show actual portfolio images
-                  return portfolioImages.slice(0, 8).map((img, i) => (
-                    <div key={i} className="relative overflow-hidden rounded-2xl shadow-lg aspect-square group">
-                      <Image
-                        src={convertToProxyUrl(img)}
-                        alt={`Exhibition booth ${i + 1}`}
-                        fill
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    {/* CTA Sidebar */}
+                    <div className="lg:w-40 flex flex-col justify-center gap-3 border-t lg:border-t-0 lg:border-l border-slate-100 pt-4 lg:pt-0 lg:pl-6 shrink-0">
+                      <a
+                        href={`/builders/${b.slug || b.id}`}
+                        className="w-full bg-[#0f172a] text-white text-xs font-black py-2.5 px-3 rounded-lg hover:bg-[#1e3886] transition-all text-center"
+                      >
+                        View Portfolio
+                      </a>
+                      <PublicQuoteRequest
+                        location={displayLocation}
+                        builderId={b.id}
+                        buttonText="Request Quote"
+                        className="w-full bg-white border border-slate-200 text-[#0f172a] text-xs font-black py-2.5 px-3 h-auto rounded-lg hover:border-[#1e3886] transition-all"
+                        size="sm"
                       />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white bg-opacity-90 rounded-full p-2">
-                          <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                          </svg>
-                        </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-10 text-center">
+              <PublicQuoteRequest
+                location={displayLocation}
+                buttonText={`Get Free Quotes from All ${displayLocation} Builders`}
+                className="px-8 py-3 bg-white border border-slate-200 text-[#0f172a] font-black rounded-lg hover:border-[#1e3886] transition-all"
+              />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* No builders state */}
+      {!suppressBuilders && filteredBuilders.length === 0 && (
+        <section className="py-20 bg-[#f6f6f8]">
+          <div className="max-w-7xl mx-auto px-4 text-center">
+            <div className="bg-white rounded-2xl border border-slate-200 p-16">
+              <Building className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <h2 className="text-2xl font-black text-[#0f172a] mb-2">No Builders Listed Yet</h2>
+              <p className="text-slate-500 mb-8">We're expanding our directory for {displayLocation}. Get notified when builders are added.</p>
+              <PublicQuoteRequest location={displayLocation} buttonText="Request Builders for This Location" className="bg-[#1e3886] text-white font-black px-8 py-3 h-auto rounded-lg hover:bg-[#c0123d] transition-all border-0" />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── WHY CHOOSE LOCAL (dark section) ── */}
+      <section className="py-20 bg-[#0f172a] text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-black mb-6 uppercase tracking-tighter leading-tight">
+                {(() => {
+                  let content = resolvedCmsBlock?.whyChooseHeading;
+                  if (!content && resolvedCmsBlock?.countryPages) {
+                    for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
+                      if (resolvedCmsBlock.countryPages[key]?.whyChooseHeading) { content = resolvedCmsBlock.countryPages[key].whyChooseHeading; break; }
+                    }
+                  }
+                  if (typeof content === 'object' && content !== null) return content.heading || content.title || `Built for ${displayLocation},`;
+                  return content || `Built for Professionals,`;
+                })()}
+                <br />
+                <span className="text-blue-400">
+                  Trusted by Global Brands.
+                </span>
+              </h2>
+              <p className="text-slate-400 text-lg mb-8 leading-relaxed">
+                {(() => {
+                  let content = resolvedCmsBlock?.whyChooseParagraph;
+                  if (!content && resolvedCmsBlock?.countryPages) {
+                    for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
+                      if (resolvedCmsBlock.countryPages[key]?.whyChooseParagraph) { content = resolvedCmsBlock.countryPages[key].whyChooseParagraph; break; }
+                    }
+                  }
+                  if (typeof content === 'object' && content !== null) return content.description || content.text || '';
+                  return content || `We eliminate the risk of exhibition failure by providing a transparent, data-driven directory of ${displayLocation}'s most capable builders.`;
+                })()}
+              </p>
+
+              <div className="space-y-6">
+                {(() => {
+                  let infoCards = resolvedCmsBlock?.infoCards;
+                  if (!infoCards && resolvedCmsBlock?.countryPages) {
+                    for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
+                      if (resolvedCmsBlock.countryPages[key]?.infoCards) { infoCards = resolvedCmsBlock.countryPages[key].infoCards; break; }
+                    }
+                  }
+                  const defaultCards = [
+                    { icon: 'shield', color: 'bg-[#1e3886]/20 border-[#1e3886]/40 text-blue-400', title: 'Strict Quality Audits', text: `Every builder undergoes a 25-point verification including financial stability checks specific to ${displayLocation}.` },
+                    { icon: 'quote', color: 'bg-[#c0123d]/20 border-[#c0123d]/40 text-red-400', title: 'Competitive Tender System', text: 'Receive up to 5 detailed quotes within 24 hours from builders specialized in your industry.' },
+                    { icon: 'hub', color: 'bg-blue-500/20 border-blue-500/40 text-blue-300', title: 'Dedicated Hub Support', text: `Local experts on the ground in ${displayLocation} to oversee your project delivery.` }
+                  ];
+                  const cards = Array.isArray(infoCards) ? infoCards.map((c: any) => ({
+                    icon: 'shield',
+                    color: 'bg-[#1e3886]/20 border-[#1e3886]/40 text-blue-400',
+                    title: typeof c.title === 'object' ? c.title?.heading || c.title?.title || '' : c.title || '',
+                    text: typeof c.text === 'object' ? c.text?.description || c.text?.text || '' : c.text || ''
+                  })) : defaultCards;
+
+                  const icons = [
+                    <Shield key="s" className="w-5 h-5" />, 
+                    <CheckCircle key="c" className="w-5 h-5" />, 
+                    <Globe key="g" className="w-5 h-5" />
+                  ];
+                  const colorClasses = [
+                    'bg-[#1e3886]/20 border border-[#1e3886]/40 text-blue-400',
+                    'bg-[#c0123d]/20 border border-[#c0123d]/40 text-red-400',
+                    'bg-blue-500/20 border border-blue-500/40 text-blue-300'
+                  ];
+
+                  return cards.slice(0, 3).map((card: any, i: number) => (
+                    <div key={i} className="flex gap-4">
+                      <div className={`size-12 rounded-lg ${colorClasses[i]} flex items-center justify-center shrink-0`}>
+                        {icons[i]}
+                      </div>
+                      <div>
+                        <h4 className="font-black text-base mb-1">{card.title}</h4>
+                        <p className="text-slate-400 text-sm leading-relaxed">{card.text}</p>
                       </div>
                     </div>
                   ));
                 })()}
               </div>
             </div>
+
+            {/* Image column */}
+            <div className="relative">
+              <div className="aspect-square bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 relative">
+                {(() => {
+                  const allValidImages: string[] = [];
+                  
+                  // 1. Try to get images from resolved CMS gallery (like the main gallery does)
+                  let cmsGallery = resolvedCmsBlock?.galleryImages || resolvedCmsBlock?.gallery_images;
+                  if (!cmsGallery && resolvedCmsBlock?.countryPages) {
+                    for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
+                      if (resolvedCmsBlock.countryPages[key]?.galleryImages) {
+                        cmsGallery = resolvedCmsBlock.countryPages[key].galleryImages;
+                        break;
+                      }
+                    }
+                  }
+                  if (Array.isArray(cmsGallery)) {
+                    cmsGallery.forEach((item: any) => {
+                      const src = typeof item === 'string' ? item : (item?.image || item?.imageUrl || item?.url || item?.src);
+                      if (src && typeof src === 'string' && src.trim() !== '' && !src.includes('default-logo.png')) {
+                        allValidImages.push(src);
+                      }
+                    });
+                  }
+
+                  // 2. Pool valid portfolio images from all builders
+                  if (Array.isArray(filteredBuilders)) {
+                    filteredBuilders.forEach((b: any) => {
+                      if (b.portfolio && Array.isArray(b.portfolio)) {
+                        b.portfolio.forEach((item: any) => {
+                          const src = typeof item === 'string' ? item : (item?.image || item?.imageUrl || item?.url || item?.src);
+                          if (src && typeof src === 'string' && src.trim() !== '' && !src.includes('default-logo.png') && !allValidImages.includes(src)) {
+                            allValidImages.push(src);
+                          }
+                        });
+                      }
+                    });
+                  }
+                  
+                  // Prefer the 2nd overall image to prevent overlap with the gallery's 1st image
+                  let imgSrc = allValidImages.length > 1 ? allValidImages[1] : allValidImages[0];
+                  
+                  if (imgSrc) {
+                    return <Image src={convertToProxyUrl(imgSrc)} alt="Exhibition stand" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover opacity-80" />;
+                  }
+                  return (
+                    <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
+                      <Building2 className="w-24 h-24 text-slate-600" />
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* UPCOMING EVENTS */}
-      {Array.isArray(upcomingEvents) && upcomingEvents.length > 0 && (
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-6">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Upcoming Exhibitions in {displayLocation}</h2>
-                <p className="text-xl text-gray-600">Plan ahead for these trade shows and exhibitions</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {upcomingEvents.map((ev, i) => (
-                  <Card key={i} className="hover:shadow-lg transition-all duration-300 h-full flex flex-col">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5 text-blue-600 flex-shrink-0" />{ev.name}</CardTitle>
-                      <CardDescription>{ev.date}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                      <p className="text-gray-600 mb-4">{ev.venue}</p>
-                      <PublicQuoteRequest location={displayLocation} buttonText="Get Quote for This Event" className="w-full" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* BUILDERS GRID */}
-      {filteredBuilders.length > 0 && (
-        <section id="builders-grid" className="py-16 bg-gray-50">
-          <div className="container mx-auto px-6">
-            <div className="max-w-7xl mx-auto">
-              <div className="mb-6">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                  {(() => {
-                    let content = resolvedCmsBlock?.buildersHeading;
-
-                    // Handle nested structure for buildersHeading
-                    if (!content && resolvedCmsBlock?.countryPages) {
-                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                      for (const key of countryPageKeys) {
-                        if (resolvedCmsBlock.countryPages[key]?.buildersHeading) {
-                          content = resolvedCmsBlock.countryPages[key].buildersHeading;
-                          break;
-                        }
-                      }
+      {/* ── GET QUOTES CTA FORM ── */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-slate-50 border border-slate-200 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#1e3886]/5 to-transparent hidden lg:block" />
+            <div className="max-w-2xl relative z-10">
+              <h2 className="text-2xl md:text-3xl font-black text-[#0f172a] mb-3">Ready to Build Your Presence in {displayLocation}?</h2>
+              <p className="text-slate-600 mb-8 text-sm leading-relaxed">
+                {(() => {
+                  let content = resolvedCmsBlock?.quotesParagraph;
+                  if (!content && resolvedCmsBlock?.countryPages) {
+                    for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
+                      if (resolvedCmsBlock.countryPages[key]?.quotesParagraph) { content = resolvedCmsBlock.countryPages[key].quotesParagraph; break; }
                     }
-
-                    // Handle deeper nested structure
-                    if (!content && resolvedCmsBlock?.countryPages) {
-                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                      for (const key of countryPageKeys) {
-                        const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                        if (nestedCountryPages) {
-                          const nestedKeys = Object.keys(nestedCountryPages);
-                          for (const nestedKey of nestedKeys) {
-                            if (nestedCountryPages[nestedKey]?.buildersHeading) {
-                              content = nestedCountryPages[nestedKey].buildersHeading;
-                              break;
-                            }
-                          }
-                          if (content) break;
-                        }
-                      }
-                    }
-
-                    if (typeof content === 'object' && content !== null) {
-                      return content.heading || content.title || JSON.stringify(content);
-                    }
-                    return content || `Verified Builders in ${displayLocation}`;
-                  })()}
-                </h2>
-                <div className="text-gray-600">
-                  {resolvedCmsBlock?.buildersIntro ? (
-                    <div className="prose max-w-none text-gray-600 prose-p:text-gray-600 prose-headings:text-gray-900 prose-li:text-gray-600 prose-strong:text-gray-900" dangerouslySetInnerHTML={{
-                      __html: sanitizeHtml((() => {
-                        let content = resolvedCmsBlock?.buildersIntro;
-
-                        // Handle nested structure for buildersIntro
-                        if (!content && resolvedCmsBlock?.countryPages) {
-                          const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                          for (const key of countryPageKeys) {
-                            if (resolvedCmsBlock.countryPages[key]?.buildersIntro) {
-                              content = resolvedCmsBlock.countryPages[key].buildersIntro;
-                              break;
-                            }
-                          }
-                        }
-
-                        // Handle deeper nested structure
-                        if (!content && resolvedCmsBlock?.countryPages) {
-                          const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                          for (const key of countryPageKeys) {
-                            const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                            if (nestedCountryPages) {
-                              const nestedKeys = Object.keys(nestedCountryPages);
-                              for (const nestedKey of nestedKeys) {
-                                if (nestedCountryPages[nestedKey]?.buildersIntro) {
-                                  content = nestedCountryPages[nestedKey].buildersIntro;
-                                  break;
-                                }
-                              }
-                              if (content) break;
-                            }
-                          }
-                        }
-
-                        if (typeof content === 'object' && content !== null) {
-                          return content.description || content.text || JSON.stringify(content);
-                        }
-                        return content;
-                      })())
-                    }} />
-                  ) : (
-                    <p>{filteredBuilders.length} professional exhibition stand builders available</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full flex-wrap mb-8">
-                <div className="w-full md:w-64 flex-grow">
-                  <Input
-                    defaultValue={searchTerm ?? ''}
-                    placeholder={`Search builders in ${displayLocation}...`}
-                    className="bg-white border-gray-300 w-full"
+                  }
+                  if (typeof content === 'object' && content !== null) return content.description || content.text || '';
+                  return content || `Tell us about your next exhibition and we'll match you with the best-fit builders from our directory. Free of charge.`;
+                })()}
+              </p>
+              <div className="grid md:grid-cols-2 gap-4">
+                <input className="bg-white border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#1e3886] text-sm" placeholder="Full Name" type="text" />
+                <input className="bg-white border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#1e3886] text-sm" placeholder="Company Email" type="email" />
+                <select className="bg-white border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#1e3886] text-sm text-slate-700">
+                  <option>Expected Stand Size</option>
+                  <option>9 – 36 sqm</option>
+                  <option>36 – 100 sqm</option>
+                  <option>100+ sqm</option>
+                </select>
+                <select className="bg-white border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#1e3886] text-sm text-slate-700">
+                  <option>Budget Range</option>
+                  <option>$10k – $25k</option>
+                  <option>$25k – $50k</option>
+                  <option>$50k – $100k</option>
+                  <option>$100k+</option>
+                </select>
+                <div className="md:col-span-2">
+                  <PublicQuoteRequest
+                    location={displayLocation}
+                    buttonText="Submit for Quotes"
+                    className="w-full bg-[#c0123d] hover:bg-[#a01030] text-white font-black py-4 h-auto rounded-lg text-base border-0 uppercase tracking-widest shadow-xl shadow-red-900/10 transition-all"
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-                <div className="flex flex-wrap gap-2">
-                  <Button variant={'outline'} className="text-sm whitespace-nowrap">
-                    <Star className="w-4 h-4 mr-1" /> Rating
-                  </Button>
-                  <Button variant={'outline'} className="text-sm whitespace-nowrap">
-                    <Award className="w-4 h-4 mr-1" /> Experience
-                  </Button>
-                  <Button variant={'outline'} className="text-sm whitespace-nowrap">
-                    <DollarSign className="w-4 h-4 mr-1" /> Price
-                  </Button>
+      {/* ── GALLERY ── */}
+      <section className="py-20 bg-[#f6f6f8]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-black text-[#0f172a] uppercase tracking-tighter">Design Inspiration Gallery</h2>
+            <div className="w-14 h-1 bg-[#c0123d] mx-auto mt-4 rounded-full" />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {(() => {
+              let portfolioImages: string[] = [];
+              let cmsGallery = resolvedCmsBlock?.galleryImages || resolvedCmsBlock?.gallery_images;
+              if (!cmsGallery && resolvedCmsBlock?.countryPages) {
+                for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
+                  if (resolvedCmsBlock.countryPages[key]?.galleryImages) { cmsGallery = resolvedCmsBlock.countryPages[key].galleryImages; break; }
+                }
+              }
+              if (Array.isArray(cmsGallery) && cmsGallery.length > 0) portfolioImages = [...cmsGallery];
+              if (portfolioImages.length < 8 && Array.isArray(filteredBuilders)) {
+                filteredBuilders.forEach((builder: any) => {
+                  if (builder.portfolio && Array.isArray(builder.portfolio)) {
+                    builder.portfolio.forEach((item: any) => {
+                      let imgUrl = typeof item === 'string' ? item : (item?.image || item?.imageUrl || item?.url || item?.src || '');
+                      if (imgUrl && !portfolioImages.includes(imgUrl)) portfolioImages.push(imgUrl);
+                    });
+                  }
+                });
+              }
+              const labels = ['Custom Pavilion', 'Eco-Flow Modular', 'Double Decker Hub', 'Healthcare Booth', 'Tech Showcase', 'Automotive Stand', 'Retail Activation', 'Government Pavilion'];
+              const sectors = ['Custom Design', 'Sustainable Tech', 'Enterprise IT', 'Healthcare', 'Technology', 'Automotive', 'Retail', 'Government'];
+              if (portfolioImages.length === 0) {
+                return Array.from({ length: 4 }, (_, i) => (
+                  <div key={i} className={`aspect-[3/4] rounded-xl overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300 ${i % 2 === 1 ? 'md:mt-8' : ''}`} />
+                ));
+              }
+              return portfolioImages.slice(0, 4).map((img, i) => (
+                <div key={i} className={`aspect-[3/4] rounded-xl overflow-hidden relative group ${i % 2 === 1 ? 'md:mt-8' : ''}`}>
+                  <Image
+                    src={convertToProxyUrl(img)}
+                    alt={labels[i] || `Portfolio ${i + 1}`}
+                    fill
+                    sizes="(max-width: 640px) 50vw, 25vw"
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-5 flex flex-col justify-end">
+                    <span className="text-xs text-blue-400 font-black uppercase">{sectors[i]}</span>
+                    <h4 className="text-white font-black text-sm">{labels[i]}</h4>
+                  </div>
                 </div>
+              ));
+            })()}
+          </div>
+        </div>
+      </section>
+
+      {/* ── UPCOMING EVENTS (conditional) ── */}
+      {Array.isArray(upcomingEvents) && upcomingEvents.length > 0 && (
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl font-black text-[#0f172a] uppercase tracking-tighter mb-10">Upcoming Exhibitions in {displayLocation}</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {upcomingEvents.slice(0, 3).map((ev: any, i: number) => (
+                <div key={i} className="group cursor-pointer">
+                  <div className="h-48 rounded-2xl overflow-hidden mb-5 relative bg-slate-200">
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors" />
+                    <div className="absolute bottom-5 left-5">
+                      <h3 className="text-xl font-black text-white leading-tight">{ev.name}</h3>
+                      <p className="text-xs text-slate-200">{ev.date}</p>
+                    </div>
+                  </div>
+                  <ul className="space-y-2 text-sm font-medium text-slate-600">
+                    {ev.venue && <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-[#1e3886]" />{ev.venue}</li>}
+                    <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-[#1e3886]" />Fast-track builder matching</li>
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── CONTENT + SIDEBAR ── */}
+      {!suppressPostBuildersContent && (
+        <section className="py-20 bg-[#f6f6f8] border-y border-slate-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-3 gap-12">
+              {/* Main article */}
+              <div className="lg:col-span-2">
+                <h2 className="text-2xl md:text-3xl font-black text-[#0f172a] mb-8 uppercase tracking-tighter">Professional Exhibition Insights</h2>
+                <article className="bg-white rounded-xl p-8 border border-slate-200 mb-8">
+                  <h3 className="text-xl font-black text-[#0f172a] mb-4">
+                    {(() => {
+                      let content = resolvedCmsBlock?.servicesHeading;
+                      if (!content && resolvedCmsBlock?.countryPages) {
+                        for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
+                          if (resolvedCmsBlock.countryPages[key]?.servicesHeading) { content = resolvedCmsBlock.countryPages[key].servicesHeading; break; }
+                        }
+                      }
+                      if (typeof content === 'object' && content !== null) return content.heading || content.title || `Navigating the ${displayLocation} Exhibition Landscape`;
+                      return content || `Navigating the ${displayLocation} Exhibition Landscape in 2024`;
+                    })()}
+                  </h3>
+                  <div className="prose max-w-none text-slate-600 prose-p:text-slate-600 prose-p:leading-relaxed prose-p:mb-4 prose-headings:text-[#0f172a] prose-li:text-slate-600 prose-strong:text-[#0f172a] text-sm" dangerouslySetInnerHTML={{
+                    __html: sanitizeHtml((() => {
+                      let content = resolvedCmsBlock?.servicesParagraph;
+                      if (!content && resolvedCmsBlock?.countryPages) {
+                        for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
+                          if (resolvedCmsBlock.countryPages[key]?.servicesParagraph) { content = resolvedCmsBlock.countryPages[key].servicesParagraph; break; }
+                        }
+                      }
+                      if (typeof content === 'object' && content !== null) return content.description || content.text || '';
+                      return content || `<p>${displayLocation} has cemented its status as a world-leading exhibition hub. With major events reaching record attendance, the demand for high-quality stand construction is at an all-time high. Successful exhibiting in ${displayLocation} requires more than just a good design — it requires a builder who understands local regulations, venue specifics, and cultural nuances.</p>`;
+                    })())
+                  }} />
+                  <a href="#builders-grid" className="text-[#1e3886] font-black inline-flex items-center gap-2 hover:gap-4 transition-all text-sm mt-4">
+                    Browse All Builders <ArrowRight className="w-4 h-4" />
+                  </a>
+                </article>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredBuilders.map((b: any) => (
-                  <div key={b.id || b.slug || b.companyName} className="flex flex-col h-full">
-                    <BuilderCard
-                      builder={b}
-                      location={displayLocation}
-                      currentPageLocation={{ country: finalCountryName || '', city: isCity ? finalLocationName : undefined }}
-                      showLeadForm
-                    />
-                  </div>
-                ))}
+              {/* Sidebar */}
+              <div>
+                <h2 className="text-lg font-black text-[#0f172a] mb-6 uppercase tracking-tighter">Directory Stats</h2>
+                <div className="space-y-3 mb-6">
+                  {[
+                    { label: `Active ${displayLocation} Builders`, val: stats.totalBuilders || 0 },
+                    { label: 'Industry Categories', val: 34 },
+                    { label: 'Avg. Trust Score', val: stats.averageRating || '4.8', highlight: true }
+                  ].map((s, i) => (
+                    <div key={i} className="flex justify-between items-center p-4 bg-white border border-slate-200 rounded-lg">
+                      <span className="text-sm font-semibold text-slate-500">{s.label}</span>
+                      <span className={`text-lg font-black ${s.highlight ? 'text-emerald-600' : 'text-[#0f172a]'}`}>{typeof s.val === 'number' ? s.val.toLocaleString() : s.val}{s.highlight ? '/5' : ''}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="p-6 bg-[#1e3886]/10 rounded-xl border border-[#1e3886]/20">
+                  <h4 className="font-black text-[#1e3886] mb-2 text-sm">Need Help Choosing?</h4>
+                  <p className="text-xs text-slate-600 mb-4 leading-relaxed">Our consultants can provide a shortlist of builders matching your specific technical requirements.</p>
+                  <PublicQuoteRequest location={displayLocation} buttonText="Get Expert Consultation" className="text-xs font-black uppercase text-[#1e3886] p-0 h-auto bg-transparent border-0 hover:bg-transparent shadow-none" size="sm" />
+                </div>
               </div>
             </div>
           </div>
         </section>
       )}
 
-      {/* POST-BUILDERS SEO CONTENT */}
-      {!suppressPostBuildersContent && (
-        <>
-          <section className="py-16 bg-white">
-            <div className="container mx-auto px-6">
-              <div className="max-w-4xl mx-auto prose prose-slate leading-relaxed space-y-4">
-                <h2 className="text-2xl md:text-3xl font-bold !mb-4">
-                  {(() => {
-                    let content = resolvedCmsBlock?.servicesHeading;
-
-                    // Handle nested structure for servicesHeading
-                    if (!content && resolvedCmsBlock?.countryPages) {
-                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                      for (const key of countryPageKeys) {
-                        if (resolvedCmsBlock.countryPages[key]?.servicesHeading) {
-                          content = resolvedCmsBlock.countryPages[key].servicesHeading;
-                          break;
-                        }
-                      }
-                    }
-
-                    // Handle deeper nested structure
-                    if (!content && resolvedCmsBlock?.countryPages) {
-                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                      for (const key of countryPageKeys) {
-                        const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                        if (nestedCountryPages) {
-                          const nestedKeys = Object.keys(nestedCountryPages);
-                          for (const nestedKey of nestedKeys) {
-                            if (nestedCountryPages[nestedKey]?.servicesHeading) {
-                              content = nestedCountryPages[nestedKey].servicesHeading;
-                              break;
-                            }
-                          }
-                          if (content) break;
-                        }
-                      }
-                    }
-
-                    if (typeof content === 'object' && content !== null) {
-                      return content.heading || content.title || JSON.stringify(content);
-                    }
-                    return content || `Exhibition Stand Builders in ${displayLocation}: Services, Costs, and Tips`;
-                  })()}
-                </h2>
-                <div className="prose max-w-none text-gray-600 prose-p:text-gray-600 prose-headings:text-gray-900 prose-li:text-gray-600 prose-strong:text-gray-900" dangerouslySetInnerHTML={{
-                  __html: sanitizeHtml((() => {
-                    let content = resolvedCmsBlock?.servicesParagraph;
-
-                    // Handle nested structure for servicesParagraph
-                    if (!content && resolvedCmsBlock?.countryPages) {
-                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                      for (const key of countryPageKeys) {
-                        if (resolvedCmsBlock.countryPages[key]?.servicesParagraph) {
-                          content = resolvedCmsBlock.countryPages[key].servicesParagraph;
-                          break;
-                        }
-                      }
-                    }
-
-                    // Handle deeper nested structure
-                    if (!content && resolvedCmsBlock?.countryPages) {
-                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                      for (const key of countryPageKeys) {
-                        const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                        if (nestedCountryPages) {
-                          const nestedKeys = Object.keys(nestedCountryPages);
-                          for (const nestedKey of nestedKeys) {
-                            if (nestedCountryPages[nestedKey]?.servicesParagraph) {
-                              content = nestedCountryPages[nestedKey].servicesParagraph;
-                              break;
-                            }
-                          }
-                          if (content) break;
-                        }
-                      }
-                    }
-
-                    if (typeof content === 'object' && content !== null) {
-                      return content.description || content.text || JSON.stringify(content);
-                    }
-                    return content;
-                  })())
-                }} />
-              </div>
-            </div>
-          </section>
-
-          <section className="py-16 bg-gradient-to-br from-slate-900 to-blue-900 text-white">
-            <div className="container mx-auto px-6 text-center">
-              <div className="max-w-3xl mx-auto">
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                  {(() => {
-                    let content = resolvedCmsBlock?.finalCtaHeading;
-
-                    // Handle nested structure for finalCtaHeading
-                    if (!content && resolvedCmsBlock?.countryPages) {
-                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                      for (const key of countryPageKeys) {
-                        if (resolvedCmsBlock.countryPages[key]?.finalCtaHeading) {
-                          content = resolvedCmsBlock.countryPages[key].finalCtaHeading;
-                          break;
-                        }
-                      }
-                    }
-
-                    // Handle deeper nested structure
-                    if (!content && resolvedCmsBlock?.countryPages) {
-                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                      for (const key of countryPageKeys) {
-                        const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                        if (nestedCountryPages) {
-                          const nestedKeys = Object.keys(nestedCountryPages);
-                          for (const nestedKey of nestedKeys) {
-                            if (nestedCountryPages[nestedKey]?.finalCtaHeading) {
-                              content = nestedCountryPages[nestedKey].finalCtaHeading;
-                              break;
-                            }
-                          }
-                          if (content) break;
-                        }
-                      }
-                    }
-
-                    if (typeof content === 'object' && content !== null) {
-                      return content.heading || content.title || JSON.stringify(content);
-                    }
-                    return content || `Ready to Find Your Perfect Builder in ${displayLocation}?`;
-                  })()}
-                </h2>
-                <p className="text-xl text-slate-300 mb-8">
-                  {(() => {
-                    let content = resolvedCmsBlock?.finalCtaParagraph;
-
-                    // Handle nested structure for finalCtaParagraph
-                    if (!content && resolvedCmsBlock?.countryPages) {
-                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                      for (const key of countryPageKeys) {
-                        if (resolvedCmsBlock.countryPages[key]?.finalCtaParagraph) {
-                          content = resolvedCmsBlock.countryPages[key].finalCtaParagraph;
-                          break;
-                        }
-                      }
-                    }
-
-                    // Handle deeper nested structure
-                    if (!content && resolvedCmsBlock?.countryPages) {
-                      const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                      for (const key of countryPageKeys) {
-                        const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                        if (nestedCountryPages) {
-                          const nestedKeys = Object.keys(nestedCountryPages);
-                          for (const nestedKey of nestedKeys) {
-                            if (nestedCountryPages[nestedKey]?.finalCtaParagraph) {
-                              content = nestedCountryPages[nestedKey].finalCtaParagraph;
-                              break;
-                            }
-                          }
-                          if (content) break;
-                        }
-                      }
-                    }
-
-                    if (typeof content === 'object' && content !== null) {
-                      return content.description || content.text || JSON.stringify(content);
-                    }
-                    return content || `Get competitive quotes from verified local builders.`;
-                  })()}
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <PublicQuoteRequest location={displayLocation} buttonText={
-                    (() => {
-                      let content = resolvedCmsBlock?.finalCtaButtonText;
-
-                      // Handle nested structure for finalCtaButtonText
-                      if (!content && resolvedCmsBlock?.countryPages) {
-                        const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                        for (const key of countryPageKeys) {
-                          if (resolvedCmsBlock.countryPages[key]?.finalCtaButtonText) {
-                            content = resolvedCmsBlock.countryPages[key].finalCtaButtonText;
-                            break;
-                          }
-                        }
-                      }
-
-                      // Handle deeper nested structure
-                      if (!content && resolvedCmsBlock?.countryPages) {
-                        const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                        for (const key of countryPageKeys) {
-                          const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                          if (nestedCountryPages) {
-                            const nestedKeys = Object.keys(nestedCountryPages);
-                            for (const nestedKey of nestedKeys) {
-                              if (nestedCountryPages[nestedKey]?.finalCtaButtonText) {
-                                content = nestedCountryPages[nestedKey].finalCtaButtonText;
-                                break;
-                              }
-                            }
-                            if (content) break;
-                          }
-                        }
-                      }
-
-                      if (typeof content === 'object' && content !== null) {
-                        return content.text || content.title || JSON.stringify(content);
-                      }
-                      return content || "Start Getting Quotes";
-                    })()
-                  } className="text-lg px-8 py-4" />
-                  <Button variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/20 hover:text-gray-900 backdrop-blur-sm text-lg px-8 py-4 shadow-lg" id="back-to-top-btn">
-                    {(() => {
-                      let content = resolvedCmsBlock?.backToTopButtonText;
-
-                      // Handle nested structure for backToTopButtonText
-                      if (!content && resolvedCmsBlock?.countryPages) {
-                        const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                        for (const key of countryPageKeys) {
-                          if (resolvedCmsBlock.countryPages[key]?.backToTopButtonText) {
-                            content = resolvedCmsBlock.countryPages[key].backToTopButtonText;
-                            break;
-                          }
-                        }
-                      }
-
-                      // Handle deeper nested structure
-                      if (!content && resolvedCmsBlock?.countryPages) {
-                        const countryPageKeys = Object.keys(resolvedCmsBlock.countryPages);
-                        for (const key of countryPageKeys) {
-                          const nestedCountryPages = resolvedCmsBlock.countryPages[key]?.countryPages;
-                          if (nestedCountryPages) {
-                            const nestedKeys = Object.keys(nestedCountryPages);
-                            for (const nestedKey of nestedKeys) {
-                              if (nestedCountryPages[nestedKey]?.backToTopButtonText) {
-                                content = nestedCountryPages[nestedKey].backToTopButtonText;
-                                break;
-                              }
-                            }
-                            if (content) break;
-                          }
-                        }
-                      }
-
-                      if (typeof content === 'object' && content !== null) {
-                        return content.text || content.title || JSON.stringify(content);
-                      }
-                      return content || 'Back to Top';
-                    })()} <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </section>
-        </>
-      )}
+      {/* ── FINAL CTA (bold red) ── */}
+      <section className="py-20 bg-[#c0123d] text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 to-transparent" />
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+          <h2 className="text-3xl md:text-5xl font-black mb-6 uppercase tracking-tighter leading-tight">
+            {(() => {
+              let content = resolvedCmsBlock?.finalCtaHeading;
+              if (!content && resolvedCmsBlock?.countryPages) {
+                for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
+                  if (resolvedCmsBlock.countryPages[key]?.finalCtaHeading) { content = resolvedCmsBlock.countryPages[key].finalCtaHeading; break; }
+                }
+              }
+              if (typeof content === 'object' && content !== null) return content.heading || content.title || `Start Your World-Class Exhibition Journey`;
+              return content || `Start Your World-Class Exhibition Journey`;
+            })()}
+          </h2>
+          <p className="text-lg text-white/80 mb-10 leading-relaxed max-w-2xl mx-auto">
+            {(() => {
+              let content = resolvedCmsBlock?.finalCtaParagraph;
+              if (!content && resolvedCmsBlock?.countryPages) {
+                for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
+                  if (resolvedCmsBlock.countryPages[key]?.finalCtaParagraph) { content = resolvedCmsBlock.countryPages[key].finalCtaParagraph; break; }
+                }
+              }
+              if (typeof content === 'object' && content !== null) return content.description || content.text || '';
+              return content || `Don't leave your brand representation to chance. Connect with the best builders in ${displayLocation} today.`;
+            })()}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <PublicQuoteRequest
+              location={displayLocation}
+              buttonText="Browse Full Directory"
+              className="bg-white text-[#c0123d] px-10 py-4 h-auto rounded-lg font-black text-base hover:shadow-2xl transition-all uppercase tracking-widest border-0"
+            />
+            <PublicQuoteRequest
+              location={displayLocation}
+              buttonText="Post a Project Tender"
+              className="bg-transparent border-2 border-white text-white px-10 py-4 h-auto rounded-lg font-black text-base hover:bg-white/10 transition-all uppercase tracking-widest"
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

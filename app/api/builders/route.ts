@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin, supabase as anonSupabase } from '@/lib/supabase/client';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabase = supabaseAdmin || anonSupabase;
 
 export async function GET() {
   try {

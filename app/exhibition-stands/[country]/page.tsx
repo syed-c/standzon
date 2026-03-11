@@ -280,6 +280,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
       featured: b.featured || false,
       logo: b.logo || b.profile_image || "/images/builders/default-logo.png",
       planType: b.plan_type || b.planType || "free",
+      portfolio: b.portfolio || b.gallery_images || b.images || [],
     }));
 
     console.log(`📍 Fetched ${builders.length} builders for country: ${countryInfo.name} (page ${currentPageNum}/${totalPages}, total: ${totalBuilders})`);

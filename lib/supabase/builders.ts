@@ -262,7 +262,6 @@ export async function deleteBuilder(id: string) {
 
   if (!error1) {
     console.log('✅ Deleted builder from builders');
-    return true;
   }
 
   // Fallback to 'builder_profiles' table
@@ -302,102 +301,66 @@ export async function getFilteredBuilders(options: {
     return { builders: [], total: 0, totalPages: 0 };
   }
 
-  try {
-    // Build the query
-    let query = client.from('builders').select('*', { count: 'exact' });
+  const tryTable = async (tableName: string) => {
+    try {
+      let query = client.from(tableName).select('*', { count: 'exact' });
 
-    // Filter by country if provided
-    if (country) {
-      const normalizedCountry = country.toLowerCase();
-      const countryVariations = [normalizedCountry];
-
-      // Handle special cases
-      if (normalizedCountry.includes('united arab emirates')) {
-        countryVariations.push('uae');
-      } else if (normalizedCountry === 'uae') {
-        countryVariations.push('united arab emirates');
-      }
-
-      // Build OR condition for country matching
-      const countryConditions = countryVariations.map(variant =>
-        `headquarters_country.ilike.%${variant}%`
-      ).join(',');
-
-      query = query.or(countryConditions);
-    }
-
-    // Additional city filter if provided
-    if (city) {
-      const normalizedCity = city.toLowerCase();
-      query = query.ilike('headquarters_city', `%${normalizedCity}%`);
-    }
-
-    // No deleted_at column in builders table - skip this filter
-
-    // Get total count first
-    const { count, error: countError } = await query;
-
-    if (countError) {
-      console.error('❌ Error counting builders:', countError);
-      // Try fallback table
-      const fallbackQuery = client.from('builder_profiles').select('*', { count: 'exact' });
-      // Apply same filters to fallback
       if (country) {
         const normalizedCountry = country.toLowerCase();
-        const countryVariations = [normalizedCountry];
-        if (normalizedCountry.includes('united arab emirates')) {
-          countryVariations.push('uae');
-        } else if (normalizedCountry === 'uae') {
-          countryVariations.push('united arab emirates');
+        const variations = [normalizedCountry];
+        if (normalizedCountry.includes('united arab emirates') || normalizedCountry === 'uae') {
+          variations.push(normalizedCountry === 'uae' ? 'united arab emirates' : 'uae');
         }
-        const countryConditions = countryVariations.map(variant =>
-          `headquarters_country.ilike.%${variant}%`
-        ).join(',');
-        fallbackQuery.or(countryConditions);
+        
+        const conditions = variations.map(v => `headquarters_country.ilike.%${v}%`).join(',');
+        query = query.or(conditions);
       }
-      if (city) {
-        fallbackQuery.ilike('headquarters_city', `%${city.toLowerCase()}%`);
-      }
-      fallbackQuery.is('deleted_at', null);
 
-      const { data: fallbackData, count: fallbackCount, error: fallbackError } = await fallbackQuery
+      if (city) {
+        query = query.ilike('headquarters_city', `%${city.toLowerCase()}%`);
+      }
+
+      const { data, count, error } = await query
         .order('created_at', { ascending: false })
         .range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
 
-      if (!fallbackError && fallbackData) {
-        console.log('✅ Found builders in builder_profiles (paginated):', fallbackData.length);
-        return {
-          builders: fallbackData,
-          total: fallbackCount || 0,
-          totalPages: Math.ceil((fallbackCount || 0) / itemsPerPage)
-        };
-      }
+      if (error) throw error;
+      return { data, count };
+    } catch (err) {
+      console.error(`❌ Error querying table ${tableName}:`, err);
+      return { data: null, count: 0 };
+    }
+  };
 
+  try {
+    // Try 'builders' table first
+    let { data, count } = await tryTable('builders');
+
+    // If no results or error, try 'builder_profiles'
+    if (!data || data.length === 0) {
+      console.log('⚠️ No results in builders table, trying builder_profiles...');
+      const fallback = await tryTable('builder_profiles');
+      data = fallback.data;
+      count = fallback.count;
+    }
+
+    if (!data || data.length === 0) {
+      console.log('⚠️ No builders found in either table');
       return { builders: [], total: 0, totalPages: 0 };
     }
 
     const total = count || 0;
     const totalPages = Math.ceil(total / itemsPerPage);
 
-    // Now fetch the actual page of data
-    const { data, error } = await query
-      .order('created_at', { ascending: false })
-      .range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
-
-    if (error) {
-      console.error('❌ Error fetching builders:', error);
-      return { builders: [], total: 0, totalPages: 0 };
-    }
-
-    console.log(`✅ Found ${data?.length || 0} builders (page ${page}/${totalPages}, total: ${total})`);
+    console.log(`✅ Found ${data.length} builders (page ${page}/${totalPages}, total: ${total})`);
 
     return {
-      builders: data || [],
+      builders: data,
       total,
       totalPages
     };
-  } catch (error) {
-    console.error('❌ Unexpected error in getFilteredBuilders:', error);
+  } catch (err: any) {
+    console.error('❌ Unexpected error in getFilteredBuilders:', err);
     return { builders: [], total: 0, totalPages: 0 };
   }
 }

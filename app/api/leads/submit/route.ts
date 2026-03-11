@@ -1,17 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin, supabase as anonSupabase } from '@/lib/supabase/client';
 
-// Initialize Supabase client
-const getSupabase = () => {
-  return createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-};
+const supabase = supabaseAdmin || anonSupabase;
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = getSupabase();
     
     // Get request data
     const data = await request.json();
