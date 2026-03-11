@@ -2,7 +2,6 @@ import React from 'react';
 import { Metadata } from 'next';
 import SuperAdminCommandCenter from '@/components/SuperAdminCommandCenter';
 import SuperAdminLayout from '@/components/admin/SuperAdminLayout';
-import { Sidebar } from '@/components/admin/SuperAdminSidebar';
 import Topbar from '@/components/admin/Topbar';
 
 export const metadata: Metadata = {
@@ -48,10 +47,7 @@ const mockAdmin = {
 
 export default function CommandCenterPage() {
   return (
-    <SuperAdminLayout 
-      sidebar={<Sidebar children={undefined} />} 
-      topbar={<Topbar />}
-    >
+    <SuperAdminLayout topbar={<Topbar />}>
       <div className="space-y-8">
         {/* Welcome Banner */}
         <div className="bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:shadow-2xl transition-all duration-500">

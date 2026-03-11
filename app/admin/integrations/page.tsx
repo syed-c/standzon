@@ -2,7 +2,6 @@ import React from 'react';
 import { Metadata } from 'next';
 import IntegrationsManagement from '@/components/IntegrationsManagement';
 import SuperAdminLayout from '@/components/admin/SuperAdminLayout';
-import { Sidebar } from '@/components/admin/SuperAdminSidebar';
 import Topbar from '@/components/admin/Topbar';
 
 export const metadata: Metadata = {
@@ -48,10 +47,7 @@ const mockAdmin = {
 
 export default function IntegrationsManagementPage() {
   return (
-    <SuperAdminLayout 
-      sidebar={<Sidebar />} 
-      topbar={<Topbar />}
-    >
+    <SuperAdminLayout topbar={<Topbar />}>
       <div className="space-y-8">
         <IntegrationsManagement 
           adminId={mockAdmin.id}
