@@ -74,8 +74,8 @@ async function handleSuccessfulPayment(invoice: any): Promise<void> {
     // Find builder by customer ID or subscription ID
     const builders = unifiedPlatformAPI.getBuilders();
     const builder = builders.find(b => 
-      b.subscription?.customerId === customerId ||
-      b.subscription?.id === subscriptionId
+      (b as any).subscription?.customerId === customerId ||
+      (b as any).subscription?.id === subscriptionId
     );
 
     if (!builder) {
@@ -84,10 +84,11 @@ async function handleSuccessfulPayment(invoice: any): Promise<void> {
     }
 
     // Update builder subscription status
-    const updatedBuilder = {
+    const b = builder as any;
+    const updatedBuilder: any = {
       ...builder,
       subscription: {
-        ...builder.subscription,
+        ...(b.subscription || {}),
         status: 'active',
         currentPeriodStart: new Date(invoice.period_start * 1000),
         currentPeriodEnd: new Date(invoice.period_end * 1000),
@@ -114,7 +115,7 @@ async function handleSuccessfulPayment(invoice: any): Promise<void> {
           },
           {
             builderName: builder.companyName,
-            planName: builder.plan,
+            planName: builder.plan || 'Unknown',
             amount: (invoice.amount_paid / 100).toFixed(2),
             currency: invoice.currency.toUpperCase(),
             periodStart: updatedBuilder.subscription.currentPeriodStart.toLocaleDateString(),
@@ -147,7 +148,7 @@ async function handleFailedPayment(invoice: any): Promise<void> {
     // Find builder
     const builders = unifiedPlatformAPI.getBuilders();
     const builder = builders.find(b => 
-      b.subscription?.customerId === customerId
+      (b as any).subscription?.customerId === customerId
     );
 
     if (!builder) {
@@ -156,10 +157,11 @@ async function handleFailedPayment(invoice: any): Promise<void> {
     }
 
     // Update subscription status
-    const updatedBuilder = {
+    const b = builder as any;
+    const updatedBuilder: any = {
       ...builder,
       subscription: {
-        ...builder.subscription,
+        ...(b.subscription || {}),
         status: 'past_due',
         lastFailedPaymentAt: new Date()
       },
@@ -178,7 +180,7 @@ async function handleFailedPayment(invoice: any): Promise<void> {
         },
         {
           builderName: builder.companyName,
-          planName: builder.plan,
+          planName: builder.plan || 'Unknown',
           amount: (invoice.amount_due / 100).toFixed(2),
           currency: invoice.currency.toUpperCase(),
           retryDate: new Date(invoice.next_payment_attempt * 1000).toLocaleDateString(),
@@ -207,8 +209,8 @@ async function handleSubscriptionUpdate(subscription: any): Promise<void> {
     // Find builder
     const builders = unifiedPlatformAPI.getBuilders();
     const builder = builders.find(b => 
-      b.subscription?.customerId === customerId ||
-      b.subscription?.id === subscription.id
+      (b as any).subscription?.customerId === customerId ||
+      (b as any).subscription?.id === subscription.id
     );
 
     if (!builder) {
@@ -217,10 +219,11 @@ async function handleSubscriptionUpdate(subscription: any): Promise<void> {
     }
 
     // Update subscription details
-    const updatedBuilder = {
+    const b = builder as any;
+    const updatedBuilder: any = {
       ...builder,
       subscription: {
-        ...builder.subscription,
+        ...(b.subscription || {}),
         status: subscription.status,
         currentPeriodStart: new Date(subscription.current_period_start * 1000),
         currentPeriodEnd: new Date(subscription.current_period_end * 1000),
@@ -246,7 +249,7 @@ async function handleSubscriptionCancellation(subscription: any): Promise<void> 
     // Find builder
     const builders = unifiedPlatformAPI.getBuilders();
     const builder = builders.find(b => 
-      b.subscription?.customerId === customerId
+      (b as any).subscription?.customerId === customerId
     );
 
     if (!builder) {
@@ -255,11 +258,12 @@ async function handleSubscriptionCancellation(subscription: any): Promise<void> 
     }
 
     // Downgrade to free plan
-    const updatedBuilder = {
+    const b = builder as any;
+    const updatedBuilder: any = {
       ...builder,
       plan: 'free',
       subscription: {
-        ...builder.subscription,
+        ...(b.subscription || {}),
         status: 'cancelled',
         cancelledAt: new Date(),
         leadCredits: 3, // Free plan credits

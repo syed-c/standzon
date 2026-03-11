@@ -69,8 +69,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
-import {
-  Users,
+import { Users,
   Building2,
   TrendingUp,
   DollarSign,
@@ -135,12 +134,12 @@ import {
   GitCommit,
   GitMerge,
   GitPullRequest,
-  GitDiff,
+  GitCompare,
   Code,
   Terminal,
   Command,
   PlayCircle,
-  Stop,
+  StopCircle,
   SkipBack,
   SkipForward,
   RotateCw,
@@ -160,16 +159,13 @@ import {
   Car,
   Bike,
   Fuel,
-  GasStation,
-  ChargingStation,
+  BatteryCharging,
   BatteryLow,
   BatteryMedium,
   BatteryFull,
   BatteryWarning,
-  BatteryCritical,
   Power,
   Zap as ZapIcon,
-  LightningBolt,
   Sun as SunIcon,
   Moon as MoonIcon,
   Cloud as CloudIcon,
@@ -178,37 +174,32 @@ import {
   CloudLightning,
   CloudDrizzle,
   CloudFog,
-  CloudHaze,
   CloudSun,
   CloudMoon,
   Cloudy,
   SunDim,
   SunMedium,
-  SunBright,
+  Sun,
   MoonStar,
   Stars,
   Sparkles,
   Wind,
   Tornado,
-  Hurricane,
   Snowflake,
   Thermometer,
   ThermometerSun,
   ThermometerSnowflake,
   Droplets,
   Umbrella,
-  UmbrellaClosed,
   Rainbow,
   Flower,
   Leaf,
   Sprout,
-  Seedling,
-  TreeDeciduous,
+  Trees as TreeDeciduous,
   TreePine,
   Waves as WavesIcon,
   Anchor as AnchorIcon,
-  Sailboat,
-} from "lucide-react";
+  Sailboat } from 'lucide-react';
 
 interface Transaction {
   id: string;
@@ -642,7 +633,7 @@ const BillingFinanceDashboard = () => {
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`}
                 >
                   {planDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={['#0088FE', '#00C49F', '#FFBB28', '#FF8042'][index % 4]} />

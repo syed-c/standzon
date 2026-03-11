@@ -76,7 +76,7 @@ export default function FeaturedBuilders() {
               premiumMember: true,
               adminFeatured: true
             }
-          ];
+          ] as any[];
         }
         
         // Filter and sort featured builders
@@ -110,9 +110,9 @@ export default function FeaturedBuilders() {
             location: `${builder.headquarters?.city}, ${builder.headquarters?.country}`,
             rating: builder.rating || 4.5,
             reviews: builder.reviewCount || 0,
-            specialties: builder.specializations?.slice(0, 3).map(s => s.name) || ['Exhibition Stands'],
+            specialties: builder.specializations?.slice(0, 3).map((s: any) => s.name) || ['Exhibition Stands'],
             description: (() => {
-              let desc = builder.companyDescription || builder.description || 'Professional exhibition stand builder';
+              let desc = builder.companyDescription || (builder as any).description || 'Professional exhibition stand builder';
               // Remove SERVICE_LOCATIONS JSON from description more aggressively
               desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
               desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
@@ -151,9 +151,9 @@ export default function FeaturedBuilders() {
             location: `${builder.headquarters?.city}, ${builder.headquarters?.country}`,
             rating: builder.rating || 4.5,
             reviews: builder.reviewCount || 0,
-            specialties: builder.specializations?.slice(0, 3).map(s => s.name) || ['Exhibition Stands'],
+            specialties: builder.specializations?.slice(0, 3).map((s: any) => s.name) || ['Exhibition Stands'],
             description: (() => {
-              let desc = builder.companyDescription || builder.description || 'Professional exhibition stand builder';
+              let desc = builder.companyDescription || (builder as any).description || 'Professional exhibition stand builder';
               // Remove SERVICE_LOCATIONS JSON from description more aggressively
               desc = desc.replace(/\n\nSERVICE_LOCATIONS:.*$/g, '');
               desc = desc.replace(/SERVICE_LOCATIONS:.*$/g, '');
@@ -260,7 +260,7 @@ export default function FeaturedBuilders() {
                       </p>
 
                       <div className="flex flex-wrap gap-2 mb-4">
-                        {builder.specialties.slice(0, 2).map((specialty, specialtyIndex) => (
+                        {builder.specialties.slice(0, 2).map((specialty: string, specialtyIndex: number) => (
                           <span 
                             key={`${builder.slug}-specialty-${specialtyIndex}`}
                             className="px-2 py-1 bg-pink-100 text-pink-600 text-xs rounded-full"

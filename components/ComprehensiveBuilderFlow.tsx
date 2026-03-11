@@ -6,13 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  CheckCircle2, 
-  AlertCircle, 
-  Target, 
-  CreditCard, 
-  Bell, 
-  Sync,
+import { CheckCircle2,
+  AlertCircle,
+  Target,
+  CreditCard,
+  Bell,
+  RefreshCw,
   Users,
   MapPin,
   Star,
@@ -25,8 +24,8 @@ import {
   Zap,
   Shield,
   Crown,
-  Settings
-} from 'lucide-react';
+  User,
+  Settings } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface BuilderFlowStatus {
@@ -365,7 +364,7 @@ export default function ComprehensiveBuilderFlow({
                   {getStatusIcon(flowStatus.notificationsWorking)}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Public Listings Sync</span>
+                  <span>Public Listings RefreshCw</span>
                   {getStatusIcon(flowStatus.listingsSynced)}
                 </div>
                 <div className="flex items-center justify-between">
@@ -453,7 +452,7 @@ export default function ComprehensiveBuilderFlow({
                 
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center space-x-3">
-                    <Sync className="h-5 w-5 text-purple-500" />
+                    <RefreshCw className="h-5 w-5 text-purple-500" />
                     <span>Profile Deduplication</span>
                   </div>
                   <Badge variant="default">Active</Badge>
@@ -527,9 +526,9 @@ export default function ComprehensiveBuilderFlow({
                   {testingFeature === 'profile_sync' ? (
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
                   ) : (
-                    <Sync className="h-4 w-4 mr-2" />
+                    <RefreshCw className="h-4 w-4 mr-2" />
                   )}
-                  Test Profile Sync
+                  Test Profile RefreshCw
                 </Button>
 
                 <Button

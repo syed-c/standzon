@@ -429,11 +429,11 @@ export default function ReviewSystem({
                       <span className="text-sm w-8">{rating}</span>
                       <Star className="h-4 w-4 text-yellow-400 fill-current" />
                       <Progress 
-                        value={(ratingDistribution[rating] / reviews.length) * 100} 
+                        value={(ratingDistribution[rating as keyof typeof ratingDistribution] / reviews.length) * 100} 
                         className="flex-1 h-2" 
                       />
                       <span className="text-sm text-gray-500 w-12">
-                        {ratingDistribution[rating]}
+                        {ratingDistribution[rating as keyof typeof ratingDistribution]}
                       </span>
                     </div>
                   ))}

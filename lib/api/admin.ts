@@ -215,7 +215,7 @@ export const adminAPI = {
       if (result.success) {
         return {
           success: true,
-          data: result.data,
+          data: (result as any).data,
         };
       } else {
         return {
@@ -242,7 +242,7 @@ export const adminAPI = {
       if (result.success) {
         return {
           success: true,
-          data: result.data,
+          data: (result as any).data,
         };
       } else {
         return {
@@ -333,7 +333,7 @@ export const adminAPI = {
         data: {
           created,
           duplicates,
-          builders: results.filter(r => r.success).map(r => r.data),
+          builders: results.filter(r => r.success).map(r => (r as any).data),
         },
       };
     } catch (error) {
@@ -1035,7 +1035,7 @@ export const adminAPI = {
         success: true,
         created,
         duplicates,
-        data: results.filter(r => r.success).map(r => r.data),
+        data: results.filter(r => r.success).map(r => (r as any).data),
       };
     } catch (error) {
       console.error("❌ Error in bulk add builders:", error);

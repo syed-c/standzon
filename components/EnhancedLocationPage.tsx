@@ -8,11 +8,20 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import PublicQuoteRequest from '@/components/PublicQuoteRequest';
 import { BuilderCard } from '@/components/BuilderCard';
-import {
-  MapPin, Building, Users, Star, ArrowRight,
-  TrendingUp, Award, CheckCircle, Zap, Globe,
-  Calendar, DollarSign, Clock, Shield
-} from 'lucide-react';
+import { MapPin,
+  Building,
+  Users,
+  Star,
+  ArrowRight,
+  TrendingUp,
+  Award,
+  CheckCircle,
+  Zap,
+  Globe,
+  Calendar,
+  DollarSign,
+  Clock,
+  Shield } from 'lucide-react';
 import { unifiedPlatformAPI } from '@/lib/data/unifiedPlatformData';
 import { forcePlatformInitialization } from '@/lib/utils/platformInitializer';
 
@@ -251,7 +260,7 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
         const sync = typeof unifiedPlatformAPI?.getBuilders === 'function'
           ? unifiedPlatformAPI.getBuilders(displayLocation)
           : [];
-        console.log('📊 Sync getBuilders returned:', sync.length, 'builders');
+        console.log('📊 RefreshCw getBuilders returned:', sync.length, 'builders');
         
         if (Array.isArray(sync) && sync.length > 0) {
           console.log('✅ Using sync builders data');
@@ -1158,7 +1167,7 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                   filteredBuilders.forEach(builder => {
                     if (builder.portfolio && Array.isArray(builder.portfolio)) {
                       // If portfolio items are objects with image URLs
-                      builder.portfolio.forEach(item => {
+                      builder.portfolio.forEach((item: any) => {
                         if (typeof item === 'string') {
                           // Direct image URL
                           portfolioImages.push(item);
@@ -1175,9 +1184,9 @@ export default function EnhancedLocationPage(props: EnhancedLocationPageProps) {
                 }
                 
                 // Combine CMS gallery images with builder portfolio images
-                let combinedImages = [];
+                let combinedImages: string[] = [];
                 if (Array.isArray(galleryImages)) {
-                  combinedImages = [...galleryImages];
+                  combinedImages = [...(galleryImages as string[])];
                 }
                 
                 // Add unique portfolio images (avoid duplicates)

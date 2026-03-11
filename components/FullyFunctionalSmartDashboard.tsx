@@ -18,14 +18,63 @@ import { useToast } from '@/hooks/use-toast';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
 import { smartDashboardAPI } from '@/lib/api/smartDashboard';
 import { simpleStorageAPI } from '@/lib/data/simpleStorage';
-import {
-  LayoutDashboard, Building, Plus, Upload, Calendar, MessageSquare, Search, Filter, Edit, 
-  Trash2, Eye, CheckCircle, AlertCircle, Clock, Users, Globe, Star, Download, RefreshCw, 
-  BarChart3, Zap, Shield, MapPin, DollarSign, TrendingUp, Activity, Mail, Bell, Brain, 
-  Sparkles, Target, Lightbulb, Rocket, Wand2, Bot, Command, ArrowUp, Timer, Award, Crown,
-  AlertTriangle, Info, MousePointer, Send, Save, ExternalLink, FileDown, FileUp, UserPlus,
-  Settings, TrendingDown, PieChart as PieChartIcon, MoreHorizontal, Copy, X, Database, Archive
-} from 'lucide-react';
+import { LayoutDashboard,
+  Building,
+  Plus,
+  Upload,
+  Calendar,
+  MessageSquare,
+  Search,
+  Filter,
+  Edit,
+  Trash2,
+  Eye,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  UsersRound,
+  Globe,
+  Star,
+  Download,
+  RefreshCw,
+  BarChart3,
+  Zap,
+  Shield,
+  MapPin,
+  DollarSign,
+  TrendingUp,
+  Activity,
+  Mail,
+  Bell,
+  Brain,
+  Sparkles,
+  Target,
+  Lightbulb,
+  Rocket,
+  Wand as Wand2,
+  Bot,
+  Command,
+  ArrowUp,
+  Timer,
+  Award,
+  Crown,
+  AlertTriangle,
+  Info,
+  MousePointer,
+  Send,
+  Save,
+  ExternalLink,
+  FileDown,
+  FileUp,
+  UserPlus,
+  Settings,
+  TrendingDown,
+  PieChart as PieChartIcon,
+  MoreHorizontal,
+  Copy,
+  X,
+  Database,
+  Archive } from 'lucide-react';
 
 export default function FullyFunctionalSmartDashboard({ adminId, permissions }: { adminId: string; permissions: string[] }) {
   const [activeTab, setActiveTab] = useState('smart-overview');
@@ -335,7 +384,7 @@ export default function FullyFunctionalSmartDashboard({ adminId, permissions }: 
                 <Globe className="h-5 w-5 mr-3" />
                 <span className="font-medium">Platform Intelligence</span>
                 <Badge className="ml-auto bg-violet-100 text-violet-800 text-xs">
-                  {smartData.platformIntelligence?.totalUsers || 0}
+                  {smartData.platformIntelligence?.totalUsersRound || 0}
                 </Badge>
               </button>
 
@@ -594,7 +643,7 @@ function SmartOverviewEnhanced({ analytics, insights, onRefresh }: any) {
                   <span>Platform Active</span>
                 </div>
                 <div className="flex items-center">
-                  <Users className="h-5 w-5 mr-2 text-blue-200" />
+                  <UsersRound className="h-5 w-5 mr-2 text-blue-200" />
                   <span>{analytics?.activeBuilders || 0} Builders Online</span>
                 </div>
                 <div className="flex items-center">
@@ -1319,7 +1368,7 @@ function BuilderAnalyticsModule({ builders, analytics, onRefresh }: any) {
                 </div>
               </div>
               <div className="flex items-center">
-                <Users className="h-6 w-6 mr-2 text-blue-300" />
+                <UsersRound className="h-6 w-6 mr-2 text-blue-300" />
                 <div>
                   <div className="text-2xl font-bold">{builders.length}</div>
                   <div className="text-sm text-purple-200">Active Builders</div>
@@ -1503,7 +1552,7 @@ function BuilderAnalyticsModule({ builders, analytics, onRefresh }: any) {
                   <h4 className="font-semibold text-gray-900">Geographic Opportunity</h4>
                   <p className="text-sm text-gray-600 mt-1">European markets showing 78% growth. Consider expanding builder network in France and Italy.</p>
                   <Button size="sm" className="mt-3" variant="outline">
-                    <Users className="h-3 w-3 mr-1" />
+                    <UsersRound className="h-3 w-3 mr-1" />
                     Expand Network
                   </Button>
                 </div>
@@ -2016,7 +2065,7 @@ function EventIntelligenceModule({ events, analytics, onRefresh }: any) {
                   <h4 className="font-semibold text-gray-900">High Performance Alert</h4>
                   <p className="text-sm text-gray-600 mt-1">Dubai Expo 2025 showing exceptional 420% ROI. Consider increasing builder participation.</p>
                   <Button size="sm" className="mt-3" variant="outline">
-                    <Users className="h-3 w-3 mr-1" />
+                    <UsersRound className="h-3 w-3 mr-1" />
                     Expand Participation
                   </Button>
                 </div>
@@ -2103,7 +2152,7 @@ function SmartEventsModule({ events, onRefresh }: any) {
                 </div>
               </div>
               <div className="flex items-center">
-                <Users className="h-6 w-6 mr-2 text-blue-200" />
+                <UsersRound className="h-6 w-6 mr-2 text-blue-200" />
                 <div>
                   <div className="text-2xl font-bold">{manageableEvents.reduce((sum, e) => sum + e.attendees, 0).toLocaleString()}</div>
                   <div className="text-sm text-cyan-200">Total Attendees</div>
@@ -2125,9 +2174,8 @@ function SmartEventsModule({ events, onRefresh }: any) {
             </Button>
             <Button className="bg-white/20 border border-white/20" onClick={onRefresh}>
               <RefreshCw className="h-4 w-4 mr-2" />
-              Sync Events
+              RefreshCw Events
             </Button>
-          </div>
           </div>
         </div>
       </div>
@@ -2166,7 +2214,7 @@ function SmartEventsModule({ events, onRefresh }: any) {
                   {new Date(event.startDate).toLocaleDateString()}
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
-                  <Users className="h-4 w-4 mr-2" />
+                  <UsersRound className="h-4 w-4 mr-2" />
                   {event.attendees.toLocaleString()} expected attendees
                 </div>
               </div>
@@ -2341,9 +2389,9 @@ function SmartEventsModule({ events, onRefresh }: any) {
 
 function PlatformIntelligenceModule({ platformData, analytics, onRefresh }: any) {
   const realPlatformData = {
-    totalUsers: 15847,
-    dailyActiveUsers: 3456,
-    monthlyActiveUsers: 12934,
+    totalUsersRound: 15847,
+    dailyActiveUsersRound: 3456,
+    monthlyActiveUsersRound: 12934,
     builderCount: 456,
     leadCount: 8923,
     revenue: 234567,
@@ -2385,16 +2433,16 @@ function PlatformIntelligenceModule({ platformData, analytics, onRefresh }: any)
             <p className="text-violet-100 text-lg">Global platform analytics, user activity, and system performance monitoring</p>
             <div className="mt-4 grid grid-cols-4 gap-6">
               <div className="flex items-center">
-                <Users className="h-6 w-6 mr-2 text-violet-200" />
+                <UsersRound className="h-6 w-6 mr-2 text-violet-200" />
                 <div>
-                  <div className="text-2xl font-bold">{realPlatformData.totalUsers.toLocaleString()}</div>
-                  <div className="text-sm text-violet-200">Total Users</div>
+                  <div className="text-2xl font-bold">{realPlatformData.totalUsersRound.toLocaleString()}</div>
+                  <div className="text-sm text-violet-200">Total UsersRound</div>
                 </div>
               </div>
               <div className="flex items-center">
                 <Activity className="h-6 w-6 mr-2 text-pink-200" />
                 <div>
-                  <div className="text-2xl font-bold">{realPlatformData.dailyActiveUsers.toLocaleString()}</div>
+                  <div className="text-2xl font-bold">{realPlatformData.dailyActiveUsersRound.toLocaleString()}</div>
                   <div className="text-sm text-violet-200">Daily Active</div>
                 </div>
               </div>
@@ -2583,9 +2631,9 @@ function PlatformIntelligenceModule({ platformData, analytics, onRefresh }: any)
 
         <Card className="shadow-lg border-0">
           <CardContent className="p-6 text-center">
-            <Users className="h-12 w-12 mx-auto text-green-600 mb-4" />
-            <div className="text-3xl font-bold text-gray-900">{realPlatformData.monthlyActiveUsers.toLocaleString()}</div>
-            <div className="text-sm text-gray-600">Monthly Active Users</div>
+            <UsersRound className="h-12 w-12 mx-auto text-green-600 mb-4" />
+            <div className="text-3xl font-bold text-gray-900">{realPlatformData.monthlyActiveUsersRound.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Monthly Active UsersRound</div>
             <div className="mt-2 text-xs text-green-600 flex items-center justify-center">
               <ArrowUp className="h-3 w-3 mr-1" />
               +23% growth

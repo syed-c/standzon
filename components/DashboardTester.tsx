@@ -5,11 +5,26 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  CheckCircle, AlertTriangle, Play, Eye, Edit, Download, Upload, 
-  RefreshCw, Target, Brain, Zap, Users, Calendar, MessageSquare, 
-  BarChart3, Globe, Settings, Plus, Send, Star 
-} from 'lucide-react';
+import { CheckCircle,
+  AlertTriangle,
+  Play,
+  Eye,
+  Edit,
+  Download,
+  Upload,
+  RefreshCw,
+  Target,
+  Brain,
+  Zap,
+  Users,
+  Calendar,
+  MessageSquare,
+  BarChart3,
+  Globe,
+  Settings,
+  Plus,
+  Send,
+  Star } from 'lucide-react';
 
 interface TestResult {
   module: string;
@@ -51,7 +66,7 @@ export default function DashboardTester({ onTestComplete }: { onTestComplete?: (
         'Apply search filters',
         'Execute bulk operations',
         'Edit builder profiles',
-        'Sync real-time data'
+        'RefreshCw real-time data'
       ]
     },
     {
@@ -71,7 +86,7 @@ export default function DashboardTester({ onTestComplete }: { onTestComplete?: (
         'Validate file uploads',
         'Process bulk data',
         'Generate error reports',
-        'Sync uploaded data'
+        'RefreshCw uploaded data'
       ]
     },
     {
@@ -90,7 +105,7 @@ export default function DashboardTester({ onTestComplete }: { onTestComplete?: (
         'Create new events',
         'Edit event details',
         'Publish/unpublish events',
-        'Sync to public listings',
+        'RefreshCw to public listings',
         'Generate event reports'
       ]
     },

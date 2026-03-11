@@ -111,6 +111,7 @@ import {
   CheckSquare,
   User,
   ChevronDown,
+  ChevronUp,
   ChevronRight,
   MoreHorizontal,
   EyeIcon,
@@ -135,12 +136,10 @@ import {
   GitCommit,
   GitMerge,
   GitPullRequest,
-  GitDiff,
   Code,
   Terminal,
   Command,
   PlayCircle,
-  Stop,
   SkipBack,
   SkipForward,
   RotateCw,
@@ -160,16 +159,12 @@ import {
   Car,
   Bike,
   Fuel,
-  GasStation,
-  ChargingStation,
   BatteryLow,
   BatteryMedium,
   BatteryFull,
   BatteryWarning,
-  BatteryCritical,
   Power,
   Zap as ZapIcon,
-  LightningBolt,
   Sun as SunIcon,
   Moon as MoonIcon,
   Cloud as CloudIcon,
@@ -178,31 +173,26 @@ import {
   CloudLightning,
   CloudDrizzle,
   CloudFog,
-  CloudHaze,
   CloudSun,
   CloudMoon,
   Cloudy,
   SunDim,
   SunMedium,
-  SunBright,
   MoonStar,
   Stars,
   Sparkles,
   Wind,
   Tornado,
-  Hurricane,
   Snowflake,
   Thermometer,
   ThermometerSun,
   ThermometerSnowflake,
   Droplets,
   Umbrella,
-  UmbrellaClosed,
   Rainbow,
   Flower,
   Leaf,
   Sprout,
-  Seedling,
   TreeDeciduous,
   TreePine,
   Waves as WavesIcon,
@@ -248,7 +238,6 @@ import {
   Copy,
   Share2,
   Archive as ArchiveIcon,
-  Unarchive,
   Ban as BanIcon,
   Flag as FlagIcon,
   ArchiveRestore,
@@ -262,6 +251,16 @@ import {
   HardDriveUpload,
   HardDriveDownload,
 } from "lucide-react";
+
+export const ChartCard = ({ title, description, chart }: { title: string; description?: string; chart: React.ReactNode }) => (
+  <Card>
+    <CardHeader>
+      <CardTitle>{title}</CardTitle>
+      {description && <CardDescription>{description}</CardDescription>}
+    </CardHeader>
+    <CardContent>{chart}</CardContent>
+  </Card>
+);
 
 // Reusable Chart Components
 interface ChartData {
@@ -389,7 +388,7 @@ export const ReusablePieChart = ({
               fill="#8884d8"
               dataKey={dataKey}
               nameKey={nameKey}
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+              label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />

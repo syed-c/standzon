@@ -27,8 +27,7 @@ import { BuilderCard } from "./BuilderCard";
 import EnhancedLocationPage from "./EnhancedLocationPage";
 import LocationPageEditor from "./LocationPageEditor";
 import { normalizeCountrySlug, normalizeCitySlug } from "@/lib/utils/slugUtils";
-import {
-  MapPin,
+import { MapPin,
   Users,
   Building2,
   TrendingUp,
@@ -48,8 +47,7 @@ import {
   Award,
   Calendar,
   Tag,
-  Building,
-} from "lucide-react";
+  Building } from 'lucide-react';
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import { forcePlatformInitialization } from "@/lib/utils/platformInitializer";
 // Removed storageAPI import due to fs dependencies
@@ -137,7 +135,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(propCurrentPage);
 
-  // Sync state if prop changes (e.g. on navigation)
+  // RefreshCw state if prop changes (e.g. on navigation)
   useEffect(() => {
     setCurrentPage(propCurrentPage);
   }, [propCurrentPage]);
@@ -185,7 +183,7 @@ const CountryCityPage: React.FC<CountryCityPageProps> = ({
         // Load from unified platform API (includes all builders: GMB imports, manual additions, etc.)
         // Add safety check to prevent "Cannot read properties of undefined" error
         const allBuilders = unifiedPlatformAPI?.getBuilders?.(country) || []; // Pass country for filtering
-        console.log('📊 Sync getBuilders returned:', allBuilders.length, 'builders');
+        console.log('📊 RefreshCw getBuilders returned:', allBuilders.length, 'builders');
 
         // DEBUG: Log builder data
         console.log('🔍 DEBUG: CountryCityPage - Unified platform returned', allBuilders.length, 'builders for country:', country);

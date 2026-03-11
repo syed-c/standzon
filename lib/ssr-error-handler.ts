@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Comprehensive SSR error handling utilities
 // Goal: Never throw in SSR - always return safe fallbacks
 
@@ -36,7 +38,7 @@ export function withSSRGuard<T>(
 ) {
   return async function SSRGuardedComponent(props: T) {
     try {
-      return <Component {...props} />;
+      return React.createElement(Component as any, props as any);
     } catch (error) {
       console.error('❌ SSR Component error:', error);
       

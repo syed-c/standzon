@@ -4,11 +4,10 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  CheckCircle, 
-  Zap, 
-  Database, 
-  Users, 
+import { CheckCircle,
+  Zap,
+  Database,
+  Users,
   Eye,
   Edit,
   Trash2,
@@ -19,8 +18,7 @@ import {
   Building,
   Star,
   Settings,
-  Shield
-} from 'lucide-react';
+  Shield } from 'lucide-react';
 
 export default function FeatureShowcase() {
   const features = [
@@ -136,7 +134,7 @@ export default function FeatureShowcase() {
       color: "text-indigo-600"
     },
     {
-      title: "Test Real-time Sync",
+      title: "Test Real-time RefreshCw",
       description: "Watch sync status indicator for live updates",
       icon: RefreshCw,
       color: "text-red-600"

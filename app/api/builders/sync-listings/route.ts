@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       }, { status: 404 });
     }
 
-    let updatedBuilder = { ...builder };
+    let updatedBuilder: any = { ...builder };
     let syncResults = [];
 
     // Process different types of changes
@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
 
     // Get sync status for builder
     const builders = unifiedPlatformAPI.getBuilders();
-    const builder = builders.find(b => b.id === builderId);
+    const builder = builders.find(b => b.id === builderId) as any;
     
     if (!builder) {
       return NextResponse.json({

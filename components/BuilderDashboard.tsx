@@ -80,7 +80,7 @@ export default function BuilderDashboard({ builderId, builderType }: BuilderDash
     }
   };
 
-  const saveProfileChanges = async () => {
+    const saveProfileChanges = async () => {
     try {
       // Update localStorage with new profile data
       const currentUserData = JSON.parse(localStorage.getItem('builderUserData') || '{}');
@@ -89,7 +89,7 @@ export default function BuilderDashboard({ builderId, builderType }: BuilderDash
       localStorage.setItem('builderUserData', JSON.stringify(currentUserData));
       
       // Update local state
-      setBuilderData(prev => ({ 
+      setBuilderData((prev: any) => ({ 
         ...prev, 
         profile: { ...prev.profile, ...editedProfile } 
       }));
@@ -103,7 +103,7 @@ export default function BuilderDashboard({ builderId, builderType }: BuilderDash
   };
 
   const updateEditedProfile = (field: string, value: any) => {
-    setEditedProfile(prev => ({ ...prev, [field]: value }));
+    setEditedProfile((prev: any) => ({ ...prev, [field]: value }));
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,7 +120,7 @@ export default function BuilderDashboard({ builderId, builderType }: BuilderDash
           currentUserData.profile.logo = imageUrl;
           localStorage.setItem('builderUserData', JSON.stringify(currentUserData));
           
-          setBuilderData(prev => ({ 
+          setBuilderData((prev: any) => ({ 
             ...prev, 
             profile: { ...prev.profile, logo: imageUrl } 
           }));

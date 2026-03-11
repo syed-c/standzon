@@ -9,20 +9,18 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
-import { 
-  Search, 
-  Filter, 
-  X, 
-  MapPin, 
-  Building, 
+import { Search,
+  Filter,
+  X,
+  MapPin,
+  Building,
   Star,
   Calendar,
   Users,
   CheckCircle,
   AlertCircle,
   Clock,
-  Zap
-} from 'lucide-react';
+  Zap } from 'lucide-react';
 
 interface FilterOptions {
   searchQuery: string;
@@ -81,7 +79,7 @@ export default function AdvancedFilterPanel({
     'Event Planning',
     'Installation Services',
     'Graphics & Printing',
-    'Audio Visual',
+    'Mic Visual',
     'Lighting Design',
     'Project Management'
   ];
@@ -442,7 +440,7 @@ export default function AdvancedFilterPanel({
                 {[
                   { value: 'verified', label: 'Verified', icon: CheckCircle, color: 'text-green-600' },
                   { value: 'pending', label: 'Pending Review', icon: Clock, color: 'text-yellow-600' },
-                  { value: 'unverified', label: 'Unverified', icon: AlertCircle, color: 'text-red-600' }
+                  { value: 'unverified', label: 'ShieldX', icon: AlertCircle, color: 'text-red-600' }
                 ].map(({ value, label, icon: Icon, color }) => (
                   <div key={value} className="flex items-center space-x-2">
                     <Checkbox

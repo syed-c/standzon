@@ -143,10 +143,10 @@ export function LocationPageEditor({ pageData, isVisible, onClose, onSave }: Loc
   const updateContent = (section: keyof PageContent, field: string, value: any) => {
     setContent(prev => ({
       ...prev,
-      [section]: {
-        ...prev[section],
+      [section]: typeof prev[section] === 'object' && prev[section] !== null ? {
+        ...(prev[section] as any),
         [field]: value
-      }
+      } : value
     }));
   };
 

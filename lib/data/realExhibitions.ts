@@ -2,7 +2,7 @@
 // All data sourced from official websites and verified sources
 // NO DUMMY DATA - All exhibitions are real and scheduled events
 
-import { Exhibition, ExhibitionVenue, Industry } from './exhibitions';
+import { Exhibition, ExhibitionVenue, Industry } from './exhibitions.types';
 
 // Additional Industries for Real Exhibitions (copied to avoid circular dependency)
 const additionalIndustries: Industry[] = [

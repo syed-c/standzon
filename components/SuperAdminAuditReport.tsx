@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
-import {
-  CheckCircle,
+import { CheckCircle,
   XCircle,
   AlertTriangle,
   Zap,
@@ -20,8 +19,7 @@ import {
   Activity,
   Settings,
   FileText,
-  BarChart3
-} from 'lucide-react';
+  BarChart3 } from 'lucide-react';
 import { adminAPI } from '@/lib/api/admin';
 import { realStorageAPI } from '@/lib/data/realStorage';
 import { useRealTimeSync } from '@/lib/utils/realTimeSync';
@@ -95,11 +93,11 @@ export default function SuperAdminAuditReport() {
         });
       }
 
-      // 3. Test Real-time Sync System
-      console.log('Testing Real-time Sync...');
+      // 3. Test Real-time RefreshCw System
+      console.log('Testing Real-time RefreshCw...');
       if (syncStatus.isInitialized && syncStatus.activeListeners > 0) {
         auditResults.push({
-          component: 'Real-time Sync',
+          component: 'Real-time RefreshCw',
           status: 'operational',
           message: `✅ Active - ${syncStatus.activeListeners} listeners`,
           details: `Last sync: ${syncStatus.lastSync}`,
@@ -107,10 +105,10 @@ export default function SuperAdminAuditReport() {
         });
       } else {
         auditResults.push({
-          component: 'Real-time Sync',
+          component: 'Real-time RefreshCw',
           status: 'warning',
           message: '⚠️ No active listeners',
-          details: 'Sync system initialized but no components listening',
+          details: 'RefreshCw system initialized but no components listening',
           lastChecked: auditTime
         });
       }
@@ -194,12 +192,12 @@ export default function SuperAdminAuditReport() {
         lastChecked: auditTime
       });
 
-      // 7. Test Platform Sync
+      // 7. Test Platform RefreshCw
       console.log('Testing platform synchronization...');
       try {
         await forceRefresh();
         auditResults.push({
-          component: 'Platform Sync',
+          component: 'Platform RefreshCw',
           status: 'operational',
           message: '✅ Cross-platform sync working',
           details: 'Website, Admin Dashboard, Builder Dashboards',
@@ -207,9 +205,9 @@ export default function SuperAdminAuditReport() {
         });
       } catch (error) {
         auditResults.push({
-          component: 'Platform Sync',
+          component: 'Platform RefreshCw',
           status: 'warning',
-          message: '⚠️ Sync test incomplete',
+          message: '⚠️ RefreshCw test incomplete',
           details: 'Force refresh triggered but validation incomplete',
           lastChecked: auditTime
         });

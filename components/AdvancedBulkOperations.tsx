@@ -217,7 +217,7 @@ export default function AdvancedBulkOperations({
     };
 
     setActiveOperation(finalOperation);
-    setOperationHistory(prev => [finalOperation, ...prev]);
+    setOperationHistory((prev: BulkOperation[]) => [finalOperation, ...prev]);
     setIsRunning(false);
     onOperationComplete(finalOperation);
 
@@ -264,7 +264,7 @@ export default function AdvancedBulkOperations({
 
   const pauseOperation = () => {
     if (activeOperation) {
-      setActiveOperation(prev => prev ? { ...prev, status: 'paused' } : null);
+      setActiveOperation((prev: BulkOperation | null) => prev ? { ...prev, status: 'paused' } : null);
       setIsRunning(false);
       toast.info('Operation paused');
     }
@@ -272,7 +272,7 @@ export default function AdvancedBulkOperations({
 
   const resumeOperation = () => {
     if (activeOperation) {
-      setActiveOperation(prev => prev ? { ...prev, status: 'running' } : null);
+      setActiveOperation((prev: BulkOperation | null) => prev ? { ...prev, status: 'running' } : null);
       setIsRunning(true);
       toast.info('Operation resumed');
     }
@@ -381,7 +381,7 @@ export default function AdvancedBulkOperations({
                     <Textarea
                       placeholder="Enter reason for rejection..."
                       value={operationSettings.reason || ''}
-                      onChange={(e) => setOperationSettings(prev => ({ ...prev, reason: e.target.value }))}
+                      onChange={(e) => setOperationSettings((prev: any) => ({ ...prev, reason: e.target.value }))}
                     />
                   </div>
                 )}
@@ -391,7 +391,7 @@ export default function AdvancedBulkOperations({
                     <Label>New Status</Label>
                     <Select 
                       value={operationSettings.status || ''}
-                      onValueChange={(value) => setOperationSettings(prev => ({ ...prev, status: value }))}
+                      onValueChange={(value) => setOperationSettings((prev: any) => ({ ...prev, status: value }))}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
@@ -413,7 +413,7 @@ export default function AdvancedBulkOperations({
                     <Input
                       placeholder="premium, verified, featured"
                       value={operationSettings.tags || ''}
-                      onChange={(e) => setOperationSettings(prev => ({ ...prev, tags: e.target.value }))}
+                      onChange={(e) => setOperationSettings((prev: any) => ({ ...prev, tags: e.target.value }))}
                     />
                   </div>
                 )}
@@ -424,7 +424,7 @@ export default function AdvancedBulkOperations({
                       <Label>Email Template</Label>
                       <Select 
                         value={operationSettings.template || ''}
-                        onValueChange={(value) => setOperationSettings(prev => ({ ...prev, template: value }))}
+                        onValueChange={(value) => setOperationSettings((prev: any) => ({ ...prev, template: value }))}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select template" />
@@ -442,7 +442,7 @@ export default function AdvancedBulkOperations({
                       <Textarea
                         placeholder="Optional custom message..."
                         value={operationSettings.message || ''}
-                        onChange={(e) => setOperationSettings(prev => ({ ...prev, message: e.target.value }))}
+                        onChange={(e) => setOperationSettings((prev: any) => ({ ...prev, message: e.target.value }))}
                       />
                     </div>
                   </div>

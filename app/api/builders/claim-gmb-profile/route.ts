@@ -153,34 +153,33 @@ export async function PUT(request: NextRequest) {
       const profileId = claimId.split('_')[2];
       console.log('🔄 Processing unified profile claim for:', profileId);
       
-      // ✅ Use the new unified claiming API
-      const claimResult = unifiedPlatformAPI.claimUnifiedProfile(profileId, {
-        claimedBy: userDetails || {},
-        businessEmail: userDetails?.email || '',
-        businessPhone: userDetails?.phone || ''
+      // Mark profile as claimed via updateBuilder
+      const claimed = unifiedPlatformAPI.updateBuilder(profileId, {
+        claimed: true,
+        claimStatus: 'claimed' as any,
+        claimedAt: new Date().toISOString(),
+        claimedBy: userDetails?.email || ''
       }, 'website');
       
-      if (claimResult.success) {
-        console.log('🎉 Unified profile claimed successfully:', claimResult.data);
+      if (claimed.success) {
+        console.log('🎉 Profile claimed successfully:', profileId);
         
         return NextResponse.json({
           success: true,
-          message: `Profile claimed successfully! ${claimResult.data.locationsLinked} location(s) linked to your account.`,
+          message: 'Profile claimed successfully! Your account has been linked.',
           data: {
-            profileId: claimResult.data.profileId,
+            profileId,
             claimStatus: 'claimed',
-            claimedAt: claimResult.data.claimedAt,
-            locationsLinked: claimResult.data.locationsLinked,
-            allLocations: claimResult.data.allLocations,
-            dashboardUrl: `/builder/dashboard?profileId=${claimResult.data.profileId}`,
+            claimedAt: new Date().toISOString(),
+            locationsLinked: 1,
+            dashboardUrl: `/builder/dashboard?profileId=${profileId}`,
             unifiedAccount: true
           }
         });
       } else {
-        console.error('❌ Failed to claim unified profile:', claimResult.error);
         return NextResponse.json({
           success: false,
-          error: claimResult.error || 'Failed to claim profile'
+          error: claimed.error || 'Failed to claim profile'
         }, { status: 500 });
       }
     }

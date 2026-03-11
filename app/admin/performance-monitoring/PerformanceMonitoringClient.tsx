@@ -7,20 +7,18 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import { 
-  Activity, 
-  Database, 
-  Clock, 
-  TrendingUp, 
-  Server, 
-  Zap, 
-  RefreshCw, 
+import { Activity,
+  Database,
+  Clock,
+  TrendingUp,
+  Server,
+  Zap,
+  RefreshCw,
   BarChart3,
   Timer,
   HardDrive,
   Wifi,
-  AlertTriangle
-} from 'lucide-react';
+  AlertTriangle } from 'lucide-react';
 
 interface PerformanceMetrics {
   cacheStats: {
@@ -211,7 +209,7 @@ export default function PerformanceMonitoringClient() {
             variant={autoRefresh ? "default" : "outline"}
           >
             <Timer className="w-4 h-4 mr-2" />
-            {autoRefresh ? 'Stop Auto-Refresh' : 'Start Auto-Refresh'}
+            {autoRefresh ? 'StopCircle Auto-Refresh' : 'Start Auto-Refresh'}
           </Button>
         </CardContent>
       </Card>

@@ -9,12 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { 
-  Download, 
-  Database, 
-  Globe2, 
-  Building2, 
-  Users, 
+import {
+  Download,
+  Database,
+  Globe2,
+  Building2,
+  Users,
   Activity,
   CheckCircle,
   AlertCircle,
@@ -58,7 +58,7 @@ export default function BulkBuilderImporter() {
       setIsLoading(true);
       const response = await fetch('/api/admin/bulk-import');
       const data = await response.json();
-      
+
       if (data.success) {
         setImportStatus(data.data);
         console.log('📊 Current import status:', data.data);
@@ -98,16 +98,16 @@ export default function BulkBuilderImporter() {
     try {
       // Simulate progress for better UX
       const progressInterval = setInterval(() => {
-        setImportProgress(prev => Math.min(prev + 10, 90));
+        setImportProgress((prev: number) => Math.min(prev + 10, 90));
       }, 500);
 
-      const payload = importMode === 'all' 
+      const payload = importMode === 'all'
         ? { action: 'generate-all' }
-        : { 
-            action: 'generate-country', 
-            countries: selectedCountries, 
-            count: buildersPerCountry 
-          };
+        : {
+          action: 'generate-country',
+          countries: selectedCountries,
+          count: buildersPerCountry
+        };
 
       console.log('🚀 Starting bulk import with payload:', payload);
 
@@ -126,7 +126,7 @@ export default function BulkBuilderImporter() {
       if (result.success) {
         setImportResult(result);
         console.log('✅ Bulk import successful:', result);
-        
+
         // Refresh the status
         setTimeout(() => {
           loadImportStatus();
@@ -135,7 +135,7 @@ export default function BulkBuilderImporter() {
         console.error('❌ Bulk import failed:', result.error);
         setImportResult({ success: false, error: result.error });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Bulk import error:', error);
       setImportResult({ success: false, error: error.message });
     } finally {
@@ -281,7 +281,7 @@ export default function BulkBuilderImporter() {
                 <span className="font-medium">Recommended: Import All Countries</span>
               </div>
               <p className="text-sm text-blue-700">
-                This will import builders for all supported countries: United States (25 builders), 
+                This will import builders for all supported countries: United States (25 builders),
                 United Arab Emirates (15 builders), United Kingdom (20 builders), and Australia (25 builders).
                 Total: <strong>85 new builders</strong>
               </p>
@@ -302,18 +302,18 @@ export default function BulkBuilderImporter() {
                     <Label htmlFor="select-all-countries" className="text-sm">Select All</Label>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {importStatus.supportedCountries.map((country) => {
                     const stats = importStatus.countryBreakdown[country];
                     const needsBuilders = !stats || stats.total < 10;
-                    
+
                     return (
                       <div key={country} className="flex items-center space-x-2 p-2 border rounded">
                         <Checkbox
                           id={`country-${country}`}
-                          checked={selectedCountries.includes(country)}
-                          onCheckedChange={(checked) => handleCountryToggle(country, checked)}
+                          checked={!!selectedCountries.includes(country)}
+                          onCheckedChange={(checked) => handleCountryToggle(country, checked === true)}
                         />
                         <Label htmlFor={`country-${country}`} className="flex-1 flex items-center justify-between">
                           <span>{country}</span>
@@ -360,11 +360,10 @@ export default function BulkBuilderImporter() {
 
           {/* Import Result */}
           {importResult && (
-            <div className={`p-4 rounded-lg border ${
-              importResult.success 
-                ? 'bg-green-50 border-green-200' 
+            <div className={`p-4 rounded-lg border ${importResult.success
+                ? 'bg-green-50 border-green-200'
                 : 'bg-red-50 border-red-200'
-            }`}>
+              }`}>
               {importResult.success ? (
                 <div>
                   <div className="flex items-center gap-2 text-green-800 font-medium mb-2">
@@ -406,8 +405,8 @@ export default function BulkBuilderImporter() {
             ) : (
               <>
                 <Download className="h-4 w-4 mr-2" />
-                {importMode === 'all' 
-                  ? 'Import All Missing Builders (85 builders)' 
+                {importMode === 'all'
+                  ? 'Import All Missing Builders (85 builders)'
                   : `Import Selected (${selectedCountries.length * buildersPerCountry} builders)`
                 }
               </>

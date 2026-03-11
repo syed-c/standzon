@@ -50,7 +50,7 @@ class StripeService {
     }
 
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2025-05-28.basil",
+      apiVersion: "2025-02-24.acacia",
     });
 
     this.webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
@@ -61,6 +61,13 @@ class StripeService {
    */
   private isConfigured(): boolean {
     return this.stripe !== null;
+  }
+
+  private getStripe(): Stripe {
+    if (!this.stripe) {
+      throw new Error("Stripe service is not configured. Please set STRIPE_SECRET_KEY.");
+    }
+    return this.stripe;
   }
 
   /**
@@ -126,17 +133,10 @@ class StripeService {
    * Create or retrieve Stripe customer
    */
   async createCustomer(params: CreateCustomerParams): Promise<Stripe.Customer> {
-    if (!this.stripe) {
-      throw new Error(
-        "Stripe service is not configured. Please set STRIPE_SECRET_KEY."
-      );
-    }
-
-
-
-    try {
+      const stripe = this.getStripe();
+      try {
       // Check if customer already exists
-      const existingCustomers = await this.stripe.customers.list({
+      const existingCustomers = await stripe.customers.list({
         email: params.email,
         limit: 1,
       });
@@ -146,7 +146,7 @@ class StripeService {
       }
 
       // Create new customer
-      const customer = await this.stripe.customers.create({
+      const customer = await stripe.customers.create({
         email: params.email,
         name: params.name,
         phone: params.phone,
@@ -206,8 +206,9 @@ class StripeService {
         subscriptionData.payment_behavior = "default_incomplete";
       }
 
+      const stripe = this.getStripe();
       const subscription =
-        await this.stripe.subscriptions.create(subscriptionData);
+        await stripe.subscriptions.create(subscriptionData);
 
 
 
@@ -243,7 +244,8 @@ class StripeService {
 
 
     try {
-      const subscription = await this.stripe.subscriptions.update(
+      const stripe = this.getStripe();
+      const subscription = await stripe.subscriptions.update(
         subscriptionId,
         {
           cancel_at_period_end: !immediately,
@@ -274,12 +276,13 @@ class StripeService {
         throw new Error("Invalid plan selected");
       }
 
+      const stripe = this.getStripe();
       // Get current subscription
       const currentSubscription =
-        await this.stripe.subscriptions.retrieve(subscriptionId);
+        await stripe.subscriptions.retrieve(subscriptionId);
 
       // Update subscription with new price
-      const subscription = await this.stripe.subscriptions.update(
+      const subscription = await stripe.subscriptions.update(
         subscriptionId,
         {
           items: [
@@ -310,8 +313,9 @@ class StripeService {
 
 
     try {
+      const stripe = this.getStripe();
       // Create payment intent
-      const paymentIntent = await this.stripe.paymentIntents.create({
+      const paymentIntent = await stripe.paymentIntents.create({
         amount: params.amount,
         currency: params.currency,
         payment_method: params.paymentMethodId,
@@ -338,7 +342,8 @@ class StripeService {
 
 
     try {
-      const setupIntent = await this.stripe.setupIntents.create({
+      const stripe = this.getStripe();
+      const setupIntent = await stripe.setupIntents.create({
         customer: customerId,
         usage: "off_session",
         metadata: {
@@ -359,7 +364,8 @@ class StripeService {
 
 
     try {
-      const paymentMethods = await this.stripe.paymentMethods.list({
+      const stripe = this.getStripe();
+      const paymentMethods = await stripe.paymentMethods.list({
         customer: customerId,
         type: "card",
       });
@@ -384,7 +390,8 @@ class StripeService {
 
 
     try {
-      const event = this.stripe.webhooks.constructEvent(
+      const stripe = this.getStripe();
+      const event = stripe.webhooks.constructEvent(
         payload,
         signature,
         this.webhookSecret
@@ -570,7 +577,8 @@ class StripeService {
    * Retrieve subscription details
    */
   async getSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
-    return await this.stripe.subscriptions.retrieve(subscriptionId);
+    const stripe = this.getStripe();
+    return await stripe.subscriptions.retrieve(subscriptionId);
   }
 
   /**
@@ -580,7 +588,8 @@ class StripeService {
     customerId: string,
     returnUrl: string
   ): Promise<string> {
-    const session = await this.stripe.billingPortal.sessions.create({
+    const stripe = this.getStripe();
+    const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: returnUrl,
     });

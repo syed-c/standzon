@@ -9,12 +9,11 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { 
-  Download, 
-  Upload, 
-  FileText, 
-  CheckCircle, 
-  AlertCircle, 
+import { Download,
+  Upload,
+  FileText,
+  CheckCircle,
+  AlertCircle,
   Building,
   ArrowLeft,
   Zap,
@@ -30,8 +29,7 @@ import {
   RefreshCw,
   Eye,
   Edit,
-  Trash2
-} from 'lucide-react';
+  Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { ExhibitionBuilder } from '@/lib/data/exhibitionBuilders';
 import { simpleStorageAPI as storageAPI } from '@/lib/data/simpleStorage';
@@ -562,7 +560,7 @@ export default function EnhancedBulkUploadPage() {
             </Badge>
             <Badge className="bg-blue-100 text-blue-800">
               <Zap className="h-3 w-3 mr-1" />
-              Real-time Sync
+              Real-time RefreshCw
             </Badge>
             <Badge className="bg-purple-100 text-purple-800">
               <CheckCircle className="h-3 w-3 mr-1" />

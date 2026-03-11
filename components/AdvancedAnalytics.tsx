@@ -298,6 +298,7 @@ export default function AdvancedAnalytics({
                       paddingAngle={5}
                       dataKey="builders"
                       nameKey="country"
+                      label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`}
                     >
                       {analyticsData.builders.map((entry: any, index: number) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

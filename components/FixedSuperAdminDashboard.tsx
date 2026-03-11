@@ -7,13 +7,47 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Users, Building, TrendingUp, DollarSign, MessageSquare, Star, Globe, Calendar,
-  AlertTriangle, CheckCircle, Clock, Eye, UserPlus, Activity, FileText, CreditCard,
-  Settings, Shield, Bell, Search, Filter, Download, RefreshCw, BarChart3, MapPin,
-  Zap, Trash2, Upload, Edit, Plus, Save, ExternalLink, Database, HardDrive,
-  UserCheck, Mail, Target, CheckSquare, User, ChevronDown, ChevronRight
-} from 'lucide-react';
+import { Users,
+  Building,
+  TrendingUp,
+  DollarSign,
+  MessageSquare,
+  Star,
+  Globe,
+  Calendar,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Eye,
+  UserPlus,
+  Activity,
+  FileText,
+  CreditCard,
+  Settings,
+  Shield,
+  Bell,
+  Search,
+  Filter,
+  Download,
+  RefreshCw,
+  BarChart3,
+  MapPin,
+  Zap,
+  Trash2,
+  Upload,
+  Edit,
+  Plus,
+  Save,
+  ExternalLink,
+  Database,
+  HardDrive,
+  UserCheck,
+  Mail,
+  Target,
+  CheckSquare,
+  User,
+  ChevronDown,
+  ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import WorkingGlobalPagesManager from '@/components/WorkingGlobalPagesManager';
 
@@ -420,7 +454,7 @@ export default function FixedSuperAdminDashboard({ adminId, permissions }: Fixed
                                 </p>
                                 <div className="flex items-center space-x-2 mt-2">
                                   <Badge variant={builder.verified ? 'default' : 'secondary'}>
-                                    {builder.verified ? 'Verified' : 'Unverified'}
+                                    {builder.verified ? 'Verified' : 'ShieldX'}
                                   </Badge>
                                   <Badge variant="outline">
                                     {builder.source || 'Manual'}

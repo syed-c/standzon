@@ -7,10 +7,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Wifi, WifiOff, RefreshCw, CheckCircle, AlertTriangle, Info, 
-  Activity, Database, Globe, Users, Building, Calendar 
-} from 'lucide-react';
+import { Wifi,
+  WifiOff,
+  RefreshCw,
+  CheckCircle,
+  AlertTriangle,
+  Info,
+  Activity,
+  Database,
+  Globe,
+  Users,
+  Building,
+  Calendar } from 'lucide-react';
 
 interface SyncStatus {
   isConnected: boolean;
@@ -111,7 +119,7 @@ export function RealTimeSyncIndicator({ compact = false }: { compact?: boolean }
     }));
     
     toast({
-      title: "Sync Refreshed",
+      title: "RefreshCw Refreshed",
       description: "Real-time data synchronization refreshed",
       duration: 2000,
     });
@@ -141,7 +149,7 @@ export function RealTimeSyncIndicator({ compact = false }: { compact?: boolean }
             ) : (
               <WifiOff className="h-5 w-5 text-red-600" />
             )}
-            <span>Real-Time Sync Status</span>
+            <span>Real-Time RefreshCw Status</span>
           </div>
           <Button 
             size="sm" 
@@ -161,7 +169,7 @@ export function RealTimeSyncIndicator({ compact = false }: { compact?: boolean }
           <Activity className="h-4 w-4" />
           <AlertDescription>
             <strong>Status:</strong> {syncStatus.isConnected ? 'Connected' : 'Disconnected'} | 
-            <strong> Last Sync:</strong> {new Date(syncStatus.lastSync).toLocaleTimeString()}
+            <strong> Last RefreshCw:</strong> {new Date(syncStatus.lastSync).toLocaleTimeString()}
           </AlertDescription>
         </Alert>
 

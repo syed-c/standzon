@@ -22,7 +22,8 @@ import {
   AlertCircle,
   CheckCircle,
   Gift,
-  Sparkles
+  Sparkles,
+  Eye
 } from 'lucide-react';
 import { toast } from 'sonner';
 

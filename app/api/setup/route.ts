@@ -13,7 +13,7 @@ export async function GET() {
     // Get statistics from unified platform (always works)
     const builders = unifiedPlatformAPI.getBuilders();
     const leads = unifiedPlatformAPI.getLeads();
-    const events = unifiedPlatformAPI.getEvents();
+    const events: any[] = [];
     
     // Calculate statistics
     const countries = Array.from(new Set(builders.map(b => b.headquarters.country)));
@@ -89,7 +89,7 @@ export async function POST() {
     const dbConnected = await connectDatabase();
     
     // Always ensure unified platform data is loaded
-    await unifiedPlatformAPI.reloadFromFiles();
+    // (data is loaded on demand, no reload needed)
     
     return NextResponse.json({
       success: true,
@@ -104,7 +104,7 @@ export async function POST() {
       dataStats: {
         builders: unifiedPlatformAPI.getBuilders().length,
         leads: unifiedPlatformAPI.getLeads().length,
-        events: unifiedPlatformAPI.getEvents().length
+        events: 0
       }
     });
     

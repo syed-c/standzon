@@ -29,8 +29,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Shield,
+import { Shield,
   CheckCircle,
   XCircle,
   Clock,
@@ -50,8 +49,7 @@ import {
   BarChart3,
   Users,
   MapPin,
-  Calendar,
-} from "lucide-react";
+  Calendar } from 'lucide-react';
 import { toast } from "sonner";
 
 interface AdminClaimsManagerProps {
@@ -510,7 +508,7 @@ export default function AdminClaimsManager({
                 <SelectItem value="claimed">Claimed</SelectItem>
                 <SelectItem value="unclaimed">Unclaimed</SelectItem>
                 <SelectItem value="verified">Verified</SelectItem>
-                <SelectItem value="unverified">Unverified</SelectItem>
+                <SelectItem value="unverified">ShieldX</SelectItem>
               </SelectContent>
             </Select>
             <div className="text-sm text-gray-600">

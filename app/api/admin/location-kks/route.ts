@@ -11,10 +11,10 @@ export async function GET(request: NextRequest) {
     
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action');
-    const continent = searchParams.get('continent');
-    const country = searchParams.get('country');
-    const city = searchParams.get('city');
-    const industry = searchParams.get('industry');
+    const continent = searchParams.get('continent') ?? undefined;
+    const country = searchParams.get('country') ?? undefined;
+    const city = searchParams.get('city') ?? undefined;
+    const industry = searchParams.get('industry') ?? undefined;
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined;
 
     console.log('📊 Location KKS Query:', { action, continent, country, city, industry, limit });

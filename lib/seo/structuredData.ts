@@ -1,7 +1,4 @@
 
-// Structured Data (JSON-LD) generation for SEO optimization
-import { Doc } from '@/convex/_generated/dataModel';
-
 // Base organization schema for StandsZone
 export const getOrganizationSchema = () => ({
   "@context": "https://schema.org",

@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
 import { 
-  TrendingUp, BarChart3, Zap, Target, Clock, Users, Globe, Star, 
+  TrendingUp, BarChart3, Zap, Target, Clock, UsersRound as Users, Globe, Star, 
   AlertCircle, CheckCircle, Activity, RefreshCw, Brain, Sparkles,
   ArrowUp, ArrowDown, Eye, MousePointer, Send, Award
 } from 'lucide-react';

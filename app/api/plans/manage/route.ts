@@ -283,9 +283,10 @@ async function handleAdminPlanOverride(builderId: string, planType: string, admi
 // Track demo assignments for analytics
 async function trackDemoAssignment(builderId: string, planType: string, adminId: string) {
   try {
-    if (typeof global !== 'undefined') {
-      if (!global.demoAssignments) {
-        global.demoAssignments = [];
+    if (typeof globalThis !== 'undefined') {
+      const g = globalThis as any;
+      if (!g.demoAssignments) {
+        g.demoAssignments = [];
       }
       
       const demoRecord = {
@@ -298,7 +299,7 @@ async function trackDemoAssignment(builderId: string, planType: string, adminId:
         status: 'active'
       };
       
-      global.demoAssignments.push(demoRecord);
+      g.demoAssignments.push(demoRecord);
       console.log(`📊 Demo assignment tracked: ${builderId} -> ${planType}`);
     }
   } catch (error) {
@@ -425,9 +426,10 @@ async function updateBuilderPlan(builderId: string, planType: string, metadata: 
 // Initialize plan features and access controls
 async function initializePlanFeatures(builderId: string, planConfig: any) {
   try {
-    if (typeof global !== 'undefined') {
-      if (!global.builderFeatureAccess) {
-        global.builderFeatureAccess = new Map();
+    if (typeof globalThis !== 'undefined') {
+      const g = globalThis as any;
+      if (!g.builderFeatureAccess) {
+        g.builderFeatureAccess = new Map();
       }
       
       const featureAccess = {
@@ -440,7 +442,7 @@ async function initializePlanFeatures(builderId: string, planConfig: any) {
         expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days
       };
       
-      global.builderFeatureAccess.set(builderId, featureAccess);
+      g.builderFeatureAccess.set(builderId, featureAccess);
       console.log(`🔓 Features initialized for builder ${builderId}: ${planConfig.name}`);
     }
   } catch (error) {
@@ -452,8 +454,8 @@ async function initializePlanFeatures(builderId: string, planConfig: any) {
 async function getBuilderUsageStats(builderId: string) {
   try {
     // Get from global tracking (in production, query from database)
-    if (typeof global !== 'undefined' && global.builderUsageStats) {
-      const stats = global.builderUsageStats.get(builderId);
+    if (typeof globalThis !== 'undefined' && (globalThis as any).builderUsageStats) {
+      const stats = (globalThis as any).builderUsageStats.get(builderId);
       return stats || {
         leadsReceived: 0,
         leadsAccepted: 0,
@@ -489,25 +491,26 @@ async function getCurrentPlan(builderId: string) {
 
 // Get available upgrade options
 function getAvailableUpgrades(currentPlan: string) {
-  const upgradePath = {
+  const upgradePath: Record<string, string[]> = {
     'starter': ['basic', 'growth', 'pro'],
     'basic': ['growth', 'pro'],
     'growth': ['pro'],
     'pro': []
   };
   
-  return (upgradePath[currentPlan] || []).map(planType => getPlanConfiguration(planType));
+  return (upgradePath[currentPlan] || []).map((planType: string) => getPlanConfiguration(planType));
 }
 
 // Update global plan registry
 async function updateGlobalPlanRegistry(builderId: string, planType: string, metadata: any) {
   try {
-    if (typeof global !== 'undefined') {
-      if (!global.planRegistry) {
-        global.planRegistry = new Map();
+    if (typeof globalThis !== 'undefined') {
+      const g = globalThis as any;
+      if (!g.planRegistry) {
+        g.planRegistry = new Map();
       }
       
-      global.planRegistry.set(builderId, {
+      g.planRegistry.set(builderId, {
         planType,
         updatedAt: new Date().toISOString(),
         metadata
@@ -521,9 +524,10 @@ async function updateGlobalPlanRegistry(builderId: string, planType: string, met
 // Log admin actions
 async function logAdminAction(adminId: string, action: string, details: any) {
   try {
-    if (typeof global !== 'undefined') {
-      if (!global.adminAuditLog) {
-        global.adminAuditLog = [];
+    if (typeof globalThis !== 'undefined') {
+      const g = globalThis as any;
+      if (!g.adminAuditLog) {
+        g.adminAuditLog = [];
       }
       
       const logEntry = {
@@ -534,7 +538,7 @@ async function logAdminAction(adminId: string, action: string, details: any) {
         timestamp: new Date().toISOString()
       };
       
-      global.adminAuditLog.push(logEntry);
+      g.adminAuditLog.push(logEntry);
     }
   } catch (error) {
     console.error('❌ Error logging admin action:', error);

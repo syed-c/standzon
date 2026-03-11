@@ -53,7 +53,9 @@ interface Builder {
   keyStrengths: string[];
   serviceLocations?: Array<{
     country: string;
-    cities: string[];
+    cities?: string[];
+    city?: string;
+    [key: string]: any;
   }>;
   // Add flat fields for compatibility with Supabase data
   headquarters_city?: string;

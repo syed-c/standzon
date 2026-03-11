@@ -4,7 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, MapPin, CheckCircle, Users } from 'lucide-react';
+import { 
+  Star, MapPin, CheckCircle, Users, Signal, Wifi, WifiOff, 
+  Battery, Menu, Bell, User, BarChart3, Search, Filter, 
+  Tablet, Monitor, Smartphone, Clock, Building, Settings, Eye 
+} from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { unifiedPlatformAPI } from '@/lib/data/unifiedPlatformData';
 
 interface MockBuilder {
@@ -18,8 +23,13 @@ interface MockBuilder {
 }
 
 export default function MobileResponsiveDemo() {
-  const [currentDevice, setCurrentDevice] = useState<'mobile' | 'tablet' | 'desktop'>('mobile');
+  const [viewMode, setViewMode] = useState<'mobile' | 'tablet' | 'desktop'>('mobile');
   const [realBuilders, setRealBuilders] = useState<MockBuilder[]>([]);
+  const [touchGestures, setTouchGestures] = useState({ swipeCount: 0, tapCount: 0, pinchCount: 0 });
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  
+  const onViewModeChange = (mode: 'mobile' | 'tablet' | 'desktop') => setViewMode(mode);
 
   useEffect(() => {
     // Load real builders from unified platform
@@ -63,6 +73,7 @@ export default function MobileResponsiveDemo() {
 
   // No mock data - use real builders from unified platform
   const [builders, setBuilders] = useState<any[]>([]);
+  const mockBuilders = builders; // compatibility with template below
   
   // Load real builders for demo
   React.useEffect(() => {
@@ -446,7 +457,7 @@ export default function MobileResponsiveDemo() {
       </Card>
 
       {/* Mobile Content */}
-      {currentDevice === 'mobile' && (
+      {viewMode === 'mobile' && (
         <div className="p-4">
           <h2 className="text-lg font-bold mb-4">Exhibition Builders</h2>
           {realBuilders.length > 0 ? (

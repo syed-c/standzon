@@ -41,8 +41,9 @@ async function recordLeadAcceptance(leadId: string, builderEmail: string) {
   
   try {
     if (typeof globalThis !== 'undefined') {
-      if (!globalThis.exhibitBayLeadAcceptances) {
-        globalThis.exhibitBayLeadAcceptances = [];
+      const g = globalThis as any;
+      if (!g.exhibitBayLeadAcceptances) {
+        g.exhibitBayLeadAcceptances = [];
       }
       
       const acceptance = {
@@ -53,14 +54,14 @@ async function recordLeadAcceptance(leadId: string, builderEmail: string) {
       };
       
       // Remove any existing acceptance for this lead/builder combo
-      globalThis.exhibitBayLeadAcceptances = globalThis.exhibitBayLeadAcceptances.filter(
+      g.exhibitBayLeadAcceptances = g.exhibitBayLeadAcceptances.filter(
         (acc: any) => !(acc.leadId === leadId && acc.builderEmail === builderEmail)
       );
       
       // Add new acceptance
-      globalThis.exhibitBayLeadAcceptances.push(acceptance);
+      g.exhibitBayLeadAcceptances.push(acceptance);
       
-      console.log(`✅ Lead acceptance recorded. Total acceptances: ${globalThis.exhibitBayLeadAcceptances.length}`);
+      console.log(`✅ Lead acceptance recorded. Total acceptances: ${g.exhibitBayLeadAcceptances.length}`);
     }
   } catch (error) {
     console.error('❌ Error recording lead acceptance:', error);

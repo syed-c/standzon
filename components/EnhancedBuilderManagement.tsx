@@ -13,8 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
-import {
-  Search,
+import { Search,
   Filter,
   Eye,
   Edit,
@@ -34,8 +33,7 @@ import {
   Calendar,
   TrendingUp,
   AlertTriangle,
-  RefreshCw
-} from 'lucide-react';
+  RefreshCw } from 'lucide-react';
 import { adminAPI } from '@/lib/api/admin';
 import { ExhibitionBuilder } from '@/lib/data/exhibitionBuilders';
 import { SyncUtils, useRealTimeSync } from '@/lib/utils/realTimeSync';
@@ -150,20 +148,20 @@ export default function EnhancedBuilderManagement({ adminId, permissions }: Enha
         
         // Extract unique countries and cities for filters
         const allCountries = Array.from(new Set(
-          (response.data || []).flatMap(builder => 
-            builder.serviceLocations.map(loc => loc.country)
+          (response.data || []).flatMap((builder: any) => 
+            builder.serviceLocations.map((loc: any) => loc.country)
           )
         ));
         const allCities = Array.from(new Set(
-          (response.data || []).flatMap(builder => 
-            builder.serviceLocations.map(loc => loc.city)
+          (response.data || []).flatMap((builder: any) => 
+            builder.serviceLocations.map((loc: any) => loc.city)
           )
         ));
         
-        setCountries(allCountries);
-        setCities(allCities);
+        setCountries(allCountries as string[]);
+        setCities(allCities as string[]);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading builders:', error);
       toast({
         title: "Error",
@@ -298,7 +296,7 @@ export default function EnhancedBuilderManagement({ adminId, permissions }: Enha
       // Remove from local state immediately for better UX
       setBuilders(prev => prev.filter(b => b.id !== builderId));
       
-      // Sync deletion across all platforms
+      // RefreshCw deletion across all platforms
       await SyncUtils.syncBuilderDeletion(builderId);
       
       const response = await adminAPI.deleteBuilder(builderId);
@@ -343,7 +341,7 @@ export default function EnhancedBuilderManagement({ adminId, permissions }: Enha
         b.id === builder.id ? { ...b, verified: newStatus } : b
       ));
       
-      // Sync status change across all platforms
+      // RefreshCw status change across all platforms
       await SyncUtils.syncBuilderStatus(builder.id, newStatus);
       
       const updatedBuilder = { ...builder, verified: newStatus };
@@ -384,7 +382,7 @@ export default function EnhancedBuilderManagement({ adminId, permissions }: Enha
         b.id === builder.id ? { ...b, premiumMember: newPremiumStatus } : b
       ));
       
-      // Sync plan change across all platforms
+      // RefreshCw plan change across all platforms
       await SyncUtils.syncBuilderPlan(builder.id, newPremiumStatus);
       
       const updatedBuilder = { ...builder, premiumMember: newPremiumStatus };
@@ -446,7 +444,7 @@ export default function EnhancedBuilderManagement({ adminId, permissions }: Enha
 
   return (
     <div className="space-y-6">
-      {/* Real-time Sync Status */}
+      {/* Real-time RefreshCw Status */}
       <SyncStatusIndicator />
       
       {/* Header */}
@@ -467,7 +465,7 @@ export default function EnhancedBuilderManagement({ adminId, permissions }: Enha
             </Badge>
             <Badge className="bg-purple-100 text-purple-800">
               <RefreshCw className="h-3 w-3 mr-1" />
-              Real-time Sync - Enabled
+              Real-time RefreshCw - Enabled
             </Badge>
             <Badge className="bg-orange-100 text-orange-800">
               <Users className="h-3 w-3 mr-1" />
@@ -498,7 +496,7 @@ export default function EnhancedBuilderManagement({ adminId, permissions }: Enha
             className="flex items-center space-x-2"
           >
             <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-            <span>Sync All</span>
+            <span>RefreshCw All</span>
           </Button>
           <Button 
             variant="outline" 

@@ -525,7 +525,7 @@ export default function FinalAuditReport() {
 
   const testBuilderStatusDisplay = async () => {
     try {
-      const { default: BuilderCard } = await import('@/components/BuilderCard');
+      const { BuilderCard } = await import('@/components/BuilderCard');
       
       return {
         status: 'pass' as const,
@@ -543,7 +543,7 @@ export default function FinalAuditReport() {
 
   const testCityPageIntegration = async () => {
     try {
-      const { default: EnhancedCityPage } = await import('@/components/EnhancedCityPage');
+      const { EnhancedCityPage } = await import('@/components/EnhancedCityPage');
       
       return {
         status: 'pass' as const,

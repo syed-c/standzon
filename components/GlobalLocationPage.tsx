@@ -301,7 +301,7 @@ export function GlobalLocationPage({ country, city, mode = 'global' }: GlobalLoc
                         planType: builder.planType || 'free' // Add missing planType property
                       }}
                       currentPageLocation={{
-                        country: country,
+                        country: country || '',
                         city: city
                       }}
                     />

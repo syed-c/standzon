@@ -5,11 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Activity, 
-  Zap, 
-  Users, 
-  Building, 
+import { Activity,
+  Zap,
+  Users,
+  Building,
   Globe,
   TrendingUp,
   Clock,
@@ -25,8 +24,7 @@ import {
   Signal,
   Eye,
   Pause,
-  Play
-} from 'lucide-react';
+  Play } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface RealTimeEvent {
@@ -247,7 +245,7 @@ export default function RealTimeSyncDemo() {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Activity className="h-5 w-5 text-blue-600" />
-              <span>Real-Time Sync System</span>
+              <span>Real-Time RefreshCw System</span>
               <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
             </CardTitle>
             <div className="flex items-center gap-2">
@@ -280,7 +278,7 @@ export default function RealTimeSyncDemo() {
             </div>
             <div className="text-center p-3 bg-green-50 rounded-lg">
               <p className="text-2xl font-bold text-green-600">{metrics.dataSync.toFixed(1)}%</p>
-              <p className="text-xs text-green-600">Data Sync</p>
+              <p className="text-xs text-green-600">Data RefreshCw</p>
             </div>
             <div className="text-center p-3 bg-purple-50 rounded-lg">
               <p className="text-2xl font-bold text-purple-600">{metrics.apiCalls.toLocaleString()}</p>
@@ -416,7 +414,7 @@ export default function RealTimeSyncDemo() {
               <div className="space-y-2">
                 {[
                   { name: 'WebSocket Server', status: isConnected ? 'online' : 'offline' },
-                  { name: 'Database Sync', status: 'online' },
+                  { name: 'Database RefreshCw', status: 'online' },
                   { name: 'Message Queue', status: 'online' },
                   { name: 'Event Processor', status: isPaused ? 'paused' : 'online' },
                   { name: 'Notification Service', status: 'online' }
@@ -468,7 +466,7 @@ export default function RealTimeSyncDemo() {
             </div>
             <div className="p-4 bg-green-50 rounded-lg text-center">
               <Globe className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <h4 className="font-semibold text-green-800">Live Data Sync</h4>
+              <h4 className="font-semibold text-green-800">Live Data RefreshCw</h4>
               <p className="text-sm text-green-700 mt-1">Synchronized data across all platform components</p>
             </div>
             <div className="p-4 bg-purple-50 rounded-lg text-center">

@@ -602,6 +602,11 @@ class UnifiedDataManager {
     }
   }
 
+  // ✅ NEW: Get events
+  getEvents(): any[] {
+    return [...this.data.events];
+  }
+
   // ✅ NEW: Get stats
   getStats(): any {
     return {
@@ -1169,6 +1174,14 @@ export const unifiedPlatformAPI = {
       return getUnifiedDataManager().getLeads();
     } catch (error) {
       console.error('❌ Error in getLeads:', error);
+      return [];
+    }
+  },
+  getEvents: () => {
+    try {
+      return getUnifiedDataManager().getEvents();
+    } catch (error) {
+      console.error('❌ Error in getEvents:', error);
       return [];
     }
   },

@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       const allBuilders = unifiedPlatformAPI.getBuilders();
       builder = allBuilders.find(b => 
         b.contactInfo?.primaryEmail === email || 
-        b.email === email
+        (b as any).email === email
       );
     }
     
@@ -37,49 +37,51 @@ export async function GET(request: NextRequest) {
       }, { status: 404 });
     }
     
+    const b: any = builder;
+    
     // Transform to unified profile structure
     const unifiedProfile = {
-      id: builder.id,
-      companyName: builder.companyName,
-      slug: builder.slug,
-      contactName: builder.contactInfo?.contactPerson || builder.contactName,
-      email: builder.contactInfo?.primaryEmail || builder.email,
-      phone: builder.contactInfo?.phone || builder.phone,
-      website: builder.contactInfo?.website || builder.website,
-      description: builder.companyDescription || builder.description,
-      logo: builder.logo || '/images/builders/default-logo.png',
+      id: b.id,
+      companyName: b.companyName,
+      slug: b.slug,
+      contactName: b.contactInfo?.contactPerson || b.contactName,
+      email: b.contactInfo?.primaryEmail || b.email,
+      phone: b.contactInfo?.phone || b.phone,
+      website: b.contactInfo?.website || b.website,
+      description: b.companyDescription || b.description,
+      logo: b.logo || '/images/builders/default-logo.png',
       
-      establishedYear: builder.establishedYear,
-      businessType: builder.businessType || 'company',
-      teamSize: builder.teamSize,
-      yearsOfExperience: builder.yearsOfExperience || 5,
-      projectsCompleted: builder.projectsCompleted,
+      establishedYear: b.establishedYear,
+      businessType: b.businessType || 'company',
+      teamSize: b.teamSize,
+      yearsOfExperience: b.yearsOfExperience || 5,
+      projectsCompleted: b.projectsCompleted,
       
-      headquarters: builder.headquarters || {
+      headquarters: b.headquarters || {
         country: 'United States',
         city: 'Las Vegas',
         address: '123 Business Street',
         postalCode: '12345'
       },
       
-      services: builder.services || [],
-      serviceLocations: builder.serviceLocations || [],
-      specializations: builder.specializations?.map(s => s.name || s) || [],
+      services: b.services || [],
+      serviceLocations: b.serviceLocations || [],
+      specializations: b.specializations?.map((s: any) => s.name || s) || [],
       
-      verified: builder.verified || false,
-      claimed: builder.claimed || false,
-      subscriptionPlan: builder.planType || 'free',
-      subscriptionExpiry: builder.subscriptionExpiry || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      verified: b.verified || false,
+      claimed: b.claimed || false,
+      subscriptionPlan: b.planType || 'free',
+      subscriptionExpiry: b.subscriptionExpiry || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       
       profileViews: Math.floor(Math.random() * 500) + 100,
       leadCount: Math.floor(Math.random() * 10) + 2,
       responseRate: Math.floor(Math.random() * 30) + 70,
-      rating: builder.rating || 4.0,
-      reviewCount: builder.reviewCount || 0,
+      rating: b.rating || 4.0,
+      reviewCount: b.reviewCount || 0,
       
-      createdAt: builder.createdAt || new Date().toISOString(),
-      lastUpdated: builder.lastUpdated || new Date().toISOString(),
-      source: builder.source || 'registration'
+      createdAt: b.createdAt || new Date().toISOString(),
+      lastUpdated: b.lastUpdated || new Date().toISOString(),
+      source: b.source || 'registration'
     };
     
     console.log('✅ Unified profile retrieved:', unifiedProfile.companyName);
@@ -157,7 +159,7 @@ export async function PUT(request: NextRequest) {
     transformedUpdates.lastUpdated = new Date().toISOString();
     
     // Update using unified platform API
-    const result = unifiedPlatformAPI.updateBuilder(builderId, transformedUpdates, 'unified_dashboard');
+    const result = unifiedPlatformAPI.updateBuilder(builderId, transformedUpdates, 'website');
     
     if (result.success) {
       console.log('✅ Unified profile updated successfully');
@@ -260,7 +262,7 @@ export async function POST(request: NextRequest) {
     };
     
     // Add to unified platform
-    const result = unifiedPlatformAPI.addBuilder(unifiedBuilderData, 'unified_registration');
+    const result: any = await unifiedPlatformAPI.addBuilder(unifiedBuilderData as any, 'website');
     
     if (result.success) {
       console.log('✅ New unified profile created successfully');

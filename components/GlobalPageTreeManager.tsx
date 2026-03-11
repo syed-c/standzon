@@ -11,11 +11,31 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { GLOBAL_EXHIBITION_DATA } from '@/lib/data/globalCities';
-import {
-  Globe, MapPin, Building2, TreePine, ChevronRight, ChevronDown, Edit, Trash2, Eye,
-  Plus, Save, RefreshCw, Download, Upload, Zap, Brain, Target, CheckCircle,
-  AlertCircle, Star, Award, BarChart3, TrendingUp, Users, Calendar
-} from 'lucide-react';
+import { Globe,
+  MapPin,
+  Building2,
+  TreePine,
+  ChevronRight,
+  ChevronDown,
+  Edit,
+  Trash2,
+  Eye,
+  Plus,
+  Save,
+  RefreshCw,
+  Download,
+  Upload,
+  Zap,
+  Brain,
+  Target,
+  CheckCircle,
+  AlertCircle,
+  Star,
+  Award,
+  BarChart3,
+  TrendingUp,
+  Users,
+  Calendar } from 'lucide-react';
 
 interface TreeNode {
   id: string;
@@ -612,7 +632,7 @@ export function GlobalPageTreeManager() {
             
             <Button className="bg-gradient-to-r from-orange-500 to-orange-600 h-auto p-4 flex flex-col items-center space-y-2">
               <RefreshCw className="h-6 w-6" />
-              <span className="font-medium">Sync All</span>
+              <span className="font-medium">RefreshCw All</span>
               <span className="text-xs opacity-75">Real-time synchronization</span>
             </Button>
           </div>

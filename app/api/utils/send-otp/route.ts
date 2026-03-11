@@ -252,18 +252,18 @@ function maskContact(contact: string, method: 'phone' | 'email'): string {
 
 // Clean up expired OTPs from memory
 function cleanupExpiredOTPs() {
-  if (typeof global !== 'undefined' && global.otpStorage) {
+  if (typeof globalThis !== 'undefined' && (globalThis as any).otpStorage) {
     const now = new Date().toISOString();
     const keysToDelete: string[] = [];
     
-    global.otpStorage.forEach((otpData, key) => {
+    (globalThis as any).otpStorage.forEach((otpData: any, key: string) => {
       if (otpData.expiresAt < now) {
         keysToDelete.push(key);
       }
     });
     
     keysToDelete.forEach(key => {
-      global.otpStorage?.delete(key);
+      (globalThis as any).otpStorage?.delete(key);
       console.log(`🧹 Cleaned up expired OTP: ${key}`);
     });
   }
@@ -274,9 +274,9 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const action = searchParams.get('action');
   
-  if (action === 'status' && typeof global !== 'undefined' && global.otpStorage) {
+  if (action === 'status' && typeof globalThis !== 'undefined' && (globalThis as any).otpStorage) {
     const activeOTPs: any[] = [];
-    global.otpStorage.forEach((data, key) => {
+    (globalThis as any).otpStorage.forEach((data: any, key: string) => {
       activeOTPs.push({
         key,
         method: data.method,

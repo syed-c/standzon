@@ -2,7 +2,7 @@
 
 import { ExhibitionBuilder } from './exhibitionBuilders';
 
-export type VendorType = 'booth-builder' | 'exhibition-builder' | 'venue-provider';
+export type VendorType = 'booth-builder' | 'exhibition-builder' | 'venue-provider' | 'event-planner' | 'celebration-planner';
 
 export interface UnifiedVendor {
   id: string;
@@ -223,6 +223,7 @@ export class VendorManagementService {
       totalVendors: allVendors.length,
       vendorsByType: {
         'booth-builder': allVendors.filter(v => v.vendorType === 'booth-builder').length,
+        'exhibition-builder': allVendors.filter(v => v.vendorType === 'exhibition-builder').length,
         'event-planner': allVendors.filter(v => v.vendorType === 'event-planner').length,
         'celebration-planner': allVendors.filter(v => v.vendorType === 'celebration-planner').length,
         'venue-provider': allVendors.filter(v => v.vendorType === 'venue-provider').length

@@ -50,7 +50,7 @@ export default function BlogPage() {
         <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-10">Browse Topics</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
           {categories.map((category) => {
-            const Icon = topicIcons[category.name] || FiBookOpen;
+            const Icon = topicIcons[category.name as keyof typeof topicIcons] || FiBookOpen;
             return (
               <div key={category.slug} className="group cursor-pointer">
                 <div className="flex items-start gap-3 mb-2">

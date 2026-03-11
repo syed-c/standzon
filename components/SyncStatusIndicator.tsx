@@ -4,15 +4,13 @@ import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRealTimeSync } from "@/lib/utils/realTimeSync";
-import {
-  Wifi,
+import { Wifi,
   WifiOff,
   RefreshCw,
   CheckCircle,
   Clock,
   Database,
-  Zap,
-} from "lucide-react";
+  Zap } from 'lucide-react';
 
 export default function SyncStatusIndicator() {
   const { syncStatus } = useRealTimeSync();
@@ -49,7 +47,7 @@ export default function SyncStatusIndicator() {
                     : "bg-red-100 text-red-800"
                 }
               >
-                {isConnected ? "Live Sync Active" : "Disconnected"}
+                {isConnected ? "Live RefreshCw Active" : "Disconnected"}
               </Badge>
             </div>
 

@@ -13,16 +13,15 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Building, 
-  MapPin, 
-  Target, 
-  CreditCard, 
-  Edit, 
-  Plus, 
-  Trash2, 
-  Check, 
-  X, 
+import { Building,
+  MapPin,
+  Target,
+  CreditCard,
+  Edit,
+  Plus,
+  Trash2,
+  Check,
+  X,
   Eye,
   Star,
   Users,
@@ -36,8 +35,7 @@ import {
   MapPin as Location,
   Settings,
   Camera,
-  LogOut
-} from 'lucide-react';
+  LogOut } from 'lucide-react';
 import { GLOBAL_EXHIBITION_DATA } from '@/lib/data/globalCities';
 
 interface BuilderProfile {
@@ -1096,7 +1094,7 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
               )}
               <div className="flex items-center space-x-4 mt-4">
                 <Badge variant="secondary" className="bg-white/20 text-white">
-                  {profile.verified ? 'Verified' : 'Unverified'}
+                  {profile.verified ? 'Verified' : 'ShieldX'}
                 </Badge>
                 <Badge variant="secondary" className="bg-white/20 text-white">
                   {profile.subscriptionPlan ? profile.subscriptionPlan.charAt(0).toUpperCase() + profile.subscriptionPlan.slice(1) : 'Free'}

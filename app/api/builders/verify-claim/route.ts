@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Admin override claim function
-async function handleAdminOverrideClaim(builderId: string, contact: string, method: string, adminId: string) {
+async function handleAdminOverrideClaim(builderId: string, contact: string, method: 'email' | 'phone', adminId: string) {
   console.log(`👨‍💼 Processing admin override claim for builder ${builderId}`);
   
   const claimResult = await completeBuilderClaim(builderId, contact, method, {
@@ -94,7 +94,7 @@ async function handleAdminOverrideClaim(builderId: string, contact: string, meth
 }
 
 // Complete builder claim process with full integration
-async function completeBuilderClaim(builderId: string, contact: string, method: string, adminData?: any) {
+async function completeBuilderClaim(builderId: string, contact: string, method: 'email' | 'phone', adminData?: any) {
   try {
     // Import required APIs
     const { builderAPI } = await import('@/lib/database/persistenceAPI');
@@ -180,9 +180,10 @@ async function completeBuilderClaim(builderId: string, contact: string, method: 
 // Initialize builder dashboard with default settings
 async function initializeBuilderDashboard(builderId: string) {
   try {
-    if (typeof global !== 'undefined') {
-      if (!global.builderDashboards) {
-        global.builderDashboards = new Map();
+    if (typeof globalThis !== 'undefined') {
+      const g = globalThis as any;
+      if (!g.builderDashboards) {
+        g.builderDashboards = new Map();
       }
       
       const dashboardData = {
@@ -204,7 +205,7 @@ async function initializeBuilderDashboard(builderId: string) {
         createdAt: new Date().toISOString()
       };
       
-      global.builderDashboards.set(builderId, dashboardData);
+      g.builderDashboards.set(builderId, dashboardData);
       console.log(`📊 Dashboard initialized for builder ${builderId}`);
     }
   } catch (error) {
@@ -248,12 +249,13 @@ async function sendClaimWelcomeNotification(builderId: string, contact: string, 
 // Update global claim registry for admin tracking
 async function updateGlobalClaimRegistry(builderId: string, claimInfo: any) {
   try {
-    if (typeof global !== 'undefined') {
-      if (!global.claimRegistry) {
-        global.claimRegistry = new Map();
+    if (typeof globalThis !== 'undefined') {
+      const g = globalThis as any;
+      if (!g.claimRegistry) {
+        g.claimRegistry = new Map();
       }
       
-      global.claimRegistry.set(builderId, claimInfo);
+      g.claimRegistry.set(builderId, claimInfo);
       console.log(`📋 Claim registry updated for builder ${builderId}`);
     }
   } catch (error) {
@@ -264,9 +266,10 @@ async function updateGlobalClaimRegistry(builderId: string, claimInfo: any) {
 // Log admin actions for audit trail
 async function logAdminAction(adminId: string, action: string, details: any) {
   try {
-    if (typeof global !== 'undefined') {
-      if (!global.adminAuditLog) {
-        global.adminAuditLog = [];
+    if (typeof globalThis !== 'undefined') {
+      const g = globalThis as any;
+      if (!g.adminAuditLog) {
+        g.adminAuditLog = [];
       }
       
       const logEntry = {
@@ -279,7 +282,7 @@ async function logAdminAction(adminId: string, action: string, details: any) {
         userAgent: 'admin-interface'
       };
       
-      global.adminAuditLog.push(logEntry);
+      g.adminAuditLog.push(logEntry);
       console.log(`📝 Admin action logged: ${action} by ${adminId}`);
     }
   } catch (error) {
@@ -313,10 +316,11 @@ export async function GET(request: NextRequest) {
   const action = searchParams.get('action');
   const builderId = searchParams.get('builderId');
   
-  if (action === 'logs' && typeof global !== 'undefined' && global.verificationLogs) {
+  const g = globalThis as any;
+  if (action === 'logs' && typeof globalThis !== 'undefined' && g.verificationLogs) {
     const logs = builderId 
-      ? global.verificationLogs.filter((log: any) => log.builderId === builderId)
-      : global.verificationLogs;
+      ? g.verificationLogs.filter((log: any) => log.builderId === builderId)
+      : g.verificationLogs;
     
     return NextResponse.json({
       success: true,
@@ -325,12 +329,12 @@ export async function GET(request: NextRequest) {
     });
   }
   
-  if (action === 'status' && builderId && typeof global !== 'undefined' && global.otpStorage) {
+  if (action === 'status' && builderId && typeof globalThis !== 'undefined' && g.otpStorage) {
     const phoneKey = `${builderId}-phone`;
     const emailKey = `${builderId}-email`;
     
-    const phoneOtp = global.otpStorage.get(phoneKey);
-    const emailOtp = global.otpStorage.get(emailKey);
+    const phoneOtp: any = g.otpStorage.get(phoneKey);
+    const emailOtp: any = g.otpStorage.get(emailKey);
     
     return NextResponse.json({
       success: true,

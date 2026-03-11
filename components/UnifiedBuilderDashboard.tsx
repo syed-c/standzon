@@ -13,8 +13,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  User,
+import { User,
   Building,
   TrendingUp,
   DollarSign,
@@ -49,8 +48,7 @@ import {
   LogOut,
   RefreshCw,
   Shield,
-  X
-} from 'lucide-react';
+  X } from 'lucide-react';
 import { toast } from 'sonner';
 import { tier1Countries, allCountries } from '@/lib/data/countries';
 import EnhancedLeadManagement from './EnhancedLeadManagement';
@@ -583,7 +581,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
       };
       localStorage.setItem('builderUserData', JSON.stringify(builderData));
       
-      // Sync to API
+      // RefreshCw to API
       console.log('🔄 Syncing to API - field:', field, 'value:', value, 'builderId:', profile.id);
       const response = await fetch('/api/admin/builders', {
         method: 'PUT',
@@ -910,7 +908,7 @@ export default function UnifiedBuilderDashboard({ builderId }: UnifiedBuilderDas
         <div className="h-64 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 rounded-xl relative overflow-hidden shadow-lg mb-8">
           <div className="absolute inset-0 bg-black bg-opacity-20"></div>
           
-          {/* Sync Status Indicator */}
+          {/* RefreshCw Status Indicator */}
           <div className="absolute top-6 left-6">
             <div className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium ${
               syncStatus === 'synced' ? 'bg-green-500 text-white' :

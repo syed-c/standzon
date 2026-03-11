@@ -69,8 +69,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
-import {
-  Users,
+import { Users,
   Building2,
   TrendingUp,
   DollarSign,
@@ -135,17 +134,16 @@ import {
   GitCommit,
   GitMerge,
   GitPullRequest,
-  GitDiff,
+  GitCompare,
   Code,
   Terminal,
   Command,
   PlayCircle,
-  Stop,
+  StopCircle,
   SkipBack,
   SkipForward,
   RotateCw,
-  RefreshCw as RefreshCwIcon,
-} from "lucide-react";
+  RefreshCw as RefreshCwIcon } from 'lucide-react';
 
 interface Deployment {
   id: string;
@@ -464,7 +462,7 @@ const DeploymentsPanel = () => {
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`}
                 >
                   {[
                     { name: 'Success', value: deploymentStats.succeeded, color: '#10B981' },

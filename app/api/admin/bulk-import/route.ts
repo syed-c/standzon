@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     // Read existing builders
     const buildersPath = path.join(process.cwd(), 'data', 'builders.json');
-    let existingData = { _metadata: {}, data: [] };
+    let existingData: any = { _metadata: {}, data: [] };
     
     try {
       const fileContent = await fs.readFile(buildersPath, 'utf8');
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     console.log('✅ Bulk import completed successfully!');
 
     // Generate summary statistics
-    const countryStats = {};
+    const countryStats: Record<string, any> = {};
     newBuilders.forEach(builder => {
       const country = builder.headquarters.country;
       if (!countryStats[country]) {
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Convert Sets to arrays for JSON response
-    const countryStatsForResponse = {};
+    const countryStatsForResponse: Record<string, any> = {};
     Object.keys(countryStats).forEach(country => {
       countryStatsForResponse[country] = {
         count: countryStats[country].count,
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Bulk import failed:', error);
     return NextResponse.json({ 
       success: false, 
@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
   try {
     // Read current builders data
     const buildersPath = path.join(process.cwd(), 'data', 'builders.json');
-    let existingData = { data: [] };
+    let existingData: any = { data: [] };
     
     try {
       const fileContent = await fs.readFile(buildersPath, 'utf8');
@@ -145,10 +145,10 @@ export async function GET(request: NextRequest) {
       console.log('📝 No existing builders file found');
     }
 
-    const builders = existingData.data || [];
+    const builders: any[] = existingData.data || [];
     
     // Count by country
-    const countryStats = {};
+    const countryStats: Record<string, any> = {};
     builders.forEach(builder => {
       const country = builder.headquarters?.country || 'Unknown';
       if (!countryStats[country]) {
@@ -164,7 +164,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Convert Sets to arrays
-    const countryStatsForResponse = {};
+    const countryStatsForResponse: Record<string, any> = {};
     Object.keys(countryStats).forEach(country => {
       countryStatsForResponse[country] = {
         total: countryStats[country].count,
@@ -185,7 +185,7 @@ export async function GET(request: NextRequest) {
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to get bulk import status:', error);
     return NextResponse.json({ 
       success: false, 

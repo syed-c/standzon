@@ -86,6 +86,15 @@ export interface CostBreakdown {
   }>;
 }
 
+export { industries } from "./industries";
+
+export const tradeShowStats = {
+  totalExpectedVisitors: 15500000, // Mock total for statistics
+  totalExhibitors: 450000,
+  countriesRepresented: 145,
+  majorEvents: 85
+};
+
 // Static data removed (moved to Supabase)
 export const tradeShows: TradeShow[] = [];
 

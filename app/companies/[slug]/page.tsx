@@ -31,7 +31,7 @@ const companies: { [key: string]: any } = {
     services: [
       "3D Design & Visualization",
       "Stand Construction & Installation",
-      "Audio Visual Integration",
+      "Mic Visual Integration",
       "Project Management",
       "Logistics & Storage",
       "On-site Support"

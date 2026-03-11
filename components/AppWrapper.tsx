@@ -6,5 +6,5 @@ import ServerGlobalLayoutProvider from './ServerGlobalLayoutProvider';
 
 export default function AppWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  return <ServerGlobalLayoutProvider pathname={pathname}>{children}</ServerGlobalLayoutProvider>;
+  return <ServerGlobalLayoutProvider pathname={pathname || '/'}>{children}</ServerGlobalLayoutProvider>;
 }
