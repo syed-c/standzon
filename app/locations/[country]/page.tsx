@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { normalizeCountrySlug } from '@/lib/utils/slugUtils';
 
-export default function CountryPage({ params }: { params: { country: string } }) {
+export default function CountryPage({ params }: { params: Promise<{ country: string }> }) {
   const router = useRouter();
-  const country = params.country;
+  const { country } = use(params);
   
   useEffect(() => {
     // Redirect to the exhibition-stands route with the same country parameter

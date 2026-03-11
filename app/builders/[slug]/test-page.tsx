@@ -3,9 +3,9 @@ import { notFound } from "next/navigation";
 export default async function TestDynamicPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const { slug } = await params;
   console.log("Test dynamic page with slug:", slug);
   
   // Simple test - always show something
