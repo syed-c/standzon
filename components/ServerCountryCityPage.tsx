@@ -319,7 +319,7 @@ export default async function ServerCountryCityPage({
         !['jordan', 'lebanon', 'israel'].includes(country.toLowerCase()) && (
         <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-black text-[#0f172a] mb-12 uppercase tracking-tighter">
+            <h2 className="text-3xl font-black !text-[#0f172a] mb-12 uppercase tracking-tighter">
               {country} Strategic Hubs
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
@@ -354,10 +354,10 @@ export default async function ServerCountryCityPage({
                         <p className="text-sm text-slate-200">{subtitle}</p>
                       </div>
                     </div>
-                    <ul className="space-y-3 text-sm font-medium text-slate-600">
+                    <ul className="space-y-3 text-sm font-medium !text-slate-600">
                       {features.slice(0, 3).map((feat: string, fi: number) => (
                         <li key={fi} className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-[#1e3886] shrink-0" />
+                          <CheckCircle className="w-4 h-4 !text-[#1e3886] shrink-0" />
                           {feat}
                         </li>
                       ))}
@@ -376,20 +376,20 @@ export default async function ServerCountryCityPage({
           <div className="grid lg:grid-cols-3 gap-12">
             {/* Main article */}
             <div className="lg:col-span-2">
-              <h2 className="text-2xl md:text-3xl font-black text-[#0f172a] mb-8 uppercase tracking-tighter">
+              <h2 className="text-2xl md:text-3xl font-black !text-[#0f172a] mb-8 uppercase tracking-tighter">
                 Professional Exhibition Insights
               </h2>
               <article className="bg-white rounded-xl p-8 border border-slate-200">
-                <h3 className="text-xl font-black text-[#0f172a] mb-4">
+                <h3 className="text-xl font-black !text-[#0f172a] mb-4">
                   {servicesContent.heading}
                 </h3>
                 <div
-                  className="prose max-w-none text-slate-600 prose-p:text-slate-600 prose-p:leading-relaxed prose-p:mb-4 prose-headings:text-[#0f172a] prose-li:text-slate-600 prose-strong:text-[#0f172a] text-sm"
+                  className="prose max-w-none !text-slate-600 prose-p:!text-slate-600 prose-p:leading-relaxed prose-p:mb-4 prose-headings:!text-[#0f172a] prose-li:!text-slate-600 prose-strong:!text-[#0f172a] text-sm"
                   dangerouslySetInnerHTML={{ __html: servicesContent.paragraph }}
                 />
                 <a
                   href="#builders-grid"
-                  className="text-[#1e3886] font-black inline-flex items-center gap-2 hover:gap-4 transition-all text-sm mt-6"
+                  className="!text-[#1e3886] font-black inline-flex items-center gap-2 hover:gap-4 transition-all text-sm mt-6"
                 >
                   Browse All Builders <ArrowRight className="w-4 h-4" />
                 </a>
@@ -398,7 +398,7 @@ export default async function ServerCountryCityPage({
 
             {/* Sidebar */}
             <div>
-              <h2 className="text-lg font-black text-[#0f172a] mb-6 uppercase tracking-tighter">
+              <h2 className="text-lg font-black !text-[#0f172a] mb-6 uppercase tracking-tighter">
                 Directory Stats
               </h2>
               <div className="space-y-3 mb-6">
@@ -408,22 +408,22 @@ export default async function ServerCountryCityPage({
                   { label: "Avg. Trust Score", val: `${locationStats.averageRating}/5`, highlight: true },
                 ].map((s, i) => (
                   <div key={i} className="flex justify-between items-center p-4 bg-white border border-slate-200 rounded-lg">
-                    <span className="text-sm font-semibold text-slate-500">{s.label}</span>
-                    <span className={`text-lg font-black ${s.highlight ? "text-emerald-600" : "text-[#0f172a]"}`}>
+                    <span className="text-sm font-semibold !text-slate-500">{s.label}</span>
+                    <span className={`text-lg font-black ${s.highlight ? "!text-emerald-600" : "!text-[#0f172a]"}`}>
                       {s.val}
                     </span>
                   </div>
                 ))}
               </div>
               <div className="p-6 bg-[#1e3886]/10 rounded-xl border border-[#1e3886]/20">
-                <h4 className="font-black text-[#1e3886] mb-2 text-sm">Need Help Choosing?</h4>
-                <p className="text-xs text-slate-600 mb-4 leading-relaxed">
+                <h4 className="font-black !text-[#1e3886] mb-2 text-sm">Need Help Choosing?</h4>
+                <p className="text-xs !text-slate-600 mb-4 leading-relaxed">
                   Our consultants can provide a shortlist of builders matching your specific technical requirements.
                 </p>
                 <PublicQuoteRequest
                   location={city || country}
                   buttonText="Get Expert Consultation"
-                  className="text-xs font-black uppercase text-[#1e3886] p-0 h-auto bg-transparent border-0 hover:bg-transparent shadow-none"
+                  className="text-xs font-black uppercase !text-[#1e3886] p-0 h-auto bg-transparent border-0 hover:bg-transparent shadow-none"
                   size="sm"
                 />
               </div>
