@@ -2,9 +2,9 @@ import { redirect } from 'next/navigation';
 import { db } from '@/lib/supabase/database';
 
 interface ExhibitionPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // Generate static params for all trade shows from Supabase for proper redirects

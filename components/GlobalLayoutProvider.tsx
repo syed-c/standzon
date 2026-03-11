@@ -29,13 +29,13 @@ export default function GlobalLayoutProvider({ children }: GlobalLayoutProviderP
     <div className="min-h-screen flex flex-col">
       <Navigation />
       {showBreadcrumbs && (
-        <div className="sticky top-16 z-10 bg-white">
-          <div className="responsive-container">
-            <BreadcrumbNavigation items={breadcrumbs} />
+        <div className="fixed top-16 left-0 right-0 z-[990] bg-[#FFFFFF] border-b border-gray-200" style={{ height: '48px' }}>
+          <div className="responsive-container h-full flex items-center">
+            <BreadcrumbNavigation items={breadcrumbs} className="!bg-transparent !border-b-0 !py-0 !shadow-none" />
           </div>
         </div>
       )}
-      <main className="flex-grow">
+      <main className="flex-grow" style={{ marginTop: showBreadcrumbs ? '112px' : '64px' }}>
         <div className="responsive-container">
           {children}
         </div>

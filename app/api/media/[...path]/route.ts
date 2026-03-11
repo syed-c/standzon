@@ -8,14 +8,14 @@ const createPlaceholderImage = () => {
   return Buffer.from(placeholder, 'base64');
 };
 
-export async function GET(request: Request, { params }: { params: { path: string[] } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ path: string[] }> }) {
   try {
+    const { path } = await params;
     console.log('=== MEDIA PROXY ROUTE CALLED ===');
     console.log('Request URL:', request.url);
-    console.log('Full params:', JSON.stringify(params));
+    console.log('Full params:', JSON.stringify(path));
     console.log('Environment:', process.env.NODE_ENV);
     
-    const { path } = params;
     
     console.log('Proxy route called with path:', JSON.stringify(path));
     

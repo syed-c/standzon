@@ -6,9 +6,9 @@ import { db } from '@/lib/supabase/database';
 import { mapTradeShowDBToExhibition } from '@/lib/utils/tradeShowMapping';
 
 interface TradeShowPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // ISR: Revalidate every hour

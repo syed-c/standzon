@@ -617,8 +617,8 @@ export default async function ServerEnhancedLocationPage({
                   })) : defaultCards;
 
                   const icons = [
-                    <Shield key="s" className="w-5 h-5" />, 
-                    <CheckCircle key="c" className="w-5 h-5" />, 
+                    <Shield key="s" className="w-5 h-5" />,
+                    <CheckCircle key="c" className="w-5 h-5" />,
                     <Globe key="g" className="w-5 h-5" />
                   ];
                   const colorClasses = [
@@ -647,7 +647,7 @@ export default async function ServerEnhancedLocationPage({
               <div className="aspect-square bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 relative">
                 {(() => {
                   const allValidImages: string[] = [];
-                  
+
                   // 1. Try to get images from resolved CMS gallery (like the main gallery does)
                   let cmsGallery = resolvedCmsBlock?.galleryImages || resolvedCmsBlock?.gallery_images;
                   if (!cmsGallery && resolvedCmsBlock?.countryPages) {
@@ -680,10 +680,10 @@ export default async function ServerEnhancedLocationPage({
                       }
                     });
                   }
-                  
+
                   // Prefer the 2nd overall image to prevent overlap with the gallery's 1st image
                   let imgSrc = allValidImages.length > 1 ? allValidImages[1] : allValidImages[0];
-                  
+
                   if (imgSrc) {
                     return <Image src={convertToProxyUrl(imgSrc)} alt="Exhibition stand" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover opacity-80" />;
                   }
@@ -893,7 +893,7 @@ export default async function ServerEnhancedLocationPage({
       )}
 
       {/* ── FINAL CTA (bold red) ── */}
-      <section className="py-20 bg-[#c0123d] text-white relative overflow-hidden">
+      {/* <section className="py-20 bg-[#c0123d] text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 to-transparent" />
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <h2 className="text-3xl md:text-5xl font-black mb-6 uppercase tracking-tighter leading-tight">
@@ -933,7 +933,7 @@ export default async function ServerEnhancedLocationPage({
             />
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }

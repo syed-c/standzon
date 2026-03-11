@@ -223,9 +223,10 @@ export default function Navigation() {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 w-full z-[1000] transition-all duration-300 ${isScrolled
-      ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-md border-b border-gray-200/30 dark:border-slate-700/30'
-      : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-sm border-b border-gray-100/20 dark:border-slate-700/20'
-      }`}>
+      ? 'bg-[#FFFFFF] shadow-md border-b border-gray-200'
+      : 'bg-[#FFFFFF] shadow-sm border-b border-gray-100'
+      }`}
+    >
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16 w-full min-w-0">
           {/* Logo - Left */}
@@ -256,7 +257,7 @@ export default function Navigation() {
                       className="relative"
                     >
                       <button
-                        className="flex items-center space-x-1 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 whitespace-nowrap flex-shrink-0"
+                        className="flex items-center space-x-1 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:text-pink-600 hover:bg-gray-100/50 whitespace-nowrap flex-shrink-0"
                         onClick={() => handleDropdownClick(item.label)}
                       >
                         <span className="truncate max-w-[120px]">{item.label}</span>
@@ -265,7 +266,7 @@ export default function Navigation() {
                       </button>
                       {activeDropdown === item.label && (
                         <div
-                          className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-56 bg-white dark:bg-slate-800 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
+                          className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
                           onMouseEnter={handleDropdownMouseEnter}
                           onMouseLeave={handleDropdownMouseLeave}
                         >
@@ -309,19 +310,19 @@ export default function Navigation() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="!bg-transparent !text-white !border-white text-xs px-2 py-1 rounded-lg hover:!bg-white/10 hover:!text-white transition-all duration-300"
+                    className="bg-transparent text-[#0f172a] border-[#0f172a] text-xs px-2 py-1 rounded-lg hover:bg-gray-50 transition-all duration-300"
                   >
                     <SafeIcon IconComponent={FiUser} className="w-3 h-3 mr-1 flex-shrink-0" />
                     <span className="hidden xl:inline">Builder Login</span>
                     <span className="xl:hidden">Login</span>
                   </Button>
                 </Link>
-                <span className="text-white/40 hidden xl:inline mx-1">|</span>
+                <span className="text-gray-300 hidden xl:inline mx-1">|</span>
                 <Link href="/builder/register">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="!bg-transparent !text-white !border-white text-xs px-2 py-1 rounded-lg hover:!bg-white/10 hover:!text-white transition-all duration-300"
+                    className="bg-transparent text-[#0f172a] border-[#0f172a] text-xs px-2 py-1 rounded-lg hover:bg-gray-50 transition-all duration-300"
                   >
                     <span className="hidden xl:inline">Join as Builder</span>
                     <span className="xl:hidden">Join</span>
@@ -335,7 +336,7 @@ export default function Navigation() {
                 onMouseLeave={handleMouseLeave}
               >
                 <button
-                  className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-200 text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50"
+                  className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-200 text-gray-700 hover:text-pink-600 hover:bg-gray-100/50"
                   onClick={() => handleDropdownClick('Account')}
                 >
                   <SafeIcon IconComponent={FiUser} className="w-3 h-3 flex-shrink-0" />
@@ -346,7 +347,7 @@ export default function Navigation() {
                 </button>
                 {activeDropdown === 'Account' && (
                   <div
-                    className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-800 backdrop-blur-xl rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
+                    className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
                     onMouseEnter={handleDropdownMouseEnter}
                     onMouseLeave={handleDropdownMouseLeave}
                   >
@@ -415,9 +416,9 @@ export default function Navigation() {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="lg:hidden fixed inset-0 w-full h-screen bg-white dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl z-[1001] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden">
+        <div className="lg:hidden fixed inset-0 w-full h-screen bg-white shadow-2xl z-[1001] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden" style={{ top: 'var(--breadcrumb-height, 0px)' }}>
           {/* Header inside menu */}
-          <div className="h-16 flex-shrink-0 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-700 w-full flex items-center justify-between px-4">
+          <div className="h-16 flex-shrink-0 bg-white border-b border-gray-100 w-full flex items-center justify-between px-4">
             <div className="flex items-center">
               <Image
                 src={logoImg}
@@ -429,7 +430,7 @@ export default function Navigation() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800"
+              className="p-2 rounded-lg text-gray-700 hover:bg-gray-100"
               aria-label="Close menu"
             >
               <SafeIcon IconComponent={FiX} className="w-6 h-6" />

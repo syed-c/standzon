@@ -19,7 +19,7 @@ export function BreadcrumbNavigation({ items, className = '' }: BreadcrumbNaviga
 
   return (
     <nav 
-      className={`bg-white border-b border-gray-200 py-3 shadow-sm ${className}`}
+      className={`bg-[#FFFFFF] border-b border-gray-200 py-3 shadow-sm ${className}`}
       aria-label="Breadcrumb"
       data-macaly="breadcrumb-navigation"
     >

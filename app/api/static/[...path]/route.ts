@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path.join('/');
+export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path: pathArray } = await params;
+  const path = pathArray.join('/');
   
   // Handle requests for missing main-app.js
   if (path.includes('main-app.js')) {
@@ -23,6 +24,6 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
   return new NextResponse('Not found', { status: 404 });
 }
 
-export async function POST(request: NextRequest, { params }: { params: { path: string[] } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   return new NextResponse('Method not allowed', { status: 405 });
 }

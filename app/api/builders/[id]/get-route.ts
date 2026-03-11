@@ -3,12 +3,13 @@ import { supabaseAdmin, supabase as anonSupabase } from '@/lib/supabase/client';
 
 const supabase = supabaseAdmin || anonSupabase;
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const { data, error } = await supabase
       .from('builder_profiles')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) {

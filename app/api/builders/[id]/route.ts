@@ -3,12 +3,13 @@ import { supabaseAdmin, supabase as anonSupabase } from '@/lib/supabase/client';
 
 const supabase = supabaseAdmin || anonSupabase;
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const { data, error } = await supabase
       .from('builder_profiles')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (error) {
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       const { data: data2, error: error2 } = await supabase
         .from('builders')
         .select('*')
-        .eq('id', params.id)
+        .eq('id', id)
         .single();
       
       if (error2) {
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       const { data: data2, error: error2 } = await supabase
         .from('builders')
         .select('*')
-        .eq('id', params.id)
+        .eq('id', id)
         .single();
       
       if (error2 || !data2) {
@@ -47,8 +48,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id: paramId } = await params;
     const body = await request.json();
     
     // Remove fields that shouldn't be updated directly
@@ -60,7 +62,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const { data, error } = await supabase
       .from('builder_profiles')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', paramId)
       .select()
       .single();
 
@@ -69,7 +71,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       const { data: data2, error: error2 } = await supabase
         .from('builders')
         .update(updateData)
-        .eq('id', params.id)
+        .eq('id', paramId)
         .select()
         .single();
       
@@ -85,7 +87,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       const { data: data2, error: error2 } = await supabase
         .from('builders')
         .update(updateData)
-        .eq('id', params.id)
+        .eq('id', paramId)
         .select()
         .single();
       
@@ -102,20 +104,21 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id: paramId } = await params;
     // First try to delete from 'builder_profiles' table
     const { error } = await supabase
       .from('builder_profiles')
       .delete()
-      .eq('id', params.id);
+      .eq('id', paramId);
 
     if (error) {
       // Try the 'builders' table as fallback
       const { error: error2 } = await supabase
         .from('builders')
         .delete()
-        .eq('id', params.id);
+        .eq('id', paramId);
       
       if (error2) {
         return NextResponse.json({ error: error.message || error2.message }, { status: 500 });

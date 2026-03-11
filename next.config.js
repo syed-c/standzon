@@ -1,11 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   // ✅ PERFORMANCE: Enable image optimization
   images: {
     unoptimized: false,
@@ -69,6 +63,7 @@ const nextConfig = {
     workerThreads: false,
     cpus: 2, // Limit CPU usage to prevent resource contention
   },
+  turbopack: {},
   devIndicators: false,
   // ✅ PERFORMANCE: Enable compression and optimization
   compress: true,

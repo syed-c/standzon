@@ -4,7 +4,8 @@ import BuilderProfileClient from "./BuilderProfileClient";
 import { getServerSupabase } from '@/lib/supabase';
 import type { Metadata } from 'next';
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
   return {
     robots: {
       index: false,
@@ -22,22 +23,23 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function BuilderProfilePage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
   try {
     console.log("🚀 BuilderProfilePage: Starting");
 
-    const { slug } = params;
+    const { slug } = await params;
     console.log("✅ Params resolved, slug:", slug);
     console.log("✅ Slug length:", slug.length);
 
+    let builder: any = null;
     console.log("🔍 Server: Looking for builder with slug:", slug);
 
     // Try unified platform in-memory first (safest approach)
     try {
       const unifiedBuilders = unifiedPlatformAPI.getBuilders();
       console.log("📊 Unified platform builders count:", unifiedBuilders.length);
-      let builder = unifiedBuilders.find((b) => b.slug === slug);
+      builder = unifiedBuilders.find((b: any) => b.slug === slug);
       console.log("🔍 Builder found in unified platform:", !!builder);
 
       if (builder) {
@@ -59,7 +61,7 @@ export default async function BuilderProfilePage({
         console.log("🔍 Server: Querying Supabase for builder with slug:", slug);
 
         // Use simple query first to avoid complex join issues
-        const { data: supabaseBuilder, error } = await Promise.race([
+        const { data: supabaseBuilder, error } = (await Promise.race([
           sb.from('builder_profiles')
             .select('*')
             .eq('slug', slug)
@@ -67,7 +69,7 @@ export default async function BuilderProfilePage({
           new Promise((_, reject) => 
             setTimeout(() => reject(new Error('Database timeout')), 5000)
           )
-        ]).catch(() => ({ data: null, error: new Error('Query failed') }));
+        ]).catch(() => ({ data: null, error: new Error('Query failed') }))) as any;
 
         console.log("🔍 Supabase query result:", { data: supabaseBuilder, error });
 
@@ -77,7 +79,7 @@ export default async function BuilderProfilePage({
           // Load portfolio data from portfolio_items table with error handling
           let portfolio: any[] = [];
           try {
-            const { data: portfolioData } = await Promise.race([
+            const { data: portfolioData } = (await Promise.race([
               sb.from('portfolio_items')
                 .select('*')
                 .eq('builder_id', supabaseBuilder.id)
@@ -85,7 +87,7 @@ export default async function BuilderProfilePage({
               new Promise((_, reject) => 
                 setTimeout(() => reject(new Error('Portfolio timeout')), 3000)
               )
-            ]).catch(() => ({ data: null }));
+            ]).catch(() => ({ data: null }))) as any;
 
             portfolio = (portfolioData || []).map((item: any) => ({
               id: item.id,
@@ -107,14 +109,14 @@ export default async function BuilderProfilePage({
           // Load services from builder_services table with error handling
           let services: any[] = [];
           try {
-            const { data: servicesData } = await Promise.race([
+            const { data: servicesData } = (await Promise.race([
               sb.from('builder_services')
                 .select('*')
                 .eq('builder_id', supabaseBuilder.id),
               new Promise((_, reject) => 
                 setTimeout(() => reject(new Error('Services timeout')), 3000)
               )
-            ]).catch(() => ({ data: null }));
+            ]).catch(() => ({ data: null }))) as any;
 
             services = (servicesData || []).map((item: any) => ({
               id: item.id,
@@ -134,14 +136,14 @@ export default async function BuilderProfilePage({
           // Load service locations from builder_service_locations table with error handling
           let serviceLocations = [];
           try {
-            const { data: locationsData } = await Promise.race([
+            const { data: locationsData } = (await Promise.race([
               sb.from('builder_service_locations')
                 .select('*')
                 .eq('builder_id', supabaseBuilder.id),
               new Promise((_, reject) => 
                 setTimeout(() => reject(new Error('Locations timeout')), 3000)
               )
-            ]).catch(() => ({ data: null }));
+            ]).catch(() => ({ data: null }))) as any;
 
             // Group by country safely
             const countryMap = new Map();
@@ -249,7 +251,7 @@ export default async function BuilderProfilePage({
         } else {
           // Try the 'builders' table as fallback with error handling
           console.log("🔍 Server: Trying 'builders' table as fallback");
-          const { data: buildersTableData, error: buildersError } = await Promise.race([
+          const { data: buildersTableData, error: buildersError } = (await Promise.race([
             sb.from('builders')
               .select('*')
               .eq('slug', slug)
@@ -257,7 +259,7 @@ export default async function BuilderProfilePage({
             new Promise((_, reject) => 
               setTimeout(() => reject(new Error('Builders table timeout')), 3000)
             )
-          ]).catch(() => ({ data: null, error: new Error('Query failed') }));
+          ]).catch(() => ({ data: null, error: new Error('Query failed') }))) as any;
 
           console.log("🔍 Builders table query result:", { data: buildersTableData, error: buildersError });
 
@@ -325,15 +327,15 @@ export default async function BuilderProfilePage({
         const sb = getServerSupabase();
         if (sb) {
           console.log("🔍 Server: Trying fuzzy search for builder with slug:", slug);
-          const { data: allBuilders, error } = await Promise.race([
+          const { data: allBuilders, error } = (await Promise.race([
             sb.from('builder_profiles').select('*'),
             new Promise((_, reject) => 
               setTimeout(() => reject(new Error('Fuzzy search timeout')), 3000)
             )
-          ]).catch(() => ({ data: null, error: new Error('Query failed') }));
+          ]).catch(() => ({ data: null, error: new Error('Query failed') }))) as any;
 
           if (!error && allBuilders) {
-            const similarBuilder = allBuilders.find(b => b.slug && b.slug.includes(slug.substring(0, Math.min(20, slug.length))));
+            const similarBuilder = allBuilders.find((b: any) => b.slug && b.slug.includes(slug.substring(0, Math.min(20, slug.length))));
             if (similarBuilder) {
               console.log("🔍 Server: Found similar builder:", similarBuilder.company_name, similarBuilder.slug);
             }

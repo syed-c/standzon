@@ -315,60 +315,60 @@ export default async function ServerCountryCityPage({
 
 
       {/* ── STRATEGIC HUBS / CITIES ── */}
-      {!city && cities && cities.length > 0 && !hideCitiesSection &&
+      {cities && cities.length > 0 && !hideCitiesSection && !city &&
         !['jordan', 'lebanon', 'israel'].includes(country.toLowerCase()) && (
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-black !text-[#0f172a] mb-12 uppercase tracking-tighter">
-              {country} Strategic Hubs
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {cities.slice(0, 6).map((c, index) => {
-                const cityUrl = `/exhibition-stands/${normalizeCountrySlug(country)}/${normalizeCitySlug(c.name)}`;
-                // Generate generic hub-specific features per city
-                const features = c.features || [
-                  `${c.builderCount || 0}+ Local Builders`,
-                  "Same-day Site Visits",
-                  "Local Venue Specialists",
-                ];
-                const subtitle = c.subtitle || c.tagline || `Exhibitions & Trade Shows`;
-                const imgSrc = c.image || c.imageUrl || c.photo;
+          <section className="py-20 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-3xl font-black !text-[#0f172a] mb-12 uppercase tracking-tighter">
+                {country} Strategic Hubs
+              </h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                {cities.slice(0, 6).map((c, index) => {
+                  const cityUrl = `/exhibition-stands/${normalizeCountrySlug(country)}/${normalizeCitySlug(c.name)}`;
+                  // Generate generic hub-specific features per city
+                  const features = c.features || [
+                    `${c.builderCount || 0}+ Local Builders`,
+                    "Same-day Site Visits",
+                    "Local Venue Specialists",
+                  ];
+                  const subtitle = c.subtitle || c.tagline || `Exhibitions & Trade Shows`;
+                  const imgSrc = c.image || c.imageUrl || c.photo;
 
-                return (
-                  <a key={`${c.slug || c.name}-${index}`} href={cityUrl} className="group cursor-pointer">
-                    <div className="h-64 rounded-2xl overflow-hidden mb-6 relative bg-slate-200">
-                      {imgSrc ? (
-                        <img
-                          src={imgSrc}
-                          alt={c.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
-                          <MapPin className="w-12 h-12 text-slate-500" />
+                  return (
+                    <a key={`${c.slug || c.name}-${index}`} href={cityUrl} className="group cursor-pointer">
+                      <div className="h-64 rounded-2xl overflow-hidden mb-6 relative bg-slate-200">
+                        {imgSrc ? (
+                          <img
+                            src={imgSrc}
+                            alt={c.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
+                            <MapPin className="w-12 h-12 text-slate-500" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors" />
+                        <div className="absolute bottom-6 left-6">
+                          <h3 className="text-2xl font-black text-white">{c.name}</h3>
+                          <p className="text-sm text-slate-200">{subtitle}</p>
                         </div>
-                      )}
-                      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors" />
-                      <div className="absolute bottom-6 left-6">
-                        <h3 className="text-2xl font-black text-white">{c.name}</h3>
-                        <p className="text-sm text-slate-200">{subtitle}</p>
                       </div>
-                    </div>
-                    <ul className="space-y-3 text-sm font-medium !text-slate-600">
-                      {features.slice(0, 3).map((feat: string, fi: number) => (
-                        <li key={fi} className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 !text-[#1e3886] shrink-0" />
-                          {feat}
-                        </li>
-                      ))}
-                    </ul>
-                  </a>
-                );
-              })}
+                      <ul className="space-y-3 text-sm font-medium !text-slate-600">
+                        {features.slice(0, 3).map((feat: string, fi: number) => (
+                          <li key={fi} className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 !text-[#1e3886] shrink-0" />
+                            {feat}
+                          </li>
+                        ))}
+                      </ul>
+                    </a>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
       {/* ── PROFESSIONAL EXHIBITION INSIGHTS + SIDEBAR ── */}
       <section className="py-20 bg-[#f6f6f8] border-y border-slate-200">
