@@ -257,7 +257,7 @@ export default function Navigation() {
                       className="relative"
                     >
                       <button
-                        className="flex items-center space-x-1 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:text-pink-600 hover:bg-gray-100/50 whitespace-nowrap flex-shrink-0"
+                        className="flex items-center space-x-1 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-white hover:text-pink-600 hover:bg-gray-100/50 whitespace-nowrap flex-shrink-0"
                         onClick={() => handleDropdownClick(item.label)}
                       >
                         <span className="truncate max-w-[120px]">{item.label}</span>
