@@ -223,8 +223,8 @@ export default function Navigation() {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 w-full z-[1000] transition-all duration-300 ${isScrolled
-      ? 'bg-[#FFFFFF] shadow-md border-b border-gray-200'
-      : 'bg-[#FFFFFF] shadow-sm border-b border-gray-100'
+      ? 'bg-white dark:bg-[#0f172a] shadow-md border-b border-gray-200 dark:border-slate-800'
+      : 'bg-white dark:bg-[#0f172a] shadow-sm border-b border-gray-100 dark:border-slate-800'
       }`}
     >
       <div className="container mx-auto px-4">
@@ -266,7 +266,7 @@ export default function Navigation() {
                       </button>
                       {activeDropdown === item.label && (
                         <div
-                          className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
+                          className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-gray-200 dark:border-slate-800 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
                           onMouseEnter={handleDropdownMouseEnter}
                           onMouseLeave={handleDropdownMouseLeave}
                         >
@@ -347,7 +347,7 @@ export default function Navigation() {
                 </button>
                 {activeDropdown === 'Account' && (
                   <div
-                    className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
+                    className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-gray-200 dark:border-slate-800 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
                     onMouseEnter={handleDropdownMouseEnter}
                     onMouseLeave={handleDropdownMouseLeave}
                   >
@@ -416,9 +416,9 @@ export default function Navigation() {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="lg:hidden fixed inset-0 w-full h-screen bg-white shadow-2xl z-[1001] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden" style={{ top: 'var(--breadcrumb-height, 0px)' }}>
+        <div className="lg:hidden fixed inset-0 w-full h-screen bg-white dark:bg-slate-900 shadow-2xl z-[1001] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden" style={{ top: 'var(--breadcrumb-height, 0px)' }}>
           {/* Header inside menu */}
-          <div className="h-16 flex-shrink-0 bg-white border-b border-gray-100 w-full flex items-center justify-between px-4">
+          <div className="h-16 flex-shrink-0 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 w-full flex items-center justify-between px-4">
             <div className="flex items-center">
               <Image
                 src={logoImg}
