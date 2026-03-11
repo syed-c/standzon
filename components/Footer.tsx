@@ -105,7 +105,7 @@ export default function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="mb-4">
-              <Image src={logoImg} alt="StandsZone" width={200} height={60} className="w-40 md:w-48 h-auto" priority />
+              <Image src={logoImg} alt="StandsZone" width={200} height={60} className="w-40 md:w-48 h-auto" style={{ height: 'auto' }} priority />
             </div>
             <p className="text-gray-300 mb-6 leading-relaxed">
               {footerData?.paragraph || siteData.pages?.footerText || fallbackData.pages.footerText}
