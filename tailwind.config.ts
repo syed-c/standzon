@@ -83,6 +83,8 @@ const config: Config = {
       },
       fontFamily: {
         'inter': ['var(--font-inter)', 'Inter', 'sans-serif'],
+        'sans': ['var(--font-inter)', 'Inter', 'sans-serif'],
+        'display': ['var(--font-inter)', 'Inter', 'sans-serif'],
         'geist': ['Geist Sans', 'sans-serif'],
         'poppins': ['var(--font-poppins)', 'Poppins', 'Inter', 'system-ui', 'sans-serif'],
         'helvetica': ['Helvetica', 'Arial', 'Trebuchet MS', 'sans-serif'],

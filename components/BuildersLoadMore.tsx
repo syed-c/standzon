@@ -103,21 +103,21 @@ export default function BuildersLoadMore({
 
               {/* Body */}
               <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-start mb-2 gap-4">
+                <div className="flex justify-between flex-col md:flex-row items-start mb-2 gap-2 md:gap-4">
                   <div>
-                    <h3 className="text-lg font-black text-[#0f172a] group-hover:text-[#1e3886] transition-colors leading-tight">
+                    <h3 className="text-xl font-bold text-[#0f172a] group-hover:text-[#c0123d] transition-colors leading-tight">
                       {b.companyName}
                     </h3>
-                    <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                      <MapPin className="w-3 h-3" /> {hq}
+                    <p className="text-xs text-slate-500 font-bold flex items-center gap-1 mt-1">
+                      <MapPin className="w-3.5 h-3.5 text-slate-400" /> {hq}
                       {hqCountry && hqCountry !== hq ? `, ${hqCountry}` : ""}
                       {estYear ? ` • Est. ${estYear}` : ""}
                     </p>
                   </div>
-                  <div className="text-right shrink-0">
+                  <div className="text-left md:text-right shrink-0">
                     <div className="flex items-center text-yellow-500">
                       <Star className="w-4 h-4 fill-current" />
-                      <span className="text-base font-black ml-1 text-[#0f172a]">
+                      <span className="text-lg font-black ml-1 text-[#0f172a]">
                         {rating}
                       </span>
                     </div>
@@ -135,7 +135,7 @@ export default function BuildersLoadMore({
                   </p>
                 )}
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                   {[
                     {
                       label: "Projects Done",
@@ -156,18 +156,17 @@ export default function BuildersLoadMore({
                       val:
                         (b.planType || "Standard").charAt(0).toUpperCase() +
                         (b.planType || "Standard").slice(1),
-                      color: isPremium ? "text-[#1e3886]" : "",
+                      color: isPremium ? "text-[#c0123d]" : "",
                     },
                   ].map((stat, si) => (
                     <div
                       key={si}
-                      className="bg-slate-50 p-2.5 rounded-lg border border-slate-100"
                     >
-                      <span className="block text-[9px] uppercase font-black text-slate-400 mb-0.5">
+                      <span className="block text-[10px] uppercase font-bold text-slate-400 mb-1">
                         {stat.label}
                       </span>
                       <span
-                        className={`text-xs font-black text-[#0f172a] ${stat.color}`}
+                        className={`text-sm font-bold text-[#0f172a] ${stat.color}`}
                       >
                         {stat.val}
                       </span>
@@ -177,16 +176,16 @@ export default function BuildersLoadMore({
               </div>
 
               {/* CTA Sidebar */}
-              <div className="lg:w-40 flex flex-col justify-center gap-3 border-t lg:border-t-0 lg:border-l border-slate-100 pt-4 lg:pt-0 lg:pl-6 shrink-0">
+              <div className="lg:w-48 flex flex-col justify-center gap-3 pt-6 lg:pt-0 lg:pl-6 shrink-0 mt-4 lg:mt-0">
                 <a
                   href={`/builders/${b.slug || b.id}`}
-                  className="w-full bg-[#0f172a] text-white text-xs font-black py-2.5 px-3 rounded-lg hover:bg-[#1e3886] transition-all text-center"
+                  className="w-full bg-[#0f172a] text-white text-sm font-bold py-3 px-4 rounded-lg hover:bg-[#c0123d] transition-all text-center"
                 >
                   View Portfolio
                 </a>
                 <a
                   href="#quote-form"
-                  className="w-full bg-white border border-slate-200 text-[#0f172a] text-xs font-black py-2.5 px-3 rounded-lg hover:border-[#1e3886] transition-all text-center"
+                  className="w-full bg-white border border-slate-200 text-[#0f172a] text-sm font-bold py-3 px-4 rounded-lg hover:border-[#c0123d] transition-all text-center"
                 >
                   Request Quote
                 </a>

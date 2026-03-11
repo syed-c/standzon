@@ -13,13 +13,14 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import AppWrapper from '@/components/AppWrapper';
 // GlobalTypography temporarily disabled due to dev chunk issue
 
-// Font optimization: Reduce font weights and enable swap
+// Font optimization: Match DOCTYPE html.html exactly
 const inter = Inter({
   subsets: ["latin"],
-  display: 'optional', // Use optional for better performance
+  display: 'swap',
   preload: true,
   fallback: ['system-ui', 'arial'],
-  weight: ['400', '500', '600'], // Only load essential weights
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-inter',
 });
 
 // Limit font weights for performance
@@ -177,7 +178,7 @@ export default function RootLayout({
 
         {/* Note: Removed preload links that were causing warnings in development */}
       </head>
-      <body className={`${inter.className} ${poppins.className} ${roboto.variable} ${montserrat.variable} ${redHatDisplay.variable} h-full m-0 p-0`} suppressHydrationWarning>
+      <body className={`${inter.variable} ${poppins.variable} ${roboto.variable} ${montserrat.variable} ${redHatDisplay.variable} ${inter.className} font-sans h-full m-0 p-0`} suppressHydrationWarning>
         <ThemeProvider>
           <CriticalResourcePreloader />
           {/* <GlobalTypography /> */}
