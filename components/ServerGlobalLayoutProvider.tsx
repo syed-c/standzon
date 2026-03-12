@@ -12,7 +12,7 @@ interface ServerGlobalLayoutProviderProps {
 
 export default function ServerGlobalLayoutProvider({ children, pathname }: ServerGlobalLayoutProviderProps) {
   // Don't show breadcrumbs on the home page or debug pages
-  const showBreadcrumbs = pathname !== '/' && !pathname.startsWith('/debug');
+  const showBreadcrumbs = pathname !== '/' && !pathname.startsWith('/debug') && !pathname.startsWith('/admin');
   const breadcrumbs = pathname ? generateBreadcrumbs(pathname) : [];
 
   return (
