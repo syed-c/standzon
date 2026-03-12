@@ -5,19 +5,18 @@ import PublicQuoteRequest from "@/components/PublicQuoteRequest";
 import { getFontClass } from "@/lib/utils/fonts";
 import { convertToProxyUrl } from "@/lib/utils/imageProxyUtils";
 import TestimonialsCarousel from '@/components/TestimonialsCarousel';
-import ContactSection from '@/components/ContactSection'; // Assuming standard import
+import ContactSection from '@/components/ContactSection';
 import Link from 'next/link';
 
 export default async function HomeRest() {
     const saved = await getServerPageContent('home');
 
-    // Font choices
     const leadsIntroFont = saved?.sections?.leadsIntro?.headingFont || '';
     const readyLeadsFont = saved?.sections?.readyLeads?.headingFont || '';
     const finalCtaFont = saved?.sections?.finalCta?.headingFont || '';
 
     const readyStart = saved?.sections?.readyStart || saved?.sections?.getStarted || { heading: "Ready to Get Started?", paragraph: "Connect with verified exhibition stand builders in your target location. Get multiple competitive quotes without creating an account." };
-    const finalCta = saved?.sections?.finalCta || { heading: "Let's Create Something Extraordinary", paragraph: "Ready to transform your exhibition presence? Get a personalized quote and discover how we can bring your vision to life.", buttons: [{ text: "Get Free Quotes Now", href: "/quote" }] };
+    const finalCta = saved?.sections?.finalCta || { heading: "Start Your World-Class Journey", paragraph: "Connect with certified architectural partners and elevate your global brand presence through our proprietary network.", buttons: [{ text: "Register as a Builder", href: "/builder/register" }, { text: "Post a Quote RFP", href: "/quote" }] };
 
     const topLevelButtons = Array.isArray(saved?.buttons) ? saved!.buttons as Array<{ section?: string; text?: string; link?: string; href?: string }> : [];
     const startButtonsFromTop = topLevelButtons.filter(b => {
@@ -30,106 +29,129 @@ export default async function HomeRest() {
 
     return (
         <>
-            {/* Ready to Get Started (CTA mid) */}
-            <section className="py-12 md:py-16 bg-gradient-to-br from-blue-50 to-purple-50">
-                <div className="container mx-auto px-4 sm:px-6 text-center">
-                    <div className="max-w-3xl mx-auto">
-                        <h2 className={["text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 md:mb-6", getFontClass(readyLeadsFont as any)].join(' ')}>
+            {/* Ready to Get Started (CTA mid) — Crimson style */}
+            {/* <section className="py-16 bg-[#c0123d] text-white overflow-hidden relative">
+                <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div>
+                        <h3 className={["text-3xl font-black tracking-tighter uppercase italic", getFontClass(readyLeadsFont as any)].join(' ')}>
                             {readyStart.heading || "Ready to Get Started?"}
-                        </h2>
-                        <p className="text-lg md:text-xl text-gray-600 mb-6 md:mb-8 px-4" dangerouslySetInnerHTML={{ __html: readyStart.paragraph || "" }} />
-                        <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
-                            {startButtonsFromTop.length > 0 ? (
-                                startButtonsFromTop.map((b, i) => (
-                                    <Link key={`${b.text}-${i}`} href={b.href || "#"} prefetch={true} className={i === 0 ? "bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-semibold" : "border-2 border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white px-6 md:px-8 py-3 md:py-4 rounded-xl text-base md:text-lg font-semibold"}>
-                                        {b.text || (i === 0 ? "Get Free Quotes Now" : "Learn More")}
-                                    </Link>
-                                ))
-                            ) : (
-                                <>
-                                    <PublicQuoteRequest
-                                        buttonText="Get Free Quotes Now"
-                                        className="text-base md:text-lg px-6 md:px-8 py-3 md:py-4 touch-active no-tap-highlight"
-                                    />
-                                    <PublicQuoteRequest
-                                        buttonText="Find Local Builders"
-                                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-base md:text-lg px-6 md:px-8 py-3 md:py-4 touch-active no-tap-highlight"
-                                    />
-                                </>
-                            )}
-                        </div>
-                        <p className="text-xs md:text-sm text-gray-500 mt-4 px-4">
-                            ✅ No registration required • ✅ Multiple quotes • ✅ Verified builders only
-                        </p>
+                        </h3>
+                        <p className="text-white/80 mt-2 font-medium max-w-xl" dangerouslySetInnerHTML={{ __html: readyStart.paragraph || "" }} />
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        {startButtonsFromTop.length > 0 ? (
+                            startButtonsFromTop.map((b, i) => (
+                                <Link
+                                    key={`${b.text}-${i}`}
+                                    href={b.href || "#"}
+                                    prefetch={true}
+                                    className={i === 0
+                                        ? "bg-white text-[#c0123d] hover:bg-slate-100 font-black uppercase tracking-widest px-10 py-5 transition-all shadow-xl whitespace-nowrap text-center text-sm"
+                                        : "border-2 border-white text-white hover:bg-white hover:text-[#c0123d] font-black uppercase tracking-widest px-10 py-5 transition-all whitespace-nowrap text-center text-sm"
+                                    }
+                                >
+                                    {b.text || (i === 0 ? "Get Free Quotes Now" : "Learn More")}
+                                </Link>
+                            ))
+                        ) : (
+                            <>
+                                <PublicQuoteRequest
+                                    buttonText="Get Free Quotes Now"
+                                    className="bg-white text-[#c0123d] hover:bg-slate-100 font-black uppercase tracking-widest px-10 py-5 transition-all shadow-xl whitespace-nowrap text-sm rounded-none"
+                                />
+                                <PublicQuoteRequest
+                                    buttonText="Find Local Builders"
+                                    className="border-2 border-white text-white hover:bg-white hover:text-[#c0123d] font-black uppercase tracking-widest px-10 py-5 transition-all whitespace-nowrap text-sm rounded-none"
+                                />
+                            </>
+                        )}
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* What Our Clients Say + Reviews */}
             {saved?.sections?.clientSay?.heading || saved?.sections?.clientSay?.paragraph ? (
-                <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
-                    <div className="max-w-6xl mx-auto px-4">
-                        {saved?.sections?.clientSay?.heading && (
-                            <h2 className={["text-3xl font-bold text-gray-900 mb-3 text-center", getFontClass(leadsIntroFont as any)].join(' ')}>{saved!.sections!.clientSay!.heading}</h2>
-                        )}
-                        {saved?.sections?.clientSay?.paragraph && (
-                            <p className="text-lg text-gray-600 mb-8 text-center" dangerouslySetInnerHTML={{ __html: saved!.sections!.clientSay!.paragraph }} />
-                        )}
-                        {/* If custom reviews provided, render them; else fallback to existing carousel */}
+                <section className="py-24 px-6 bg-white">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="text-center mb-16">
+                            {saved?.sections?.clientSay?.heading && (
+                                <h3 className={["text-3xl font-black text-[#0f172a] tracking-tight mb-4 uppercase", getFontClass(leadsIntroFont as any)].join(' ')}>
+                                    {saved!.sections!.clientSay!.heading}
+                                </h3>
+                            )}
+                            <div className="w-20 h-1 bg-[#1e3886] mx-auto mb-6"></div>
+                            {saved?.sections?.clientSay?.paragraph && (
+                                <p className="text-lg text-slate-500 max-w-3xl mx-auto" dangerouslySetInnerHTML={{ __html: saved!.sections!.clientSay!.paragraph }} />
+                            )}
+                        </div>
                         {(Array.isArray(saved?.sections?.reviews) && saved!.sections!.reviews!.length > 0) || reviewsFromTop.length > 0 ? (
-                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid md:grid-cols-3 gap-10">
                                 {(saved!.sections?.reviews || reviewsFromTop).map((r: { name?: string; role?: string; rating?: number; text?: string; image?: string }, i: number) => (
-                                    <div key={i} className="bg-white rounded-xl shadow p-6 border">
-                                        <div className="flex items-center gap-4 mb-4">
-                                            <Image src={convertToProxyUrl(r.image || "https://via.placeholder.com/80x80")} alt={r.name || "Reviewer"} width={56} height={56} className="w-14 h-14 rounded-full object-cover" />
+                                    <div key={i} className="p-8 border border-slate-100 shadow-sm relative">
+                                        <div className="absolute -top-4 left-8 text-4xl text-slate-200 font-serif leading-none">&ldquo;</div>
+                                        <div className="flex items-center gap-4 mb-4 mt-4">
+                                            {/* <Image src={convertToProxyUrl(r.image || "https://via.placeholder.com/80x80")} alt={r.name || "Reviewer"} width={48} height={48} className="w-12 h-12 rounded-full object-cover" /> */}
                                             <div>
-                                                <div className="font-semibold text-gray-900">{r.name || "Anonymous"}</div>
-                                                <div className="text-sm text-gray-500">{r.role || ""}</div>
+                                                <div className="font-black text-[#0f172a] text-sm">{r.name || "Anonymous"}</div>
+                                                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{r.role || ""}</div>
                                             </div>
                                         </div>
-                                        <div className="text-yellow-500 mb-3">{"★".repeat(Math.max(0, Math.min(5, Number(r.rating) || 5)))}</div>
-                                        <p className="text-gray-700">{r.text || ""}</p>
+                                        <p className="italic text-slate-600 leading-relaxed">&ldquo;{r.text || ""}&rdquo;</p>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <Suspense fallback={<div className="h-64 bg-gray-200 rounded-lg animate-pulse"></div>}>
+                            <Suspense fallback={<div className="h-64 bg-slate-100 animate-pulse"></div>}>
                                 <TestimonialsCarousel />
                             </Suspense>
                         )}
                     </div>
                 </section>
             ) : (
-                <Suspense fallback={<div className="h-64 bg-gray-200 rounded-lg animate-pulse"></div>}>
+                <Suspense fallback={<div className="h-64 bg-slate-100 animate-pulse"></div>}>
                     <TestimonialsCarousel />
                 </Suspense>
             )}
 
             {/* Contact Section */}
-            <Suspense fallback={<div className="py-16 bg-gray-50 animate-pulse"><div className="container mx-auto px-4"><div className="h-64 bg-gray-200 rounded-lg"></div></div></div>}>
+            <Suspense fallback={<div className="py-16 bg-slate-50 animate-pulse"><div className="max-w-7xl mx-auto px-6"><div className="h-64 bg-slate-200"></div></div></div>}>
                 <ContactSection />
             </Suspense>
 
-            {/* Final CTA */}
-            <section className="relative py-16 md:py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
-                <div className="absolute inset-0">
-                    <div className="w-full h-full bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-pink-500/10"></div>
-                </div>
-
-                <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className={["text-3xl md:text-4xl lg:text-5xl font-bold mb-6", finalCtaFont ? `font-${finalCtaFont}` : ''].join(' ')}>
-                        {finalCta.heading}
+            {/* Final CTA — Navy with crimson accent */}
+            <section className="relative py-32 bg-[#0f172a] overflow-hidden">
+                <div className="absolute inset-0 bg-[#0f172a]/80 z-[1]"></div>
+                <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+                    <h2 className={["text-5xl md:text-6xl font-black text-white uppercase tracking-tighter mb-8 leading-none", finalCtaFont ? `font-${finalCtaFont}` : ''].join(' ')}>
+                        {(() => {
+                            const heading = finalCta.heading || "Start Your World-Class Journey";
+                            // Try to highlight one word in crimson
+                            const words = heading.split(' ');
+                            if (words.length > 3) {
+                                const midStart = Math.floor(words.length / 2);
+                                return (
+                                    <>
+                                        {words.slice(0, midStart).join(' ')}{' '}
+                                        <br />
+                                        <span className="text-[#c0123d]">{words.slice(midStart, midStart + 2).join(' ')}</span>{' '}
+                                        {words.slice(midStart + 2).join(' ')}
+                                    </>
+                                );
+                            }
+                            return heading;
+                        })()}
                     </h2>
-                    <p className="text-lg md:text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed" dangerouslySetInnerHTML={{ __html: finalCta.paragraph || "" }} />
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto" dangerouslySetInnerHTML={{ __html: finalCta.paragraph || "" }} />
+                    <div className="flex flex-col md:flex-row justify-center gap-6">
                         {((finalButtonsFromTop.length > 0 ? finalButtonsFromTop : finalCta.buttons) || []).map((b: { text?: string; href?: string }, i: number) => (
                             <Link
                                 key={i}
                                 href={b.href || "#"}
                                 prefetch={true}
                                 className={i === 0
-                                    ? "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg transition-all duration-300 inline-block"
-                                    : "bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white hover:bg-white/20 hover:border-white/50 px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 inline-block"}
+                                    ? "bg-[#c0123d] text-white px-12 py-5 font-bold uppercase tracking-widest hover:bg-white hover:text-[#0f172a] transition-all text-sm"
+                                    : "bg-[#1e3886] text-white px-12 py-5 font-bold uppercase tracking-widest hover:bg-white hover:text-[#0f172a] transition-all text-sm"
+                                }
                             >
                                 {b.text || (i === 0 ? "Get Free Quotes Now" : "Learn More")}
                             </Link>

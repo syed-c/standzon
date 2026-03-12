@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stands Zone | Architecting Global Presence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1e3886", // Royal Blue
+                        "navy": "#0f172a",    // Dark Navy
+                        "crimson": "#c0123d", // Crimson
+                        "background-light": "#ffffff",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0rem", // Sharp, architectural corners
+                        "lg": "0rem",
+                        "xl": "0rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-gradient {
+            background: linear-gradient(to right, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0) 100%);
+        }
+        .editorial-border {
+            border-left: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body class="bg-background-light text-navy font-display antialiased">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200">
+<div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+<div class="flex items-center gap-12">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-navy flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xl">architecture</span>
+</div>
+<span class="text-xl font-black tracking-tighter uppercase text-navy">Stands Zone</span>
+</div>
+<nav class="hidden lg:flex items-center gap-8">
+<a class="text-xs font-bold uppercase tracking-widest hover:text-crimson transition-colors" href="#">Builders</a>
+<a class="text-xs font-bold uppercase tracking-widest hover:text-crimson transition-colors" href="#">Tender System</a>
+<a class="text-xs font-bold uppercase tracking-widest hover:text-crimson transition-colors" href="#">Audits</a>
+<a class="text-xs font-bold uppercase tracking-widest hover:text-crimson transition-colors" href="#">Regional Hubs</a>
+<a class="text-xs font-bold uppercase tracking-widest hover:text-crimson transition-colors" href="#">Insights</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-navy p-2 hover:bg-slate-100 transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="bg-navy text-white px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-primary transition-all">
+                    Get a Quote
+                </button>
+</div>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="relative h-[85vh] w-full overflow-hidden bg-navy">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-60" data-alt="Luxury 3D exhibition stand architectural rendering" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSSJLmGj2K8Mntf-ywz9JMi5LJKS5wUKxtr1-EtF8IiqafL9yfBf3E735Z3M8qpY_8X0i8zfVYkvuap6bEGFWk5VWkKRkf-qanKoL-ZEBCShaVd8BmnVswptQyLAbouikgJWYsrmmyBtmyAolpmzP7UgwAsVpPfI6PkloVtPKPUUmbXrLlOwNpueIDNcdoRzWUF6rKiNOv561hiDPwIOdTE71p-5yIRZ_MA_Z3P8MJ6ZSharBzX9NjyZsdXCf0gcRtG_d_gYAskTQ"/>
+<div class="absolute inset-0 hero-gradient"></div>
+</div>
+<div class="relative z-10 h-full max-w-7xl mx-auto px-6 flex flex-col justify-center">
+<span class="text-crimson font-bold uppercase tracking-[0.3em] mb-4 text-sm">Premier B2B Directory</span>
+<h1 class="text-6xl md:text-8xl font-black text-white leading-tight mb-8 max-w-4xl tracking-tighter uppercase">
+                Architecting <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">Global Presence</span>
+</h1>
+<div class="max-w-3xl w-full bg-white p-2 shadow-2xl flex flex-col md:flex-row gap-2">
+<div class="flex-1 flex items-center px-4 gap-3 border-b md:border-b-0 md:border-r border-slate-100 py-3">
+<span class="material-symbols-outlined text-slate-400">location_on</span>
+<input class="w-full border-none focus:ring-0 text-sm font-medium" placeholder="Country, City or Region..." type="text"/>
+</div>
+<div class="flex-1 flex items-center px-4 gap-3 py-3">
+<span class="material-symbols-outlined text-slate-400">business</span>
+<input class="w-full border-none focus:ring-0 text-sm font-medium" placeholder="Builder Name or Specialty..." type="text"/>
+</div>
+<button class="bg-crimson text-white px-10 py-4 font-bold uppercase tracking-widest hover:bg-navy transition-colors">
+                    Search Directory
+                </button>
+</div>
+</div>
+<!-- Recent Activity Banner -->
+<div class="bg-slate-50 border-y border-slate-200 py-4 overflow-hidden">
+<div class="max-w-7xl mx-auto px-6 flex items-center gap-8 whitespace-nowrap overflow-hidden">
+<span class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-crimson shrink-0">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-crimson opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-crimson"></span>
+</span>
+                Live Activity
+            </span>
+<div class="flex gap-12 animate-marquee items-center text-xs font-medium text-slate-500">
+<span>NEW QUOTE: TechCorp requested $120k booth for GITEX Dubai</span>
+<span class="text-slate-300">|</span>
+<span>MATCHED: Apex Builders secured contract for CES Vegas 2024</span>
+<span class="text-slate-300">|</span>
+<span>AUDIT COMPLETE: EuroStands Berlin re-certified (98% Score)</span>
+<span class="text-slate-300">|</span>
+<span>NEW TENDER: Automotive Global RFP launched for Frankfurt Motor Show</span>
+</div>
+</div>
+</div>
+<!-- Why Choose -->
+<section class="py-24 max-w-7xl mx-auto px-6">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+<div class="lg:col-span-4">
+<h2 class="text-4xl font-black uppercase tracking-tighter leading-none mb-6">The Gold Standard in <br/><span class="text-primary">Exhibition Solutions</span></h2>
+<p class="text-slate-500 text-lg leading-relaxed">Ensuring architectural excellence through rigorous vetting, financial stability audits, and competitive transparency.</p>
+<div class="mt-10 flex gap-4">
+<div class="h-px bg-slate-200 flex-1 self-center"></div>
+<span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Excellence Guaranteed</span>
+</div>
+</div>
+<div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="p-8 border border-slate-100 hover:border-primary transition-colors bg-white">
+<span class="material-symbols-outlined text-4xl text-navy mb-6">verified_user</span>
+<h3 class="font-bold uppercase tracking-tight text-lg mb-4">Strict Quality Audits</h3>
+<p class="text-sm text-slate-500 leading-relaxed">50-point inspection on every builder covering past projects and financial solvency.</p>
+</div>
+<div class="p-8 border border-slate-100 hover:border-primary transition-colors bg-white">
+<span class="material-symbols-outlined text-4xl text-navy mb-6">gavel</span>
+<h3 class="font-bold uppercase tracking-tight text-lg mb-4">Tender System</h3>
+<p class="text-sm text-slate-500 leading-relaxed">Access premium designs at market-leading rates via our proprietary bidding engine.</p>
+</div>
+<div class="p-8 border border-slate-100 hover:border-primary transition-colors bg-white">
+<span class="material-symbols-outlined text-4xl text-navy mb-6">support_agent</span>
+<h3 class="font-bold uppercase tracking-tight text-lg mb-4">Dedicated Support</h3>
+<p class="text-sm text-slate-500 leading-relaxed">White-glove project management from initial concept to on-site handover.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Builder Directory -->
+<section class="bg-navy py-24 text-white">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+<div>
+<span class="text-crimson font-bold uppercase tracking-widest text-xs">Vetted Partners</span>
+<h2 class="text-4xl font-black uppercase tracking-tighter mt-2">Elite Builder Directory</h2>
+</div>
+<div class="flex gap-4">
+<button class="px-6 py-2 border border-white/20 hover:border-white text-xs font-bold uppercase tracking-widest transition-all">Filter by City</button>
+<button class="px-6 py-2 border border-white/20 hover:border-white text-xs font-bold uppercase tracking-widest transition-all">Sort by Rating</button>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Card 1 -->
+<div class="bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-6 flex flex-col lg:flex-row items-center gap-8 group">
+<div class="w-24 h-24 bg-white/10 flex items-center justify-center p-4">
+<img class="max-w-full invert opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Corporate architectural builder logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARIH1B3zjUTwXG1ZWrJlkbrdKl8GsPdkDzIBLIrq4XpI-nGdRI6pLB2B6jus9osMmWe8B4X_-0WHNzulTA7A86cUqDwRfsvl70C-dE0T9i-xTd6YIEb_m7fkNxeCQt9-DQpxQ5DlQL6XcuqSQiExsD_ND3HWxbLXYDXWf4IRkxhgKy7edngbxBhxl3GFdOCifgsMO4AFWk1Dm6U-xomIMWuDi-HtfPEoorhp32iPeicM-ytkiZRu-i--64SAWwClxsExCitYvYrtM"/>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-1">
+<h3 class="text-xl font-bold uppercase tracking-tight">Vanguard Exhibits</h3>
+<span class="bg-crimson text-[10px] px-2 py-0.5 font-bold uppercase tracking-wider">Top Rated</span>
+</div>
+<p class="text-slate-400 text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-xs">location_on</span> Dubai, UAE &amp; London, UK
+                        </p>
+</div>
+<div class="grid grid-cols-3 gap-12 text-center lg:text-left">
+<div>
+<span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1">Success Rate</span>
+<span class="text-lg font-black">99.4%</span>
+</div>
+<div>
+<span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1">Avg Project</span>
+<span class="text-lg font-black">$150k+</span>
+</div>
+<div>
+<span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1">Tier</span>
+<span class="text-lg font-black text-primary">Platinum</span>
+</div>
+</div>
+<button class="bg-white text-navy px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-crimson hover:text-white transition-all">View Profile</button>
+</div>
+<!-- Card 2 -->
+<div class="bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-6 flex flex-col lg:flex-row items-center gap-8 group">
+<div class="w-24 h-24 bg-white/10 flex items-center justify-center p-4">
+<img class="max-w-full invert opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Modern design studio logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkYOr4jr8qGhDkWiLFkjvsTUOoyznT4jejxhjMuduJ6X-xjynPPaj-F2170QHnReE_Boe6VobUhqGzMd9u-rNexQ0agtPgKc0wL8E-I8wtQr4E7sIsVCkDdzGLPx691mb03E2j8n_CwHZcQ0r66KZ_UnQ-9uULI53pEIMJyCh8yYkwo9Kjfll5egj1NKnGBzh6VLSaoNbY31sPPjVoAnjYlIxAN0tpFSMaW0Ls9NWWyvg4UJdbCdGG_Z7F6OGuOzGseKbWz80qWl0"/>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-1">
+<h3 class="text-xl font-bold uppercase tracking-tight">Structura Global</h3>
+</div>
+<p class="text-slate-400 text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-xs">location_on</span> Berlin, Germany
+                        </p>
+</div>
+<div class="grid grid-cols-3 gap-12 text-center lg:text-left">
+<div>
+<span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1">Success Rate</span>
+<span class="text-lg font-black">97.8%</span>
+</div>
+<div>
+<span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1">Avg Project</span>
+<span class="text-lg font-black">$85k+</span>
+</div>
+<div>
+<span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1">Tier</span>
+<span class="text-lg font-black text-slate-400">Gold</span>
+</div>
+</div>
+<button class="bg-white text-navy px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-crimson hover:text-white transition-all">View Profile</button>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-12 flex justify-center items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center border border-white/20 hover:border-white transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<span class="text-xs font-bold uppercase tracking-widest">Page 01 of 12</span>
+<button class="w-10 h-10 flex items-center justify-center border border-white/20 hover:border-white transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Staggered Gallery -->
+<section class="py-24 bg-white">
+<div class="max-w-7xl mx-auto px-6">
+<h2 class="text-4xl font-black uppercase tracking-tighter mb-12">Excellence in <span class="text-primary italic">Execution</span></h2>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-[800px]">
+<div class="md:col-span-8 relative overflow-hidden group">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" data-alt="Massive automotive exhibition stand with high-tech displays" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjtJ361ygau7QDOoikNC4L3jOBBLbbCktSceqlOfGRVS6r17sEKf5q68nWA8OsjGmGCQukoFfPsym_ws4y_f26K5EqsS8EPgojfMRAzA-oWG1TRWg3VNFPRcEX2VK789wslwSfaBmvJqhs8S_mTPhhgyYQzRbxfoQjYm_Y5-_JbXHihtHvI7rDfIzcfUC_izPaFB3Gx0410zOQowEo2IId8vzFtdOhCMUX3LdZTmeso1rGxovVHHTGgOxAwqCFOVMx8SAS6GxnGsc"/>
+<div class="absolute bottom-0 left-0 p-8 bg-navy text-white translate-y-full group-hover:translate-y-0 transition-transform">
+<p class="text-[10px] uppercase tracking-widest font-black mb-2 text-crimson">Project Highlight</p>
+<p class="text-lg font-bold">Concept One: Automotive Pavilion</p>
+</div>
+</div>
+<div class="md:col-span-4 grid grid-rows-2 gap-6">
+<div class="relative overflow-hidden group">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" data-alt="Elegant jewelry exhibition stand with minimalist lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAIVQYaEqd05wXoLsMp5z1B2GzH16QG4wiKuD7fKWtGBwres8G_cltZ4lonK0O9_sLoKhm59WknfFMkaHaDMTgUsUl9IiLyO-DTjTShyU7xRRb2HsO-LbJlam_T4ufms7yY2BVdBIADMdAeQtEECCVcD7S0b4Ub30Iuj3N987s8jvgmPgSZy-1ErGXXCk-YOXzt9YiIkWUBEbcx64Hhtz18BduFAzmPT4RYyZZUNEdrOgrRfavER8mJqlCMC6jKdu-RfA7pRL_hXE"/>
+</div>
+<div class="relative overflow-hidden group">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" data-alt="Digital tech hub exhibition design with neon accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2sr8g6C3jfyJktk4mdVciooup5yVdtj2RjtiWHS8hEqU4P4r_UwZhDSG3FNYACygVhevVzCDt7nhlwDH0ta8F98Gpb0qsgc7FzZd0sLYo9Z9yg4WgsCPxidOdo20Fi1yPpAJhmJcjcxVh1LLCOv-xcd_WFRcqio-l-Rw_a54vqhTmm4rmrVX5HyKxQJ5S4Dsc2jWmCumwdg10LF_-2FkJSSD7vAEhRUH3xxhjblWrNpxCmSpTSUJOnDcZWihM_FqSb3hhAoM3r5k"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- UAE Regional Hubs -->
+<section class="py-24 bg-slate-50 border-t border-slate-200">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex items-center gap-6 mb-16">
+<h2 class="text-4xl font-black uppercase tracking-tighter shrink-0">UAE Regional Hubs</h2>
+<div class="h-px bg-slate-200 w-full"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+<!-- Dubai -->
+<div class="group relative overflow-hidden bg-navy text-white border-r border-navy-800">
+<div class="aspect-[4/5] overflow-hidden">
+<img class="w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-1000" data-alt="Dubai skyline architectural vista" data-location="Dubai" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1G3kfVAx8uhwpLbQXD2HaCnjFzXEMOXzJ-L646J5V9e4wO1O-Yr3ANHpzeoMZEma_vawUIjxqwoxFbvD1hxbzBHclSTu5b0vcBzhbV8aeuH5NF_whX6CbWmCnnLJRLPxghd12a_Rc6-sAElu994zpCUqEPyYVg3VoIVkFgKPmLokSms6kbv0D1h-y3Brz7NdqvKxAOQhEnQfiqvbvN7zLLuoKJaqEOKvqYU-qXK66lNHx5k808rBfH4G83lFyJT1GaC2djAPKPGo"/>
+</div>
+<div class="absolute inset-0 p-10 flex flex-col justify-end bg-gradient-to-t from-navy to-transparent">
+<h3 class="text-3xl font-black uppercase mb-4">Dubai</h3>
+<div class="space-y-2 border-l-2 border-crimson pl-6">
+<p class="text-xs font-bold uppercase tracking-widest"><span class="text-crimson">450+</span> Certified Builders</p>
+<p class="text-xs font-bold uppercase tracking-widest"><span class="text-crimson">2.4k</span> Annual Projects</p>
+<p class="text-xs font-bold uppercase tracking-widest">Global Logistics Hub</p>
+</div>
+</div>
+</div>
+<!-- Abu Dhabi -->
+<div class="group relative overflow-hidden bg-navy text-white border-r border-navy-800">
+<div class="aspect-[4/5] overflow-hidden">
+<img class="w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-1000" data-alt="Abu Dhabi modern architecture" data-location="Abu Dhabi" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3oDmBT3T_jy2BQrD4oHhLkvC5hUB1BrKuR9s64lpoSi7Y8P_7FxdwJub_ev_lA0ZZ9QYCC1TZdqMmVWPHUnomuE4JldRqt4Qtdl40Usut9rYAhhDa4KRgPA9iNJiAz7HBUV_XHKdXsvlYvWIK3LCapcpfX6qJi9wu7Q8AN8zYXU1aea5dJ14lKHTF53omJiES88IOTX9fBftiilAVSVJGzAr63M3j2JX0DFiwDfEGl5uTHipv2HeCTPcjM5gjZ_3uKo6NxQF5hEE"/>
+</div>
+<div class="absolute inset-0 p-10 flex flex-col justify-end bg-gradient-to-t from-navy to-transparent">
+<h3 class="text-3xl font-black uppercase mb-4">Abu Dhabi</h3>
+<div class="space-y-2 border-l-2 border-primary pl-6">
+<p class="text-xs font-bold uppercase tracking-widest"><span class="text-primary">120+</span> Elite Studios</p>
+<p class="text-xs font-bold uppercase tracking-widest"><span class="text-primary">850</span> Annual Projects</p>
+<p class="text-xs font-bold uppercase tracking-widest">Policy &amp; Trade Center</p>
+</div>
+</div>
+</div>
+<!-- Sharjah -->
+<div class="group relative overflow-hidden bg-navy text-white">
+<div class="aspect-[4/5] overflow-hidden">
+<img class="w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-1000" data-alt="Sharjah cultural architecture" data-location="Sharjah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhck9CiRHSLY-vSWlKwb897VMP9Skdw7Mtzej2q8rU2K6t3oCRa7SMLHHxfxLzIOztXp98mYKhwc9I4TlseUibj2NGoCL6iE504Rmpy6YQ5oX_kPl34kKZ-QVaP1IDgMNTHe8CSN68xYxJ_YTJ8jHcmWIWqvxr-6O5b5ZTx0CAViBhZe_WENNwvZT6IwQzvRYCcVOuaX9LGk6qv_EqIMkSRWUyW18b5LSGvIH_k4rCGgHclXtDeEG8G8jHE8g7tlUyxw-vYDWV-7w"/>
+</div>
+<div class="absolute inset-0 p-10 flex flex-col justify-end bg-gradient-to-t from-navy to-transparent">
+<h3 class="text-3xl font-black uppercase mb-4">Sharjah</h3>
+<div class="space-y-2 border-l-2 border-slate-400 pl-6">
+<p class="text-xs font-bold uppercase tracking-widest"><span class="text-slate-400">85+</span> Niche Builders</p>
+<p class="text-xs font-bold uppercase tracking-widest"><span class="text-slate-400">320</span> Annual Projects</p>
+<p class="text-xs font-bold uppercase tracking-widest">Industrial Craft Hub</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Industry Insights -->
+<section class="py-24 max-w-7xl mx-auto px-6">
+<div class="flex justify-between items-center mb-12">
+<h2 class="text-4xl font-black uppercase tracking-tighter">Industry <span class="text-primary">Insights</span></h2>
+<a class="text-xs font-black uppercase tracking-[0.2em] text-crimson border-b-2 border-crimson pb-1 hover:text-navy hover:border-navy transition-all" href="#">View All Articles</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<article class="group">
+<div class="aspect-video mb-6 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Data visualization on futuristic screens" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmlm8IjB248FMJIZsSGdLSV5BRnSYDSSMR2PRVBGt8FgiBEnnkyfNjkXlOhuh_ax-DNi6wSYWPg9Wb7hoeSTkoSAr1tTIGNUPEb6mZW7-5faR9O1vH3VL9rPB7yYi4_4JTYgt_3C1SxknnuPiUM9KGb3ci9cKEJhdexf7upSmCQMMw_RYoz1uh97phsZpDTSOtbwk0QFzkH0I-2Ry70iHnEhbxo-sC4Saad9MDoj6l-t92cW94Kc3jbOIhXT36tqPujMNR7QpM4mo"/>
+</div>
+<span class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 block">Market Report 2024</span>
+<h3 class="text-xl font-bold uppercase tracking-tight leading-snug mb-4 group-hover:text-primary transition-colors">The Shift Toward Carbon-Neutral Modular Architecture</h3>
+<p class="text-sm text-slate-500 mb-6 line-clamp-2">How leading exhibition firms are reducing their footprint without compromising grandiosity in stand design.</p>
+<button class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest group-hover:gap-4 transition-all">
+                    Read Analysis <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</article>
+<article class="group">
+<div class="aspect-video mb-6 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Digital networking light pattern" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLvDL_5iFCUk5RR39IdxfKwFsFFDMWb0Po_kX3AeG2MpTIslI73-Ago4CKbGUin2JoSgj5dib9cKLIoloIgXPKYyPiLpqo9U72sEyLTM3a25PXOtnzhlh7wD3DOoIfPj8JEtySxOs5IQIh-zWheYdlzy0_VhDQcGVdVOM3otcAajv-x6anGsn94pBR3yJ1Fek2AdmiOHBUW8EFNDtWGTj6flERqJXfFLl-BKbA3AeZPNrIyl1sl-SqMbmTQrYACyqeDwHacB9j-E4"/>
+</div>
+<span class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 block">B2B Strategy</span>
+<h3 class="text-xl font-bold uppercase tracking-tight leading-snug mb-4 group-hover:text-primary transition-colors">Maximizing ROI through Interactive Hybrid Stands</h3>
+<p class="text-sm text-slate-500 mb-6 line-clamp-2">Exploring the integration of phygital experiences to increase lead conversion rates by up to 45%.</p>
+<button class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest group-hover:gap-4 transition-all">
+                    Read Analysis <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</article>
+<article class="group">
+<div class="aspect-video mb-6 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Low angle of modern skyscraper facade" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkbAuYsbNYvLDOIw3kQYqLAbUsR6RT0GNePDwO0-l2MhVnGx8RoilengWhxomgFG1IGatslz4QdhIs6BmGwTKCPWEQUZ-zvLiPTf12R2rsxpt7QJ8x7Wajyf6Zar1_WaZdjkHp0ySe4s4gFHfrAbI7vJrkskgywDseV7MlUugfykjsNoVODky9X8VqsM2z9zwOi_u6yDpM4ArsDWScEkRtpsBr0SoUPm8un9KZF9Z4wlbTLwhBiALl943Kq-7ornOwHu0yUJ0vpLg"/>
+</div>
+<span class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 block">Corporate Policy</span>
+<h3 class="text-xl font-bold uppercase tracking-tight leading-snug mb-4 group-hover:text-primary transition-colors">Navigating Global Exhibition Financial Regulations</h3>
+<p class="text-sm text-slate-500 mb-6 line-clamp-2">A comprehensive guide for B2B procurement managers on cross-border builder contracts and taxes.</p>
+<button class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest group-hover:gap-4 transition-all">
+                    Read Analysis <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</article>
+</div>
+</section>
+<!-- Powerful CTA -->
+<section class="relative py-32 bg-navy overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-20" data-alt="Abstract architectural lines and light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApumx7V2-LVLslPYve38sMBSErogi5CAnfyoov2R_FeXR7saCUWsXmUTxZ0Cw54vcMWwIT_VvM_9bS69GuTUU-fPJ5_FcMNdCBhPnweqNPrdG2PArV4XKfLA3Wt3QG3oRbRaUGiC_X1UH-gFIJRQX2HnA12AgDCna7O9iSCn18p__2439WAXa6YFpmLCZNxAaRnsn3Daerf9PizjUCcdr-m-cU9ydac6_6ENa0hYdJssfNLmADncvNgHfb7ftwE_zu4m3gZtC1ERQ"/>
+<div class="absolute inset-0 bg-navy/80"></div>
+</div>
+<div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
+<h2 class="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter mb-8 leading-none">
+                Start Your <br/> <span class="text-crimson">World-Class</span> Journey
+            </h2>
+<p class="text-xl text-slate-400 mb-12 max-w-2xl mx-auto">Connect with certified architectural partners and elevate your global brand presence through our proprietary tender system.</p>
+<div class="flex flex-col md:flex-row justify-center gap-6">
+<button class="bg-crimson text-white px-12 py-5 font-bold uppercase tracking-widest hover:bg-white hover:text-navy transition-all">
+                    Register as a Builder
+                </button>
+<button class="bg-primary text-white px-12 py-5 font-bold uppercase tracking-widest hover:bg-white hover:text-navy transition-all">
+                    Post a Tender RFP
+                </button>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-navy text-slate-500 py-20 border-t border-white/5">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-2 mb-8">
+<div class="w-6 h-6 bg-white flex items-center justify-center">
+<span class="material-symbols-outlined text-navy text-sm">architecture</span>
+</div>
+<span class="text-lg font-black tracking-tighter uppercase text-white">Stands Zone</span>
+</div>
+<p class="text-xs leading-loose uppercase tracking-widest opacity-60">The world's premier B2B directory for high-end exhibition architecture and global stand design.</p>
+</div>
+<div>
+<h4 class="text-white text-[10px] font-black uppercase tracking-[0.3em] mb-8">Navigation</h4>
+<ul class="space-y-4 text-xs font-bold uppercase tracking-widest">
+<li><a class="hover:text-white transition-colors" href="#">Directory</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Tender System</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Quality Audits</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Insights</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white text-[10px] font-black uppercase tracking-[0.3em] mb-8">Regional</h4>
+<ul class="space-y-4 text-xs font-bold uppercase tracking-widest">
+<li><a class="hover:text-white transition-colors" href="#">Dubai Hub</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Abu Dhabi Hub</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Europe HQ</a></li>
+<li><a class="hover:text-white transition-colors" href="#">North America</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white text-[10px] font-black uppercase tracking-[0.3em] mb-8">Support</h4>
+<ul class="space-y-4 text-xs font-bold uppercase tracking-widest">
+<li><a class="hover:text-white transition-colors" href="#">Help Center</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Trust &amp; Safety</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Contact Expert</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+<p class="text-[10px] uppercase tracking-widest font-bold">© 2024 Stands Zone Global. All Rights Reserved.</p>
+<div class="flex gap-8">
+<a class="hover:text-white transition-colors" href="#"><span class="material-symbols-outlined text-lg">share</span></a>
+<a class="hover:text-white transition-colors" href="#"><span class="material-symbols-outlined text-lg">public</span></a>
+<a class="hover:text-white transition-colors" href="#"><span class="material-symbols-outlined text-lg">mail</span></a>
+</div>
+</div>
+</div>
+</footer>
+</section>
+</body></html>

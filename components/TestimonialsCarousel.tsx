@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiStar, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import { Button } from '@/components/ui/button';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 interface Testimonial {
   id: number;
@@ -22,7 +20,7 @@ const testimonials: Testimonial[] = [
     name: "Sarah Johnson",
     company: "TechFlow Solutions",
     role: "Marketing Director",
-    content: "ExhibitBay helped us find the perfect builder for our trade show in Berlin. The quality was exceptional and we saved 30% compared to our previous vendor. Highly recommended!",
+    content: "Stands Zone transformed our European tour. Finding reliable local builders in three different countries was seamless and the quality was superior to anything we've had before.",
     rating: 5,
     image: "https://images.unsplash.com/photo-1494790108755-2616b1e2c947?w=150&h=150&fit=crop&crop=face",
     location: "Berlin, Germany"
@@ -32,7 +30,7 @@ const testimonials: Testimonial[] = [
     name: "Michael Chen",
     company: "Innovation Labs",
     role: "CEO",
-    content: "The platform made it incredibly easy to compare quotes from multiple builders. We found a reliable partner who delivered our custom booth on time and within budget.",
+    content: "The quote comparison tool saved us over 40 hours of manual research. We found a niche builder in Tokyo that perfectly matched our minimalist brand aesthetic.",
     rating: 5,
     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
     location: "San Francisco, USA"
@@ -42,7 +40,7 @@ const testimonials: Testimonial[] = [
     name: "Emma Rodriguez",
     company: "Green Energy Corp",
     role: "Events Manager",
-    content: "Outstanding service from start to finish. The builders were professional, creative, and delivered exactly what we envisioned. Our booth was the talk of the trade show!",
+    content: "Unrivaled database of quality partners. For high-stakes trade shows, this is the only platform we use to vet our construction teams.",
     rating: 5,
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
     location: "Madrid, Spain"
@@ -63,152 +61,97 @@ export default function TestimonialsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  console.log("TestimonialsCarousel: Component rendered");
-
   useEffect(() => {
     if (!isAutoPlaying) return;
-
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     }, 5000);
-
     return () => clearInterval(interval);
   }, [isAutoPlaying]);
 
   const nextTestimonial = () => {
-    console.log("TestimonialsCarousel: Next testimonial");
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     setIsAutoPlaying(false);
   };
 
   const prevTestimonial = () => {
-    console.log("TestimonialsCarousel: Previous testimonial");
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
     setIsAutoPlaying(false);
   };
 
   const goToSlide = (index: number) => {
-    console.log("TestimonialsCarousel: Go to slide", index);
     setCurrentIndex(index);
     setIsAutoPlaying(false);
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl lg:text-4xl font-bold text-navy-900 mb-4">
-            What Our Clients Say
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Join thousands of satisfied clients who found their perfect exhibition stand builders through our platform
-          </p>
-        </motion.div>
+    <section className="py-24 px-6 bg-white">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h3 className="text-3xl font-black text-[#0f172a] tracking-tight mb-4 uppercase">
+            TRUSTED BY EXHIBITORS WORLDWIDE
+          </h3>
+          <div className="w-20 h-1 bg-[#1e3886] mx-auto"></div>
+        </div>
 
-        <div className="relative max-w-4xl mx-auto">
-          {/* Main Testimonial */}
-          <div className="relative h-80 overflow-hidden">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentIndex}
-                initial={{ opacity: 0, x: 300 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -300 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="absolute inset-0"
-              >
-                <div className="bg-white rounded-2xl shadow-2xl p-8 lg:p-12 h-full flex flex-col justify-between border border-gray-100">
-                  <div>
-                    {/* Stars */}
-                    <div className="flex items-center mb-6">
-                      {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                        <FiStar key={i} className="w-5 h-5 text-gold-primary fill-current" />
-                      ))}
-                    </div>
+        {/* Testimonials grid — show 3 at a time on desktop */}
+        <div className="grid md:grid-cols-3 gap-10">
+          {[0, 1, 2].map((offset) => {
+            const idx = (currentIndex + offset) % testimonials.length;
+            const t = testimonials[idx];
+            return (
+              <div key={t.id} className="p-8 border border-slate-100 shadow-sm relative">
+                {/* Quote icon */}
+                <div className="absolute -top-4 left-8 text-4xl text-slate-200 font-serif leading-none">&ldquo;</div>
 
-                    {/* Content */}
-                    <blockquote className="text-lg lg:text-xl text-gray-700 leading-relaxed mb-8 font-medium">
-                      "{testimonials[currentIndex].content}"
-                    </blockquote>
+                <p className="italic text-slate-600 leading-relaxed mt-4 mb-8">
+                  &ldquo;{t.content}&rdquo;
+                </p>
+
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-slate-200 rounded-full overflow-hidden">
+                    <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
                   </div>
-
-                  {/* Author */}
-                  <div className="flex items-center">
-                    <div className="w-16 h-16 rounded-full overflow-hidden mr-4 ring-4 ring-blue-primary/10">
-                      <img
-                        src={testimonials[currentIndex].image}
-                        alt={testimonials[currentIndex].name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <div className="font-bold text-navy-900 text-lg">
-                        {testimonials[currentIndex].name}
-                      </div>
-                      <div className="text-blue-primary font-medium">
-                        {testimonials[currentIndex].role}
-                      </div>
-                      <div className="text-gray-500 text-sm">
-                        {testimonials[currentIndex].company} • {testimonials[currentIndex].location}
-                      </div>
-                    </div>
+                  <div>
+                    <p className="font-black text-[#0f172a] text-sm">{t.name}</p>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t.role}, {t.company}</p>
                   </div>
                 </div>
-              </motion.div>
-            </AnimatePresence>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Navigation */}
+        <div className="flex items-center justify-center mt-12 gap-6">
+          <button
+            onClick={prevTestimonial}
+            className="w-10 h-10 flex items-center justify-center border border-slate-200 hover:border-[#1e3886] transition-colors"
+          >
+            <FiChevronLeft className="w-4 h-4" />
+          </button>
+
+          <div className="flex space-x-3">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`w-2 h-2 transition-all duration-300 ${
+                  index === currentIndex
+                    ? 'bg-[#1e3886] scale-150'
+                    : 'bg-slate-300 hover:bg-slate-400'
+                }`}
+              />
+            ))}
           </div>
 
-          {/* Navigation */}
-          <div className="flex items-center justify-between mt-8">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={prevTestimonial}
-              className="rounded-full w-12 h-12 p-0 border-2 hover:border-blue-primary hover:text-blue-primary transition-colors"
-            >
-              <FiChevronLeft className="w-5 h-5" />
-            </Button>
-
-            {/* Dots */}
-            <div className="flex space-x-3">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentIndex
-                      ? 'bg-blue-primary scale-125'
-                      : 'bg-gray-300 hover:bg-gray-400'
-                  }`}
-                />
-              ))}
-            </div>
-
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={nextTestimonial}
-              className="rounded-full w-12 h-12 p-0 border-2 hover:border-blue-primary hover:text-blue-primary transition-colors"
-            >
-              <FiChevronRight className="w-5 h-5" />
-            </Button>
-          </div>
-
-          {/* Auto-play indicator */}
-          <div className="text-center mt-6">
-            <button
-              onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-              className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              {isAutoPlaying ? 'Pause auto-play' : 'Resume auto-play'}
-            </button>
-          </div>
+          <button
+            onClick={nextTestimonial}
+            className="w-10 h-10 flex items-center justify-center border border-slate-200 hover:border-[#1e3886] transition-colors"
+          >
+            <FiChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </section>

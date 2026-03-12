@@ -336,7 +336,7 @@ export default function Navigation() {
                 onMouseLeave={handleMouseLeave}
               >
                 <button
-                  className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-200 text-gray-700 hover:text-pink-600 hover:bg-gray-100/50"
+                  className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-200 text-white hover:text-pink-600 hover:bg-gray-100/50"
                   onClick={() => handleDropdownClick('Account')}
                 >
                   <SafeIcon IconComponent={FiUser} className="w-3 h-3 flex-shrink-0" />

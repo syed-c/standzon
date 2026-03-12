@@ -14,37 +14,35 @@ export default async function ServerRecentLeadsSection({
   ctaParagraph,
   ctaButtons,
 }: ServerRecentLeadsSectionProps) {
-  // Fetch leads on the server
   let leads = [];
   try {
     leads = await getRecentLeads(10);
   } catch (error) {
     console.warn("Failed to fetch recent leads:", error);
-    // Use fallback static data
     leads = [
       {
         id: "1",
-        exhibitionName: "CES 2024",
-        standSize: "50 sqm",
-        budget: "$25,000",
+        exhibitionName: "GITEX Global 2024",
+        standSize: "120 sqm",
+        budget: "$45k - $60k",
         submittedAt: new Date(Date.now() - 86400000),
-        status: "Open",
+        status: "Active",
       },
       {
         id: "2",
-        exhibitionName: "Hannover Messe",
-        standSize: "30 sqm",
-        budget: "$15,000",
+        exhibitionName: "CES Las Vegas",
+        standSize: "45 sqm",
+        budget: "$15k - $25k",
         submittedAt: new Date(Date.now() - 172800000),
-        status: "Matched",
+        status: "Active",
       },
       {
         id: "3",
-        exhibitionName: "GITEX Technology",
-        standSize: "75 sqm",
-        budget: "$40,000",
+        exhibitionName: "EuroShop 2025",
+        standSize: "300 sqm",
+        budget: "$120k+",
         submittedAt: new Date(Date.now() - 259200000),
-        status: "Open",
+        status: "Negotiation",
       },
     ];
   }
@@ -57,110 +55,84 @@ export default async function ServerRecentLeadsSection({
     });
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusClasses = (status: string) => {
     switch (status.toLowerCase()) {
+      case "active":
       case "open":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-green-100 text-green-700";
       case "matched":
-        return "bg-blue-100 text-blue-800 border-blue-200";
       case "responded":
-        return "bg-purple-100 text-purple-800 border-purple-200";
+        return "bg-blue-100 text-blue-700";
+      case "negotiation":
+        return "bg-amber-100 text-amber-700";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-gray-100 text-gray-700";
     }
   };
 
   return (
     <div>
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mb-6">
-          <svg
-            className="w-8 h-8 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13 10V3L4 14h7v7l9-11h-7z"
-            />
+      {/* Section header */}
+      <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div>
+          <span className="text-[#c0123d] font-black text-xs uppercase tracking-widest">Real-time Activity</span>
+          <h3 className="text-3xl font-black text-[#0f172a] tracking-tight mt-2 uppercase">RECENT LEADS &amp; QUOTES</h3>
+        </div>
+        <Link
+          href="/builders"
+          className="text-[#1e3886] font-bold uppercase text-xs tracking-widest flex items-center gap-2 border-b-2 border-[#1e3886] pb-1 hover:text-[#c0123d] hover:border-[#c0123d] transition-colors"
+        >
+          View Live Feed
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
-        </div>
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          Recent Leads & Quotes
-        </h2>
-        <p className="text-xl text-gray-600 mb-2">
-          Real exhibition stand requests and quotes from clients worldwide
-        </p>
-        <p className="text-sm text-emerald-600 font-medium">
-          ✨ Updated in real-time • Join now to access these leads
-        </p>
+        </Link>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-emerald-100">
-        {/* Header */}
-        <div className="px-3 md:px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-600">
-          <div className="grid grid-cols-4 gap-1 md:gap-2 text-xs font-semibold text-white">
-            <div className="truncate">Event/Request</div>
-            <div className="truncate">Size</div>
-            <div className="truncate">Budget</div>
-            <div className="truncate">Date</div>
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-[#0f172a] text-white uppercase text-[10px] tracking-widest">
+              <th className="p-4">Event Name</th>
+              <th className="p-4">Stand Size</th>
+              <th className="p-4">Estimated Budget</th>
+              <th className="p-4">Date</th>
+              <th className="p-4">Status</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 text-sm">
+            {leads.slice(0, 10).map((lead, index) => (
+              <tr key={`${lead.id}-${index}`} className="hover:bg-slate-50 transition-colors">
+                <td className="p-4 font-bold text-[#0f172a]">{lead.exhibitionName || 'Event Not Specified'}</td>
+                <td className="p-4 font-medium text-slate-700">{lead.standSize || 'N/A'}</td>
+                <td className="p-4 font-bold text-[#1e3886]">{lead.budget || 'Budget not specified'}</td>
+                <td className="p-4 text-slate-500">{formatDate(new Date(lead.submittedAt))}</td>
+                <td className="p-4">
+                  {lead.status && (
+                    <span className={`${getStatusClasses(lead.status)} px-3 py-1 text-[10px] font-black uppercase rounded-full`}>
+                      {lead.status}
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* CTA */}
+      <div className="mt-12 py-16 bg-[#c0123d] text-white overflow-hidden relative">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div>
+            <h3 className="text-3xl font-black tracking-tighter uppercase italic">
+              {ctaHeading || "Ready to Access These Leads?"}
+            </h3>
+            <p className="text-white/80 mt-2 font-medium">
+              {ctaParagraph || "Join our platform as a verified builder and start receiving quote requests."}
+            </p>
           </div>
-        </div>
-
-        {/* Leads List */}
-        <div className="divide-y divide-gray-100 max-h-80 md:max-h-96 overflow-y-auto">
-          {leads.slice(0, 10).map((lead, index) => (
-            <div
-              key={`${lead.id}-${index}`}
-              className="px-3 md:px-4 py-3 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 transition-all duration-300 group"
-            >
-              <div className="grid grid-cols-4 gap-1 md:gap-2 items-center text-xs md:text-sm">
-                <div className="min-w-0">
-                  <div className="flex items-start space-x-1 md:space-x-2">
-                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse mt-1 flex-shrink-0"></div>
-                    <div className="min-w-0 flex-1">
-                      <div className="font-semibold text-gray-900 group-hover:text-emerald-700 transition-colors truncate text-xs md:text-sm">
-                        {lead.exhibitionName || 'Event Not Specified'}
-                      </div>
-                      {lead.status && (
-                        <span
-                          className={`inline-block px-1 py-0.5 text-xs rounded-full border mt-1 ${getStatusColor(lead.status)}`}
-                        >
-                          {lead.status}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="text-gray-700 text-xs truncate">
-                  {lead.standSize || 'N/A'}
-                </div>
-                <div className="text-gray-700 text-xs truncate">
-                  {lead.budget || 'Budget not specified'}
-                </div>
-                <div className="text-gray-500 text-xs truncate">
-                  {formatDate(new Date(lead.submittedAt))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Call to Action */}
-      <div className="mt-6">
-        <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-4 md:p-6 text-white">
-          <h3 className="text-lg md:text-xl font-bold mb-2">
-            {ctaHeading || "Ready to Access These Leads & Quotes?"}
-          </h3>
-          <p className="text-emerald-100 mb-4 text-sm md:text-base">
-            {ctaParagraph ||
-              "Join our platform as a verified builder and start receiving qualified leads and quote requests like these"}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-4">
             {(ctaButtons && ctaButtons.length > 0
               ? ctaButtons
               : [
@@ -174,11 +146,11 @@ export default async function ServerRecentLeadsSection({
                 prefetch={true}
                 className={
                   i === 0
-                    ? "px-4 py-2 bg-white text-emerald-600 font-semibold rounded-lg hover:bg-emerald-50 transition-colors text-sm md:text-base"
-                    : "px-4 py-2 border border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors text-sm md:text-base"
+                    ? "bg-white text-[#c0123d] hover:bg-slate-100 font-black uppercase tracking-widest px-10 py-5 transition-all shadow-xl whitespace-nowrap text-center text-sm"
+                    : "border-2 border-white text-white hover:bg-white hover:text-[#c0123d] font-black uppercase tracking-widest px-10 py-5 transition-all whitespace-nowrap text-center text-sm"
                 }
               >
-                {b.text || (i === 0 ? "Primary" : "Secondary")}
+                {b.text || (i === 0 ? "Join as Builder" : "Learn More")}
               </Link>
             ))}
           </div>
@@ -186,22 +158,14 @@ export default async function ServerRecentLeadsSection({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-3 mt-6">
-        <div className="text-center p-3 md:p-4 bg-white rounded-xl shadow-sm border border-emerald-100">
-          <div className="text-lg md:text-xl font-bold text-emerald-600">
-            150+
-          </div>
-          <div className="text-xs md:text-sm text-gray-600">
-            Leads This Month
-          </div>
+      <div className="grid grid-cols-2 gap-0 mt-0 border border-slate-200 divide-x divide-slate-200">
+        <div className="text-center p-6 bg-white">
+          <div className="text-2xl font-black text-[#1e3886]">150+</div>
+          <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Leads This Month</div>
         </div>
-        <div className="text-center p-3 md:p-4 bg-white rounded-xl shadow-sm border border-emerald-100">
-          <div className="text-lg md:text-xl font-bold text-teal-600">
-            $2.5M+
-          </div>
-          <div className="text-xs md:text-sm text-gray-600">
-            Total Project Value
-          </div>
+        <div className="text-center p-6 bg-white">
+          <div className="text-2xl font-black text-[#1e3886]">$2.5M+</div>
+          <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Total Project Value</div>
         </div>
       </div>
     </div>

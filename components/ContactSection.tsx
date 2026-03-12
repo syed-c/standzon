@@ -1,19 +1,38 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FiPhone, FiMail, FiMapPin, FiClock, FiMessageSquare } from 'react-icons/fi';
 import { useToast } from '@/hooks/use-toast';
 
 export default function ContactSection() {
-  console.log("ContactSection: Component rendered");
-  
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [footerData, setFooterData] = useState<any | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchFooter = () => {
+      const url = `/api/admin/footer?ts=${Date.now()}`;
+      fetch(url, { cache: 'no-store' })
+        .then(r => r.json())
+        .then(json => { if (mounted) setFooterData(json?.data || null); })
+        .catch(() => { });
+    };
+    fetchFooter();
+    return () => { mounted = false; };
+  }, []);
+
+  const fallbackData = {
+    contact: {
+      phone: "+1 (555) 123-4567",
+      email: "hello@standszone.com",
+      address: "123 Exhibition Ave, NYC"
+    }
+  };
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -27,258 +46,152 @@ export default function ContactSection() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    console.log(`Contact form: ${field} updated to ${value}`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Contact form: Submitting form", formData);
-    
     setIsSubmitting(true);
-    
-    // Simulate form submission
     setTimeout(() => {
       toast({
         title: "Quote Request Submitted!",
         description: "We'll get back to you within 24 hours.",
       });
       setIsSubmitting(false);
-      setFormData({
-        name: '',
-        email: '',
-        company: '',
-        phone: '',
-        service: '',
-        budget: '',
-        location: '',
-        message: ''
-      });
+      setFormData({ name: '', email: '', company: '', phone: '', service: '', budget: '', location: '', message: '' });
     }, 1000);
   };
 
-  const contactInfo = [
-    {
-      icon: FiPhone,
-      title: "Call Us",
-      details: "+1 (555) 123-4567",
-      subtitle: "Mon-Fri 9AM-6PM EST"
-    },
-    {
-      icon: FiMail,
-      title: "Email Us",
-      details: "hello@standszone.com",
-      subtitle: "24/7 Response"
-    },
-    {
-      icon: FiMapPin,
-      title: "Visit Us",
-      details: "123 Exhibition Ave, NYC",
-      subtitle: "By Appointment"
-    },
-    {
-      icon: FiClock,
-      title: "Quick Response",
-      details: "Within 2 Hours",
-      subtitle: "During Business Hours"
-    }
-  ];
-
   return (
-    <section id="contact" className="py-20 lg:py-32 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 font-inter">
-            Let's Create Something
-            <br />
-            <span className="bg-gradient-to-r from-pink-600 via-rose-600 to-pink-700 bg-clip-text text-transparent">Extraordinary</span>
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Ready to transform your exhibition presence? Get a personalized quote and 
-            discover how we can bring your vision to life.
+    <section id="contact" className="py-24 px-6 bg-slate-50 border-t border-slate-200">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16">
+        {/* Left column — Contact info */}
+        <div className="lg:w-1/3">
+          <h3 className="text-4xl font-black text-[#0f172a] leading-tight mb-6 uppercase tracking-tighter">
+            LET&apos;S CREATE SOMETHING EXTRAORDINARY
+          </h3>
+          <p className="text-slate-500 mb-10">
+            Our global team of consultants is ready to assist you with technical specifications and local market insights.
           </p>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Contact Information */}
-          <div className="lg:col-span-1">
-            <div className="space-y-6">
-              {contactInfo.map((info, index) => (
-                <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-pink-600 to-rose-700 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <info.icon className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-1">
-                          {info.title}
-                        </h3>
-                        <p className="text-gray-900 font-medium">
-                          {info.details}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {info.subtitle}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white shadow-sm flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-[#1e3886]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Call Us</p>
+                {footerData?.contact?.phoneLink ? (
+                  <a href={footerData.contact.phoneLink} className="font-bold text-[#0f172a] hover:text-[#1e3886] transition-colors">{footerData.contact.phone}</a>
+                ) : (
+                  <p className="font-bold text-[#0f172a]">{footerData?.contact?.phone || fallbackData.contact.phone}</p>
+                )}
+              </div>
             </div>
 
-            {/* WhatsApp CTA */}
-            <Card className="mt-8 bg-gradient-to-br from-green-500 to-green-600 border-0 text-white">
-              <CardContent className="p-6 text-center">
-                <FiMessageSquare className="w-12 h-12 mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">
-                  WhatsApp Us
-                </h3>
-                <p className="mb-4 opacity-90">
-                  Get instant responses to your queries
-                </p>
-                <Button className="bg-white text-green-600 border-2 border-green-200">
-                  Chat Now
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white shadow-sm flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-[#1e3886]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Email</p>
+                {footerData?.contact?.emailLink ? (
+                  <a href={footerData.contact.emailLink} className="font-bold text-[#0f172a] hover:text-[#1e3886] transition-colors">{footerData.contact.email}</a>
+                ) : (
+                  <p className="font-bold text-[#0f172a]">{footerData?.contact?.email || fallbackData.contact.email}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white shadow-sm flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-[#1e3886]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Visit Us</p>
+                {footerData?.contact?.addressLink ? (
+                  <a href={footerData.contact.addressLink} className="font-bold text-[#0f172a] hover:text-[#1e3886] transition-colors">{footerData.contact.address}</a>
+                ) : (
+                  <p className="font-bold text-[#0f172a]">{footerData?.contact?.address || fallbackData.contact.address}</p>
+                )}
+              </div>
+            </div>
           </div>
+        </div>
 
-          {/* Contact Form */}
-          <Card className="lg:col-span-2 border-0 shadow-2xl bg-white">
-            <CardContent className="p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-navy-900 mb-2">
-                      Full Name *
-                    </label>
-                    <Input
-                      required
-                      value={formData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                      placeholder="Your full name"
-                      className="border-gray-300 focus:border-pink-600 focus:ring-pink-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-2">
-                      Email Address *
-                    </label>
-                    <Input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      placeholder="your@email.com"
-                      className="border-gray-300 focus:border-pink-600 focus:ring-pink-600"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-2">
-                      Company Name
-                    </label>
-                    <Input
-                      value={formData.company}
-                      onChange={(e) => handleInputChange('company', e.target.value)}
-                      placeholder="Your company"
-                      className="border-gray-300 focus:border-pink-600 focus:ring-pink-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-2">
-                      Phone Number
-                    </label>
-                    <Input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      placeholder="+1 (555) 123-4567"
-                      className="border-gray-300 focus:border-pink-600 focus:ring-pink-600"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-2 bg-white">
-                      Service Needed
-                    </label>
-                    <Select onValueChange={(value) => handleInputChange('service', value)}>
-                      <SelectTrigger className="border-gray-300 focus:border-pink-600 focus:ring-pink-600 bg-white">
-                        <SelectValue placeholder="Select a service" />
-                      </SelectTrigger>
-                      <SelectContent className='bg-white text-gray-900'>
-                        <SelectItem value="custom-design">Custom Stand Design</SelectItem>
-                        <SelectItem value="build-installation">Build & Installation</SelectItem>
-                        <SelectItem value="global-services">Global Services</SelectItem>
-                        <SelectItem value="event-management">Event Management</SelectItem>
-                        <SelectItem value="full-service">Full Service Package</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-2">
-                      Budget Range
-                    </label>
-                    <Select onValueChange={(value) => handleInputChange('budget', value)}>
-                      <SelectTrigger className="border-gray-300 focus:border-pink-600 focus:ring-pink-600">
-                        <SelectValue placeholder="Select budget range" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="under-25k">Under $25,000</SelectItem>
-                        <SelectItem value="25k-50k">$25,000 - $50,000</SelectItem>
-                        <SelectItem value="50k-100k">$50,000 - $100,000</SelectItem>
-                        <SelectItem value="100k-250k">$100,000 - $250,000</SelectItem>
-                        <SelectItem value="over-250k">Over $250,000</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Exhibition Location
-                  </label>
-                  <Input
-                    value={formData.location}
-                    onChange={(e) => handleInputChange('location', e.target.value)}
-                    placeholder="City, Country"
-                    className="border-gray-300 focus:border-pink-600 focus:ring-pink-600"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Project Details
-                  </label>
-                  <Textarea
-                    value={formData.message}
-                    onChange={(e) => handleInputChange('message', e.target.value)}
-                    placeholder="Tell us about your exhibition goals, timeline, and any specific requirements..."
-                    rows={4}
-                    className="border-gray-300 focus:border-pink-600 focus:ring-pink-600"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-pink-600 via-rose-600 to-pink-700 hover:from-pink-700 hover:via-rose-700 hover:to-pink-800 text-white py-3 text-lg font-semibold disabled:opacity-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-2xl"
-                >
-                  {isSubmitting ? 'Submitting...' : 'Get Your Free Quote'}
-                </Button>
-
-                <p className="text-sm text-gray-500 text-center">
-                  By submitting this form, you agree to our privacy policy. 
-                  We'll respond within 24 hours with a detailed quote.
-                </p>
-              </form>
-            </CardContent>
-          </Card>
+        {/* Right column — Form */}
+        <div className="lg:w-2/3 bg-white p-10 shadow-xl border border-slate-200">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="col-span-1">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Full Name</label>
+              <Input
+                required
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                placeholder="John Doe"
+                className="bg-slate-50 border-slate-200 focus:border-[#1e3886] focus:ring-[#1e3886] p-4 rounded-none"
+              />
+            </div>
+            <div className="col-span-1">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Company Email</label>
+              <Input
+                type="email"
+                required
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="john@company.com"
+                className="bg-slate-50 border-slate-200 focus:border-[#1e3886] focus:ring-[#1e3886] p-4 rounded-none"
+              />
+            </div>
+            <div className="col-span-1">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Event Name</label>
+              <Input
+                value={formData.company}
+                onChange={(e) => handleInputChange('company', e.target.value)}
+                placeholder="e.g. Arab Health 2025"
+                className="bg-slate-50 border-slate-200 focus:border-[#1e3886] focus:ring-[#1e3886] p-4 rounded-none"
+              />
+            </div>
+            <div className="col-span-1">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Budget Range</label>
+              <Select onValueChange={(value) => handleInputChange('budget', value)}>
+                <SelectTrigger className="bg-slate-50 border-slate-200 focus:border-[#1e3886] focus:ring-[#1e3886] p-4 rounded-none">
+                  <SelectValue placeholder="Select budget range" />
+                </SelectTrigger>
+                <SelectContent className="bg-white text-[#0f172a]">
+                  <SelectItem value="10k-25k">$10k - $25k</SelectItem>
+                  <SelectItem value="25k-50k">$25k - $50k</SelectItem>
+                  <SelectItem value="50k-100k">$50k - $100k</SelectItem>
+                  <SelectItem value="100k-plus">$100k+</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Project Brief &amp; Details</label>
+              <Textarea
+                value={formData.message}
+                onChange={(e) => handleInputChange('message', e.target.value)}
+                placeholder="Tell us about your requirements..."
+                rows={4}
+                className="bg-slate-50 border-slate-200 focus:border-[#1e3886] focus:ring-[#1e3886] p-4 rounded-none"
+              />
+            </div>
+            <div className="col-span-1 md:col-span-2">
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-[#1e3886] hover:bg-[#1e3886]/95 text-white font-black uppercase tracking-[0.2em] py-5 shadow-lg transition-all rounded-none text-sm"
+              >
+                {isSubmitting ? 'Submitting...' : 'Request Professional Consultation'}
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
     </section>

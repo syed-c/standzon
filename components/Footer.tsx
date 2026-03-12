@@ -7,10 +7,6 @@ import logoImg from '@/components/zonelogo2.png';
 import { FiPhone, FiMail, FiMapPin, FiLinkedin, FiTwitter, FiInstagram, FiFacebook, FiExternalLink } from 'react-icons/fi';
 
 export default function Footer() {
-  console.log("Footer: Component rendered");
-
-  // const settings = null;
-
   // Fallback data if settings are not loaded yet
   const fallbackData = {
     companyName: "StandsZone",
@@ -26,7 +22,7 @@ export default function Footer() {
       facebook: "#"
     },
     pages: {
-      footerText: "Creating extraordinary exhibition experiences that captivate audiences and drive business results across 50+ countries worldwide."
+      footerText: "The definitive global network for professional exhibition stand construction and management."
     }
   };
 
@@ -35,14 +31,13 @@ export default function Footer() {
   React.useEffect(() => {
     let mounted = true;
     const fetchFooter = () => {
-      const url = `/api/admin/footer?ts=${Date.now()}`; // cache-bust SW/CDN
+      const url = `/api/admin/footer?ts=${Date.now()}`;
       fetch(url, { cache: 'no-store' })
         .then(r => r.json())
         .then(json => { if (mounted) setFooterData(json?.data || null); })
         .catch(() => { });
     };
     fetchFooter();
-    // Refresh when the tab gains focus (helps after saving in CMS)
     const onFocus = () => fetchFooter();
     const onVisible = () => { if (document.visibilityState === 'visible') fetchFooter(); };
     const onFooterUpdated = () => fetchFooter();
@@ -60,8 +55,7 @@ export default function Footer() {
     };
   }, []);
 
-  // Use settings data or fallback
-  const siteData = fallbackData; // reserved for other global settings
+  const siteData = fallbackData;
 
   const services = footerData?.columns?.services?.items || [
     { label: "Custom Stand Design", href: "#" },
@@ -98,63 +92,66 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-gray-900 text-white w-full">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        {/* Main Footer Content */}
-        <div className="py-12 md:py-16 grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-8 gap-y-12 w-full">
+    <footer className="bg-[#0f172a] text-slate-500 pt-20 pb-10 px-6 border-t border-white/5 w-full">
+      <div className="max-w-7xl mx-auto">
+        {/* Main columns */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
           {/* Company Info */}
-          <div className="lg:col-span-1">
-            <div className="mb-4">
-              <Image src={logoImg} alt="StandsZone" width={200} height={60} className="w-40 md:w-48 h-auto" style={{ height: 'auto' }} priority />
+          <div className="col-span-2 md:col-span-1">
+            <div className="flex items-center gap-2 mb-8">
+              <Image src={logoImg} alt="StandsZone" width={120} height={36} className="h-8 w-auto" style={{ height: 'auto' }} priority />
             </div>
-            <p className="text-gray-300 mb-6 leading-relaxed">
+            <p className="text-xs leading-loose uppercase tracking-widest opacity-60 mb-6">
               {footerData?.paragraph || siteData.pages?.footerText || fallbackData.pages.footerText}
             </p>
 
+            {/* Contact info */}
             <div className="space-y-3">
-              <div className="flex items-center">
-                <FiPhone className="w-4 h-4 text-pink-400 mr-3 flex-shrink-0" />
+              <div className="flex items-center gap-3">
+                <FiPhone className="w-3 h-3 text-slate-500 flex-shrink-0" />
                 {footerData?.contact?.phoneLink ? (
-                  <a href={footerData.contact.phoneLink} className="text-gray-300 hover:text-pink-400 transition-colors flex items-center">
+                  <a href={footerData.contact.phoneLink} className="text-xs font-bold uppercase tracking-widest hover:text-white transition-colors flex items-center">
                     {footerData.contact.phone}
                     <FiExternalLink className="w-3 h-3 ml-1 opacity-60 flex-shrink-0" />
                   </a>
                 ) : (
-                  <span className="text-gray-300">{footerData?.contact?.phone || siteData.contact?.phone || fallbackData.contact.phone}</span>
+                  <span className="text-xs font-bold uppercase tracking-widest">{footerData?.contact?.phone || siteData.contact?.phone || fallbackData.contact.phone}</span>
                 )}
               </div>
-              <div className="flex items-center">
-                <FiMail className="w-4 h-4 text-pink-400 mr-3 flex-shrink-0" />
+              <div className="flex items-center gap-3">
+                <FiMail className="w-3 h-3 text-slate-500 flex-shrink-0" />
                 {footerData?.contact?.emailLink ? (
-                  <a href={footerData.contact.emailLink} className="text-gray-300 hover:text-pink-400 transition-colors flex items-center">
+                  <a href={footerData.contact.emailLink} className="text-xs font-bold uppercase tracking-widest hover:text-white transition-colors flex items-center">
                     {footerData.contact.email}
                     <FiExternalLink className="w-3 h-3 ml-1 opacity-60 flex-shrink-0" />
                   </a>
                 ) : (
-                  <span className="text-gray-300">{footerData?.contact?.email || siteData.contact?.email || fallbackData.contact.email}</span>
+                  <span className="text-xs font-bold uppercase tracking-widest">{footerData?.contact?.email || siteData.contact?.email || fallbackData.contact.email}</span>
                 )}
               </div>
-              <div className="flex items-center">
-                <FiMapPin className="w-4 h-4 text-pink-400 mr-3 flex-shrink-0" />
+              <div className="flex items-center gap-3">
+                <FiMapPin className="w-3 h-3 text-slate-500 flex-shrink-0" />
                 {footerData?.contact?.addressLink ? (
-                  <a href={footerData.contact.addressLink} className="text-gray-300 hover:text-pink-400 transition-colors flex items-center">
+                  <a href={footerData.contact.addressLink} className="text-xs font-bold uppercase tracking-widest hover:text-white transition-colors flex items-center">
                     {footerData.contact.address}
                     <FiExternalLink className="w-3 h-3 ml-1 opacity-60 flex-shrink-0" />
                   </a>
                 ) : (
-                  <span className="text-gray-300">{footerData?.contact?.address || siteData.contact?.address || fallbackData.contact.address}</span>
+                  <span className="text-xs font-bold uppercase tracking-widest">{footerData?.contact?.address || siteData.contact?.address || fallbackData.contact.address}</span>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Services */}
+          {/* Services Column */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 font-inter">{footerData?.columns?.services?.heading || 'Services'}</h4>
-            <ul className="space-y-2">
+            <h6 className="text-white text-[10px] font-black uppercase tracking-[0.3em] mb-8">
+              {footerData?.columns?.services?.heading || 'Services'}
+            </h6>
+            <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
               {services.map((service: any, index: number) => (
                 <li key={index}>
-                  <a href={service.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight flex items-center min-h-[44px] py-2">
+                  <a href={service.href || '#'} className="hover:text-[#c0123d] transition-colors touch-active no-tap-highlight">
                     {service.label || service}
                   </a>
                 </li>
@@ -162,13 +159,15 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Locations */}
+          {/* Locations Column */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 font-inter">{footerData?.columns?.locations?.heading || 'Global Locations'}</h4>
-            <ul className="space-y-2">
+            <h6 className="text-white text-[10px] font-black uppercase tracking-[0.3em] mb-8">
+              {footerData?.columns?.locations?.heading || 'Global Locations'}
+            </h6>
+            <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
               {locations.map((location: any, index: number) => (
                 <li key={index}>
-                  <a href={location.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight flex items-center min-h-[44px] py-2">
+                  <a href={location.href || '#'} className="hover:text-[#c0123d] transition-colors touch-active no-tap-highlight">
                     {location.label || location}
                   </a>
                 </li>
@@ -176,13 +175,15 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Resources */}
+          {/* Resources Column */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 font-inter">{footerData?.columns?.resources?.heading || 'Resources'}</h4>
-            <ul className="space-y-2">
+            <h6 className="text-white text-[10px] font-black uppercase tracking-[0.3em] mb-8">
+              {footerData?.columns?.resources?.heading || 'Resources'}
+            </h6>
+            <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
               {resources.map((resource: any, index: number) => (
                 <li key={index}>
-                  <a href={resource.href || '#'} className="text-gray-300 hover:text-pink-400 transition-colors touch-active no-tap-highlight flex items-center min-h-[44px] py-2">
+                  <a href={resource.href || '#'} className="hover:text-[#c0123d] transition-colors touch-active no-tap-highlight">
                     {resource.label || resource}
                   </a>
                 </li>
@@ -191,46 +192,41 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Newsletter removed per requirements */}
-
-        {/* Bottom Footer */}
-        <div className="py-8 border-t border-gray-800 w-full">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
-              <p className="text-gray-400 text-sm text-center md:text-left">
-                {footerData?.bottom?.copyright || `© 2026 ${siteData.companyName || fallbackData.companyName}. All rights reserved.`}
-              </p>
-              <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6 text-sm">
-                {(footerData?.bottom?.links || [
-                  { label: 'Privacy Policy', href: '/legal/privacy-policy' },
-                  { label: 'Terms of Service', href: '/legal/terms-of-service' },
-                  { label: 'Cookie Policy', href: '/legal/cookie-policy' },
-                  { label: 'Sitemap', href: 'https://standszone.com/sitemap.xml' },
-                ]).map((l: any, i: number) => (
-                  <a key={i} href={l.href} className="text-gray-400 hover:text-pink-400 transition-colors touch-active no-tap-highlight whitespace-nowrap min-h-[44px] flex items-center">
-                    {l.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div className="flex space-x-4 mt-4 md:mt-0">
-              {(footerData?.social || socialLinks).map((social: any, index: number) => (
-                <a
-                  key={index}
-                  href={social.href}
-                  aria-label={social.label}
-                  className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-pink-400 hover:bg-gray-700 transition-all duration-300 touch-active no-tap-highlight"
-                >
-                  {social.icon === 'linkedin' ? <FiLinkedin className="w-4 h-4" />
-                    : social.icon === 'twitter' ? <FiTwitter className="w-4 h-4" />
-                      : social.icon === 'instagram' ? <FiInstagram className="w-4 h-4" />
-                        : social.icon === 'facebook' ? <FiFacebook className="w-4 h-4" />
-                          : <FiExternalLink className="w-4 h-4" />}
+        {/* Bottom bar */}
+        <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+            <p className="text-[10px] uppercase tracking-widest font-bold">
+              {footerData?.bottom?.copyright || `© 2026 ${siteData.companyName || fallbackData.companyName}. All Rights Reserved.`}
+            </p>
+            <div className="flex flex-wrap justify-center md:justify-start gap-6 text-[10px] uppercase tracking-widest font-bold">
+              {(footerData?.bottom?.links || [
+                { label: 'Privacy Policy', href: '/legal/privacy-policy' },
+                { label: 'Terms of Service', href: '/legal/terms-of-service' },
+                { label: 'Sitemap', href: 'https://standszone.com/sitemap.xml' },
+              ]).map((l: any, i: number) => (
+                <a key={i} href={l.href} className="hover:text-white transition-colors touch-active no-tap-highlight whitespace-nowrap">
+                  {l.label}
                 </a>
               ))}
             </div>
+          </div>
+
+          {/* Social Links */}
+          <div className="flex gap-6">
+            {(footerData?.social || socialLinks).map((social: any, index: number) => (
+              <a
+                key={index}
+                href={social.href}
+                aria-label={social.label}
+                className="text-slate-500 hover:text-white transition-colors touch-active no-tap-highlight"
+              >
+                {social.icon === 'linkedin' ? <FiLinkedin className="w-4 h-4" />
+                  : social.icon === 'twitter' ? <FiTwitter className="w-4 h-4" />
+                    : social.icon === 'instagram' ? <FiInstagram className="w-4 h-4" />
+                      : social.icon === 'facebook' ? <FiFacebook className="w-4 h-4" />
+                        : <FiExternalLink className="w-4 h-4" />}
+              </a>
+            ))}
           </div>
         </div>
       </div>
