@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { sanitizeHtml } from '@/lib/utils/html';
 import { getFontClass } from '@/lib/utils/fonts';
+import HeroSearchFilter from '@/components/HeroSearchFilter';
 
 interface UltraFastHeroProps {
   headings: string[];
@@ -100,37 +101,8 @@ export default function UltraFastHero({
           />
         )}
 
-        {/* Search bar — architectural style */}
-        <div className="max-w-3xl w-full bg-white p-2 shadow-2xl flex flex-col md:flex-row gap-2 mb-12">
-          <div className="flex-1 flex items-center px-4 gap-3 border-b md:border-b-0 md:border-r border-slate-100 py-3">
-            <svg className="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 12.414a1.5 1.5 0 00-2.121 0l-4.243 4.243M15 11a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <input
-              className="w-full border-none focus:ring-0 text-[#0f172a] text-sm font-medium placeholder:text-slate-400 bg-transparent outline-none"
-              placeholder="Country, City or Region..."
-              type="text"
-              readOnly
-            />
-          </div>
-          <div className="flex-1 flex items-center px-4 gap-3 py-3">
-            <svg className="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-            <input
-              className="w-full border-none focus:ring-0 text-[#0f172a] text-sm font-medium placeholder:text-slate-400 bg-transparent outline-none"
-              placeholder="Builder Name or Specialty..."
-              type="text"
-              readOnly
-            />
-          </div>
-          <Link
-            href="/builders"
-            className="bg-[#c0123d] hover:bg-[#0f172a] text-white px-10 py-4 font-bold uppercase tracking-widest transition-colors text-center text-sm"
-          >
-            Search Directory
-          </Link>
-        </div>
+        {/* Dynamic search filter */}
+        <HeroSearchFilter />
 
         {/* Stats row
         {stats.length > 0 && (

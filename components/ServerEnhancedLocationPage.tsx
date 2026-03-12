@@ -15,6 +15,7 @@ import { getAllBuilders } from '@/lib/supabase/builders';
 import { getServerPageContent } from '@/lib/data/serverPageContent';
 import { convertToProxyUrl } from '@/lib/utils/imageProxyUtils';
 import Image from 'next/image';
+import HeroSearchFilter from '@/components/HeroSearchFilter';
 
 /**
  * Props: flexible and permissive so this component can be used server-side or client-side.
@@ -336,8 +337,8 @@ export default async function ServerEnhancedLocationPage({
     <div className="min-h-screen bg-[#f6f6f8] font-sans">
 
       {/* ── HERO ── */}
-      <section className="relative bg-[#0f172a] py-20 overflow-hidden">
-        <div className="absolute inset-0">
+      <section className="relative bg-[#0f172a] py-20 overflow-visible">
+        <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-[#1e3886]/30 via-transparent to-[#c0123d]/20" />
           <div className="absolute inset-0 opacity-[0.04]"
             style={{ backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`, backgroundSize: '32px 32px' }} />
@@ -348,11 +349,50 @@ export default async function ServerEnhancedLocationPage({
               {isCity ? `${finalCountryName} Exhibition Hub` : 'World-Class Exhibition Logistics'}
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight mb-6 tracking-tight">
-              {isCity ? (
-                <>Exhibition Stand Builders <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">in {finalLocationName}.</span></>
-              ) : (
-                <>Global Directory of <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">Verified Stand Builders.</span></>
-              )}
+              {(() => {
+                // Try to find a custom title directly from the raw database content
+                // We avoid using pageContent.title as a first fallback because it contains the generated default
+                let headingRaw = 
+                  resolvedCmsBlock?.hero?.title || 
+                  resolvedCmsBlock?.hero?.heading || 
+                  resolvedCmsBlock?.title || 
+                  resolvedCmsBlock?.heroHeading ||
+                  serverCmsContent?.hero?.title || 
+                  serverCmsContent?.hero?.heading || 
+                  serverCmsContent?.title;
+
+                if (!headingRaw && resolvedCmsBlock?.countryPages) {
+                  for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
+                    if (resolvedCmsBlock.countryPages[key]?.title) { 
+                      headingRaw = resolvedCmsBlock.countryPages[key].title; 
+                      break; 
+                    }
+                  }
+                }
+
+                let customHeading = '';
+                if (typeof headingRaw === 'string') {
+                  customHeading = headingRaw;
+                } else if (typeof headingRaw === 'object' && headingRaw !== null) {
+                  customHeading = headingRaw.title || headingRaw.heading || '';
+                }
+
+                // Make sure we aren't just getting the default merge value
+                if (customHeading && !customHeading.includes('Exhibition Stand Builders in') && !customHeading.includes('Global Directory of')) {
+                  return customHeading;
+                }
+
+                // If DB explicitly has it OR we fallback to original beautifully styled defaults
+                if (customHeading && customHeading !== `Exhibition Stand Builders in ${displayLocation}` && customHeading !== `Exhibition Stand Builders in ${finalLocationName}, ${finalCountryName}`) {
+                  return customHeading;
+                }
+
+                return isCity ? (
+                  <>Exhibition Stand Builders <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">in {finalLocationName}.</span></>
+                ) : (
+                  <>Global Directory of <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">Verified Stand Builders.</span></>
+                );
+              })()}
             </h1>
             <p className="text-lg text-slate-300 mb-10 leading-relaxed max-w-2xl">
               {(() => {
@@ -368,29 +408,11 @@ export default async function ServerEnhancedLocationPage({
               })()}
             </p>
 
-            {/* Search bar */}
-            <div className="bg-white p-2 rounded-xl shadow-2xl flex flex-col md:flex-row gap-2 mb-5">
-              <div className="flex-1 flex items-center px-4 border-b md:border-b-0 md:border-r border-slate-100">
-                <svg className="w-5 h-5 text-slate-400 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                <input className="w-full border-none focus:outline-none text-slate-900 py-3.5 text-sm" placeholder="Industry or Stand Type" type="text" />
-              </div>
-              <div className="flex-1 flex items-center px-4">
-                <MapPin className="w-5 h-5 text-slate-400 mr-3 shrink-0" />
-                <input className="w-full border-none focus:outline-none text-slate-900 py-3.5 text-sm" placeholder={`City or Region in ${finalCountryName || displayLocation}`} type="text" defaultValue={displayLocation} />
-              </div>
-              <PublicQuoteRequest
-                location={displayLocation}
-                buttonText="Search Directory"
-                className="bg-[#c0123d] hover:bg-[#a01030] text-white font-black px-7 py-3.5 h-auto rounded-lg border-0 shrink-0 text-sm"
-              />
-            </div>
-
-            <div className="flex gap-5 text-xs text-slate-400 uppercase font-black tracking-wider flex-wrap">
-              <span>Popular:</span>
-              <a href="#builders-grid" className="hover:text-white transition-colors">GITEX Global</a>
-              <a href="#builders-grid" className="hover:text-white transition-colors">Arab Health</a>
-              <a href="#builders-grid" className="hover:text-white transition-colors">Big 5 Construct</a>
-            </div>
+            {/* Dynamic search filter */}
+            <HeroSearchFilter
+              defaultCountrySlug={countrySlug}
+              defaultCitySlug={isCity ? slugify(finalLocationName) : undefined}
+            />
           </div>
         </div>
       </section>

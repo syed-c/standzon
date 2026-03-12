@@ -223,8 +223,8 @@ export default function Navigation() {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 w-full z-[1000] transition-all duration-300 ${isScrolled
-      ? 'bg-white dark:bg-[#0f172a] shadow-md border-b border-gray-200 dark:border-slate-800'
-      : 'bg-white dark:bg-[#0f172a] shadow-sm border-b border-gray-100 dark:border-slate-800'
+      ? 'bg-white shadow-md border-b border-gray-200'
+      : 'bg-white shadow-sm border-b border-gray-100'
       }`}
     >
       <div className="container mx-auto px-4">
@@ -257,7 +257,7 @@ export default function Navigation() {
                       className="relative"
                     >
                       <button
-                        className="flex items-center space-x-1 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-white hover:text-pink-600 hover:bg-gray-100/50 whitespace-nowrap flex-shrink-0"
+                        className="flex items-center space-x-1 px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:text-pink-600 hover:bg-gray-100/50 whitespace-nowrap flex-shrink-0"
                         onClick={() => handleDropdownClick(item.label)}
                       >
                         <span className="truncate max-w-[120px]">{item.label}</span>
@@ -266,7 +266,7 @@ export default function Navigation() {
                       </button>
                       {activeDropdown === item.label && (
                         <div
-                          className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-gray-200 dark:border-slate-800 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
+                          className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
                           onMouseEnter={handleDropdownMouseEnter}
                           onMouseLeave={handleDropdownMouseLeave}
                         >
@@ -275,7 +275,7 @@ export default function Navigation() {
                               key={subItem.label}
                               href={subItem.href}
                               prefetch={true}
-                              className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100/50 dark:hover:bg-slate-700/80 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-150 truncate"
+                              className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100/50:bg-slate-700/80 hover:text-pink-600:text-pink-400 transition-all duration-150 truncate"
                               onClick={() => {
                                 setActiveDropdown(null);
                                 isDropdownHoveredRef.current = false;
@@ -291,7 +291,7 @@ export default function Navigation() {
                     <Link
                       href={item.href}
                       prefetch={true}
-                      className="px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 whitespace-nowrap truncate max-w-[120px] flex-shrink-0"
+                      className="px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-700 hover:text-pink-600:text-pink-400 hover:bg-gray-100/50:bg-slate-800/50 whitespace-nowrap truncate max-w-[120px] flex-shrink-0"
                     >
                       <span className="truncate">{item.label}</span>
                     </Link>
@@ -336,7 +336,7 @@ export default function Navigation() {
                 onMouseLeave={handleMouseLeave}
               >
                 <button
-                  className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-200 text-white hover:text-pink-600 hover:bg-gray-100/50"
+                  className="flex items-center space-x-1 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-200 text-gray-700 hover:text-pink-600 hover:bg-gray-100/50"
                   onClick={() => handleDropdownClick('Account')}
                 >
                   <SafeIcon IconComponent={FiUser} className="w-3 h-3 flex-shrink-0" />
@@ -347,7 +347,7 @@ export default function Navigation() {
                 </button>
                 {activeDropdown === 'Account' && (
                   <div
-                    className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-gray-200 dark:border-slate-800 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
+                    className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-[999] animate-in fade-in slide-in-from-top-2 duration-200"
                     onMouseEnter={handleDropdownMouseEnter}
                     onMouseLeave={handleDropdownMouseLeave}
                   >
@@ -355,11 +355,11 @@ export default function Navigation() {
                       accountItem.isGreeting ? (
                         <div
                           key={accountItem.label}
-                          className="px-3 py-2 text-gray-500 dark:text-slate-400 border-b border-gray-100 dark:border-slate-700/50 bg-gray-50/50 dark:bg-slate-900/50"
+                          className="px-3 py-2 text-gray-500 border-b border-gray-100 bg-gray-50/50"
                         >
                           <span className="text-xs font-medium truncate block">{accountItem.label}</span>
                           {currentUser && (
-                            <div className="text-xs text-gray-400 dark:text-slate-500 mt-0.5 truncate">
+                            <div className="text-xs text-gray-400 mt-0.5 truncate">
                               {currentUser.role === 'admin' && '🔧 Administrator'}
                               {currentUser.role === 'builder' && '🏗️ Builder Account'}
                               {currentUser.role === 'client' && '👤 Client Account'}
@@ -370,7 +370,7 @@ export default function Navigation() {
                         <Link
                           key={accountItem.label}
                           href={accountItem.href}
-                          className="block px-3 py-2 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-100/50 dark:hover:bg-slate-700/80 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-150 truncate"
+                          className="block px-3 py-2 text-xs text-gray-700 hover:bg-gray-100/50:bg-slate-700/80 hover:text-pink-600:text-pink-400 transition-all duration-150 truncate"
                           onClick={() => {
                             setActiveDropdown(null);
                             isDropdownHoveredRef.current = false;
@@ -387,7 +387,7 @@ export default function Navigation() {
 
             {/* Get Free Quote CTA Button */}
             <Link href="/quote">
-              <Button className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-3 py-1.5 text-xs rounded-lg shadow-md transition-all duration-200 whitespace-nowrap hover:shadow-lg">
+              <Button className="bg-[#c0123d] hover:bg-[#a0102f] text-white px-3 py-1.5 text-xs rounded-lg shadow-md transition-all duration-200 whitespace-nowrap hover:shadow-lg">
                 <SafeIcon IconComponent={FiZap} className="w-3 h-3 mr-1 flex-shrink-0" />
                 <span className="truncate hidden xl:inline">Get Free Quote</span>
                 <span className="xl:hidden">Quote</span>
@@ -398,14 +398,14 @@ export default function Navigation() {
           {/* Mobile menu button - Right */}
           <div className="lg:hidden flex items-center space-x-2">
             <Link href="/quote">
-              <Button size="sm" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-3 py-1.5 rounded-lg shadow text-xs font-medium min-h-[44px]">
+              <Button size="sm" className="bg-[#c0123d] hover:bg-[#a0102f] text-white px-3 py-1.5 rounded-lg shadow text-xs font-medium min-h-[44px]">
                 <SafeIcon IconComponent={FiZap} className="w-3 h-3 mr-1 flex-shrink-0" />
                 <span className="truncate">Quote</span>
               </Button>
             </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-200 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 min-h-[44px] min-w-[44px] flex items-center justify-center touch-active no-tap-highlight"
+              className="p-2 rounded-lg transition-all duration-200 text-gray-700 hover:text-pink-600:text-pink-400 hover:bg-gray-100/50:bg-slate-800/50 min-h-[44px] min-w-[44px] flex items-center justify-center touch-active no-tap-highlight"
               aria-label="Toggle menu"
             >
               {isOpen ? <SafeIcon IconComponent={FiX} className="w-6 h-6 flex-shrink-0" /> : <SafeIcon IconComponent={FiMenu} className="w-6 h-6 flex-shrink-0" />}
@@ -416,9 +416,9 @@ export default function Navigation() {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="lg:hidden fixed inset-0 w-full h-screen bg-white dark:bg-slate-900 shadow-2xl z-[1001] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden" style={{ top: 'var(--breadcrumb-height, 0px)' }}>
+        <div className="lg:hidden fixed inset-0 w-full h-screen bg-white shadow-2xl z-[1001] animate-in slide-in-from-top duration-200 flex flex-col overflow-x-hidden" style={{ top: 'var(--breadcrumb-height, 0px)' }}>
           {/* Header inside menu */}
-          <div className="h-16 flex-shrink-0 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 w-full flex items-center justify-between px-4">
+          <div className="h-16 flex-shrink-0 bg-white border-b border-gray-100 w-full flex items-center justify-between px-4">
             <div className="flex items-center">
               <Image
                 src={logoImg}
@@ -442,7 +442,7 @@ export default function Navigation() {
             {/* Mobile Get Quote at Top */}
             <div className="mb-4">
               <Link href="/quote" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-2.5 rounded-lg shadow-lg font-medium text-sm min-h-[44px]">
+                <Button className="w-full bg-[#c0123d] hover:bg-[#a0102f] text-white py-2.5 rounded-lg shadow-lg font-medium text-sm min-h-[44px]">
                   <SafeIcon IconComponent={FiZap} className="w-4 h-4 mr-2 flex-shrink-0" />
                   <span className="truncate">Get Free Quote</span>
                 </Button>
@@ -454,15 +454,15 @@ export default function Navigation() {
               <div key={item.label} className="space-y-1">
                 {item.submenu ? (
                   <div className="space-y-1">
-                    <div className="px-3 py-2 text-gray-800 dark:text-gray-100 font-bold text-lg">
+                    <div className="px-3 py-2 text-gray-800 font-bold text-lg">
                       {item.label}
                     </div>
-                    <div className="ml-3 border-l-2 border-gray-100 dark:border-slate-800 pl-3 space-y-2">
+                    <div className="ml-3 border-l-2 border-gray-100 pl-3 space-y-2">
                       {item.submenu.map((subItem) => (
                         <Link
                           key={subItem.label}
                           href={subItem.href}
-                          className="block py-2 text-base text-gray-600 dark:text-gray-400 hover:text-pink-600 dark:hover:text-pink-400"
+                          className="block py-2 text-base text-gray-600 hover:text-pink-600:text-pink-400"
                           onClick={() => setIsOpen(false)}
                         >
                           {subItem.label}
@@ -473,7 +473,7 @@ export default function Navigation() {
                 ) : (
                   <Link
                     href={item.href}
-                    className="block px-3 py-3 text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base truncate"
+                    className="block px-3 py-3 text-gray-800 hover:text-pink-600:text-pink-400 hover:bg-gray-100/50:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base truncate"
                     onClick={() => setIsOpen(false)}
                   >
                     {item.label}
@@ -483,27 +483,27 @@ export default function Navigation() {
             ))}
 
             {/* Account section for mobile */}
-            <div className="mt-6 pt-4 border-t border-gray-100 dark:border-slate-700 w-full">
-              <h3 className="px-3 text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-3">Account</h3>
+            <div className="mt-6 pt-4 border-t border-gray-100 w-full">
+              <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Account</h3>
               {!currentUser ? (
                 <div className="space-y-1">
                   <Link
                     href="/auth/login?type=builder"
-                    className="block px-3 py-3 text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base truncate"
+                    className="block px-3 py-3 text-gray-800 hover:text-pink-600:text-pink-400 hover:bg-gray-100/50:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base truncate"
                     onClick={() => setIsOpen(false)}
                   >
                     🔐 Builder Login
                   </Link>
                   <Link
                     href="/builder/register"
-                    className="block px-3 py-3 text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base truncate"
+                    className="block px-3 py-3 text-gray-800 hover:text-pink-600:text-pink-400 hover:bg-gray-100/50:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base truncate"
                     onClick={() => setIsOpen(false)}
                   >
                     🏢 Builder Registration
                   </Link>
                   <Link
                     href="/auth/login?type=admin"
-                    className="block px-3 py-3 text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base truncate"
+                    className="block px-3 py-3 text-gray-800 hover:text-pink-600:text-pink-400 hover:bg-gray-100/50:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base truncate"
                     onClick={() => setIsOpen(false)}
                   >
                     ⚡ Admin Portal
@@ -515,7 +515,7 @@ export default function Navigation() {
                     <Link
                       key={accountItem.label}
                       href={accountItem.href}
-                      className="block px-3 py-3 text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base truncate"
+                      className="block px-3 py-3 text-gray-800 hover:text-pink-600:text-pink-400 hover:bg-gray-100/50:bg-slate-800/50 transition-all duration-150 rounded-lg font-medium text-base truncate"
                       onClick={() => setIsOpen(false)}
                     >
                       {accountItem.label}

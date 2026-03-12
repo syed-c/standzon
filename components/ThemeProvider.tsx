@@ -13,25 +13,17 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark');
+  const [theme, setTheme] = useState<Theme>('light');
   const pathname = usePathname();
 
   useEffect(() => {
-    // Check if we're on an admin page
+    // Only admin pages get dark mode — everything else is permanently light
     const isAdminPage = pathname && pathname.startsWith('/admin');
     
-    // Check for saved theme in localStorage or system preference
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    // For admin pages, default to dark mode
     if (isAdminPage) {
       setTheme('dark');
-    } else if (savedTheme) {
-      setTheme(savedTheme);
-    } else if (systemPrefersDark) {
-      setTheme('dark');
     } else {
+      // Force light mode for all public-facing pages
       setTheme('light');
     }
   }, [pathname]);
