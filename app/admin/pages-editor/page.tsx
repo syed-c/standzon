@@ -19,19 +19,7 @@ type PageItem = {
 };
 
 export default function AdminPagesEditor() {
-  // Simple client-side guard: require admin session in localStorage
-  React.useEffect(() => {
-    try {
-      const raw = typeof window !== 'undefined' ? localStorage.getItem('currentUser') : null;
-      const user = raw ? JSON.parse(raw) : null;
-      const isAdmin = !!user && (user.role === 'super_admin' || user.role === 'admin' || user.isAdmin);
-      if (!isAdmin) {
-        window.location.href = '/admin/login';
-      }
-    } catch {
-      if (typeof window !== 'undefined') window.location.href = '/admin/login';
-    }
-  }, []);
+  // No explicit client-side redirect needed here; layout.tsx handles routing if not authenticated
   const [pages, setPages] = useState<PageItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -194,7 +182,7 @@ export default function AdminPagesEditor() {
           fetch('/api/admin/footer')
             .then(r=>r.json())
             .then(j=>{ 
-              if(isMounted && j?.data) setFooter(j.data); 
+              if(isMounted && j?.data) setFooter((prev: any) => ({ ...prev, ...j.data })); 
             })
             .catch(()=>{});
         }
@@ -269,11 +257,11 @@ export default function AdminPagesEditor() {
           ...currentContent.data,
           // Only update the gallery images section
           sections: { 
-            ...currentContent.data.sections,
+            ...currentContent?.data?.sections,
             countryPages: { 
-              ...currentContent.data.sections?.countryPages,
+              ...currentContent?.data?.sections?.countryPages,
               [selectedCountryForGallery]: { 
-                ...currentContent.data.sections?.countryPages?.[selectedCountryForGallery],
+                ...currentContent?.data?.sections?.countryPages?.[selectedCountryForGallery],
                 galleryImages: urls 
               } 
             } 
@@ -334,11 +322,11 @@ export default function AdminPagesEditor() {
       
       // For city pages, we need to structure the data with a nested countryPages object
       const cityData = {
-        ...currentContent.data.sections?.cityPages?.[key],
+        ...currentContent?.data?.sections?.cityPages?.[key],
         countryPages: {
-          ...currentContent.data.sections?.cityPages?.[key]?.countryPages,
+          ...currentContent?.data?.sections?.cityPages?.[key]?.countryPages,
           [selectedCityForGallery]: {
-            ...(currentContent.data.sections?.cityPages?.[key]?.countryPages?.[selectedCityForGallery] || {}),
+            ...(currentContent?.data?.sections?.cityPages?.[key]?.countryPages?.[selectedCityForGallery] || {}),
             galleryImages: urls
           }
         }
@@ -354,9 +342,9 @@ export default function AdminPagesEditor() {
           ...currentContent.data,
           // Only update the gallery images section
           sections: { 
-            ...currentContent.data.sections,
+            ...currentContent?.data?.sections,
             cityPages: { 
-              ...currentContent.data.sections?.cityPages,
+              ...currentContent?.data?.sections?.cityPages,
               [key]: cityData
             } 
           }
@@ -679,11 +667,11 @@ export default function AdminPagesEditor() {
             setSections((prev:any) => {
               const newSections = {
                 ...prev,
-                hero: pc.sections.hero || prev.hero,
-                whyChooseCustom: pc.sections.whyChooseCustom || prev.whyChooseCustom,
-                designProcess: pc.sections.designProcess || prev.designProcess,
-                customDesignServices: pc.sections.customDesignServices || prev.customDesignServices,
-                customBoothCta: pc.sections.customBoothCta || prev.customBoothCta,
+                hero: pc.sections?.hero || prev.hero,
+                whyChooseCustom: pc?.sections?.whyChooseCustom || prev.whyChooseCustom,
+                designProcess: pc?.sections?.designProcess || prev.designProcess,
+                customDesignServices: pc?.sections?.customDesignServices || prev.customDesignServices,
+                customBoothCta: pc?.sections?.customBoothCta || prev.customBoothCta,
               };
               console.log("New sections state:", newSections);
               return newSections;
@@ -694,13 +682,13 @@ export default function AdminPagesEditor() {
             setSections((prev:any) => {
               const newSections = {
                 ...prev,
-                hero: pc.sections.hero || prev.hero,
-                mission: pc.sections.mission || prev.mission,
-                vision: pc.sections.vision || prev.vision,
-                coreValues: pc.sections.coreValues || prev.coreValues,
-                howItWorks: pc.sections.howItWorks || prev.howItWorks,
-                team: pc.sections.team || prev.team,
-                cta: pc.sections.cta || prev.cta,
+                hero: pc.sections?.hero || prev.hero,
+                mission: pc?.sections?.mission || prev.mission,
+                vision: pc?.sections?.vision || prev.vision,
+                coreValues: pc?.sections?.coreValues || prev.coreValues,
+                howItWorks: pc?.sections?.howItWorks || prev.howItWorks,
+                team: pc?.sections?.team || prev.team,
+                cta: pc?.sections?.cta || prev.cta,
               };
               console.log("New /about sections state:", newSections);
               return newSections;
@@ -711,8 +699,8 @@ export default function AdminPagesEditor() {
             setSections((prev:any) => {
               const newSections = {
                 ...prev,
-                hero: pc.sections.hero || prev.hero,
-                boothRental: pc.sections.boothRental || prev.boothRental,
+                hero: pc.sections?.hero || prev.hero,
+                boothRental: pc?.sections?.boothRental || prev.boothRental,
               };
               console.log("New sections state:", newSections);
               return newSections;
@@ -723,8 +711,8 @@ export default function AdminPagesEditor() {
             setSections((prev:any) => {
               const newSections = {
                 ...prev,
-                hero: pc.sections.hero || prev.hero,
-                renderingConcept: pc.sections.renderingConcept || prev.renderingConcept,
+                hero: pc.sections?.hero || prev.hero,
+                renderingConcept: pc?.sections?.renderingConcept || prev.renderingConcept,
               };
               console.log("New sections state:", newSections);
               return newSections;
@@ -735,8 +723,8 @@ export default function AdminPagesEditor() {
             setSections((prev:any) => {
               const newSections = {
                 ...prev,
-                hero: pc.sections.hero || prev.hero,
-                installationDismantle: pc.sections.installationDismantle || prev.installationDismantle,
+                hero: pc.sections?.hero || prev.hero,
+                installationDismantle: pc?.sections?.installationDismantle || prev.installationDismantle,
               };
               console.log("New sections state:", newSections);
               return newSections;
@@ -747,8 +735,8 @@ export default function AdminPagesEditor() {
             setSections((prev:any) => {
               const newSections = {
                 ...prev,
-                hero: pc.sections.hero || prev.hero,
-                projectManagement: pc.sections.projectManagement || prev.projectManagement,
+                hero: pc.sections?.hero || prev.hero,
+                projectManagement: pc?.sections?.projectManagement || prev.projectManagement,
               };
               console.log("New sections state:", newSections);
               return newSections;
@@ -759,8 +747,8 @@ export default function AdminPagesEditor() {
             setSections((prev:any) => {
               const newSections = {
                 ...prev,
-                hero: pc.sections.hero || prev.hero,
-                graphicsPrinting: pc.sections.graphicsPrinting || prev.graphicsPrinting,
+                hero: pc.sections?.hero || prev.hero,
+                graphicsPrinting: pc?.sections?.graphicsPrinting || prev.graphicsPrinting,
               };
               console.log("New sections state:", newSections);
               return newSections;
@@ -769,20 +757,20 @@ export default function AdminPagesEditor() {
             // For home page, load home-specific sections
             setSections((prev:any) => ({
               ...prev,
-              hero: pc.sections.hero || prev.hero,
-              heroButtons: pc.sections.heroButtons || prev.heroButtons,
-              leadsIntro: pc.sections.leadsIntro || prev.leadsIntro,
-              readyLeads: pc.sections.readyLeads || prev.readyLeads,
-              globalPresence: pc.sections.globalPresence || prev.globalPresence,
-              moreCountries: pc.sections.moreCountries || prev.moreCountries,
-              expandingMarkets: pc.sections.expandingMarkets || prev.expandingMarkets,
-              readyStart: pc.sections.readyStart || prev.readyStart,
-              clientSay: pc.sections.clientSay || prev.clientSay,
-              reviews: pc.sections.reviews || prev.reviews,
-              finalCta: pc.sections.finalCta || prev.finalCta,
+              hero: pc.sections?.hero || prev.hero,
+              heroButtons: pc.sections?.heroButtons || prev.heroButtons,
+              leadsIntro: pc?.sections?.leadsIntro || prev.leadsIntro,
+              readyLeads: pc?.sections?.readyLeads || prev.readyLeads,
+              globalPresence: pc?.sections?.globalPresence || prev.globalPresence,
+              moreCountries: pc?.sections?.moreCountries || prev.moreCountries,
+              expandingMarkets: pc?.sections?.expandingMarkets || prev.expandingMarkets,
+              readyStart: pc?.sections?.readyStart || prev.readyStart,
+              clientSay: pc?.sections?.clientSay || prev.clientSay,
+              reviews: pc?.sections?.reviews || prev.reviews,
+              finalCta: pc?.sections?.finalCta || prev.finalCta,
               countryPages: {
                 ...(prev.countryPages || {}),
-                homeInfoCards: pc.sections.countryPages?.homeInfoCards || prev.countryPages?.homeInfoCards || []
+                homeInfoCards: pc?.sections?.countryPages?.homeInfoCards || prev.countryPages?.homeInfoCards || []
               }
             }));
           } else if (path.startsWith('/exhibition-stands/')) {
@@ -840,7 +828,7 @@ export default function AdminPagesEditor() {
             // For other pages, load common sections only
             setSections((prev:any) => ({
               ...prev,
-              hero: pc.sections.hero || prev.hero,
+              hero: pc.sections?.hero || prev.hero,
             }));
           }
         }
@@ -919,7 +907,7 @@ export default function AdminPagesEditor() {
       if (editingPath === '/custom-booth') {
         console.log('🎨 Saving custom-booth page:', editingPath);
         console.log('📝 Sections data:', sections);
-        console.log('🎯 Hero data:', sections.hero);
+        console.log('🎯 Hero data:', sections?.hero);
         console.log('💡 Why Choose data:', sections.whyChooseCustom);
         console.log('🔄 Design Process data:', sections.designProcess);
         console.log('🛠️ Custom Design Services data:', sections.customDesignServices);
@@ -1142,17 +1130,17 @@ export default function AdminPagesEditor() {
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Hero H1</Label>
-                            <Input value={sections.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), heading:e.target.value } }))} />
+                            <Input value={sections?.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Hero Description</Label>
-                            <Textarea rows={3} value={sections.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} />
+                            <Textarea rows={3} value={sections?.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
                               <div>
                                 <Label>Hero Background Image URL (optional)</Label>
-                                <Input value={sections.hero?.bgImage||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), bgImage:e.target.value } }))} placeholder="https://.../image.jpg" />
+                                <Input value={sections?.hero?.bgImage||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), bgImage:e.target.value } }))} placeholder="https://.../image.jpg" />
                               </div>
                               <div>
                                 <Label>Hero BG Opacity (0.0 - 1.0)</Label>
-                                <Input type="number" step="0.05" min="0" max="1" value={sections.hero?.bgOpacity??0.25} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), bgOpacity:Number(e.target.value) } }))} />
+                                <Input type="number" step="0.05" min="0" max="1" value={sections?.hero?.bgOpacity??0.25} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), bgOpacity:Number(e.target.value) } }))} />
                               </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
@@ -1160,7 +1148,7 @@ export default function AdminPagesEditor() {
                                 <Label>Heading Font</Label>
                                 <select
                                   className="w-full border rounded-md px-3 py-2"
-                                  value={sections.hero?.headingFont||''}
+                                  value={sections?.hero?.headingFont||''}
                                   onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), headingFont:e.target.value } }))}
                                 >
                                   <option value="">Default</option>
@@ -1175,7 +1163,7 @@ export default function AdminPagesEditor() {
                             <div className="mt-2">
                               <h5 className="font-semibold mb-2 text-black">Hero Buttons</h5>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {(sections.heroButtons||[]).map((b:any, idx:number)=> (
+                                {(sections?.heroButtons||[]).map((b:any, idx:number)=> (
                                   <div key={idx} className="border rounded p-3">
                                     <Label>Text</Label>
                                     <Input value={b.text||''} onChange={(e)=>setSections((s:any)=>{ const arr=[...(s.heroButtons||[])]; arr[idx]={...arr[idx], text:e.target.value}; return { ...s, heroButtons:arr }; })} />
@@ -1447,32 +1435,32 @@ export default function AdminPagesEditor() {
                           <div className="space-y-4 bg-white border rounded-md p-3">
                             <div>
                               <Label>Intro Paragraph</Label>
-                              <Textarea rows={3} value={footer.paragraph} onChange={(e)=>setFooter({ ...footer, paragraph:e.target.value })} />
+                              <Textarea rows={3} value={footer?.paragraph || ''} onChange={(e)=>setFooter({ ...footer, paragraph:e.target.value })} />
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               <div>
                                 <Label>Phone</Label>
-                                <Input value={footer.contact.phone} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer.contact, phone:e.target.value } })} />
+                                <Input value={footer?.contact?.phone || ''} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer?.contact, phone:e.target.value } })} />
                               </div>
                               <div>
                                 <Label>Phone Link (tel:)</Label>
-                                <Input value={footer.contact.phoneLink} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer.contact, phoneLink:e.target.value } })} />
+                                <Input value={footer?.contact.phoneLink} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer?.contact, phoneLink:e.target.value } })} />
                               </div>
                               <div>
                                 <Label>Email</Label>
-                                <Input value={footer.contact.email} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer.contact, email:e.target.value } })} />
+                                <Input value={footer?.contact.email} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer?.contact, email:e.target.value } })} />
                               </div>
                               <div>
                                 <Label>Email Link (mailto:)</Label>
-                                <Input value={footer.contact.emailLink} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer.contact, emailLink:e.target.value } })} />
+                                <Input value={footer?.contact.emailLink} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer?.contact, emailLink:e.target.value } })} />
                               </div>
                               <div>
                                 <Label>Address</Label>
-                                <Input value={footer.contact.address} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer.contact, address:e.target.value } })} />
+                                <Input value={footer?.contact.address} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer?.contact, address:e.target.value } })} />
                               </div>
                               <div>
                                 <Label>Address Link (map)</Label>
-                                <Input value={footer.contact.addressLink} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer.contact, addressLink:e.target.value } })} />
+                                <Input value={footer?.contact.addressLink} onChange={(e)=>setFooter({ ...footer, contact:{ ...footer?.contact, addressLink:e.target.value } })} />
                               </div>
                             </div>
 
@@ -1480,15 +1468,15 @@ export default function AdminPagesEditor() {
                               <div key={col} className="space-y-2">
                                 <div className="flex items-center justify-between">
                                   <Label className="font-semibold capitalize">{col} Column</Label>
-                                  <Button type="button" variant="outline" onClick={()=> setFooter({ ...footer, columns:{ ...footer.columns, [col]:{ ...footer.columns[col], items:[...footer.columns[col].items, { label:'New', href:'#' }] } } })}>Add Item</Button>
+                                  <Button type="button" variant="outline" onClick={()=> setFooter({ ...footer, columns:{ ...footer?.columns, [col]:{ ...footer?.columns[col], items:[...footer?.columns[col].items, { label:'New', href:'#' }] } } })}>Add Item</Button>
                                 </div>
-                                <Input value={footer.columns[col].heading} onChange={(e)=> setFooter({ ...footer, columns:{ ...footer.columns, [col]:{ ...footer.columns[col], heading:e.target.value } } })} />
+                                <Input value={footer?.columns[col].heading} onChange={(e)=> setFooter({ ...footer, columns:{ ...footer?.columns, [col]:{ ...footer?.columns[col], heading:e.target.value } } })} />
           <div className="space-y-2">
-                                  {footer.columns[col].items.map((item:any, idx:number)=> (
+                                  {footer?.columns[col].items.map((item:any, idx:number)=> (
                                     <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
-                                      <Input className="md:col-span-5" placeholder="Label" value={item.label} onChange={(e)=>{ const arr=[...footer.columns[col].items]; arr[idx] = { ...arr[idx], label:e.target.value }; setFooter({ ...footer, columns:{ ...footer.columns, [col]:{ ...footer.columns[col], items:arr } } }); }} />
-                                      <Input className="md:col-span-6" placeholder="Href" value={item.href} onChange={(e)=>{ const arr=[...footer.columns[col].items]; arr[idx] = { ...arr[idx], href:e.target.value }; setFooter({ ...footer, columns:{ ...footer.columns, [col]:{ ...footer.columns[col], items:arr } } }); }} />
-                                      <Button type="button" variant="ghost" onClick={()=>{ const arr=[...footer.columns[col].items]; arr.splice(idx,1); setFooter({ ...footer, columns:{ ...footer.columns, [col]:{ ...footer.columns[col], items:arr } } }); }}>Remove</Button>
+                                      <Input className="md:col-span-5" placeholder="Label" value={item.label} onChange={(e)=>{ const arr=[...footer?.columns[col].items]; arr[idx] = { ...arr[idx], label:e.target.value }; setFooter({ ...footer, columns:{ ...footer?.columns, [col]:{ ...footer?.columns[col], items:arr } } }); }} />
+                                      <Input className="md:col-span-6" placeholder="Href" value={item.href} onChange={(e)=>{ const arr=[...footer?.columns[col].items]; arr[idx] = { ...arr[idx], href:e.target.value }; setFooter({ ...footer, columns:{ ...footer?.columns, [col]:{ ...footer?.columns[col], items:arr } } }); }} />
+                                      <Button type="button" variant="ghost" onClick={()=>{ const arr=[...footer?.columns[col].items]; arr.splice(idx,1); setFooter({ ...footer, columns:{ ...footer?.columns, [col]:{ ...footer?.columns[col], items:arr } } }); }}>Remove</Button>
                                 </div>
                               ))}
                               </div>
@@ -1497,28 +1485,28 @@ export default function AdminPagesEditor() {
 
                             <div className="space-y-2">
                               <Label>Copyright</Label>
-                              <Input value={footer.bottom.copyright} onChange={(e)=>setFooter({ ...footer, bottom:{ ...footer.bottom, copyright:e.target.value } })} />
-                              {footer.bottom.links.map((l:any, idx:number)=> (
+                              <Input value={footer?.bottom.copyright} onChange={(e)=>setFooter({ ...footer, bottom:{ ...footer?.bottom, copyright:e.target.value } })} />
+                              {footer?.bottom.links.map((l:any, idx:number)=> (
                                 <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
-                                  <Input className="md:col-span-5" placeholder="Label" value={l.label} onChange={(e)=>{ const arr=[...footer.bottom.links]; arr[idx] = { ...arr[idx], label:e.target.value }; setFooter({ ...footer, bottom:{ ...footer.bottom, links:arr } }); }} />
-                                  <Input className="md:col-span-6" placeholder="Href" value={l.href} onChange={(e)=>{ const arr=[...footer.bottom.links]; arr[idx] = { ...arr[idx], href:e.target.value }; setFooter({ ...footer, bottom:{ ...footer.bottom, links:arr } }); }} />
-                                  <Button type="button" variant="ghost" onClick={()=>{ const arr=[...footer.bottom.links]; arr.splice(idx,1); setFooter({ ...footer, bottom:{ ...footer.bottom, links:arr } }); }}>Remove</Button>
+                                  <Input className="md:col-span-5" placeholder="Label" value={l.label} onChange={(e)=>{ const arr=[...footer?.bottom.links]; arr[idx] = { ...arr[idx], label:e.target.value }; setFooter({ ...footer, bottom:{ ...footer?.bottom, links:arr } }); }} />
+                                  <Input className="md:col-span-6" placeholder="Href" value={l.href} onChange={(e)=>{ const arr=[...footer?.bottom.links]; arr[idx] = { ...arr[idx], href:e.target.value }; setFooter({ ...footer, bottom:{ ...footer?.bottom, links:arr } }); }} />
+                                  <Button type="button" variant="ghost" onClick={()=>{ const arr=[...footer?.bottom.links]; arr.splice(idx,1); setFooter({ ...footer, bottom:{ ...footer?.bottom, links:arr } }); }}>Remove</Button>
                                 </div>
                               ))}
-                              <Button type="button" variant="outline" onClick={()=> setFooter({ ...footer, bottom:{ ...footer.bottom, links:[...footer.bottom.links, { label:'New', href:'#' }] } })}>Add Bottom Link</Button>
+                              <Button type="button" variant="outline" onClick={()=> setFooter({ ...footer, bottom:{ ...footer?.bottom, links:[...footer?.bottom.links, { label:'New', href:'#' }] } })}>Add Bottom Link</Button>
                             </div>
 
                             <div className="space-y-2">
                               <Label>Social Links</Label>
-                              {footer.social.map((s:any, idx:number)=> (
+                              {footer?.social.map((s:any, idx:number)=> (
                                 <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
-                                  <Input className="md:col-span-4" placeholder="Label" value={s.label} onChange={(e)=>{ const arr=[...footer.social]; arr[idx] = { ...arr[idx], label:e.target.value }; setFooter({ ...footer, social:arr }); }} />
-                                  <Input className="md:col-span-6" placeholder="Href" value={s.href} onChange={(e)=>{ const arr=[...footer.social]; arr[idx] = { ...arr[idx], href:e.target.value }; setFooter({ ...footer, social:arr }); }} />
-                                  <Input className="md:col-span-2" placeholder="Icon" value={s.icon} onChange={(e)=>{ const arr=[...footer.social]; arr[idx] = { ...arr[idx], icon:e.target.value }; setFooter({ ...footer, social:arr }); }} />
+                                  <Input className="md:col-span-4" placeholder="Label" value={s.label} onChange={(e)=>{ const arr=[...footer?.social]; arr[idx] = { ...arr[idx], label:e.target.value }; setFooter({ ...footer, social:arr }); }} />
+                                  <Input className="md:col-span-6" placeholder="Href" value={s.href} onChange={(e)=>{ const arr=[...footer?.social]; arr[idx] = { ...arr[idx], href:e.target.value }; setFooter({ ...footer, social:arr }); }} />
+                                  <Input className="md:col-span-2" placeholder="Icon" value={s.icon} onChange={(e)=>{ const arr=[...footer?.social]; arr[idx] = { ...arr[idx], icon:e.target.value }; setFooter({ ...footer, social:arr }); }} />
                                 </div>
                               ))}
             <div className="flex gap-2">
-              <Button type="button" variant="outline" onClick={()=> setFooter({ ...footer, social:[...footer.social, { label:'New', href:'#', icon:'linkedin' }] })}>Add Social</Button>
+              <Button type="button" variant="outline" onClick={()=> setFooter({ ...footer, social:[...footer?.social, { label:'New', href:'#', icon:'linkedin' }] })}>Add Social</Button>
               <Button type="button" onClick={async ()=>{ setFooterSaving(true); try{ const res=await fetch('/api/admin/footer',{ method:'PUT', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(footer)}); const json=await res.json(); try{ window.dispatchEvent(new CustomEvent('footer:updated')); }catch{} } finally { setFooterSaving(false); } }}>{footerSaving ? 'Saving…' : 'Save Footer'}</Button>
             </div>
                             </div>
@@ -1533,9 +1521,9 @@ export default function AdminPagesEditor() {
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Hero H1</Label>
-                            <Input value={sections.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), heading:e.target.value } }))} />
+                            <Input value={sections?.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Hero Description</Label>
-                            <Textarea rows={3} value={sections.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} enableRichTools={true} />
+                            <Textarea rows={3} value={sections?.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} enableRichTools={true} />
                           </div>
                         </AccordionContent>
                       </AccordionItem>
@@ -1682,9 +1670,9 @@ export default function AdminPagesEditor() {
                         <AccordionContent>
                           <div className="space-y-3 bg-white border rounded-md p-3">
                             <Label>Hero H1</Label>
-                            <Input value={sections.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), heading:e.target.value } }))} />
+                            <Input value={sections?.hero?.heading||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), heading:e.target.value } }))} />
                             <Label className="mt-2 block">Hero Description</Label>
-                            <Textarea rows={3} value={sections.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} />
+                            <Textarea rows={3} value={sections?.hero?.description||''} onChange={(e)=>setSections((s:any)=>({ ...s, hero:{ ...(s.hero||{}), description:e.target.value } }))} />
                       </div>
                         </AccordionContent>
                       </AccordionItem>

@@ -7,7 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 export default function Topbar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -139,14 +139,8 @@ export default function Topbar() {
               setIsNotificationsOpen(false);
             }}
           >
-            <div className="h-9 w-9 rounded-full overflow-hidden border-2 border-slate-200">
-              <Image
-                alt="Avatar"
-                src="/zonelogo1.png"
-                width={36}
-                height={36}
-                className="object-cover"
-              />
+            <div className="h-9 w-9 rounded-full overflow-hidden border-2 border-slate-200 bg-slate-100 flex items-center justify-center">
+              <span className="material-symbols-outlined text-slate-400">person</span>
             </div>
             <span className="material-symbols-outlined text-slate-400 text-[18px]">expand_more</span>
           </button>
@@ -156,14 +150,8 @@ export default function Topbar() {
             <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-lg z-50">
               <div className="p-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-slate-200">
-                    <Image
-                      alt="Avatar"
-                      src="/zonelogo1.png"
-                      width={40}
-                      height={40}
-                      className="object-cover"
-                    />
+                  <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-slate-200 bg-slate-100 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-slate-400">person</span>
                   </div>
                   <div>
                     <p className="font-bold text-[#0f172a]">Super Admin</p>

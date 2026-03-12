@@ -11,24 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 export default function AdminPortfolio() {
   console.log(' AdminPortfolio component rendered');
   
-  // Simple client-side guard: require admin session in localStorage
-  React.useEffect(() => {
-    console.log(' Checking admin authentication');
-    try {
-      const raw = typeof window !== 'undefined' ? localStorage.getItem('currentUser') : null;
-      const user = raw ? JSON.parse(raw) : null;
-      const isAdmin = !!user && (user.role === 'super_admin' || user.role === 'admin' || user.isAdmin);
-      if (!isAdmin) {
-        console.log(' User is not admin, redirecting to login');
-        window.location.href = '/admin/login';
-      } else {
-        console.log(' User is admin, proceeding');
-      }
-    } catch (error) {
-      console.log(' Error checking admin auth, redirecting to login', error);
-      if (typeof window !== 'undefined') window.location.href = '/admin/login';
-    }
-  }, []);
+  // No explicit client-side redirect needed here; layout.tsx handles routing if not authenticated
 
   const { toast } = useToast();
 

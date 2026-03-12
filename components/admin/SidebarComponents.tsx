@@ -341,7 +341,7 @@ const sections = [
 ];
 
 export const SidebarLinks = () => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const { open } = useSidebar();
   
   return (
@@ -394,29 +394,8 @@ export const SidebarLinks = () => {
         ))}
       </div>
 
-      {/* Theme Toggle */}
+      {/* System Status Info */}
       <div className="mt-auto pt-4 border-t border-[rgba(255,255,255,0.12)]">
-        <button
-          onClick={toggleTheme}
-          className="flex items-center justify-start gap-2 w-full py-2 text-white hover:bg-[#29344D] rounded-md px-2 transition-colors duration-200"
-        >
-          {theme === 'dark' ? (
-            <Sun className="w-4 h-4 text-white" />
-          ) : (
-            <Moon className="w-4 h-4 text-white" />
-          )}
-          {open && (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.2 }}
-              className="text-sm text-white"
-            >
-              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-            </motion.span>
-          )}
-        </button>
-        
         {open && (
           <motion.div
             initial={{ opacity: 0 }}

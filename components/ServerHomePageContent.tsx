@@ -1,5 +1,4 @@
 import React, { Suspense } from "react";
-import Navigation from "@/components/Navigation";
 import HomeHero from "@/components/home/HomeHero";
 import HomeLeads from "@/components/home/HomeLeads";
 import HomeLocations from "@/components/home/HomeLocations";
@@ -9,8 +8,6 @@ import { HeroSkeleton, LeadsSkeleton } from "@/components/skeletons";
 export default function ServerHomePageContent() {
   return (
     <div className="page-container homepage-container">
-      <Navigation />
-
       <main className="main-content">
         {/* Helper for LCP: Loading state - Suspense enabled for Streaming/TBT Optimization */}
         <Suspense fallback={<HeroSkeleton />}>

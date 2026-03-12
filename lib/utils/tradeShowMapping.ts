@@ -193,11 +193,11 @@ export function mapTradeShowDBToExhibition(dbData: TradeShowDB): Exhibition {
             }
         },
         sustainability: {
-            carbonNeutral: dbData.sustainability?.some(s => s.toLowerCase().includes('carbon neutral')) || false,
-            wasteReduction: dbData.sustainability?.some(s => s.toLowerCase().includes('waste')) || false,
-            digitalFirst: dbData.sustainability?.some(s => s.toLowerCase().includes('digital')) || false,
-            sustainableCatering: dbData.sustainability?.some(s => s.toLowerCase().includes('catering')) || false,
-            publicTransportIncentives: dbData.sustainability?.some(s => s.toLowerCase().includes('transport')) || false,
+            carbonNeutral: Array.isArray(dbData.sustainability) && dbData.sustainability.some(s => typeof s === 'string' && s.toLowerCase().includes('carbon neutral')) || false,
+            wasteReduction: Array.isArray(dbData.sustainability) && dbData.sustainability.some(s => typeof s === 'string' && s.toLowerCase().includes('waste')) || false,
+            digitalFirst: Array.isArray(dbData.sustainability) && dbData.sustainability.some(s => typeof s === 'string' && s.toLowerCase().includes('digital')) || false,
+            sustainableCatering: Array.isArray(dbData.sustainability) && dbData.sustainability.some(s => typeof s === 'string' && s.toLowerCase().includes('catering')) || false,
+            publicTransportIncentives: Array.isArray(dbData.sustainability) && dbData.sustainability.some(s => typeof s === 'string' && s.toLowerCase().includes('transport')) || false,
             environmentalGoals: dbData.environmental_goals || [],
             greenCertifications: ['LEED Certified', 'ISO 14001']
         },

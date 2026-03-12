@@ -25,13 +25,6 @@ export default function SuperAdminCommandCenter({
       positive: true,
     },
     {
-      icon: "monetization_on",
-      label: "Annual Revenue",
-      value: "$4.27M",
-      change: "+8.1%",
-      positive: true,
-    },
-    {
       icon: "engineering",
       label: "Active Builders",
       value: "842",

@@ -187,7 +187,7 @@ const sections: Section[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
 
   return (
     <div className="flex flex-col h-full p-4 gap-6 bg-[#0D1424]">
@@ -250,27 +250,6 @@ export default function Sidebar() {
         ))}
       </div>
 
-      {/* Theme Switch */}
-      <div className="pt-4 border-t border-[rgba(255,255,255,0.12)]">
-        <button 
-          onClick={toggleTheme}
-          className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-all duration-300 bg-[#202A40] hover:bg-[#202A40] text-[#AAB4C5] hover:text-[#FFFFFF] shadow-md hover:shadow-lg border border-[rgba(255,255,255,0.25)]"
-        >
-          <div className="flex items-center gap-3">
-            {theme === 'dark' ? (
-              <Moon className="w-4 h-4 text-[#E2E8F0]" />
-            ) : (
-              <Sun className="w-4 h-4 text-[#E2E8F0]" />
-            )}
-            <span>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="relative w-10 h-5 bg-[#202A40] rounded-full border border-[rgba(255,255,255,0.25)]">
-              <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-[#FFFFFF] transition-all duration-300 ${theme === 'dark' ? 'left-5' : 'left-0.5'}`}></div>
-            </div>
-          </div>
-        </button>
-      </div>
 
       {/* Sidebar Footer */}
       <div className="pt-4 border-t border-[rgba(255,255,255,0.12)]">
