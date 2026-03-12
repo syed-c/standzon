@@ -1,259 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useTheme } from '@/components/ThemeProvider';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  AreaChart,
-  Area,
-  RadarChart,
-  Radar,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-} from "recharts";
-import { UsersRound,
-  Building2,
-  TrendingUp,
-  DollarSign,
-  MessageSquare,
-  Star,
-  Globe,
-  Calendar,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Eye,
-  UserPlus,
-  Activity,
-  FileText,
-  CreditCard,
-  Settings,
-  Shield,
-  Bell,
-  Search,
-  Filter,
-  Download,
-  RefreshCw,
-  BarChart3,
-  PieChart as PieChartIcon,
-  MapPin,
-  Zap,
-  Trash2,
-  Upload,
-  Edit,
-  Plus,
-  Save,
-  ExternalLink,
-  Database,
-  HardDrive,
-  UserCheck,
-  Mail,
-  Target,
-  CheckSquare,
-  User,
-  UserPlus as UserPlusIcon,
-  MapPin as MapPinIcon,
-  Calendar as CalendarIcon,
-  Settings as SettingsIcon,
-  ChevronDown,
-  ChevronRight,
-  ServerIcon as ServerIconIcon,
-  Wifi as WifiIcon,
-  Cpu,
-  MemoryStick,
-  HardDrive as HardDriveIcon,
-  Database as DatabaseIcon,
-  Network,
-  Cloud as CloudIcon,
-  Mail as MailIcon,
-  Lock,
-  Key,
-  Shield as ShieldIcon,
-  Globe as GlobeIcon,
-  BarChart as BarChartIcon,
-  Activity as ActivityIcon,
-  Bell as BellIcon,
-  Volume2,
-  VolumeX,
-  Bluetooth,
-  Signal,
-  Battery,
-  BatteryCharging,
-  BatteryLow,
-  BatteryMedium,
-  BatteryFull,
-  Sun as SunIcon,
-  Moon as MoonIcon,
-  CloudRain,
-  CloudSnow,
-  CloudLightning,
-  CloudDrizzle,
-  CloudFog,
-  CloudSun,
-  CloudMoon,
-  Cloudy,
-  SunDim,
-  SunMedium,
-  MoonStar,
-  Stars,
-  Sparkles,
-  Wind,
-  Tornado,
-  Snowflake,
-  Thermometer,
-  ThermometerSun,
-  ThermometerSnowflake,
-  Droplets,
-  Umbrella,
-  Rainbow,
-  Flower,
-  Leaf,
-  Sprout,
-  Trees as TreeDeciduous,
-  TreePine,
-  Waves as WavesIcon,
-  Anchor as AnchorIcon,
-  Sailboat,
-  Compass as CompassIcon,
-  Navigation as NavigationIcon,
-  Route,
-  Mountain,
-  Trees as TreePalm,
-  Castle,
-  History,
-  Landmark,
-  Library,
-  Hospital,
-  Store,
-  Factory,
-  Home,
-  House,
-  Building as BuildingIcon,
-  School,
-  University,
-  Church,
-  Banknote,
-  PiggyBank,
-  Wallet,
-  CreditCard as CreditCardIcon,
-  Receipt as ReceiptIcon,
-  Coins,
-  Gem,
-  Scale,
-  Package as PackageIcon,
-  Truck,
-  Ship,
-  Plane,
-  Train,
-  Bus,
-  Car,
-  Bike,
-  Fuel,
-  BatteryWarning,
-  Power,
-  Zap as ZapIcon,
-  ZapOff,
-  Pin,
-  PinOff,
-  Crosshair,
-  Target as TargetIcon,
-  Crosshair as Crosshair2Icon,
-  Crosshair as Crosshair3Icon,
-  Crosshair as Crosshair4Icon,
-  Crosshair as Crosshair5Icon,
-  Crosshair as Crosshair6Icon,
-  Crosshair as Crosshair7Icon,
-  Crosshair as Crosshair8Icon,
-  Crosshair as Crosshair9Icon,
-  Crosshair as Crosshair10Icon,
-  Crosshair as Crosshair11Icon,
-  Crosshair as Crosshair12Icon,
-  Crosshair as Crosshair13Icon,
-  Crosshair as Crosshair14Icon,
-  Crosshair as Crosshair15Icon,
-  Crosshair as Crosshair16Icon,
-  Crosshair as Crosshair17Icon,
-  Crosshair as Crosshair18Icon,
-  Crosshair as Crosshair19Icon,
-  Crosshair as Crosshair20Icon,
-  Crosshair as Crosshair21Icon,
-  Crosshair as Crosshair22Icon,
-  Crosshair as Crosshair23Icon,
-  Crosshair as Crosshair24Icon,
-  Crosshair as Crosshair25Icon,
-  Crosshair as Crosshair26Icon,
-  Crosshair as Crosshair27Icon,
-  Crosshair as Crosshair28Icon,
-  Crosshair as Crosshair29Icon,
-  Crosshair as Crosshair30Icon,
-  Crosshair as Crosshair31Icon,
-  Crosshair as Crosshair32Icon,
-  Crosshair as Crosshair33Icon,
-  Crosshair as Crosshair34Icon,
-  Crosshair as Crosshair35Icon,
-  Crosshair as Crosshair36Icon,
-  Crosshair as Crosshair37Icon,
-  Crosshair as Crosshair38Icon,
-  Crosshair as Crosshair39Icon,
-  Crosshair as Crosshair40Icon,
-  Crosshair as Crosshair41Icon,
-  Crosshair as Crosshair42Icon,
-  Crosshair as Crosshair43Icon,
-  Crosshair as Crosshair44Icon,
-  Crosshair as Crosshair45Icon,
-  Crosshair as Crosshair46Icon,
-  Crosshair as Crosshair47Icon,
-  Crosshair as Crosshair48Icon,
-  Crosshair as Crosshair49Icon,
-  Crosshair as Crosshair50Icon } from 'lucide-react';
-import { adminAPI } from "@/lib/api/admin";
-
-// Colors for charts
-const COLORS = [
-  "#3B82F6",
-  "#10B981",
-  "#F59E0B",
-  "#EF4444",
-  "#8B5CF6",
-  "#06B6D4",
-  "#EC4899",
-  "#8B5CF6",
-  "#F97316",
-  "#14B8A6",
-];
+import Link from "next/link";
 
 interface SuperAdminCommandCenterProps {
   adminId: string;
@@ -264,122 +12,89 @@ export default function SuperAdminCommandCenter({
   adminId,
   permissions,
 }: SuperAdminCommandCenterProps) {
-  const { theme } = useTheme();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [kpis, setKpis] = useState({
-    totalTenants: 0,
-    totalBuilders: 0,
-    totalProjects: 0,
-    totalLeads: 0,
-    totalRevenue: 0,
-    totalActiveSubscriptions: 0,
-    totalDeployments: 0,
-    totalDomains: 0,
-    newLeadsToday: 0,
-    newBuildersToday: 0,
-    mrr: 0,
-    arr: 0,
-    churnRate: 0,
-    platformUptime: 0,
-    storageUsed: 0,
-    storageLimit: 0,
-  });
 
-  // Mock data for charts
-  const platformMetricsData = [
-    { name: 'Jan', tenants: 400, builders: 240, projects: 240, leads: 380 },
-    { name: 'Feb', tenants: 300, builders: 138, projects: 198, leads: 290 },
-    { name: 'Mar', tenants: 200, builders: 98, projects: 108, leads: 180 },
-    { name: 'Apr', tenants: 278, builders: 390, projects: 290, leads: 390 },
-    { name: 'May', tenants: 189, builders: 480, projects: 380, leads: 480 },
-    { name: 'Jun', tenants: 239, builders: 380, projects: 480, leads: 380 },
-    { name: 'Jul', tenants: 349, builders: 430, projects: 530, leads: 430 },
+  // Stats data
+  const stats = [
+    {
+      icon: "leaderboard",
+      label: "Total Leads",
+      value: "12,840",
+      change: "+12.4%",
+      positive: true,
+    },
+    {
+      icon: "monetization_on",
+      label: "Annual Revenue",
+      value: "$4.27M",
+      change: "+8.1%",
+      positive: true,
+    },
+    {
+      icon: "engineering",
+      label: "Active Builders",
+      value: "842",
+      change: "-2.1%",
+      positive: false,
+    },
+    {
+      icon: "fact_check",
+      label: "Quote Match Rate",
+      value: "94.2%",
+      change: "+0.5%",
+      positive: true,
+    },
   ];
 
-  const revenueData = [
-    { name: 'Jan', revenue: 4000, expenses: 2400 },
-    { name: 'Feb', revenue: 3000, expenses: 1398 },
-    { name: 'Mar', revenue: 2000, expenses: 9800 },
-    { name: 'Apr', revenue: 2780, expenses: 3908 },
-    { name: 'May', revenue: 1890, expenses: 4800 },
-    { name: 'Jun', revenue: 2390, expenses: 3800 },
-    { name: 'Jul', revenue: 3490, expenses: 4300 },
+  // Audit trail data
+  const auditTrail = [
+    {
+      icon: "person_add",
+      iconBg: "bg-emerald-100 text-emerald-600",
+      title: "New Builder Verified:",
+      description: '"Skyline Exhibits Europe" has completed KYC requirements.',
+      time: "14 minutes ago • System-Automated",
+    },
+    {
+      icon: "update",
+      iconBg: "bg-[#1e3886]/10 text-[#1e3886]",
+      title: "CMS Synchronization:",
+      description: "42 regional price listings updated for the GCC market.",
+      time: "2 hours ago • Admin: M. Ross",
+    },
+    {
+      icon: "report",
+      iconBg: "bg-[#c0123d]/10 text-[#c0123d]",
+      title: "Security Alert:",
+      description:
+        "Unusual login attempt detected from unknown IP (192.168.x.x).",
+      time: "5 hours ago • Security Protocol",
+    },
   ];
 
-  const subscriptionData = [
-    { name: 'FREE', value: 400 },
-    { name: 'PROFESSIONAL', value: 300 },
-    { name: 'ENTERPRISE', value: 300 },
-    { name: 'PREMIUM', value: 200 },
+  // Partner requests data
+  const partnerRequests = [
+    {
+      initials: "AM",
+      name: "ArchiMetric Stands",
+      status: "Pending Review • 3h",
+    },
+    {
+      initials: "VG",
+      name: "Vanguard Global",
+      status: "Processing • 1d",
+    },
   ];
 
-  const locationData = [
-    { name: 'USA', value: 400 },
-    { name: 'UK', value: 300 },
-    { name: 'Canada', value: 300 },
-    { name: 'Germany', value: 200 },
-    { name: 'Australia', value: 150 },
-    { name: 'India', value: 100 },
-  ];
-
-  const activityData = [
-    { id: 1, action: 'New tenant registered', time: '2 min ago', type: 'success' },
-    { id: 2, action: 'Lead assigned', time: '15 min ago', type: 'info' },
-    { id: 3, action: 'Payment received', time: '1 hour ago', type: 'success' },
-    { id: 4, action: 'System backup completed', time: '3 hours ago', type: 'info' },
-    { id: 5, action: 'Profile updated', time: '5 hours ago', type: 'warning' },
-    { id: 6, action: 'New builder created', time: '6 hours ago', type: 'success' },
-    { id: 7, action: 'Deployment failed', time: '7 hours ago', type: 'error' },
-    { id: 8, action: 'Integration connected', time: '8 hours ago', type: 'info' },
-  ];
-
-  const integrationsData = [
-    { name: 'Google OAuth', status: 'connected', usage: 95 },
-    { name: 'Google GMB', status: 'connected', usage: 80 },
-    { name: 'SMTP', status: 'connected', usage: 90 },
-    { name: 'SMS Twilio', status: 'disconnected', usage: 0 },
-    { name: 'Stripe', status: 'connected', usage: 75 },
-    { name: 'OpenAI', status: 'connected', usage: 60 },
-  ];
-
-  // Simulate loading data
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Set mock data
-      setKpis({
-        totalTenants: 1248,
-        totalBuilders: 2456,
-        totalProjects: 3241,
-        totalLeads: 8756,
-        totalRevenue: 42567,
-        totalActiveSubscriptions: 1248,
-        totalDeployments: 1567,
-        totalDomains: 1248,
-        newLeadsToday: 324,
-        newBuildersToday: 12,
-        mrr: 12456,
-        arr: 149472,
-        churnRate: 2.5,
-        platformUptime: 99.9,
-        storageUsed: 456789,
-        storageLimit: 1048576,
-      });
-      
-      setLoading(false);
-    };
-
-    loadData();
+    const timer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
     setRefreshing(false);
   };
 
@@ -387,413 +102,265 @@ export default function SuperAdminCommandCenter({
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-500">Loading dashboard...</p>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1e3886] mx-auto" />
+          <p className="mt-4 text-slate-400 text-sm">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:shadow-2xl transition-all duration-500">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Welcome back, Super Admin</h1>
-            <p className="text-gray-400 mt-1">Here's what's happening with the platform today.</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 text-sm text-gray-400">
-              <Clock className="w-4 h-4" />
-              <span>Last updated: Just now</span>
+    <div className="space-y-8">
+      {/* ── Summary Stats ─────────────────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, i) => (
+          <div
+            key={i}
+            className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm"
+          >
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-3 bg-[#1e3886]/10 text-[#1e3886] rounded-lg">
+                <span className="material-symbols-outlined text-2xl">
+                  {stat.icon}
+                </span>
+              </div>
+              <span
+                className={`text-xs font-bold px-2 py-1 rounded ${
+                  stat.positive
+                    ? "text-emerald-500 bg-emerald-500/10"
+                    : "text-[#c0123d] bg-[#c0123d]/10"
+                }`}
+              >
+                {stat.change}
+              </span>
             </div>
-            <button 
-              className="px-3 py-1.5 rounded-xl text-sm bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-blue-400 border border-blue-500/30 hover:from-blue-600/30 hover:to-indigo-600/30 transition-all duration-300 flex items-center gap-1 shadow-md hover:shadow-lg"
-              onClick={handleRefresh}
-            >
-              <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-              {refreshing ? 'Refreshing...' : 'Refresh'}
+            <p className="text-slate-500 text-sm font-medium">{stat.label}</p>
+            <h3 className="text-3xl font-extrabold text-[#0f172a] mt-1">
+              {stat.value}
+            </h3>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Main Grid: Content (2/3) + Sidebar (1/3) ─────────── */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        {/* ── Left Column (2/3) ─────────────────────────────── */}
+        <div className="xl:col-span-2 space-y-8">
+          {/* Global Network Status */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+              <h4 className="font-bold text-[#0f172a] flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#1e3886]">
+                  public
+                </span>
+                Global Network Status
+              </h4>
+              <div className="flex gap-2">
+                <button className="px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors uppercase tracking-wider">
+                  Live Map
+                </button>
+                <button className="px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors uppercase tracking-wider">
+                  Data View
+                </button>
+              </div>
+            </div>
+            <div className="h-96 relative bg-slate-100 flex items-center justify-center">
+              {/* Abstract radial glow */}
+              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,_#1e3886_0%,_transparent_100%)]" />
+              <div className="text-slate-400 flex flex-col items-center">
+                <span className="material-symbols-outlined text-6xl mb-2 opacity-30">
+                  map
+                </span>
+                <p className="text-sm font-medium tracking-widest uppercase opacity-40">
+                  Regional Performance Visualization
+                </p>
+              </div>
+              {/* Animated data-point dots */}
+              <div className="absolute top-20 left-1/4 size-4 bg-emerald-500/40 rounded-full animate-pulse flex items-center justify-center">
+                <div className="size-2 bg-emerald-500 rounded-full" />
+              </div>
+              <div className="absolute bottom-1/3 right-1/3 size-4 bg-[#1e3886]/40 rounded-full flex items-center justify-center">
+                <div className="size-2 bg-[#1e3886] rounded-full" />
+              </div>
+              <div className="absolute top-1/2 right-1/4 size-4 bg-[#c0123d]/40 rounded-full flex items-center justify-center">
+                <div className="size-2 bg-[#c0123d] rounded-full" />
+              </div>
+            </div>
+          </div>
+
+          {/* System Audit Trail */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-slate-100">
+              <h4 className="font-bold text-[#0f172a] uppercase tracking-wider text-sm">
+                System Audit Trail
+              </h4>
+            </div>
+            <div className="divide-y divide-slate-100">
+              {auditTrail.map((entry, i) => (
+                <div
+                  key={i}
+                  className="p-6 flex gap-4 hover:bg-slate-50 transition-colors"
+                >
+                  <div
+                    className={`size-10 rounded-lg flex items-center justify-center shrink-0 ${entry.iconBg}`}
+                  >
+                    <span className="material-symbols-outlined">
+                      {entry.icon}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-slate-800">
+                      <span className="font-bold">{entry.title}</span>{" "}
+                      {entry.description}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1 uppercase font-bold tracking-tight">
+                      {entry.time}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="p-4 bg-slate-50 text-center">
+              <Link
+                href="/admin/data-audit"
+                className="text-xs font-bold text-[#1e3886] hover:text-[#0f172a] transition-colors uppercase tracking-widest"
+              >
+                View Full Audit Log
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Right Column (1/3) ────────────────────────────── */}
+        <div className="space-y-8">
+          {/* Control Panel */}
+          <div className="bg-[#0f172a] text-white p-8 rounded-xl shadow-xl space-y-6">
+            <h4 className="font-bold text-sm uppercase tracking-[0.2em] opacity-60">
+              Control Panel
+            </h4>
+            <div className="grid grid-cols-1 gap-4">
+              {/* Clear System Cache */}
+              <Link
+                href="/admin/clear-cache"
+                className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-[#1e3886] group-hover:text-white transition-colors">
+                    cached
+                  </span>
+                  <span className="text-sm font-semibold">
+                    Clear System Cache
+                  </span>
+                </div>
+                <span className="material-symbols-outlined text-sm opacity-40">
+                  chevron_right
+                </span>
+              </Link>
+
+              {/* Add New Builder */}
+              <Link
+                href="/admin/add-builder"
+                className="w-full flex items-center justify-between p-4 bg-[#1e3886] hover:bg-[#1e3886]/90 rounded-lg transition-all group shadow-lg"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-white">
+                    add_business
+                  </span>
+                  <span className="text-sm font-semibold">
+                    Add New Builder
+                  </span>
+                </div>
+                <span className="material-symbols-outlined text-sm opacity-60">
+                  chevron_right
+                </span>
+              </Link>
+
+              {/* Generate Monthly Report */}
+              <Link
+                href="/admin/reports"
+                className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-emerald-400 group-hover:text-white transition-colors">
+                    cloud_download
+                  </span>
+                  <span className="text-sm font-semibold">
+                    Generate Monthly Report
+                  </span>
+                </div>
+                <span className="material-symbols-outlined text-sm opacity-40">
+                  chevron_right
+                </span>
+              </Link>
+
+              {/* Emergency Broadcast */}
+              <button className="w-full flex items-center justify-between p-4 bg-[#c0123d]/10 hover:bg-[#c0123d] rounded-lg border border-[#c0123d]/20 transition-all group">
+                <div className="flex items-center gap-3 text-[#c0123d] group-hover:text-white">
+                  <span className="material-symbols-outlined">warning</span>
+                  <span className="text-sm font-semibold">
+                    Emergency Broadcast
+                  </span>
+                </div>
+                <span className="material-symbols-outlined text-sm opacity-40 group-hover:text-white/40">
+                  chevron_right
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Partner Requests */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+            <h4 className="font-bold text-[#0f172a] uppercase tracking-wider text-sm mb-6">
+              Partner Requests
+            </h4>
+            <div className="space-y-6">
+              {partnerRequests.map((partner, i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <div className="size-10 bg-slate-100 rounded-lg flex items-center justify-center font-bold text-slate-400">
+                    {partner.initials}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-[#0f172a]">
+                      {partner.name}
+                    </p>
+                    <p className="text-xs text-slate-500 uppercase font-medium">
+                      {partner.status}
+                    </p>
+                  </div>
+                  <div className="flex gap-1">
+                    <button className="size-8 rounded-lg border border-slate-200 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-colors">
+                      <span className="material-symbols-outlined text-lg">
+                        check
+                      </span>
+                    </button>
+                    <button className="size-8 rounded-lg border border-slate-200 flex items-center justify-center text-[#c0123d] hover:bg-rose-50 transition-colors">
+                      <span className="material-symbols-outlined text-lg">
+                        close
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Market Insight */}
+          <div className="bg-gradient-to-br from-[#1e3886] to-[#0f172a] p-6 rounded-xl text-white shadow-xl relative overflow-hidden group">
+            <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-white/5 text-[120px] group-hover:rotate-12 transition-transform duration-700">
+              insights
+            </span>
+            <h5 className="text-xs font-bold uppercase tracking-widest opacity-60 mb-2">
+              Market Insight
+            </h5>
+            <p className="text-lg font-medium leading-tight relative z-10">
+              Bespoke wooden structures are trending 40% higher in Europe this
+              quarter.
+            </p>
+            <button className="mt-4 text-xs font-bold underline underline-offset-4 decoration-white/20 hover:decoration-white transition-all relative z-10">
+              LEARN MORE
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Platform Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          { 
-            title: 'Total Tenants', 
-            value: kpis.totalTenants.toLocaleString(), 
-            change: '+8.2%', 
-            icon: <Building2 className="w-5 h-5" />, 
-            color: 'from-blue-500/30 via-indigo-500/30 to-violet-500/30',
-            subtitle: 'Active accounts'
-          },
-          { 
-            title: 'Total Builders', 
-            value: kpis.totalBuilders.toLocaleString(), 
-            change: '+5.7%', 
-            icon: <UsersRound className="w-5 h-5" />, 
-            color: 'from-purple-500/30 via-fuchsia-500/30 to-pink-500/30',
-            subtitle: 'Platform participants'
-          },
-          { 
-            title: 'Total Revenue', 
-            value: `$${(kpis.totalRevenue / 1000).toFixed(1)}K`, 
-            change: '+12.5%', 
-            icon: <DollarSign className="w-5 h-5" />, 
-            color: 'from-green-500/30 via-emerald-500/30 to-teal-500/30',
-            subtitle: 'Lifetime value'
-          },
-          { 
-            title: 'New Leads', 
-            value: kpis.newLeadsToday.toLocaleString(), 
-            change: '+3.1%', 
-            icon: <MessageSquare className="w-5 h-5" />, 
-            color: 'from-amber-500/30 via-orange-500/30 to-red-500/30',
-            subtitle: 'Today\'s intake'
-          }
-        ].map((metric, index) => (
-          <Card 
-            key={index} 
-            className="overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700"
-          >
-            <CardHeader className="p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-400">{metric.title}</p>
-                  <p className="text-2xl font-bold text-white mt-1">{metric.value}</p>
-                  <p className="text-sm text-gray-400 mt-1">{metric.subtitle}</p>
-                  <p className="text-sm text-green-400 mt-1 flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3" />
-                    {metric.change}
-                  </p>
-                </div>
-                <div className="p-3 rounded-xl bg-gray-700/50 text-white shadow-lg">
-                  {metric.icon}
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-        ))}
-      </div>
-
-      {/* Platform Health Indicators */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          { 
-            title: 'Platform Uptime', 
-            value: `${kpis.platformUptime}%`, 
-            status: 'operational', 
-            icon: <ServerIconIcon className="w-5 h-5" />,
-            color: 'text-green-400'
-          },
-          { 
-            title: 'MRR', 
-            value: `$${(kpis.mrr / 1000).toFixed(1)}K`, 
-            status: 'growing', 
-            icon: <TrendingUp className="w-5 h-5" />,
-            color: 'text-green-400'
-          },
-          { 
-            title: 'Churn Rate', 
-            value: `${kpis.churnRate}%`, 
-            status: 'low', 
-            icon: <Activity className="w-5 h-5" />,
-            color: 'text-green-400'
-          },
-          { 
-            title: 'Storage Used', 
-            value: `${((kpis.storageUsed / kpis.storageLimit) * 100).toFixed(1)}%`, 
-            status: 'normal', 
-            icon: <HardDrive className="w-5 h-5" />,
-            color: 'text-blue-400'
-          }
-        ].map((health, index) => (
-          <Card 
-            key={index} 
-            className="overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700"
-          >
-            <CardHeader className="p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-400">{health.title}</p>
-                  <p className={`text-2xl font-bold mt-1 ${health.color}`}>{health.value}</p>
-                  <p className="text-sm text-gray-400 mt-1 capitalize">{health.status}</p>
-                </div>
-                <div className={`p-3 rounded-xl bg-gray-700/50 ${health.color} shadow-lg`}>
-                  {health.icon}
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-        ))}
-      </div>
-
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Platform Growth Chart */}
-        <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-white">
-              <BarChartIcon className="h-5 w-5" />
-              <span>Platform Growth</span>
-            </CardTitle>
-            <CardDescription className="text-gray-400">
-              Tenants, builders, projects, and leads over time
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={platformMetricsData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="name" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1F2937', 
-                    borderColor: '#374151', 
-                    borderRadius: '0.5rem',
-                    color: '#F9FAFB'
-                  }} 
-                />
-                <Area
-                  type="monotone"
-                  dataKey="tenants"
-                  stackId="1"
-                  stroke="#3B82F6"
-                  fill="#3B82F6"
-                  fillOpacity={0.2}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="builders"
-                  stackId="2"
-                  stroke="#10B981"
-                  fill="#10B981"
-                  fillOpacity={0.2}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="projects"
-                  stackId="3"
-                  stroke="#F59E0B"
-                  fill="#F59E0B"
-                  fillOpacity={0.2}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="leads"
-                  stackId="4"
-                  stroke="#EF4444"
-                  fill="#EF4444"
-                  fillOpacity={0.2}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Revenue Chart */}
-        <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-white">
-              <TrendingUp className="h-5 w-5" />
-              <span>Revenue Trends</span>
-            </CardTitle>
-            <CardDescription className="text-gray-400">
-              Monthly revenue and expenses
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="name" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1F2937', 
-                    borderColor: '#374151', 
-                    borderRadius: '0.5rem',
-                    color: '#F9FAFB'
-                  }} 
-                />
-                <Legend />
-                <Bar dataKey="revenue" fill="#10B981" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="expenses" fill="#EF4444" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Distribution Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Subscription Distribution */}
-        <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-white">
-              <PieChartIcon className="h-5 w-5" />
-              <span>Subscription Distribution</span>
-            </CardTitle>
-            <CardDescription className="text-gray-400">
-              Distribution of subscription plans across tenants
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={subscriptionData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {subscriptionData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1F2937', 
-                    borderColor: '#374151', 
-                    borderRadius: '0.5rem',
-                    color: '#F9FAFB'
-                  }} 
-                />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Geographic Distribution */}
-        <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-white">
-              <MapPin className="h-5 w-5" />
-              <span>Geographic Distribution</span>
-            </CardTitle>
-            <CardDescription className="text-gray-400">
-              Distribution of tenants by location
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <RadarChart data={locationData}>
-                <PolarGrid stroke="#374151" />
-                <PolarAngleAxis dataKey="name" stroke="#9CA3AF" />
-                <PolarRadiusAxis stroke="#9CA3AF" />
-                <Radar
-                  name="Tenants"
-                  dataKey="value"
-                  stroke="#3B82F6"
-                  fill="#3B82F6"
-                  fillOpacity={0.6}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1F2937', 
-                    borderColor: '#374151', 
-                    borderRadius: '0.5rem',
-                    color: '#F9FAFB'
-                  }} 
-                />
-              </RadarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Platform Status and Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Integration Status */}
-        <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-white">
-              <Globe className="h-5 w-5" />
-              <span>Integration Status</span>
-            </CardTitle>
-            <CardDescription className="text-gray-400">
-              Third-party integration connectivity
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {integrationsData.map((integration, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${
-                      integration.status === 'connected' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                    }`}>
-                      <Globe className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">{integration.name}</p>
-                      <p className={`text-xs ${
-                        integration.status === 'connected' ? 'text-green-400' : 'text-red-400'
-                      }`}>
-                        {integration.status}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-white">{integration.usage}%</p>
-                    <Progress value={integration.usage} className="h-2 w-24 mt-1" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activity */}
-        <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-white">
-              <ActivityIcon className="h-5 w-5" />
-              <span>Recent Activity</span>
-            </CardTitle>
-            <CardDescription className="text-gray-400">
-              Latest platform events and actions
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4 max-h-80 overflow-y-auto">
-              {activityData.map((activity, index) => (
-                <div 
-                  key={activity.id} 
-                  className="flex items-start gap-4 pb-4 border-b border-gray-700/50 last:border-0 last:pb-0 hover:bg-gray-700/20 transition-all duration-300 rounded-xl p-2"
-                >
-                  <div className={`p-2 rounded-xl ${
-                    activity.type === 'success' ? 'bg-green-500/30 text-green-400 border border-green-500/50' :
-                    activity.type === 'warning' ? 'bg-amber-500/30 text-amber-400 border border-amber-500/50' :
-                    activity.type === 'error' ? 'bg-red-500/30 text-red-400 border border-red-500/50' :
-                    'bg-blue-500/30 text-blue-400 border border-blue-500/50'
-                  }`}>
-                    {activity.type === 'success' ? <CheckCircle className="w-4 h-4" /> :
-                     activity.type === 'warning' ? <AlertTriangle className="w-4 h-4" /> :
-                     activity.type === 'error' ? <ZapIcon className="w-4 h-4" /> :
-                     <ActivityIcon className="w-4 h-4" />}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-gray-200">{activity.action}</p>
-                    <p className="text-sm text-gray-400 mt-1">{activity.time}</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-500" />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

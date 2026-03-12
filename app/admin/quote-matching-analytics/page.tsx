@@ -1,7 +1,5 @@
 import React from 'react';
 import { Metadata } from 'next';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
 import RealTimePlatformAnalytics from '@/components/RealTimePlatformAnalytics';
 
 export const metadata: Metadata = {
@@ -14,13 +12,13 @@ export default function QuoteMatchingAnalyticsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      <Navigation />
+      
       
       <main className="pt-20">
         <RealTimePlatformAnalytics />
       </main>
 
-      <Footer />
+      
     </div>
   );
 }

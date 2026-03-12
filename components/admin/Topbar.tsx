@@ -2,20 +2,31 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useTheme } from '@/components/ThemeProvider';
-import { Bell, Search, Settings, User, Menu, ChevronDown, Moon, Sun } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Topbar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Derive page title from pathname
+  const getPageTitle = () => {
+    if (!pathname) return "Command Center";
+    const segment = pathname.replace("/admin/", "").replace("/admin", "").split("/")[0];
+    if (!segment) return "Command Center";
+    return segment
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+  };
 
   const handleLogout = async () => {
     try {
       // Get session ID from localStorage
       const sessionId = typeof window !== 'undefined' ? localStorage.getItem('adminSessionId') : null;
-      
+
       // Call logout API
       const response = await fetch('/api/admin/logout', {
         method: 'POST',
@@ -24,13 +35,13 @@ export default function Topbar() {
         },
         body: JSON.stringify({ sessionId }),
       });
-      
+
       // Clear local storage
       if (typeof window !== 'undefined') {
         localStorage.removeItem('currentUser');
         localStorage.removeItem('adminSessionId');
       }
-      
+
       // Redirect to login page
       router.push('/admin/login');
     } catch (error) {
@@ -45,126 +56,133 @@ export default function Topbar() {
   };
 
   return (
-    <div className="h-16 flex items-center justify-between px-4 lg:px-6 bg-[#0D1424] backdrop-blur-lg border-b border-[rgba(255,255,255,0.12)]">
-      <div className="flex items-center gap-4">
-        <button className="lg:hidden p-2 rounded-xl text-[#AAB4C5] hover:bg-[#202A40] hover:text-[#FFFFFF] transition-all duration-300 shadow-md hover:shadow-lg">
-          <Menu className="w-5 h-5" />
-        </button>
-        <div className="text-sm text-[#E2E8F0] truncate">
-          <span className="text-[#FFFFFF] font-medium">Admin Dashboard</span>
+    <div className="w-full flex items-center justify-between">
+      {/* Left side: page title + status */}
+      <div className="flex items-center gap-6">
+        <h2 className="text-xl font-bold tracking-tight text-[#0f172a]">{getPageTitle()}</h2>
+        <div className="h-6 w-px bg-slate-200 hidden sm:block" />
+        <div className="hidden sm:flex items-center gap-2">
+          <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20" />
+          <span className="text-sm font-bold text-emerald-600 uppercase tracking-wider">System: Operational</span>
         </div>
       </div>
+
+      {/* Right side: search, notifications, profile */}
       <div className="flex items-center gap-3">
-        {/* Search */}
+        {/* Global Search */}
         <div className="relative hidden md:block">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
           <input
             type="text"
-            placeholder="Search..."
-            className="bg-[#1E293B] backdrop-blur-md border border-[rgba(255,255,255,0.15)] rounded-xl pl-10 pr-4 py-2 text-sm text-[#FFFFFF] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#3C4A6B] focus:border-transparent w-64 transition-all duration-300 shadow-md hover:shadow-lg"
+            placeholder="Global search..."
+            className="bg-slate-100 border-none rounded-lg py-2 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-[#1e3886] focus:outline-none transition-all text-slate-800 placeholder:text-slate-400"
           />
         </div>
 
-        {/* Theme Toggle */}
-        <button 
-          onClick={toggleTheme}
-          className="p-2 rounded-xl text-[#AAB4C5] hover:bg-[#202A40] hover:text-[#FFFFFF] transition-all duration-300 shadow-md hover:shadow-lg"
-        >
-          {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </button>
+        {/* Theme Toggle removed */}
 
         {/* Notifications */}
         <div className="relative">
-          <button 
-            className="p-2 rounded-xl text-[#AAB4C5] hover:bg-[#202A40] hover:text-[#FFFFFF] transition-all duration-300 shadow-md hover:shadow-lg relative"
-            onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+          <button
+            className="size-10 flex items-center justify-center rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors relative"
+            onClick={() => {
+              setIsNotificationsOpen(!isNotificationsOpen);
+              setIsProfileOpen(false);
+            }}
           >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-[#FF5C5C] rounded-full animate-pulse"></span>
+            <span className="material-symbols-outlined text-[20px]">notifications</span>
+            <span className="absolute top-2 right-2 size-2 bg-[#c0123d] rounded-full border-2 border-white" />
           </button>
-          
+
           {/* Notifications Dropdown */}
           {isNotificationsOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-[#19233A] backdrop-blur-xl border border-[rgba(255,255,255,0.12)] rounded-2xl shadow-[0_4px_14px_rgba(0,0,0,0.6)] z-50">
-              <div className="p-4 border-b border-[rgba(255,255,255,0.12)]">
-                <h3 className="font-semibold text-[#FFFFFF]">Notifications</h3>
+            <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-lg z-50">
+              <div className="p-4 border-b border-slate-100">
+                <h3 className="font-bold text-[#0f172a]">Notifications</h3>
               </div>
-              <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-[#202A40] scrollbar-track-[#0D1424] rounded-lg">
-                {[1, 2, 3].map((item) => (
-                  <div key={item} className="p-4 border-b border-[rgba(255,255,255,0.09)] hover:bg-[#29344D] transition-all duration-300">
-                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-[#3C4A6B] rounded-full mt-2 animate-pulse"></div>
-                      <div>
-                        <p className="text-sm text-[#FFFFFF]">New builder registration</p>
-                        <p className="text-xs text-[#AAB4C5] mt-1">2 hours ago</p>
-                      </div>
+              <div className="max-h-64 overflow-y-auto">
+                {[
+                  { text: "New builder registration pending review", time: "14 min ago", icon: "person_add", color: "emerald" },
+                  { text: "CMS sync complete — 42 listings updated", time: "2 hours ago", icon: "update", color: "blue" },
+                  { text: "Security alert from unknown IP", time: "5 hours ago", icon: "report", color: "red" },
+                ].map((item, idx) => (
+                  <div key={idx} className="p-4 border-b border-slate-50 hover:bg-slate-50 transition-colors flex gap-3">
+                    <div className={`size-9 rounded-lg flex items-center justify-center shrink-0 ${
+                      item.color === "emerald" ? "bg-emerald-100 text-emerald-600" :
+                      item.color === "blue" ? "bg-blue-100 text-blue-600" :
+                      "bg-red-100 text-red-600"
+                    }`}>
+                      <span className="material-symbols-outlined text-lg">{item.icon}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-700">{item.text}</p>
+                      <p className="text-xs text-slate-400 mt-0.5 uppercase font-bold tracking-tight">{item.time}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="p-3 text-center">
-                <button className="text-sm text-[#4F46E5] hover:text-[#FFFFFF] transition-colors duration-300">View all notifications</button>
+              <div className="p-3 bg-slate-50 text-center rounded-b-xl">
+                <button className="text-xs font-bold text-[#1e3886] hover:text-[#0f172a] transition-colors uppercase tracking-widest">
+                  View All Notifications
+                </button>
               </div>
             </div>
           )}
         </div>
 
-        {/* Settings */}
-        <button className="p-2 rounded-xl text-[#AAB4C5] hover:bg-[#202A40] hover:text-[#FFFFFF] transition-all duration-300 shadow-md hover:shadow-lg">
-          <Settings className="w-5 h-5" />
-        </button>
-
         {/* Profile */}
         <div className="relative">
-          <button 
-            className="flex items-center gap-2 p-1 rounded-xl hover:bg-[#202A40] transition-all duration-300 shadow-md hover:shadow-lg"
-            onClick={() => setIsProfileOpen(!isProfileOpen)}
+          <button
+            className="flex items-center gap-2 p-1 rounded-lg hover:bg-slate-100 transition-colors"
+            onClick={() => {
+              setIsProfileOpen(!isProfileOpen);
+              setIsNotificationsOpen(false);
+            }}
           >
-            <div className="h-8 w-8 rounded-full overflow-hidden border border-[rgba(255,255,255,0.12)] shadow-md">
-              <Image 
-                alt="Avatar" 
-                src="/zonelogo1.png" 
-                width={32} 
-                height={32} 
+            <div className="h-9 w-9 rounded-full overflow-hidden border-2 border-slate-200">
+              <Image
+                alt="Avatar"
+                src="/zonelogo1.png"
+                width={36}
+                height={36}
                 className="object-cover"
               />
             </div>
-            <ChevronDown className="w-4 h-4 text-[#E2E8F0]" />
+            <span className="material-symbols-outlined text-slate-400 text-[18px]">expand_more</span>
           </button>
-          
+
           {/* Profile Dropdown */}
           {isProfileOpen && (
-            <div className="absolute right-0 mt-2 w-64 bg-[#19233A] backdrop-blur-xl border border-[rgba(255,255,255,0.12)] rounded-2xl shadow-[0_4px_14px_rgba(0,0,0,0.6)] z-50">
-              <div className="p-4 border-b border-[rgba(255,255,255,0.12)]">
+            <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-lg z-50">
+              <div className="p-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full overflow-hidden border border-[rgba(255,255,255,0.12)] shadow-md">
-                    <Image 
-                      alt="Avatar" 
-                      src="/zonelogo1.png" 
-                      width={40} 
-                      height={40} 
+                  <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-slate-200">
+                    <Image
+                      alt="Avatar"
+                      src="/zonelogo1.png"
+                      width={40}
+                      height={40}
                       className="object-cover"
                     />
                   </div>
                   <div>
-                    <p className="font-medium text-[#FFFFFF]">Admin User</p>
-                    <p className="text-sm text-[#AAB4C5]">admin@exhibitbay.com</p>
+                    <p className="font-bold text-[#0f172a]">Super Admin</p>
+                    <p className="text-sm text-slate-500">admin@standzon.com</p>
                   </div>
                 </div>
               </div>
-              <div className="py-2">
-                <a href="/admin/profile" className="block px-4 py-2 text-sm text-[#AAB4C5] hover:bg-[#202A40] hover:text-[#FFFFFF] transition-all duration-300">
-                  Profile
-                </a>
-                <a href="/admin/settings" className="block px-4 py-2 text-sm text-[#AAB4C5] hover:bg-[#202A40] hover:text-[#FFFFFF] transition-all duration-300">
+              <div className="py-1">
+                <a href="/admin/settings" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#0f172a] transition-colors">
+                  <span className="material-symbols-outlined text-[18px]">settings</span>
                   Settings
                 </a>
               </div>
-              <div className="border-t border-[rgba(255,255,255,0.12)] py-2">
-                <button 
+              <div className="border-t border-slate-100 py-1">
+                <button
                   onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-sm text-[#FF5C5C] hover:bg-[#202A40] hover:text-[#FFFFFF] transition-all duration-300"
+                  className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-[#c0123d] hover:bg-red-50 transition-colors"
                 >
+                  <span className="material-symbols-outlined text-[18px]">logout</span>
                   Logout
                 </button>
               </div>

@@ -1,447 +1,115 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import Link, { LinkProps } from "next/link";
+import Link from "next/link";
 import React, { useState, createContext, useContext } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Menu,
-  X,
-  Home,
-  Building2,
-  FileText,
-  Settings,
-  Database,
-  Users,
-  BarChart3,
-  Globe,
-  Upload,
-  Shield,
-  PieChart,
-  Activity,
-  Zap,
-  Award,
-  TrendingUp,
-  Monitor,
-  Sun,
-  Moon,
-  DollarSign,
-  Calendar,
-  MessageSquare,
-  Package,
-  Key,
-  Server,
-  AlertTriangle,
-  Bell,
-  Layers,
-  Grid3X3,
-  Clock,
-  Flag,
-  Heart,
-  Mail,
-  Phone,
-  MapPin,
-  CalendarCheck,
-  Eye,
-  EyeOff,
-  GitBranch,
-  Cloud,
-  Lock,
-  User,
-  CreditCard,
-  Receipt,
-  ShoppingCart,
-  Star,
-  ThumbsUp,
-  Volume2,
-  Users as UsersRound,
-  UserCog,
-  FileJson,
-  Code,
-  Palette,
-  LockOpen,
-  UserCheck,
-  BadgeCheck,
-  Building,
-  Briefcase,
-  Handshake,
-  ChartColumn as ChartNoAxesColumn,
-  GanttChart,
-  Workflow,
-  CircleDashed,
-  CircleCheck as CircleCheckBig,
-  CircleAlert,
-  CircleX,
-  Archive,
-  Trash2,
-  RotateCcw,
-  Filter,
-  Search,
-  Download,
-  Upload as UploadIcon,
-  Plus,
-  MoreHorizontal,
-  Copy,
-  Share,
-  Bookmark,
-  Folder,
-  FolderOpen,
-  File,
-  FileText as FileTextIcon,
-  Image,
-  Video,
-  Music,
-  Archive as ArchiveIcon,
-  Tag,
-  Hash,
-  AtSign,
-  Link as LinkIcon,
-  ExternalLink,
-  Maximize2,
-  Minimize2,
-  RotateCw,
-  RefreshCw,
-  Play,
-  Pause,
-  Square,
-  SkipBack,
-  SkipForward,
-  VolumeX,
-  Volume1,
-  Volume2 as Volume2Icon,
-  Mic,
-  MicOff,
-  Webcam,
-  VideoOff as CameraOff,
-  Battery,
-  BatteryCharging,
-  Wifi,
-  Bluetooth,
-  Signal,
-  Cpu,
-  HardDrive,
-  MemoryStick,
-  Disc,
-  Server as ServerIcon,
-  Database as DatabaseIcon,
-  Network,
-  Router,
-  Smartphone,
-  Tablet,
-  Laptop,
-  Monitor as MonitorIcon,
-  Printer,
-  Scan,
-  Camera,
-  Video as VideoIcon,
-  Radio,
-  Tv,
-  Speaker,
-  Headphones,
-  Gamepad2,
-  Watch,
-  Clock as ClockIcon,
-  Timer,
-  AlarmClock,
-  Calendar as CalendarIcon,
-  CalendarDays,
-  CalendarRange,
-  CalendarDays as CalendarClock,
-  CalendarHeart,
-  CalendarPlus,
-  CalendarMinus,
-  CalendarX,
-  CalendarCheck as CalendarCheckIcon,
-  CalendarRange as CalendarArrowUp,
-  CalendarRange as CalendarArrowDown,
-  Map,
-  Navigation,
-  Compass,
-  Locate,
-  LocateFixed,
-  LocateOff,
-  Route,
-  Mountain,
-  Trees as TreePalm,
-  Castle,
-  History,
-  Landmark,
-  Library,
-  Hospital,
-  Store,
-  Factory,
-  Home as HomeIcon,
-  House,
-  Building as BuildingIcon,
-  School,
-  GraduationCap as University,
-  Church,
-  Landmark as LandmarkIcon,
-  Banknote,
-  PiggyBank,
-  Wallet,
-  CreditCard as CreditCardIcon,
-  Receipt as ReceiptIcon,
-  Coins,
-  Gem,
-  Scale,
-  Package as PackageIcon,
-  Truck,
-  Ship,
-  Plane,
-  Train,
-  Bus,
-  Car,
-  Bike,
-  Fuel,
-  BatteryLow,
-  BatteryMedium,
-  BatteryFull,
-  BatteryWarning,
-  Power,
-  Zap as ZapIcon,
-  ZapOff,
-  Sun as SunIcon,
-  Moon as MoonIcon,
-  Cloud as CloudIcon,
-  CloudRain,
-  CloudSnow,
-  CloudLightning,
-  CloudDrizzle,
-  CloudFog,
-  CloudSun,
-  CloudMoon,
-  Cloudy,
-  SunDim,
-  SunMedium,
-  MoonStar,
-  Stars,
-  Sparkles,
-  Wind,
-  Tornado,
-  Snowflake,
-  Thermometer,
-  ThermometerSun,
-  ThermometerSnowflake,
-  Droplets,
-  Umbrella,
-  Rainbow,
-  Flower,
-  Leaf,
-  Sprout,
-  Trees as TreeDeciduous,
-  TreePine,
-  Waves,
-  Anchor,
-  Sailboat,
-  Waves as WavesIcon,
-  Ship as ShipIcon,
-  Anchor as AnchorIcon,
-  Compass as CompassIcon,
-  Navigation as NavigationIcon,
-  MapPin as MapPinIcon,
-  Pin,
-  PinOff,
-  Crosshair,
-  Crosshair as CrosshairIcon,
-  Target,
-  Target as TargetIcon } from 'lucide-react';
-import { useTheme } from "@/components/ThemeProvider";
+import { usePathname } from "next/navigation";
 
-interface Links {
+// ─── Sidebar context ───────────────────────────────────────────────
+interface SidebarContextProps {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const SidebarContext = createContext<SidebarContextProps | undefined>(undefined);
+
+export const useSidebar = () => {
+  const context = useContext(SidebarContext);
+  if (!context) throw new Error("useSidebar must be used within a SidebarProvider");
+  return context;
+};
+
+// ─── Navigation schema ─────────────────────────────────────────────
+interface NavItem {
   label: string;
   href: string;
-  icon: React.JSX.Element | React.ReactNode;
+  icon: string;          // Material Symbols Outlined name
   badge?: string;
   disabled?: boolean;
   external?: boolean;
 }
 
-interface SidebarContextProps {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  animate: boolean;
+interface NavSection {
+  title: string;
+  items: NavItem[];
 }
 
-const SidebarContext = createContext<SidebarContextProps | undefined>(
-  undefined
-);
+const sections: NavSection[] = [
+  {
+    title: "Navigation",
+    items: [
+      { label: "Command Center", href: "/admin/dashboard", icon: "dashboard" },
+      { label: "Builders & Partners", href: "/admin/builders", icon: "corporate_fare" },
+      { label: "Add Builder", href: "/admin/add-builder", icon: "add_business" },
+      { label: "Featured Builders", href: "/admin/featured-builders", icon: "star" },
+      { label: "Smart Builders", href: "/admin/smart-builders", icon: "psychology" },
+      { label: "Registrations", href: "/admin/registrations", icon: "how_to_reg" },
+      { label: "Profile Claims", href: "/admin/profile-claims", icon: "verified_user" },
+    ],
+  },
+  {
+    title: "Content & CMS",
+    items: [
+      { label: "CMS & Content", href: "/admin/content-management", icon: "description" },
+      { label: "Pages Editor", href: "/admin/pages-editor", icon: "edit_document" },
+      { label: "Global Pages", href: "/admin/global-pages", icon: "language" },
+      { label: "Tradeshows", href: "/admin/tradeshows", icon: "event" },
+      { label: "Venues", href: "/admin/venue-management-summary", icon: "location_city" },
+      { label: "Locations", href: "/admin/location-kks", icon: "pin_drop" },
+      { label: "Portfolio", href: "/admin/portfolio", icon: "photo_library" },
+    ],
+  },
+  {
+    title: "Revenue & Leads",
+    items: [
+      { label: "Leads", href: "/admin/leads", icon: "contact_mail" },
+      { label: "Quote Analytics", href: "/admin/quote-matching-analytics", icon: "analytics" },
+      { label: "Billing", href: "/admin/billing", icon: "payments" },
+      { label: "Marketplace", href: "/admin/marketplace", icon: "storefront" },
+    ],
+  },
+  {
+    title: "System",
+    items: [
+      { label: "Global Settings", href: "/admin/settings", icon: "settings" },
+      { label: "Website Settings", href: "/admin/website-settings", icon: "tune" },
+      { label: "Users & RBAC", href: "/admin/users", icon: "group" },
+      { label: "Activity Stream", href: "/admin/activities", icon: "timeline" },
+      { label: "Audit Logs", href: "/admin/data-audit", icon: "security" },
+      { label: "GMB Integration", href: "/admin/gmb-integration", icon: "integration_instructions" },
+      { label: "GMB Listings", href: "/admin/gmb-listings", icon: "place" },
+      { label: "Integrations", href: "/admin/integrations", icon: "hub" },
+    ],
+  },
+  {
+    title: "Operations",
+    items: [
+      { label: "Bulk Import", href: "/admin/bulk-import", icon: "cloud_upload" },
+      { label: "Clear Cache", href: "/admin/clear-cache", icon: "cached" },
+      { label: "Reports", href: "/admin/reports", icon: "summarize" },
+      { label: "Performance", href: "/admin/performance-monitoring", icon: "speed" },
+      { label: "Deployments", href: "/admin/deployments", icon: "rocket_launch" },
+      { label: "Inspect DB", href: "/admin/inspect-db", icon: "database" },
+      { label: "Data Summary", href: "/admin/data-summary", icon: "fact_check" },
+    ],
+  },
+];
 
-export const useSidebar = () => {
-  const context = useContext(SidebarContext);
-  if (!context) {
-    throw new Error("useSidebar must be used within a SidebarProvider");
-  }
-  return context;
-};
+// ─── Components ─────────────────────────────────────────────────────
 
-export const SidebarProvider = ({
-  children,
-  open: openProp,
-  setOpen: setOpenProp,
-  animate = true,
-}: {
-  children: React.ReactNode;
-  open?: boolean;
-  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  animate?: boolean;
-}) => {
-  const [openState, setOpenState] = useState(false);
-
-  const open = openProp !== undefined ? openProp : openState;
-  const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState;
-
-  return (
-    <SidebarContext.Provider value={{ open, setOpen, animate }}>
-      {children}
-    </SidebarContext.Provider>
-  );
-};
-
-export const Sidebar = ({
-  children,
-  open,
-  setOpen,
-  animate,
-}: {
-  children: React.ReactNode;
-  open?: boolean;
-  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  animate?: boolean;
-}) => {
-  return (
-    <SidebarProvider open={open} setOpen={setOpen} animate={animate}>
-      {children}
-    </SidebarProvider>
-  );
-};
-
-export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
-  return (
-    <>
-      <DesktopSidebar {...props}>
-        <SidebarLinks />
-      </DesktopSidebar>
-      <MobileSidebar {...(props as React.ComponentProps<"div">)}>
-        <SidebarLinks />
-      </MobileSidebar>
-    </>
-  );
-};
-
-export const DesktopSidebar = ({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<typeof motion.div>) => {
-  const { open, setOpen, animate } = useSidebar();
-  return (
-    <motion.div
-      className={cn(
-        "h-screen sticky top-0 px-4 py-4 hidden md:flex md:flex-col bg-gradient-to-b from-gray-900 to-gray-950 w-[280px] flex-shrink-0 border-r border-gray-800 backdrop-blur-xl",
-        className
-      )}
-      animate={{
-        width: animate ? (open ? "280px" : "60px") : "280px",
-      }}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      {...props}
-    >
-      {children}
-    </motion.div>
-  );
-};
-
-export const MobileSidebar = ({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<"div">) => {
-  const { open, setOpen } = useSidebar();
-  return (
-    <>
-      <div
-        className={cn(
-          "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-gray-900/80 backdrop-blur-xl w-full border-b border-gray-800"
-        )}
-        {...props}
-      >
-        <div className="flex justify-end z-20 w-full">
-          <Menu
-            className="text-gray-300 cursor-pointer hover:text-white"
-            onClick={() => setOpen(!open)}
-          />
-        </div>
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={{ x: "-100%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: "-100%", opacity: 0 }}
-              transition={{
-                duration: 0.3,
-                ease: "easeInOut",
-              }}
-              className={cn(
-                "fixed h-full w-full inset-0 bg-gray-900/95 backdrop-blur-xl p-10 z-[100] flex flex-col justify-between",
-                className
-              )}
-            >
-              <div
-                className="absolute right-10 top-10 z-50 text-gray-300 cursor-pointer hover:text-white"
-                onClick={() => setOpen(!open)}
-              >
-                <X />
-              </div>
-              {children}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </>
-  );
-};
-
-export const SidebarLink = ({
-  link,
-  className,
-  ...props
-}: {
-  link: Links;
-  className?: string;
-  props?: LinkProps;
-}) => {
-  const { open, animate } = useSidebar();
-  
-  if (link.disabled) {
+function SidebarLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
+  if (item.disabled) {
     return (
       <div
-        className={cn(
-          "flex items-center justify-start gap-2 group/sidebar py-2 text-gray-500 cursor-not-allowed",
-          className
-        )}
+        className="flex items-center gap-3 px-4 py-2.5 rounded text-slate-600 cursor-not-allowed select-none"
         title="Coming soon"
       >
-        {link.icon}
-        <motion.span
-          animate={{
-            display: animate ? (open ? "inline-block" : "none") : "inline-block",
-            opacity: animate ? (open ? 1 : 0) : 1,
-          }}
-          className="text-gray-500 text-sm whitespace-pre inline-block !p-0 !m-0"
-        >
-          {link.label}
-        </motion.span>
-        {link.badge && open && (
-          <motion.span
-            animate={{
-              display: animate ? (open ? "inline-block" : "none") : "inline-block",
-              opacity: animate ? (open ? 1 : 0) : 1,
-            }}
-            className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-400"
-          >
-            {link.badge}
-          </motion.span>
+        <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+        <span className="text-sm font-medium">{item.label}</span>
+        {item.badge && (
+          <span className="ml-auto text-[10px] font-bold bg-slate-700 text-slate-400 px-2 py-0.5 rounded">
+            {item.badge}
+          </span>
         )}
       </div>
     );
@@ -449,355 +117,178 @@ export const SidebarLink = ({
 
   return (
     <Link
-      href={link.href}
-      target={link.external ? "_blank" : undefined}
-      rel={link.external ? "noopener noreferrer" : undefined}
+      href={item.href}
+      target={item.external ? "_blank" : undefined}
+      rel={item.external ? "noopener noreferrer" : undefined}
       className={cn(
-        "flex items-center justify-start gap-2 group/sidebar py-2 text-gray-300 hover:bg-gray-800/50 rounded-md transition-colors duration-200",
-        className
+        "flex items-center gap-3 px-4 py-2.5 rounded transition-all duration-200 group",
+        isActive
+          ? "bg-white/10 border-l-4 border-[#1e3886] text-white font-semibold"
+          : "text-slate-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent"
       )}
-      {...props}
     >
-      {link.icon}
-      <motion.span
-        animate={{
-          display: animate ? (open ? "inline-block" : "none") : "inline-block",
-          opacity: animate ? (open ? 1 : 0) : 1,
-        }}
-        className="text-gray-300 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
-      >
-        {link.label}
-      </motion.span>
-      {link.badge && open && (
-        <motion.span
-          animate={{
-            display: animate ? (open ? "inline-block" : "none") : "inline-block",
-            opacity: animate ? (open ? 1 : 0) : 1,
-          }}
-          className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30"
-        >
-          {link.badge}
-        </motion.span>
+      <span className={cn(
+        "material-symbols-outlined text-[20px]",
+        isActive ? "text-white" : "text-slate-500 group-hover:text-slate-300"
+      )}>
+        {item.icon}
+      </span>
+      <span className="text-sm">{item.label}</span>
+      {item.badge && (
+        <span className="ml-auto text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded">
+          {item.badge}
+        </span>
       )}
-      {link.external && open && (
-        <ExternalLink className="w-3 h-3 text-gray-500 ml-auto" />
+      {item.external && (
+        <span className="material-symbols-outlined text-[14px] ml-auto text-slate-600">open_in_new</span>
       )}
     </Link>
   );
-};
+}
 
-// Map section titles to icons
-const sectionIcons: Record<string, React.ReactNode> = {
-  'COMMAND CENTER': <Home className="w-4 h-4 text-gray-400" />,
-  'TENANT MANAGEMENT': <Building2 className="w-4 h-4 text-gray-400" />,
-  'USER MANAGEMENT': <Users className="w-4 h-4 text-gray-400" />,
-  'PROJECTS & WEBSITES': <FileText className="w-4 h-4 text-gray-400" />,
-  'DEPLOYMENTS & DOMAINS': <Upload className="w-4 h-4 text-gray-400" />,
-  'LEADS & APPOINTMENTS': <MessageSquare className="w-4 h-4 text-gray-400" />,
-  'TEMPLATES & COMPONENTS': <Package className="w-4 h-4 text-gray-400" />,
-  'BILLING & FINANCE': <DollarSign className="w-4 h-4 text-gray-400" />,
-  'INTEGRATIONS & API': <Globe className="w-4 h-4 text-gray-400" />,
-  'REVIEWS & REPUTATION': <Star className="w-4 h-4 text-gray-400" />,
-  'ALERTS & LOGS': <AlertTriangle className="w-4 h-4 text-gray-400" />,
-  'SYSTEM SETTINGS': <Settings className="w-4 h-4 text-gray-400" />,
-  'REPORTS & INSIGHTS': <BarChart3 className="w-4 h-4 text-gray-400" />,
-};
+function SidebarNav() {
+  const pathname = usePathname();
 
-// Map item labels to icons
-const itemIcons: Record<string, React.ReactNode> = {
-  // Command Center
-  'Command Center': <Home className="w-4 h-4 text-gray-400" />,
-  'Dashboard': <Home className="w-4 h-4 text-gray-400" />,
-  'Activity Stream': <Activity className="w-4 h-4 text-gray-400" />,
-  'AI Insights': <Zap className="w-4 h-4 text-gray-400" />,
-  'Platform Status': <Server className="w-4 h-4 text-gray-400" />,
-  
-  // Tenant Management
-  'Tenants': <Building2 className="w-4 h-4 text-gray-400" />,
-  'Tenant Analytics': <BarChart3 className="w-4 h-4 text-gray-400" />,
-  'Tenant Plans': <CreditCard className="w-4 h-4 text-gray-400" />,
-  'Tenant Compliance': <Shield className="w-4 h-4 text-gray-400" />,
-  
-  // User Management
-  'Users': <Users className="w-4 h-4 text-gray-400" />,
-  'User Roles': <Shield className="w-4 h-4 text-gray-400" />,
-  'User Sessions': <Activity className="w-4 h-4 text-gray-400" />,
-  'User Permissions': <Lock className="w-4 h-4 text-gray-400" />,
-  
-  // Projects & Websites
-  'Projects': <FileText className="w-4 h-4 text-gray-400" />,
-  'Project Analytics': <BarChart3 className="w-4 h-4 text-gray-400" />,
-  'Websites': <Globe className="w-4 h-4 text-gray-400" />,
-  'SEO Management': <Search className="w-4 h-4 text-gray-400" />,
-  
-  // Deployments & Domains
-  'Deployments': <Upload className="w-4 h-4 text-gray-400" />,
-  'Domains': <Globe className="w-4 h-4 text-gray-400" />,
-  'SSL Certificates': <Shield className="w-4 h-4 text-gray-400" />,
-  'CDN Configuration': <Cloud className="w-4 h-4 text-gray-400" />,
-  
-  // Leads & Appointments
-  'Leads': <MessageSquare className="w-4 h-4 text-gray-400" />,
-  'Lead Pipeline': <Workflow className="w-4 h-4 text-gray-400" />,
-  'Appointments': <Calendar className="w-4 h-4 text-gray-400" />,
-  'Lead Analytics': <BarChart3 className="w-4 h-4 text-gray-400" />,
-  
-  // Templates & Components
-  'Templates': <Package className="w-4 h-4 text-gray-400" />,
-  'Components': <Layers className="w-4 h-4 text-gray-400" />,
-  'Marketplace': <Store className="w-4 h-4 text-gray-400" />,
-  'Design System': <Palette className="w-4 h-4 text-gray-400" />,
-  
-  // Billing & Finance
-  'Subscriptions': <CreditCard className="w-4 h-4 text-gray-400" />,
-  'Payments': <DollarSign className="w-4 h-4 text-gray-400" />,
-  'Invoices': <Receipt className="w-4 h-4 text-gray-400" />,
-  'Revenue Analytics': <TrendingUp className="w-4 h-4 text-gray-400" />,
-  
-  // Integrations & API
-  'Third-Party Integrations': <Globe className="w-4 h-4 text-gray-400" />,
-  'API Management': <Key className="w-4 h-4 text-gray-400" />,
-  'Webhooks': <GitBranch className="w-4 h-4 text-gray-400" />,
-  'OAuth Providers': <LockOpen className="w-4 h-4 text-gray-400" />,
-  
-  // Reviews & Reputation
-  'Reviews': <Star className="w-4 h-4 text-gray-400" />,
-  'Review Analytics': <BarChart3 className="w-4 h-4 text-gray-400" />,
-  'Review Moderation': <Eye className="w-4 h-4 text-gray-400" />,
-  'Review Responses': <MessageSquare className="w-4 h-4 text-gray-400" />,
-  
-  // Alerts & Logs
-  'System Alerts': <AlertTriangle className="w-4 h-4 text-gray-400" />,
-  'System Logs': <FileText className="w-4 h-4 text-gray-400" />,
-  'Audit Trail': <Activity className="w-4 h-4 text-gray-400" />,
-  'Error Monitoring': <AlertTriangle className="w-4 h-4 text-gray-400" />,
-  
-  // System Settings
-  'Global Settings': <Settings className="w-4 h-4 text-gray-400" />,
-  'Feature Flags': <Flag className="w-4 h-4 text-gray-400" />,
-  'Maintenance Mode': <Settings className="w-4 h-4 text-gray-400" />,
-  'Backup & Recovery': <Database className="w-4 h-4 text-gray-400" />,
-  
-  // Reports & Insights
-  'Weekly Reports': <FileText className="w-4 h-4 text-gray-400" />,
-  'Business Intelligence': <BarChart3 className="w-4 h-4 text-gray-400" />,
-  'Usage Analytics': <Activity className="w-4 h-4 text-gray-400" />,
-  'Performance Metrics': <TrendingUp className="w-4 h-4 text-gray-400" />,
-};
-
-// Navigation sections
-const sections = [
-  {
-    title: 'COMMAND CENTER',
-    items: [
-      { label: 'Dashboard', href: '/admin/dashboard', icon: itemIcons['Dashboard'] },
-      { label: 'Activity Stream', href: '/admin/activity', icon: itemIcons['Activity Stream'] },
-      { label: 'AI Insights', href: '/admin/ai-insights', icon: itemIcons['AI Insights'] },
-      { label: 'Platform Status', href: '/admin/status', icon: itemIcons['Platform Status'] },
-    ],
-  },
-  {
-    title: 'TENANT MANAGEMENT',
-    items: [
-      { label: 'Tenants', href: '/admin/tenants', icon: itemIcons['Tenants'] },
-      { label: 'Tenant Analytics', href: '/admin/tenants/analytics', icon: itemIcons['Tenant Analytics'] },
-      { label: 'Tenant Plans', href: '/admin/tenants/plans', icon: itemIcons['Tenant Plans'] },
-      { label: 'Tenant Compliance', href: '/admin/tenants/compliance', icon: itemIcons['Tenant Compliance'] },
-    ],
-  },
-  {
-    title: 'USER MANAGEMENT',
-    items: [
-      { label: 'Users', href: '/admin/users', icon: itemIcons['Users'] },
-      { label: 'User Roles', href: '/admin/users/roles', icon: itemIcons['User Roles'] },
-      { label: 'User Sessions', href: '/admin/users/sessions', icon: itemIcons['User Sessions'] },
-      { label: 'User Permissions', href: '/admin/users/permissions', icon: itemIcons['User Permissions'] },
-    ],
-  },
-  {
-    title: 'PROJECTS & WEBSITES',
-    items: [
-      { label: 'Projects', href: '/admin/projects', icon: itemIcons['Projects'] },
-      { label: 'Project Analytics', href: '/admin/projects/analytics', icon: itemIcons['Project Analytics'] },
-      { label: 'Websites', href: '/admin/websites', icon: itemIcons['Websites'] },
-      { label: 'SEO Management', href: '/admin/seo', icon: itemIcons['SEO Management'] },
-    ],
-  },
-  {
-    title: 'DEPLOYMENTS & DOMAINS',
-    items: [
-      { label: 'Deployments', href: '/admin/deployments', icon: itemIcons['Deployments'] },
-      { label: 'Domains', href: '/admin/domains', icon: itemIcons['Domains'] },
-      { label: 'SSL Certificates', href: '/admin/ssl', icon: itemIcons['SSL Certificates'] },
-      { label: 'CDN Configuration', href: '/admin/cdn', icon: itemIcons['CDN Configuration'] },
-    ],
-  },
-  {
-    title: 'LEADS & APPOINTMENTS',
-    items: [
-      { label: 'Leads', href: '/admin/leads', icon: itemIcons['Leads'] },
-      { label: 'Lead Pipeline', href: '/admin/leads/pipeline', icon: itemIcons['Lead Pipeline'] },
-      { label: 'Appointments', href: '/admin/appointments', icon: itemIcons['Appointments'] },
-      { label: 'Lead Analytics', href: '/admin/leads/analytics', icon: itemIcons['Lead Analytics'] },
-    ],
-  },
-  {
-    title: 'TEMPLATES & COMPONENTS',
-    items: [
-      { label: 'Templates', href: '/admin/templates', icon: itemIcons['Templates'] },
-      { label: 'Components', href: '/admin/components', icon: itemIcons['Components'] },
-      { label: 'Marketplace', href: '/admin/marketplace', icon: itemIcons['Marketplace'] },
-      { label: 'Design System', href: '/admin/design-system', icon: itemIcons['Design System'] },
-    ],
-  },
-  {
-    title: 'BILLING & FINANCE',
-    items: [
-      { label: 'Subscriptions', href: '/admin/subscriptions', icon: itemIcons['Subscriptions'] },
-      { label: 'Payments', href: '/admin/payments', icon: itemIcons['Payments'] },
-      { label: 'Invoices', href: '/admin/invoices', icon: itemIcons['Invoices'] },
-      { label: 'Revenue Analytics', href: '/admin/revenue', icon: itemIcons['Revenue Analytics'] },
-    ],
-  },
-  {
-    title: 'INTEGRATIONS & API',
-    items: [
-      { label: 'Third-Party Integrations', href: '/admin/integrations', icon: itemIcons['Third-Party Integrations'] },
-      { label: 'API Management', href: '/admin/api', icon: itemIcons['API Management'] },
-      { label: 'Webhooks', href: '/admin/webhooks', icon: itemIcons['Webhooks'] },
-      { label: 'OAuth Providers', href: '/admin/oauth', icon: itemIcons['OAuth Providers'] },
-    ],
-  },
-  {
-    title: 'REVIEWS & REPUTATION',
-    items: [
-      { label: 'Reviews', href: '/admin/reviews', icon: itemIcons['Reviews'] },
-      { label: 'Review Analytics', href: '/admin/reviews/analytics', icon: itemIcons['Review Analytics'] },
-      { label: 'Review Moderation', href: '/admin/reviews/moderation', icon: itemIcons['Review Moderation'] },
-      { label: 'Review Responses', href: '/admin/reviews/responses', icon: itemIcons['Review Responses'] },
-    ],
-  },
-  {
-    title: 'ALERTS & LOGS',
-    items: [
-      { label: 'System Alerts', href: '/admin/alerts', icon: itemIcons['System Alerts'] },
-      { label: 'System Logs', href: '/admin/logs', icon: itemIcons['System Logs'] },
-      { label: 'Audit Trail', href: '/admin/audit', icon: itemIcons['Audit Trail'] },
-      { label: 'Error Monitoring', href: '/admin/errors', icon: itemIcons['Error Monitoring'] },
-    ],
-  },
-  {
-    title: 'SYSTEM SETTINGS',
-    items: [
-      { label: 'Global Settings', href: '/admin/settings', icon: itemIcons['Global Settings'] },
-      { label: 'Feature Flags', href: '/admin/features', icon: itemIcons['Feature Flags'] },
-      { label: 'Maintenance Mode', href: '/admin/maintenance', icon: itemIcons['Maintenance Mode'] },
-      { label: 'Backup & Recovery', href: '/admin/backup', icon: itemIcons['Backup & Recovery'] },
-    ],
-  },
-  {
-    title: 'REPORTS & INSIGHTS',
-    items: [
-      { label: 'Weekly Reports', href: '/admin/reports/weekly', icon: itemIcons['Weekly Reports'] },
-      { label: 'Business Intelligence', href: '/admin/business-intelligence', icon: itemIcons['Business Intelligence'] },
-      { label: 'Usage Analytics', href: '/admin/usage', icon: itemIcons['Usage Analytics'] },
-      { label: 'Performance Metrics', href: '/admin/performance', icon: itemIcons['Performance Metrics'] },
-    ],
-  },
-];
-
-export const SidebarLinks = () => {
-  const { theme, toggleTheme } = useTheme();
-  const { open } = useSidebar();
-  
   return (
-    <div className="flex flex-col h-full">
-      {/* Sidebar Header */}
-      <div className="flex items-center justify-between p-2 mb-4">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-            <Zap className="h-5 w-5 text-white" />
+    <nav className="flex-1 px-4 space-y-1 mt-4 overflow-y-auto pb-4">
+      {sections.map((section) => (
+        <div key={section.title} className="mb-4">
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-4 mb-2 mt-4">
+            {section.title}
           </div>
-          {open && (
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div>
-                <div className="text-sm font-bold text-white">Super Admin</div>
-                <div className="text-xs text-gray-400">Command Center</div>
-              </div>
-            </motion.div>
-          )}
+          <div className="space-y-0.5">
+            {section.items.map((item) => (
+              <SidebarLink
+                key={item.href}
+                item={item}
+                isActive={pathname === item.href || !!pathname?.startsWith(item.href + "/")}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      ))}
+    </nav>
+  );
+}
 
-      {/* Navigation Sections */}
-      <div className="flex-1 overflow-y-auto py-2 space-y-6">
-        {sections.map((section) => (
-          <div key={section.title}>
-            {open && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.2 }}
-                className="px-2 py-1 text-xs tracking-wide font-semibold text-gray-500 uppercase flex items-center gap-2"
-              >
-                {sectionIcons[section.title] || <div className="w-4 h-4" />}
-                {section.title}
-              </motion.div>
-            )}
-            <div className="space-y-1">
-              {section.items.map((item) => (
-                <SidebarLink 
-                  key={item.label} 
-                  link={item} 
-                />
-              ))}
+// ─── Main Sidebar Exports ───────────────────────────────────────────
+
+export function Sidebar({
+  children,
+  open,
+  setOpen,
+}: {
+  children: React.ReactNode;
+  open?: boolean;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const [openState, setOpenState] = useState(true);
+  const finalOpen = open !== undefined ? open : openState;
+  const finalSetOpen = setOpen !== undefined ? setOpen : setOpenState;
+
+  return (
+    <SidebarContext.Provider value={{ open: finalOpen, setOpen: finalSetOpen }}>
+      {children}
+    </SidebarContext.Provider>
+  );
+}
+
+export function SidebarBody() {
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex w-72 bg-[#0f172a] flex-col h-full text-slate-300 border-r border-[#0f172a]/20 shrink-0">
+        {/* Logo / Header */}
+        <div className="p-8 flex items-center gap-3 shrink-0">
+          <div className="size-10 bg-[#1e3886] flex items-center justify-center rounded-lg shadow-lg">
+            <span className="material-symbols-outlined text-white text-2xl">architecture</span>
+          </div>
+          <div>
+            <h1 className="text-white text-lg font-extrabold tracking-tight uppercase">Stands Zone</h1>
+            <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Super Admin Console</p>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <SidebarNav />
+
+        {/* Footer / Profile */}
+        <div className="p-6 mt-auto border-t border-white/5 shrink-0">
+          <div className="flex items-center gap-3 px-2">
+            <div className="size-9 rounded-full bg-slate-700 overflow-hidden ring-2 ring-[#1e3886]/20 flex items-center justify-center">
+              <span className="material-symbols-outlined text-slate-300 text-lg">person</span>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <p className="text-sm font-bold text-white truncate">Super Admin</p>
+              <p className="text-xs text-slate-500 truncate">Administrator</p>
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* Theme Toggle */}
-      <div className="mt-auto pt-4 border-t border-gray-800">
-        <button
-          onClick={toggleTheme}
-          className="flex items-center justify-start gap-2 w-full py-2 text-gray-300 hover:bg-gray-800/50 rounded-md px-2 transition-colors duration-200"
-        >
-          {theme === 'dark' ? (
-            <Sun className="w-4 h-4 text-gray-300" />
-          ) : (
-            <Moon className="w-4 h-4 text-gray-300" />
-          )}
-          {open && (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.2 }}
-              className="text-sm text-gray-300"
-            >
-              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-            </motion.span>
-          )}
-        </button>
-        
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.2 }}
-            className="mt-4 px-2 text-xs text-gray-500"
-          >
+          <div className="mt-4 px-2 text-xs text-slate-500">
             <div className="flex items-center gap-2 mb-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
               <span>System Online</span>
             </div>
             <div>v1.0.0</div>
-          </motion.div>
-        )}
-      </div>
-    </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Mobile Sidebar Trigger */}
+      <MobileSidebar />
+    </>
   );
-};
+}
+
+function MobileSidebar() {
+  const { open, setOpen } = useSidebar();
+
+  return (
+    <>
+      {/* Mobile header bar */}
+      <div className="h-12 px-4 py-3 flex md:hidden items-center justify-between bg-[#0f172a] w-full border-b border-white/5">
+        <div className="flex items-center gap-2">
+          <div className="size-7 bg-[#1e3886] flex items-center justify-center rounded">
+            <span className="material-symbols-outlined text-white text-base">architecture</span>
+          </div>
+          <span className="text-white text-sm font-bold">Stands Zone</span>
+        </div>
+        <button
+          className="text-slate-300 hover:text-white transition-colors"
+          onClick={() => setOpen(!open)}
+        >
+          <span className="material-symbols-outlined">{open ? "close" : "menu"}</span>
+        </button>
+      </div>
+
+      {/* Mobile overlay */}
+      {open && (
+        <div className="fixed inset-0 z-[100] md:hidden">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
+          {/* Panel */}
+          <aside className="absolute left-0 top-0 h-full w-72 bg-[#0f172a] flex flex-col text-slate-300 shadow-2xl">
+            <div className="p-6 flex items-center justify-between border-b border-white/5">
+              <div className="flex items-center gap-2">
+                <div className="size-8 bg-[#1e3886] flex items-center justify-center rounded-lg">
+                  <span className="material-symbols-outlined text-white text-xl">architecture</span>
+                </div>
+                <div>
+                  <h1 className="text-white text-base font-extrabold uppercase">Stands Zone</h1>
+                  <p className="text-[9px] text-slate-400 font-bold tracking-widest uppercase">Super Admin</p>
+                </div>
+              </div>
+              <button className="text-slate-400 hover:text-white" onClick={() => setOpen(false)}>
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <SidebarNav />
+          </aside>
+        </div>
+      )}
+    </>
+  );
+}
+
+// Keep the old export name for compatibility
+export const SidebarLinks = SidebarNav;
+export const SidebarProvider = Sidebar;

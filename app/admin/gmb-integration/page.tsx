@@ -2,9 +2,6 @@
 
 import React, { Suspense, useState } from 'react';
 import GMBAPIFetchTool from '@/components/GMBAPIFetchTool';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
 
 function GMBIntegrationClient() {
   // Mock admin data for the tool
@@ -40,10 +37,10 @@ function LoadingComponent() {
 
 export default function GMBIntegrationPage() {
   return (
-    <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
+    <>
       <Suspense fallback={<LoadingComponent />}>
         <GMBIntegrationClient />
       </Suspense>
-    </AdminLayout>
+    </>
   );
 }

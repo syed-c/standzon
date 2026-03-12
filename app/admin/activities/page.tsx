@@ -1,9 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
 import {
   Card,
   CardContent,
@@ -236,7 +233,7 @@ export default function ActivitiesPage() {
 
   if (loading) {
     return (
-      <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
+      <>
         <div className="min-h-screen bg-gray-50">
           <div className="max-w-7xl mx-auto p-6">
             <Card>
@@ -247,12 +244,12 @@ export default function ActivitiesPage() {
             </Card>
           </div>
         </div>
-      </AdminLayout>
+      </>
     );
   }
 
   return (
-    <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
+    <>
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto p-6">
           {/* Header */}
@@ -511,7 +508,7 @@ export default function ActivitiesPage() {
           )}
         </div>
       </div>
-    </AdminLayout>
+    </>
   );
 }
 

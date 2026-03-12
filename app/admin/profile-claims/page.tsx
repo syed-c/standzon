@@ -1,15 +1,13 @@
 "use client";
 
 import AdminClaimsManager from '@/components/AdminClaimsManager';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Users, TrendingUp, AlertCircle } from 'lucide-react';
 
 export default function ProfileClaimsPage() {
   return (
     <div className="min-h-screen bg-[#f9fafb]">
-      <Navigation />
+      
       
       <div className="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -146,7 +144,7 @@ export default function ProfileClaimsPage() {
         </div>
       </div>
       
-      <Footer />
+      
     </div>
   );
 }

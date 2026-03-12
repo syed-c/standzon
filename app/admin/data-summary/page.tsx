@@ -40,15 +40,10 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
 import { GLOBAL_EXHIBITION_DATA } from '@/lib/data/globalCities';
 import { getAllExpandedCities } from '@/lib/data/expandedLocations';
 import { dataPublishingService, PublishingTask } from '@/lib/services/dataPublishingService';
 import { useToast } from '@/hooks/use-toast';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
 
 interface SummaryData {
   totalCountries: number;
@@ -288,7 +283,7 @@ export default function DataSummaryPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-        <Navigation />
+        
         <div className="flex items-center justify-center py-20">
           <div className="text-center space-y-4">
             <div className="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
@@ -301,7 +296,7 @@ export default function DataSummaryPage() {
   }
 
   return (
-    <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
+    <>
       {/* page main content here, no Navigation/Footer */}
       {/* Header */}
       <section className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 text-white py-16">
@@ -699,6 +694,6 @@ export default function DataSummaryPage() {
           )}
         </div>
       </section>
-    </AdminLayout>
+    </>
   );
 }

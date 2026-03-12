@@ -1,9 +1,6 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import AdminLayout from '@/components/admin/AdminLayout';
-import Sidebar from '@/components/admin/Sidebar';
-import Topbar from '@/components/admin/Topbar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -991,7 +988,7 @@ export default function AdminPagesEditor() {
   };
 
   return (
-    <AdminLayout sidebar={<Sidebar />} topbar={<Topbar />}>
+    <>
       <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 pages-editor">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="flex items-center justify-between">
@@ -3481,7 +3478,7 @@ export default function AdminPagesEditor() {
           </div>
         </div>
       )}
-    </AdminLayout>
+    </>
   );
 }
 

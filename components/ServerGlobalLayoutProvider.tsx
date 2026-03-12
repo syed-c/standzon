@@ -11,8 +11,15 @@ interface ServerGlobalLayoutProviderProps {
 }
 
 export default function ServerGlobalLayoutProvider({ children, pathname }: ServerGlobalLayoutProviderProps) {
+  // Admin pages have their own layout — skip public shell entirely
+  const isAdmin = pathname.startsWith('/admin');
+
+  if (isAdmin) {
+    return <>{children}</>;
+  }
+
   // Don't show breadcrumbs on the home page or debug pages
-  const showBreadcrumbs = pathname !== '/' && !pathname.startsWith('/debug') && !pathname.startsWith('/admin');
+  const showBreadcrumbs = pathname !== '/' && !pathname.startsWith('/debug');
   const breadcrumbs = pathname ? generateBreadcrumbs(pathname) : [];
 
   return (

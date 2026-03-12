@@ -1,7 +1,5 @@
 import React from 'react';
 import { Metadata } from 'next';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
 import RealTimeBuilderManager from '@/components/RealTimeBuilderManager';
 
 export const metadata: Metadata = {
@@ -14,7 +12,7 @@ export default function RealTimeBuilderManagerPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
+      
       
       <main className="pt-20 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -29,7 +27,7 @@ export default function RealTimeBuilderManagerPage() {
         </div>
       </main>
 
-      <Footer />
+      
     </div>
   );
 }

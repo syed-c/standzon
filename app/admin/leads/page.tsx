@@ -1,8 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
 import LeadsManagement from '@/components/LeadsManagement';
-import SuperAdminLayout from '@/components/admin/SuperAdminLayout';
-import Topbar from '@/components/admin/Topbar';
 
 export const metadata: Metadata = {
   title: 'Leads Management - Super Admin Dashboard',
@@ -47,13 +45,13 @@ const mockAdmin = {
 
 export default function LeadsManagementPage() {
   return (
-    <SuperAdminLayout topbar={<Topbar />}>
+    <>
       <div className="space-y-8">
         <LeadsManagement 
           adminId={mockAdmin.id}
           permissions={mockAdmin.permissions}
         />
       </div>
-    </SuperAdminLayout>
+    </>
   );
 }

@@ -92,6 +92,9 @@ export default function RootLayout({
         {/* ✅ FAVICON: Add favicon */}
         <link rel="icon" type="image/png" href="/favicon.png" />
 
+        {/* Material Symbols Outlined for admin dashboard */}
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700&display=swap" rel="stylesheet" />
+
         {/* ✅ PWA: Add manifest for installable app */}
         <link rel="manifest" href="/manifest.json" />
 
