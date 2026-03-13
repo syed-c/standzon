@@ -8,19 +8,20 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Star, 
-  Crown, 
-  MapPin, 
-  Building, 
-  Search, 
-  Filter,
-  Settings,
-  Save,
-  RefreshCw,
-  Users,
-  TrendingUp
-} from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Builder {
   id: string;
@@ -29,8 +30,8 @@ interface Builder {
   phone: string;
   city: string;
   country: string;
-  rating: number;
-  projectsCompleted: number;
+  rating: number | null;
+  projectsCompleted: number | null;
   verified: boolean;
   featured: boolean;
   adminFeatured?: boolean;
@@ -46,7 +47,14 @@ export default function FeaturedBuildersManager() {
   const [selectedCountry, setSelectedCountry] = useState('all');
   const [selectedCity, setSelectedCity] = useState('all');
   const [filterType, setFilterType] = useState('all'); // all, featured, unfeatured
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const { toast } = useToast();
+
+  // Pagination
+  const totalPages = Math.ceil(filteredBuilders.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedBuilders = filteredBuilders.slice(startIndex, startIndex + itemsPerPage);
 
   // Load builders
   const loadBuilders = async () => {
@@ -60,18 +68,18 @@ export default function FeaturedBuildersManager() {
       if (data.success && data.data && data.data.builders) {
         const allBuilders = data.data.builders.map((builder: any) => ({
           id: builder.id,
-          companyName: builder.companyName,
-          email: builder.contactInfo?.primaryEmail || '',
-          phone: builder.contactInfo?.phone || '',
-          city: builder.headquarters?.city || 'Unknown',
-          country: builder.headquarters?.country || 'Unknown',
-          rating: builder.rating || 0,
-          projectsCompleted: builder.projectsCompleted || 0,
+          companyName: builder.company_name || 'Unknown',
+          email: builder.primary_email || '',
+          phone: builder.phone || '',
+          city: builder.headquarters_city || 'Unknown',
+          country: builder.headquarters_country || 'Unknown',
+          rating: builder.rating ?? null,
+          projectsCompleted: builder.projects_completed ?? null,
           verified: builder.verified || false,
-          featured: builder.featured || builder.premiumMember || false,
+          featured: builder.featured || builder.premium_member || false,
           adminFeatured: builder.adminFeatured || false,
           featuredPriority: builder.featuredPriority || undefined,
-          gmbImported: builder.gmbImported || false
+          gmbImported: builder.gmb_imported || false
         }));
         
         setBuilders(allBuilders);
@@ -92,10 +100,15 @@ export default function FeaturedBuildersManager() {
   // Filter builders
   useEffect(() => {
     let filtered = builders.filter(builder => {
-      const matchesSearch = builder.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        builder.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        builder.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        builder.country.toLowerCase().includes(searchTerm.toLowerCase());
+      const companyName = builder.companyName || '';
+      const email = builder.email || '';
+      const city = builder.city || '';
+      const country = builder.country || '';
+      
+      const matchesSearch = companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        country.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesCountry = selectedCountry === 'all' || builder.country === selectedCountry;
       const matchesCity = selectedCity === 'all' || builder.city === selectedCity;
@@ -122,11 +135,14 @@ export default function FeaturedBuildersManager() {
       if (a.featured && !b.featured) return -1;
       if (!a.featured && b.featured) return 1;
       
-      // Finally by rating
-      return b.rating - a.rating;
+      // Finally by rating (handle null)
+      const ratingA = a.rating ?? 0;
+      const ratingB = b.rating ?? 0;
+      return ratingB - ratingA;
     });
 
     setFilteredBuilders(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
   }, [builders, searchTerm, selectedCountry, selectedCity, filterType]);
 
   // Get unique countries and cities
@@ -170,8 +186,8 @@ export default function FeaturedBuildersManager() {
   const featureTopBuilders = async () => {
     try {
       const topBuilders = builders
-        .filter(b => b.verified && b.rating >= 4.0)
-        .sort((a, b) => b.rating - a.rating)
+        .filter(b => b.verified && (b.rating ?? 0) >= 4.0)
+        .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
         .slice(0, 3);
       
       topBuilders.forEach((builder, index) => {
@@ -210,135 +226,131 @@ export default function FeaturedBuildersManager() {
     totalBuilders: builders.length,
     adminFeatured: builders.filter(b => b.adminFeatured).length,
     regularFeatured: builders.filter(b => b.featured && !b.adminFeatured).length,
-    topRated: builders.filter(b => b.rating >= 4.5).length
+    topRated: builders.filter(b => (b.rating ?? 0) >= 4.5).length
   };
 
   if (loading) {
     return (
-      <div className="p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="flex items-center space-x-3">
-            <RefreshCw className="h-6 w-6 animate-spin text-blue-600" />
-            <span className="text-lg font-medium">Loading builders...</span>
-          </div>
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e3886] mx-auto"></div>
+          <p className="mt-4 text-slate-500">Loading featured builders...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Featured Builders Manager</h1>
-          <p className="text-gray-600 mt-1">
-            Control which builders appear as featured on location pages
-          </p>
+          <h1 className="text-2xl font-bold text-slate-900">Featured Builders Manager</h1>
+          <p className="text-slate-500 mt-1">Control which builders appear as featured on location pages</p>
+          
+          {/* Feature Descriptions */}
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="flex items-start gap-2 text-sm">
+              <span className="material-symbols-outlined text-purple-600 text-lg">workspace_premium</span>
+              <span className="text-slate-600">Admin Featured: Set top 3-5 builders to appear first on all location pages</span>
+            </div>
+            <div className="flex items-start gap-2 text-sm">
+              <span className="material-symbols-outlined text-blue-600 text-lg">format_list_numbered</span>
+              <span className="text-slate-600">Priority Rankings: Control exact position (Top 1, Top 2, Top 3) for featured builders</span>
+            </div>
+            <div className="flex items-start gap-2 text-sm">
+              <span className="material-symbols-outlined text-green-600 text-lg">trending_up</span>
+              <span className="text-slate-600">Auto-Feature: Quickly feature the top 3 highest-rated verified builders</span>
+            </div>
+            <div className="flex items-start gap-2 text-sm">
+              <span className="material-symbols-outlined text-orange-600 text-lg">location_on</span>
+              <span className="text-slate-600">Location Impact: Featured builders appear at top with special badges and highlighting</span>
+            </div>
+          </div>
         </div>
-        <div className="flex space-x-3">
-          <Button
-            onClick={loadBuilders}
-            variant="outline"
-            className="text-gray-700 border-gray-300 hover:bg-gray-50"
+        
+        <div className="flex items-center gap-3">
+          <Button 
+            onClick={loadBuilders} 
+            variant="outline" 
+            className="border-slate-300 text-slate-700 hover:bg-slate-50"
           >
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <span className="material-symbols-outlined mr-2">refresh</span>
             Refresh
           </Button>
           <Button
             onClick={featureTopBuilders}
-            className="bg-green-600 hover:bg-green-700 text-white"
+            className="bg-green-600 hover:bg-green-700"
           >
-            <TrendingUp className="h-4 w-4 mr-2" />
+            <span className="material-symbols-outlined mr-2">trending_up</span>
             Feature Top 3
           </Button>
           <Button
             onClick={clearAllFeatured}
             variant="destructive"
           >
-            <Settings className="h-4 w-4 mr-2" />
-            Clear All Featured
+            <span className="material-symbols-outlined mr-2">settings</span>
+            Clear All
           </Button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Builders</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalBuilders}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { title: 'Total Builders', value: stats.totalBuilders, icon: 'groups', color: 'bg-blue-100 text-blue-600' },
+          { title: 'Admin Featured', value: stats.adminFeatured, icon: 'workspace_premium', color: 'bg-purple-100 text-purple-600' },
+          { title: 'Regular Featured', value: stats.regularFeatured, icon: 'star', color: 'bg-orange-100 text-orange-600' },
+          { title: 'Top Rated (4.5+)', value: stats.topRated, icon: 'trending_up', color: 'bg-green-100 text-green-600' },
+        ].map((stat, index) => (
+          <Card 
+            key={index} 
+            className="border-slate-200 hover:shadow-lg transition-shadow"
+          >
+            <CardHeader className="p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-500">{stat.title}</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-1">{stat.value}</p>
+                </div>
+                <div className={`p-3 rounded-lg ${stat.color}`}>
+                  <span className="material-symbols-outlined">{stat.icon}</span>
+                </div>
               </div>
-              <Building className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Admin Featured</p>
-                <p className="text-2xl font-bold text-purple-600">{stats.adminFeatured}</p>
-              </div>
-              <Crown className="h-8 w-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Regular Featured</p>
-                <p className="text-2xl font-bold text-orange-600">{stats.regularFeatured}</p>
-              </div>
-              <Star className="h-8 w-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Top Rated (4.5+)</p>
-                <p className="text-2xl font-bold text-green-600">{stats.topRated}</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
+            </CardHeader>
+          </Card>
+        ))}
       </div>
 
       {/* Filters */}
-      <Card>
+      <Card className="border-slate-200">
         <CardHeader>
-          <CardTitle className="text-lg">Filters & Search</CardTitle>
+          <CardTitle className="text-slate-900">Filters & Search</CardTitle>
+          <CardDescription className="text-slate-500">
+            {filteredBuilders.length} of {builders.length} builders
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <Label htmlFor="search">Search</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Label htmlFor="search" className="text-slate-600">Search</Label>
+              <div className="relative mt-1">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">search</span>
                 <Input
                   id="search"
                   placeholder="Search builders..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 border-slate-300"
                 />
               </div>
             </div>
             
             <div>
-              <Label htmlFor="country">Country</Label>
+              <Label htmlFor="country" className="text-slate-600">Country</Label>
               <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                <SelectTrigger>
-                  <SelectValue />
+                <SelectTrigger className="mt-1 border-slate-300">
+                  <SelectValue placeholder="All Countries" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Countries</SelectItem>
@@ -350,10 +362,10 @@ export default function FeaturedBuildersManager() {
             </div>
             
             <div>
-              <Label htmlFor="city">City</Label>
+              <Label htmlFor="city" className="text-slate-600">City</Label>
               <Select value={selectedCity} onValueChange={setSelectedCity}>
-                <SelectTrigger>
-                  <SelectValue />
+                <SelectTrigger className="mt-1 border-slate-300">
+                  <SelectValue placeholder="All Cities" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Cities</SelectItem>
@@ -365,10 +377,10 @@ export default function FeaturedBuildersManager() {
             </div>
             
             <div>
-              <Label htmlFor="type">Featured Status</Label>
+              <Label htmlFor="type" className="text-slate-600">Featured Status</Label>
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger>
-                  <SelectValue />
+                <SelectTrigger className="mt-1 border-slate-300">
+                  <SelectValue placeholder="All Builders" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Builders</SelectItem>
@@ -377,129 +389,201 @@ export default function FeaturedBuildersManager() {
                 </SelectContent>
               </Select>
             </div>
-            
-            <div className="flex items-end">
-              <div className="text-sm text-gray-500">
-                <Filter className="h-4 w-4 mr-1 inline" />
-                {filteredBuilders.length} of {builders.length}
-              </div>
-            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Builders List */}
-      <Card>
+      {/* Builders Table */}
+      <Card className="border-slate-200">
         <CardHeader>
-          <CardTitle>Builders ({filteredBuilders.length})</CardTitle>
-          <CardDescription>
-            Click to manage featured status and priority
+          <CardTitle className="text-slate-900">Builders Directory</CardTitle>
+          <CardDescription className="text-slate-500">
+            Manage featured status for builders
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {filteredBuilders.length === 0 ? (
-            <div className="text-center py-12">
-              <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No builders found matching your criteria</p>
-            </div>
-          ) : (
-            <div className="space-y-3 max-h-96 overflow-y-auto">
-              {filteredBuilders.map((builder) => (
-                <div 
-                  key={builder.id} 
-                  className={`flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors ${
-                    builder.adminFeatured ? 'bg-purple-50 border-purple-200' : 'bg-white border-gray-200'
-                  }`}
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                      <Building className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h3 className="font-medium text-gray-900">{builder.companyName}</h3>
-                        {builder.adminFeatured && (
-                          <Badge className="bg-purple-100 text-purple-800 text-xs">
-                            Admin Featured #{builder.featuredPriority}
-                          </Badge>
-                        )}
-                        {builder.featured && !builder.adminFeatured && (
-                          <Badge className="bg-orange-100 text-orange-800 text-xs">
-                            Regular Featured
-                          </Badge>
-                        )}
-                        {builder.verified && (
-                          <Badge className="bg-green-100 text-green-800 text-xs">
-                            Verified
-                          </Badge>
-                        )}
-                        {builder.gmbImported && (
-                          <Badge className="bg-blue-100 text-blue-800 text-xs">
-                            GMB
-                          </Badge>
-                        )}
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-slate-200 hover:bg-transparent">
+                  <TableHead className="text-slate-600">Company</TableHead>
+                  <TableHead className="text-slate-600">Location</TableHead>
+                  <TableHead className="text-slate-600">Rating</TableHead>
+                  <TableHead className="text-slate-600">Is Featured</TableHead>
+                  <TableHead className="text-slate-600">Status</TableHead>
+                  <TableHead className="text-slate-600">Priority</TableHead>
+                  <TableHead className="text-slate-600">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedBuilders.map((builder) => (
+                  <TableRow key={builder.id} className="border-slate-100 hover:bg-slate-50">
+                    <TableCell className="font-medium">
+                      <div>
+                        <div className="font-medium text-slate-900">{builder.companyName}</div>
+                        <div className="text-slate-500 text-xs">
+                          {builder.email && !builder.email.includes('no-email+') 
+                            ? builder.email 
+                            : 'No email'}
+                          {builder.phone ? ` • ${builder.phone}` : ''}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-500 flex items-center space-x-4">
-                        <span className="flex items-center">
-                          <MapPin className="h-3 w-3 mr-1" />
-                          {builder.city}, {builder.country}
-                        </span>
-                        <span className="flex items-center">
-                          <Star className="h-3 w-3 mr-1 text-yellow-400" />
-                          {builder.rating.toFixed(1)}
-                        </span>
-                        <span>{builder.projectsCompleted} projects</span>
+                    </TableCell>
+                    <TableCell className="text-slate-600">
+                      {builder.city}, {builder.country}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 text-amber-500">
+                        <span className="material-symbols-outlined text-sm">star</span>
+                        <span className="text-slate-900">{builder.rating !== null ? builder.rating.toFixed(1) : 'N/A'}</span>
                       </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    {builder.adminFeatured && (
-                      <Select
-                        value={builder.featuredPriority?.toString() || ''}
-                        onValueChange={(value) => updateFeaturedStatus(builder.id, true, parseInt(value))}
-                      >
-                        <SelectTrigger className="w-24">
-                          <SelectValue placeholder="Priority" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">Top 1</SelectItem>
-                          <SelectItem value="2">Top 2</SelectItem>
-                          <SelectItem value="3">Top 3</SelectItem>
-                          <SelectItem value="4">Top 4</SelectItem>
-                          <SelectItem value="5">Top 5</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                    <Button
-                      size="sm"
-                      onClick={() => updateFeaturedStatus(
-                        builder.id, 
-                        !builder.adminFeatured, 
-                        builder.adminFeatured ? undefined : 1
+                    </TableCell>
+                    <TableCell>
+                      {builder.adminFeatured ? (
+                        <Badge className="bg-purple-100 text-purple-700 border-purple-200">
+                          <span className="material-symbols-outlined text-xs mr-1">check_circle</span>
+                          Yes
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-slate-100 text-slate-500 border-slate-200">
+                          <span className="material-symbols-outlined text-xs mr-1">cancel</span>
+                          No
+                        </Badge>
                       )}
-                      className={builder.adminFeatured 
-                        ? "bg-red-600 hover:bg-red-700 text-white" 
-                        : "bg-purple-600 hover:bg-purple-700 text-white"
+                    </TableCell>
+                    <TableCell>
+                      {builder.adminFeatured ? (
+                        <Badge className="bg-purple-100 text-purple-700 border-purple-200">
+                          <span className="material-symbols-outlined text-xs mr-1">workspace_premium</span>
+                          Featured
+                        </Badge>
+                      ) : builder.featured ? (
+                        <Badge className="bg-orange-100 text-orange-700 border-orange-200">
+                          <span className="material-symbols-outlined text-xs mr-1">star</span>
+                          Premium
+                        </Badge>
+                      ) : builder.verified ? (
+                        <Badge className="bg-green-100 text-green-700 border-green-200">
+                          <span className="material-symbols-outlined text-xs mr-1">verified</span>
+                          Verified
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-slate-100 text-slate-600 border-slate-200">
+                          Standard
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {builder.adminFeatured ? (
+                        <Select
+                          value={builder.featuredPriority?.toString() || '1'}
+                          onValueChange={(value) => updateFeaturedStatus(builder.id, true, parseInt(value))}
+                        >
+                          <SelectTrigger className="w-20 h-8 bg-purple-50 border-purple-200">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="1">Top 1</SelectItem>
+                            <SelectItem value="2">Top 2</SelectItem>
+                            <SelectItem value="3">Top 3</SelectItem>
+                            <SelectItem value="4">Top 4</SelectItem>
+                            <SelectItem value="5">Top 5</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <span className="text-slate-400">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:text-slate-600">
+                            <span className="material-symbols-outlined">more_vert</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-white">
+                          {builder.adminFeatured ? (
+                            <DropdownMenuItem 
+                              onClick={() => updateFeaturedStatus(builder.id, false)}
+                              className="cursor-pointer text-red-600"
+                            >
+                              <span className="material-symbols-outlined mr-2">star_border</span>
+                              Remove Feature
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem 
+                              onClick={() => updateFeaturedStatus(builder.id, true, 1)}
+                              className="cursor-pointer"
+                            >
+                              <span className="material-symbols-outlined mr-2">star</span>
+                              Feature Builder
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between mt-6">
+            <div className="text-sm text-slate-500">
+              Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredBuilders.length)} of {filteredBuilders.length} builders
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="border-slate-300 text-slate-600 hover:bg-slate-50"
+              >
+                Previous
+              </Button>
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={
+                        currentPage === pageNum 
+                          ? "bg-[#1e3886] border-[#1e3886] text-white" 
+                          : "border-slate-300 text-slate-600 hover:bg-slate-50"
                       }
                     >
-                      {builder.adminFeatured ? (
-                        <>
-                          <Crown className="h-4 w-4 mr-1" />
-                          Unfeature
-                        </>
-                      ) : (
-                        <>
-                          <Crown className="h-4 w-4 mr-1" />
-                          Feature
-                        </>
-                      )}
+                      {pageNum}
                     </Button>
-                  </div>
-                </div>
-              ))}
+                  );
+                })}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="border-slate-300 text-slate-600 hover:bg-slate-50"
+              >
+                Next
+              </Button>
             </div>
-          )}
+          </div>
         </CardContent>
       </Card>
     </div>

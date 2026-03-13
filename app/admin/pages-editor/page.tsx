@@ -1048,7 +1048,7 @@ export default function AdminPagesEditor() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Button variant="outline" onClick={() => window.open(p.path, '_blank')}><Eye className="w-4 h-4 mr-1" /> View</Button>
-                        <Button variant="outline" onClick={() => openEditor(p.path)}><Edit className="w-4 h-4 mr-1" /> Edit</Button>
+                        <Button onClick={() => openEditor(p.path)} className="bg-[#1e3886] text-white"><Edit className="w-4 h-4 mr-1" /> Edit</Button>
                       </div>
                     </div>
                   ))}

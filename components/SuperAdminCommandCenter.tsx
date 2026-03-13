@@ -8,88 +8,243 @@ interface SuperAdminCommandCenterProps {
   permissions: string[];
 }
 
+interface DashboardStats {
+  totalLeads: number;
+  totalBuilders: number;
+  quoteMatchRate: string;
+  totalCountries: number;
+  totalCities: number;
+  totalUsers: number;
+  totalExhibitions: number;
+  pendingPartnerRequests: number;
+  leadsChange: string;
+}
+
+interface AuditTrailEntry {
+  icon: string;
+  iconBg: string;
+  title: string;
+  description: string;
+  time: string;
+}
+
+interface PartnerRequest {
+  id: string;
+  initials: string;
+  name: string;
+  email: string;
+  contactPerson: string;
+  status: string;
+  claimStatus: string;
+}
+
 export default function SuperAdminCommandCenter({
   adminId,
   permissions,
 }: SuperAdminCommandCenterProps) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [auditTrail, setAuditTrail] = useState<AuditTrailEntry[]>([]);
+  const [partnerRequests, setPartnerRequests] = useState<PartnerRequest[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Cache clear dialog state
+  const [showClearCacheDialog, setShowClearCacheDialog] = useState(false);
+  const [clearingCache, setClearingCache] = useState(false);
+  const [cacheClearResult, setCacheClearResult] = useState<{ success: boolean; message: string } | null>(null);
 
-  // Stats data
-  const stats = [
+  // Fetch dashboard data from API
+  const fetchDashboardData = async () => {
+    try {
+      setError(null);
+      
+      // Fetch stats
+      const statsRes = await fetch('/api/admin/dashboard-stats');
+      const statsData = await statsRes.json();
+      
+      if (statsData.success) {
+        setStats(statsData.data.stats);
+      }
+
+      // Fetch audit trail
+      const auditRes = await fetch('/api/admin/audit-trail');
+      const auditData = await auditRes.json();
+      
+      if (auditData.success) {
+        setAuditTrail(auditData.data);
+      }
+
+      // Fetch partner requests
+      const partnersRes = await fetch('/api/admin/partner-requests');
+      const partnersData = await partnersRes.json();
+      
+      if (partnersData.success) {
+        setPartnerRequests(partnersData.data);
+      }
+
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError('Failed to load some data');
+    }
+  };
+
+  // Handle cache clearing
+  const handleClearCache = async () => {
+    setClearingCache(true);
+    setCacheClearResult(null);
+    
+    try {
+      const response = await fetch('/api/admin/clear-cache', {
+        method: 'POST',
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setCacheClearResult({
+          success: true,
+          message: data.message || 'Cache cleared successfully!'
+        });
+      } else {
+        setCacheClearResult({
+          success: false,
+          message: data.message || 'Failed to clear cache'
+        });
+      }
+    } catch (err) {
+      setCacheClearResult({
+        success: false,
+        message: err instanceof Error ? err.message : 'An unexpected error occurred'
+      });
+    } finally {
+      setClearingCache(false);
+      // Auto-close dialog after 3 seconds on success
+      setTimeout(() => {
+        setShowClearCacheDialog(false);
+        setCacheClearResult(null);
+      }, 3000);
+    }
+  };
+
+  // Handle refresh - revalidates cache and reloads data
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    
+    try {
+      // First clear the cache
+      await fetch('/api/admin/clear-cache', {
+        method: 'POST',
+      });
+      
+      // Then fetch fresh data
+      await fetchDashboardData();
+      
+    } catch (err) {
+      console.error('Error refreshing dashboard:', err);
+      setError('Failed to refresh some data');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    const initData = async () => {
+      await fetchDashboardData();
+      setLoading(false);
+    };
+    
+    initData();
+  }, []);
+
+  // Format number with commas
+  const formatNumber = (num: number): string => {
+    return num.toLocaleString();
+  };
+
+  // Stats data - now using real data
+  const statsData = stats ? [
     {
       icon: "leaderboard",
       label: "Total Leads",
-      value: "12,840",
-      change: "+12.4%",
+      value: formatNumber(stats.totalLeads),
+      change: stats.leadsChange || "+0%",
+      positive: stats.leadsChange?.includes('+') || false,
+    },
+    {
+      icon: "engineering",
+      label: "Active Builders",
+      value: formatNumber(stats.totalBuilders),
+      change: stats.pendingPartnerRequests > 0 ? `+${stats.pendingPartnerRequests} pending` : "Active",
+      positive: true,
+    },
+    {
+      icon: "fact_check",
+      label: "Quote Match Rate",
+      value: stats.quoteMatchRate || "0%",
+      change: "+0%",
+      positive: true,
+    },
+    {
+      icon: "location_city",
+      label: "Countries Covered",
+      value: formatNumber(stats.totalCountries),
+      change: `${formatNumber(stats.totalCities)} cities`,
+      positive: true,
+    },
+  ] : [
+    {
+      icon: "leaderboard",
+      label: "Total Leads",
+      value: "---",
+      change: "...",
       positive: true,
     },
     {
       icon: "engineering",
       label: "Active Builders",
-      value: "842",
-      change: "-2.1%",
-      positive: false,
+      value: "---",
+      change: "...",
+      positive: true,
     },
     {
       icon: "fact_check",
       label: "Quote Match Rate",
-      value: "94.2%",
-      change: "+0.5%",
+      value: "---%",
+      change: "...",
+      positive: true,
+    },
+    {
+      icon: "location_city",
+      label: "Countries Covered",
+      value: "---",
+      change: "...",
       positive: true,
     },
   ];
 
-  // Audit trail data
-  const auditTrail = [
+  // Audit trail data - now using real data
+  const auditTrailData = auditTrail.length > 0 ? auditTrail : [
     {
-      icon: "person_add",
-      iconBg: "bg-emerald-100 text-emerald-600",
-      title: "New Builder Verified:",
-      description: '"Skyline Exhibits Europe" has completed KYC requirements.',
-      time: "14 minutes ago • System-Automated",
-    },
-    {
-      icon: "update",
-      iconBg: "bg-[#1e3886]/10 text-[#1e3886]",
-      title: "CMS Synchronization:",
-      description: "42 regional price listings updated for the GCC market.",
-      time: "2 hours ago • Admin: M. Ross",
-    },
-    {
-      icon: "report",
-      iconBg: "bg-[#c0123d]/10 text-[#c0123d]",
-      title: "Security Alert:",
-      description:
-        "Unusual login attempt detected from unknown IP (192.168.x.x).",
-      time: "5 hours ago • Security Protocol",
+      icon: "info",
+      iconBg: "bg-slate-100 text-slate-500",
+      title: "No Recent Activity:",
+      description: "Waiting for new events...",
+      time: "Just now • System",
     },
   ];
 
-  // Partner requests data
-  const partnerRequests = [
-    {
-      initials: "AM",
-      name: "ArchiMetric Stands",
-      status: "Pending Review • 3h",
-    },
-    {
-      initials: "VG",
-      name: "Vanguard Global",
-      status: "Processing • 1d",
-    },
-  ];
+  // Partner requests data - now using real data
+  const partnerRequestsData = partnerRequests.length > 0 ? partnerRequests : [];
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 600);
-    return () => clearTimeout(timer);
+    const initData = async () => {
+      await fetchDashboardData();
+      setLoading(false);
+    };
+    
+    initData();
   }, []);
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    setRefreshing(false);
-  };
 
   if (loading) {
     return (
@@ -106,7 +261,7 @@ export default function SuperAdminCommandCenter({
     <div className="space-y-8">
       {/* ── Summary Stats ─────────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, i) => (
+        {statsData.map((stat: any, i: any) => (
           <div
             key={i}
             className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm"
@@ -189,7 +344,7 @@ export default function SuperAdminCommandCenter({
               </h4>
             </div>
             <div className="divide-y divide-slate-100">
-              {auditTrail.map((entry, i) => (
+              {auditTrailData.map((entry: any, i: any) => (
                 <div
                   key={i}
                   className="p-6 flex gap-4 hover:bg-slate-50 transition-colors"
@@ -233,9 +388,10 @@ export default function SuperAdminCommandCenter({
             </h4>
             <div className="grid grid-cols-1 gap-4">
               {/* Clear System Cache */}
-              <Link
-                href="/admin/clear-cache"
-                className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all group"
+              <button
+                onClick={() => setShowClearCacheDialog(true)}
+                disabled={clearingCache}
+                className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all group disabled:opacity-50"
               >
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-[#1e3886] group-hover:text-white transition-colors">
@@ -248,25 +404,26 @@ export default function SuperAdminCommandCenter({
                 <span className="material-symbols-outlined text-sm opacity-40">
                   chevron_right
                 </span>
-              </Link>
+              </button>
 
-              {/* Add New Builder */}
-              <Link
-                href="/admin/add-builder"
-                className="w-full flex items-center justify-between p-4 bg-[#1e3886] hover:bg-[#1e3886]/90 rounded-lg transition-all group shadow-lg"
+              {/* Refresh Dashboard Data */}
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all group disabled:opacity-50"
               >
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-white">
-                    add_business
+                  <span className={`material-symbols-outlined text-emerald-400 group-hover:text-white transition-colors ${refreshing ? 'animate-spin' : ''}`}>
+                    refresh
                   </span>
                   <span className="text-sm font-semibold">
-                    Add New Builder
+                    {refreshing ? 'Refreshing...' : 'Refresh Dashboard'}
                   </span>
                 </div>
-                <span className="material-symbols-outlined text-sm opacity-60">
+                <span className="material-symbols-outlined text-sm opacity-40">
                   chevron_right
                 </span>
-              </Link>
+              </button>
 
               {/* Generate Monthly Report */}
               <Link
@@ -307,7 +464,7 @@ export default function SuperAdminCommandCenter({
               Partner Requests
             </h4>
             <div className="space-y-6">
-              {partnerRequests.map((partner, i) => (
+              {partnerRequestsData.map((partner: any, i: any) => (
                 <div key={i} className="flex items-center gap-4">
                   <div className="size-10 bg-slate-100 rounded-lg flex items-center justify-center font-bold text-slate-400">
                     {partner.initials}
@@ -336,25 +493,67 @@ export default function SuperAdminCommandCenter({
               ))}
             </div>
           </div>
-
-          {/* Market Insight */}
-          <div className="bg-gradient-to-br from-[#1e3886] to-[#0f172a] p-6 rounded-xl text-white shadow-xl relative overflow-hidden group">
-            <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-white/5 text-[120px] group-hover:rotate-12 transition-transform duration-700">
-              insights
-            </span>
-            <h5 className="text-xs font-bold uppercase tracking-widest opacity-60 mb-2">
-              Market Insight
-            </h5>
-            <p className="text-lg font-medium leading-tight relative z-10">
-              Bespoke wooden structures are trending 40% higher in Europe this
-              quarter.
-            </p>
-            <button className="mt-4 text-xs font-bold underline underline-offset-4 decoration-white/20 hover:decoration-white transition-all relative z-10">
-              LEARN MORE
-            </button>
-          </div>
         </div>
       </div>
+
+      {/* Clear Cache Confirmation Dialog */}
+      {showClearCacheDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 bg-red-100 rounded-full">
+                  <span className="material-symbols-outlined text-red-600 text-2xl">
+                    warning
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Clear System Cache?</h3>
+                  <p className="text-sm text-slate-500">This action cannot be undone</p>
+                </div>
+              </div>
+              
+              <p className="text-slate-600 mb-6">
+                This will clear all cached data and force the website to fetch fresh data from the database. 
+                The website may load slightly slower for a few moments after clearing.
+              </p>
+
+              {cacheClearResult && (
+                <div className={`p-3 rounded-lg mb-4 ${cacheClearResult.success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  <p className="text-sm font-medium">{cacheClearResult.message}</p>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowClearCacheDialog(false);
+                    setCacheClearResult(null);
+                  }}
+                  disabled={clearingCache}
+                  className="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-slate-700 font-medium hover:bg-slate-50 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleClearCache}
+                  disabled={clearingCache}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {clearingCache ? (
+                    <>
+                      <span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+                      Clearing...
+                    </>
+                  ) : (
+                    'Clear Cache'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -115,7 +115,7 @@ function OTPVerification({
         setIsResending(false);
         return;
       }
-      
+
       // For testing purposes, temporarily disable domain validation
       // Comment out domain validation to allow any email for testing
       /*
@@ -160,33 +160,33 @@ function OTPVerification({
       toast.error("Please enter valid 6-digit OTP.");
       return;
     }
-    
+
     // Ensure we have all required data
     if (!builderId) {
       toast.error("Missing builder information.");
       return;
     }
-    
+
     // Use the correct contact (either original or email input)
     const contactToUse = showEmailInput ? emailInput : contact;
-    
+
     setIsLoading(true);
     try {
       const res = await fetch("/api/builders/verify-claim", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          builderId, 
-          otp, 
-          method: "email", 
-          contact: contactToUse 
+        body: JSON.stringify({
+          builderId,
+          otp,
+          method: "email",
+          contact: contactToUse
         }),
       });
-      
+
       if (!res.ok) {
         throw new Error(`Server responded with status: ${res.status}`);
       }
-      
+
       const data = await res.json();
       if (data.success) {
         toast.success("Profile verified successfully!");

@@ -13,8 +13,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  MapPin, Star, Users, Clock, Phone, Mail, Globe, 
+import {
+  MapPin, Star, Users, Clock, Phone, Mail, Globe,
   Award, Shield, CheckCircle, Quote, MessageCircle,
   Building, Calendar, Target, Eye, Zap, Camera, Info
 } from 'lucide-react';
@@ -31,7 +31,7 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
   const [builder, setBuilder] = useState<any>(initialBuilder);
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   // Claim listing functionality  
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [claimStep, setClaimStep] = useState<'phone' | 'otp' | 'success'>('phone');
@@ -104,31 +104,31 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
       // Try to find builder from unified platform first
       const unifiedBuilders = unifiedPlatformAPI.getBuilders();
       let foundBuilder = unifiedBuilders.find(b => b.slug === slug);
-      
+
       // Try static data
       if (!foundBuilder) {
         foundBuilder = exhibitionBuilders.find(b => b.slug === slug);
       }
-      
+
       // Try GMB imported builders
       if (!foundBuilder) {
         try {
           console.log('🔍 Client: Checking GMB imported builders for slug:', slug);
           const gmbResponse = await fetch('/api/admin/gmb-integration?type=builders');
-          
+
           if (gmbResponse.ok) {
             const gmbData = await gmbResponse.json();
-            
+
             if (gmbData.success && gmbData.data.builders.length > 0) {
               // Find builder in GMB data and convert to ExhibitionBuilder format
               const gmbBuilder = gmbData.data.builders.find((b: any) => {
                 const generatedSlug = b.companyName.toLowerCase().replace(/[^a-z0-9]/g, '-');
                 return generatedSlug === slug;
               });
-              
+
               if (gmbBuilder) {
                 console.log('✅ Client: Found builder in GMB data:', gmbBuilder.companyName);
-                
+
                 // Convert GMB data to ExhibitionBuilder format
                 foundBuilder = {
                   id: gmbBuilder.id,
@@ -270,17 +270,17 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
     if (claimStep === 'phone') {
       setClaimLoading(true);
       setClaimError('');
-      
+
       try {
         // Get phone from GMB data - no user input needed
         const gmbPhone = builder.contactInfo?.phone;
         if (!gmbPhone) {
           throw new Error('No phone number found in business data');
         }
-        
+
         // In a real implementation, send OTP to the GMB phone number
         console.log('📱 Sending OTP to GMB registered number:', gmbPhone);
-        
+
         // Auto-advance to OTP step since we have the phone
         setClaimStep('otp');
       } catch (error) {
@@ -291,20 +291,20 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
     } else if (claimStep === 'otp') {
       setClaimLoading(true);
       setClaimError('');
-      
+
       try {
         // In a real implementation, verify OTP here
         if (otpCode !== '123456') { // Demo OTP
           throw new Error('Invalid OTP code');
         }
-        
+
         console.log('✅ OTP verified, claiming listing for:', builder.companyName);
         setClaimStep('success');
-        
+
         // Update builder as verified/claimed
         const updatedBuilder = { ...builder, verified: true };
         setBuilder(updatedBuilder);
-        
+
       } catch (error) {
         setClaimError(error instanceof Error ? error.message : 'OTP verification failed');
       } finally {
@@ -355,24 +355,24 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
   return (
     <ClientPageWithBreadcrumbs className="min-h-screen bg-gray-50">
 
-                  <Dialog open={showLeadModal} onOpenChange={setShowLeadModal}>
-                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle>Request Quote from {builder.companyName}</DialogTitle>
-                        <DialogDescription>
-                          Get a personalized quote for your exhibition stand requirements
-                        </DialogDescription>
-                      </DialogHeader>
-                      <LeadInquiryForm
-                        builderId={builder.id}
-                        builderName={builder.companyName}
-                        builderLocation={`${builder.headquarters.city}, ${builder.headquarters.country}`}
-                        isModal={true}
-                        onClose={() => setShowLeadModal(false)}
-                        onSuccess={handleLeadSuccess}
-                      />
-                    </DialogContent>
-                  </Dialog>
+      <Dialog open={showLeadModal} onOpenChange={setShowLeadModal}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Request Quote from {builder.companyName}</DialogTitle>
+            <DialogDescription>
+              Get a personalized quote for your exhibition stand requirements
+            </DialogDescription>
+          </DialogHeader>
+          <LeadInquiryForm
+            builderId={builder.id}
+            builderName={builder.companyName}
+            builderLocation={`${builder.headquarters.city}, ${builder.headquarters.country}`}
+            isModal={true}
+            onClose={() => setShowLeadModal(false)}
+            onSuccess={handleLeadSuccess}
+          />
+        </DialogContent>
+      </Dialog>
 
       <BuilderProfileTemplate
         builder={builder}

@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -19,7 +19,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -29,27 +36,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Shield,
-  CheckCircle,
-  XCircle,
-  Clock,
-  Phone,
-  Mail,
-  Eye,
-  Edit,
-  MessageSquare,
-  UserCheck,
-  AlertTriangle,
-  Search,
-  Filter,
-  RefreshCw,
-  Download,
-  Upload,
-  Settings,
-  BarChart3,
-  Users,
-  MapPin,
-  Calendar } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 interface AdminClaimsManagerProps {
@@ -57,22 +49,37 @@ interface AdminClaimsManagerProps {
   permissions: string[];
 }
 
+interface ClaimData {
+  id: string;
+  builderId: string;
+  builderName: string;
+  email: string;
+  phone: string;
+  location: string;
+  claimStatus: 'pending' | 'claimed' | 'unclaimed' | 'verified';
+  verified: boolean;
+  claimedAt: string | null;
+  claimMethod: string | null;
+  planType: string;
+  lastActivity: string;
+  gmbImported: boolean;
+  profileCompleteness: number;
+  canClaim: boolean;
+}
+
 export default function AdminClaimsManager({
   adminId,
   permissions,
 }: AdminClaimsManagerProps) {
-  const [claims, setClaims] = useState<any[]>([]);
-  const [builders, setBuilders] = useState<any[]>([]);
+  const [claims, setClaims] = useState<ClaimData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedClaim, setSelectedClaim] = useState<any>(null);
+  const [selectedClaim, setSelectedClaim] = useState<ClaimData | null>(null);
   const [showClaimDialog, setShowClaimDialog] = useState(false);
-  const [showSendOTPDialog, setShowSendOTPDialog] = useState(false);
-  const [otpMethod, setOtpMethod] = useState<"phone" | "email">("email");
-  const [customContact, setCustomContact] = useState("");
-  const [adminNote, setAdminNote] = useState("");
   const [processingAction, setProcessingAction] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Statistics
   const [stats, setStats] = useState({
@@ -93,103 +100,53 @@ export default function AdminClaimsManager({
     try {
       console.log("🔍 Loading claims data for admin dashboard...");
 
-      // Load builders with claim status
       const buildersResponse = await fetch("/api/admin/builders");
       const buildersData = await buildersResponse.json();
 
-      console.log("📊 API Response:", {
-        status: buildersResponse.status,
-        success: buildersData.success,
-        dataStructure: buildersData.data
-          ? Object.keys(buildersData.data)
-          : "No data",
-        rawData: buildersData,
-      });
-
       if (buildersData.success && buildersData.data) {
-        // Handle both new and old response structures
-        let allBuilders;
-        if (buildersData.data.builders) {
-          // New structure: { success: true, data: { builders: [...] } }
-          allBuilders = buildersData.data.builders;
-        } else if (Array.isArray(buildersData.data)) {
-          // Old structure: { success: true, data: [...] }
-          allBuilders = buildersData.data;
-        } else {
-          console.error("❌ Unexpected data structure:", buildersData.data);
-          throw new Error("Invalid API response structure");
-        }
+        const allBuilders = buildersData.data.builders || [];
 
-        console.log("🔍 Builders data structure:", {
-          success: buildersData.success,
-          buildersType: typeof allBuilders,
-          buildersIsArray: Array.isArray(allBuilders),
-          buildersLength: allBuilders?.length || 0,
-        });
+        // Filter only builders who have claimed their profile (claimed = true)
+        const claimedBuilders = allBuilders.filter((builder: any) => builder.claimed === true);
 
-        setBuilders(allBuilders);
-
-        // Ensure allBuilders is an array
-        if (!Array.isArray(allBuilders)) {
-          console.error(
-            "❌ Expected builders to be an array, got:",
-            typeof allBuilders
-          );
-          console.error("❌ Builders data:", allBuilders);
-          throw new Error("Invalid builders data structure");
-        }
-
-        // Process claims information
-        const claimsInfo = allBuilders.map((builder: any) => ({
+        // Map database fields to claim data
+        // Show as "Unclaimed" until verified, then show as "Verified"
+        const claimsInfo: ClaimData[] = claimedBuilders.map((builder: any) => ({
           id: `claim_${builder.id}`,
           builderId: builder.id,
-          builderName: builder.companyName,
-          email: builder.contactInfo?.primaryEmail || "",
-          phone: builder.contactInfo?.phone || "",
-          location: `${builder.headquarters?.city || "Unknown"}, ${builder.headquarters?.country || "Unknown"}`,
-          claimStatus: builder.claimed ? "claimed" : "unclaimed",
+          builderName: builder.company_name || 'Unknown',
+          email: builder.primary_email || '',
+          phone: builder.phone || '',
+          location: `${builder.headquarters_city || 'Unknown'}, ${builder.headquarters_country || 'Unknown'}`,
+          // If verified = true, show "verified", otherwise show "unclaimed" (pending admin verification)
+          claimStatus: builder.verified ? 'verified' : 'unclaimed',
           verified: builder.verified || false,
-          claimedAt: builder.claimedAt || null,
-          claimMethod: builder.claimMethod || null,
-          planType: builder.planType || "starter",
-          lastActivity: builder.updatedAt || builder.createdAt,
-          gmbImported: builder.gmbImported || false,
+          claimedAt: builder.claimed_at || null,
+          claimMethod: builder.claim_method || null,
+          planType: builder.premium_member ? 'premium' : 'free',
+          lastActivity: builder.updated_at || builder.created_at,
+          gmbImported: builder.gmb_imported || false,
           profileCompleteness: calculateProfileCompleteness(builder),
-          canClaim: !!(
-            builder.contactInfo?.primaryEmail || builder.contactInfo?.phone
-          ),
+          canClaim: !!(builder.primary_email || builder.phone),
         }));
 
         setClaims(claimsInfo);
 
         // Calculate statistics
-        const totalBuilders = allBuilders.length;
-        const claimedBuilders = allBuilders.filter(
-          (b: any) => b.claimed
-        ).length;
-        const verifiedBuilders = allBuilders.filter(
-          (b: any) => b.verified
-        ).length;
-        const pendingClaims = allBuilders.filter(
-          (b: any) =>
-            !b.claimed && (b.contactInfo?.primaryEmail || b.contactInfo?.phone)
-        ).length;
+        const totalBuilders = claimedBuilders.length;
+        const verifiedBuilders = claimedBuilders.filter((b: any) => b.verified).length;
+        const unverifiedBuilders = claimedBuilders.filter((b: any) => !b.verified).length;
 
         setStats({
           totalBuilders,
-          claimedBuilders,
-          unclaimedBuilders: totalBuilders - claimedBuilders,
+          claimedBuilders: totalBuilders,
+          unclaimedBuilders: unverifiedBuilders,
           verifiedBuilders,
-          pendingClaims,
-          claimSuccessRate:
-            totalBuilders > 0
-              ? Math.round((claimedBuilders / totalBuilders) * 100)
-              : 0,
+          pendingClaims: unverifiedBuilders,
+          claimSuccessRate: totalBuilders > 0 ? Math.round((verifiedBuilders / totalBuilders) * 100) : 0,
         });
 
-        console.log(
-          `✅ Loaded ${claimsInfo.length} builders with claim information`
-        );
+        console.log(`✅ Loaded ${claimsInfo.length} builders with claim information`);
       }
     } catch (error) {
       console.error("❌ Error loading claims data:", error);
@@ -202,12 +159,12 @@ export default function AdminClaimsManager({
   const calculateProfileCompleteness = (builder: any): number => {
     let completeness = 0;
     const fields = [
-      builder.companyName,
-      builder.contactInfo?.primaryEmail,
-      builder.contactInfo?.phone,
-      builder.companyDescription,
-      builder.headquarters?.city,
-      builder.headquarters?.country,
+      builder.company_name,
+      builder.primary_email,
+      builder.phone,
+      builder.company_description,
+      builder.headquarters_city,
+      builder.headquarters_country,
     ];
 
     fields.forEach((field) => {
@@ -217,6 +174,7 @@ export default function AdminClaimsManager({
     return Math.round(completeness);
   };
 
+  // Filter claims
   const filteredClaims = claims.filter((claim) => {
     const matchesSearch =
       searchTerm === "" ||
@@ -226,163 +184,71 @@ export default function AdminClaimsManager({
 
     const matchesStatus =
       statusFilter === "all" ||
-      (statusFilter === "claimed" && claim.claimStatus === "claimed") ||
       (statusFilter === "unclaimed" && claim.claimStatus === "unclaimed") ||
-      (statusFilter === "verified" && claim.verified) ||
-      (statusFilter === "unverified" && !claim.verified);
+      (statusFilter === "verified" && claim.claimStatus === "verified");
 
     return matchesSearch && matchesStatus;
   });
 
-  const handleManualClaim = async (claim: any) => {
+  // Pagination
+  const totalPages = Math.ceil(filteredClaims.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedClaims = filteredClaims.slice(startIndex, startIndex + itemsPerPage);
+
+  const handleVerifyBuilder = async (builderId: string) => {
     setProcessingAction(true);
     try {
-      console.log(
-        `👨‍💼 Processing manual claim for builder: ${claim.builderName}`
-      );
-
-      const response = await fetch("/api/builders/verify-claim", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          builderId: claim.builderId,
-          otp: "000000", // Admin override code
-          method: "admin",
-          contact: "admin@system.com",
-          adminOverride: true,
-          adminId: adminId,
-        }),
+      const response = await fetch(`/api/admin/builders?id=${builderId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verified: true }),
       });
-
-      const result = await response.json();
-
-      if (result.success) {
-        toast.success(
-          `✅ Builder profile claimed manually: ${claim.builderName}`
-        );
-        await loadClaimsData(); // Refresh data
-        setShowClaimDialog(false);
+      
+      if (response.ok) {
+        toast.success("Builder verified successfully");
+        loadClaimsData();
       } else {
-        toast.error(`❌ Manual claim failed: ${result.error}`);
+        throw new Error('Failed to verify builder');
       }
     } catch (error) {
-      console.error("❌ Manual claim error:", error);
-      toast.error("Manual claim failed");
+      console.error('Error verifying builder:', error);
+      toast.error("Failed to verify builder");
     } finally {
       setProcessingAction(false);
     }
   };
 
-  const handleSendOTP = async (claim: any) => {
-    setProcessingAction(true);
-    try {
-      const contact =
-        customContact || (otpMethod === "email" ? claim.email : claim.phone);
-
-      if (!contact) {
-        toast.error(`No ${otpMethod} available for this builder`);
-        return;
-      }
-
-      console.log(`📱 Sending OTP via ${otpMethod} to: ${contact}`);
-
-      const response = await fetch("/api/utils/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          method: otpMethod,
-          contact: contact,
-          builderId: claim.builderId,
-          message: `Admin-initiated verification for ${claim.builderName}`,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        toast.success(`✅ OTP sent via ${otpMethod} to ${result.contact}`);
-        setShowSendOTPDialog(false);
-        setCustomContact("");
-      } else {
-        toast.error(`❌ Failed to send OTP: ${result.error}`);
-      }
-    } catch (error) {
-      console.error("❌ OTP sending error:", error);
-      toast.error("Failed to send OTP");
-    } finally {
-      setProcessingAction(false);
-    }
-  };
-
-  const handleUpdateClaimStatus = async (
-    builderId: string,
-    newStatus: string
-  ) => {
-    setProcessingAction(true);
-    try {
-      console.log(
-        `🔄 Updating claim status for builder ${builderId}: ${newStatus}`
+  const getStatusBadge = (status: string, verified: boolean) => {
+    if (status === 'verified') {
+      return (
+        <Badge className="bg-green-100 text-green-700 border-green-200">
+          <span className="material-symbols-outlined text-xs mr-1">verified</span>
+          Verified
+        </Badge>
       );
-
-      const response = await fetch("/api/admin/builders", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "update",
-          id: builderId,
-          data: {
-            claimed: newStatus === "claimed",
-            claimStatus: newStatus,
-            verified: newStatus === "verified",
-            adminUpdatedAt: new Date().toISOString(),
-            adminUpdatedBy: adminId,
-          },
-        }),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        toast.success(`✅ Claim status updated to: ${newStatus}`);
-        await loadClaimsData();
-      } else {
-        toast.error(`❌ Failed to update status: ${result.error}`);
-      }
-    } catch (error) {
-      console.error("❌ Status update error:", error);
-      toast.error("Failed to update claim status");
-    } finally {
-      setProcessingAction(false);
     }
-  };
-
-  const handleBulkOperation = async (
-    operation: string,
-    selectedIds: string[]
-  ) => {
-    setProcessingAction(true);
-    try {
-      console.log(
-        `🔄 Performing bulk operation: ${operation} on ${selectedIds.length} builders`
+    if (status === 'unclaimed') {
+      return (
+        <Badge className="bg-yellow-100 text-yellow-700 border-yellow-200">
+          <span className="material-symbols-outlined text-xs mr-1">pending</span>
+          Pending Verification
+        </Badge>
       );
-
-      // Implementation for bulk operations
-      toast.success(`✅ Bulk operation completed: ${operation}`);
-      await loadClaimsData();
-    } catch (error) {
-      console.error("❌ Bulk operation error:", error);
-      toast.error("Bulk operation failed");
-    } finally {
-      setProcessingAction(false);
     }
+    return (
+      <Badge className="bg-slate-100 text-slate-600 border-slate-200">
+        <span className="material-symbols-outlined text-xs mr-1">cancel</span>
+        Unclaimed
+      </Badge>
+    );
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-500">Loading claims data...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e3886] mx-auto"></div>
+          <p className="mt-4 text-slate-500">Loading profile claims...</p>
         </div>
       </div>
     );
@@ -390,467 +256,282 @@ export default function AdminClaimsManager({
 
   return (
     <div className="space-y-6">
-      {/* Statistics Overview */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-blue-600 font-medium">
-                  Total Builders
-                </p>
-                <p className="text-3xl font-bold text-blue-900">
-                  {stats.totalBuilders}
-                </p>
+        {[
+          { title: 'Total Profiles', value: stats.totalBuilders, icon: 'groups', color: 'bg-blue-100 text-blue-600' },
+          { title: 'Verified Claims', value: stats.verifiedBuilders, icon: 'verified', color: 'bg-green-100 text-green-600' },
+          { title: 'Pending Verification', value: stats.pendingClaims, icon: 'pending', color: 'bg-yellow-100 text-yellow-600' },
+          { title: 'Claim Rate', value: `${stats.claimSuccessRate}%`, icon: 'trending_up', color: 'bg-purple-100 text-purple-600' },
+        ].map((stat, index) => (
+          <Card key={index} className="border-slate-200 hover:shadow-lg transition-shadow">
+            <CardHeader className="p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-500">{stat.title}</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-1">{stat.value}</p>
+                </div>
+                <div className={`p-3 rounded-lg ${stat.color}`}>
+                  <span className="material-symbols-outlined">{stat.icon}</span>
+                </div>
               </div>
-              <Users className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-green-50 to-green-100">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-green-600 font-medium">Claimed</p>
-                <p className="text-3xl font-bold text-green-900">
-                  {stats.claimedBuilders}
-                </p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-orange-600 font-medium">Unclaimed</p>
-                <p className="text-3xl font-bold text-orange-900">
-                  {stats.unclaimedBuilders}
-                </p>
-              </div>
-              <Clock className="h-8 w-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-purple-600 font-medium">
-                  Success Rate
-                </p>
-                <p className="text-3xl font-bold text-purple-900">
-                  {stats.claimSuccessRate}%
-                </p>
-              </div>
-              <BarChart3 className="h-8 w-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
+            </CardHeader>
+          </Card>
+        ))}
       </div>
 
-      {/* Search and Filters */}
-      <Card>
+      {/* Filters */}
+      <Card className="border-slate-200">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center space-x-2">
-                <Shield className="h-5 w-5 text-blue-600" />
-                <span>Claim Management System</span>
-              </CardTitle>
-              <CardDescription>
-                Manage builder profile claims, verification, and status updates
-              </CardDescription>
-            </div>
-            <div className="flex space-x-2">
-              <Button
-                variant="outline"
-                onClick={loadClaimsData}
-                disabled={loading}
-                className="text-gray-900"
-              >
-                <RefreshCw
-                  className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
-                />
-                Refresh
-              </Button>
-              <Button variant="outline" className="text-gray-900">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-            </div>
-          </div>
+          <CardTitle className="text-slate-900">Filters & Search</CardTitle>
+          <CardDescription className="text-slate-500">
+            {filteredClaims.length} profiles found
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col lg:flex-row gap-4 items-center mb-6">
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <Label className="text-slate-600">Search</Label>
+              <div className="relative mt-1">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">search</span>
                 <Input
-                  type="text"
-                  placeholder="Search builders, emails, locations..."
+                  placeholder="Search by name, email, location..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 border-slate-300"
                 />
               </div>
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="claimed">Claimed</SelectItem>
-                <SelectItem value="unclaimed">Unclaimed</SelectItem>
-                <SelectItem value="verified">Verified</SelectItem>
-                <SelectItem value="unverified">ShieldX</SelectItem>
-              </SelectContent>
-            </Select>
-            <div className="text-sm text-gray-600">
-              Showing {filteredClaims.length} of {claims.length} builders
-            </div>
-          </div>
-
-          {/* Claims Table */}
-          <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
-            <table className="w-full border-collapse border border-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Builder
-                  </th>
-                  <th className="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Contact
-                  </th>
-                  <th className="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Status
-                  </th>
-                  <th className="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Plan
-                  </th>
-                  <th className="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Profile
-                  </th>
-                  <th className="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredClaims.map((claim) => (
-                  <tr key={claim.id} className="hover:bg-gray-50">
-                    <td className="border border-gray-200 px-4 py-3">
-                      <div>
-                        <div className="font-medium text-gray-900">
-                          {claim.builderName}
-                        </div>
-                        <div className="text-sm text-gray-500 flex items-center">
-                          <MapPin className="h-3 w-3 mr-1" />
-                          {claim.location}
-                        </div>
-                        {claim.gmbImported && (
-                          <Badge className="bg-blue-100 text-blue-800">
-                            GMB Import
-                          </Badge>
-                        )}
-                      </div>
-                    </td>
-                    <td className="border border-gray-200 px-4 py-3">
-                      <div className="space-y-1">
-                        {claim.email && (
-                          <div className="flex items-center text-sm">
-                            <Mail className="h-3 w-3 mr-2 text-gray-400" />
-                            <span className="text-gray-600">
-                              {claim.email.substring(0, 20)}...
-                            </span>
-                          </div>
-                        )}
-                        {claim.phone && (
-                          <div className="flex items-center text-sm">
-                            <Phone className="h-3 w-3 mr-2 text-gray-400" />
-                            <span className="text-gray-600">{claim.phone}</span>
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="border border-gray-200 px-4 py-3">
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          {claim.claimStatus === "claimed" ? (
-                            <Badge className="bg-green-100 text-green-800">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Claimed
-                            </Badge>
-                          ) : (
-                            <Badge className="bg-orange-100 text-orange-800">
-                              <Clock className="h-3 w-3 mr-1" />
-                              Unclaimed
-                            </Badge>
-                          )}
-                        </div>
-                        {claim.verified && (
-                          <Badge className="bg-blue-100 text-blue-800">
-                            <Shield className="h-3 w-3 mr-1" />
-                            Verified
-                          </Badge>
-                        )}
-                        {claim.claimedAt && (
-                          <div className="text-xs text-gray-500">
-                            Claimed:{" "}
-                            {new Date(claim.claimedAt).toLocaleDateString()}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="border border-gray-200 px-4 py-3">
-                      <Badge
-                        className={`text-xs ${
-                          claim.planType === "pro"
-                            ? "bg-purple-100 text-purple-800"
-                            : claim.planType === "growth"
-                              ? "bg-green-100 text-green-800"
-                              : claim.planType === "basic"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {claim.planType}
-                      </Badge>
-                    </td>
-                    <td className="border border-gray-200 px-4 py-3">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-16 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full"
-                            style={{ width: `${claim.profileCompleteness}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-xs text-gray-600">
-                          {claim.profileCompleteness}%
-                        </span>
-                      </div>
-                    </td>
-                    <td className="border border-gray-200 px-4 py-3">
-                      <div className="flex space-x-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedClaim(claim);
-                            setShowClaimDialog(true);
-                          }}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-
-                        {!claim.claimed && claim.canClaim && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleManualClaim(claim)}
-                            disabled={processingAction}
-                            className="text-green-600 hover:text-green-700"
-                          >
-                            <UserCheck className="h-4 w-4" />
-                          </Button>
-                        )}
-
-                        {claim.canClaim && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedClaim(claim);
-                              setShowSendOTPDialog(true);
-                            }}
-                            className="text-blue-600 hover:text-blue-700"
-                          >
-                            <MessageSquare className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {filteredClaims.length === 0 && (
-            <div className="text-center py-12">
-              <AlertTriangle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-gray-600 mb-2">
-                No builders found
-              </h3>
-              <p className="text-gray-500">
-                Try adjusting your search criteria or filters
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Claim Details Dialog */}
-      <Dialog open={showClaimDialog} onOpenChange={setShowClaimDialog}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>
-              Claim Details: {selectedClaim?.builderName}
-            </DialogTitle>
-            <DialogDescription>
-              Manage claim status and verification for this builder
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedClaim && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Current Status
-                  </label>
-                  <div className="mt-1">
-                    <Badge
-                      className={
-                        selectedClaim.claimStatus === "claimed"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-orange-100 text-orange-800"
-                      }
-                    >
-                      {selectedClaim.claimStatus}
-                    </Badge>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Plan Type
-                  </label>
-                  <div className="mt-1">
-                    <Badge className="bg-blue-100 text-blue-800">
-                      {selectedClaim.planType}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Update Status
-                </label>
-                <Select
-                  onValueChange={(value) =>
-                    handleUpdateClaimStatus(selectedClaim.builderId, value)
-                  }
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select new status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="claimed">Claimed</SelectItem>
-                    <SelectItem value="unclaimed">Unclaimed</SelectItem>
-                    <SelectItem value="verified">Verified</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Admin Note
-                </label>
-                <Textarea
-                  value={adminNote}
-                  onChange={(e) => setAdminNote(e.target.value)}
-                  placeholder="Add a note about this claim action..."
-                  className="mt-1"
-                />
-              </div>
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowClaimDialog(false)}
-              className="text-gray-900"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => selectedClaim && handleManualClaim(selectedClaim)}
-              disabled={processingAction}
-            >
-              {processingAction ? "Processing..." : "Manual Claim"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Send OTP Dialog */}
-      <Dialog open={showSendOTPDialog} onOpenChange={setShowSendOTPDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Send Verification Code</DialogTitle>
-            <DialogDescription>
-              Send OTP to builder for profile claiming
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
+            
             <div>
-              <label className="text-sm font-medium text-gray-700">
-                Method
-              </label>
-              <Select
-                value={otpMethod}
-                onValueChange={(value: "phone" | "email") =>
-                  setOtpMethod(value)
-                }
-              >
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
+              <Label className="text-slate-600">Claim Status</Label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="mt-1 border-slate-300">
+                  <SelectValue placeholder="All Statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="email">Email</SelectItem>
-                  <SelectItem value="phone">SMS</SelectItem>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="unclaimed">Pending Verification</SelectItem>
+                  <SelectItem value="verified">Verified</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Contact ({otpMethod}) - Leave blank to use builder's contact
-              </label>
-              <Input
-                value={customContact}
-                onChange={(e) => setCustomContact(e.target.value)}
-                placeholder={
-                  otpMethod === "email" ? "custom@email.com" : "+1234567890"
-                }
-                className="mt-1"
-              />
+            <div className="flex items-end">
+              <Button 
+                onClick={loadClaimsData} 
+                variant="outline" 
+                className="border-slate-300 text-slate-700 hover:bg-slate-50"
+              >
+                <span className="material-symbols-outlined mr-2">refresh</span>
+                Refresh
+              </Button>
             </div>
           </div>
+        </CardContent>
+      </Card>
 
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowSendOTPDialog(false)}
-              className="text-gray-900"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => selectedClaim && handleSendOTP(selectedClaim)}
-              disabled={processingAction}
-            >
-              {processingAction ? "Sending..." : "Send OTP"}
-            </Button>
-          </DialogFooter>
+      {/* Claims Table */}
+      <Card className="border-slate-200">
+        <CardHeader>
+          <CardTitle className="text-slate-900">Profile Claims Directory</CardTitle>
+          <CardDescription className="text-slate-500">
+            Manage builder profile claims and verification status
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-slate-200 hover:bg-transparent">
+                  <TableHead className="text-slate-600">Company</TableHead>
+                  <TableHead className="text-slate-600">Location</TableHead>
+                  <TableHead className="text-slate-600">Status</TableHead>
+                  <TableHead className="text-slate-600">Profile</TableHead>
+                  <TableHead className="text-slate-600">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedClaims.map((claim) => (
+                  <TableRow key={claim.id} className="border-slate-100 hover:bg-slate-50">
+                    <TableCell className="font-medium">
+                      <div>
+                        <div className="font-medium text-slate-900">{claim.builderName}</div>
+                        <div className="text-slate-500 text-xs">
+                          {claim.email && !claim.email.includes('no-email+') 
+                            ? claim.email 
+                            : 'No email'}
+                          {claim.phone ? ` • ${claim.phone}` : ''}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-slate-600">
+                      {claim.location}
+                    </TableCell>
+                    <TableCell>
+                      {getStatusBadge(claim.claimStatus, claim.verified)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="w-16 bg-slate-200 rounded-full h-2">
+                          <div 
+                            className="bg-[#1e3886] h-2 rounded-full" 
+                            style={{ width: `${claim.profileCompleteness}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-slate-500">{claim.profileCompleteness}%</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:text-slate-600">
+                            <span className="material-symbols-outlined">more_vert</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-white">
+                          <DropdownMenuItem 
+                            onClick={() => {
+                              setSelectedClaim(claim);
+                              setShowClaimDialog(true);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined mr-2">visibility</span>
+                            View Details
+                          </DropdownMenuItem>
+                          {!claim.verified && (
+                            <DropdownMenuItem 
+                              onClick={() => handleVerifyBuilder(claim.builderId)}
+                              className="cursor-pointer"
+                            >
+                              <span className="material-symbols-outlined mr-2">verified</span>
+                              Mark as Verified
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between mt-6">
+            <div className="text-sm text-slate-500">
+              Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredClaims.length)} of {filteredClaims.length} profiles
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="border-slate-300 text-slate-600 hover:bg-slate-50"
+              >
+                Previous
+              </Button>
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={
+                        currentPage === pageNum 
+                          ? "bg-[#1e3886] border-[#1e3886] text-white" 
+                          : "border-slate-300 text-slate-600 hover:bg-slate-50"
+                      }
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="border-slate-300 text-slate-600 hover:bg-slate-50"
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Claim Detail Dialog */}
+      <Dialog open={showClaimDialog} onOpenChange={setShowClaimDialog}>
+        <DialogContent className="max-w-2xl bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-slate-900">Profile Claim Details</DialogTitle>
+            <DialogDescription className="text-slate-500">
+              Detailed information about this builder profile
+            </DialogDescription>
+          </DialogHeader>
+          {selectedClaim && (
+            <div className="grid grid-cols-2 gap-4 py-4">
+              <div>
+                <Label className="text-slate-500">Company Name</Label>
+                <p className="font-medium text-slate-900">{selectedClaim.builderName}</p>
+              </div>
+              <div>
+                <Label className="text-slate-500">Email</Label>
+                <p className="font-medium text-slate-900">{selectedClaim.email || 'N/A'}</p>
+              </div>
+              <div>
+                <Label className="text-slate-500">Phone</Label>
+                <p className="font-medium text-slate-900">{selectedClaim.phone || 'N/A'}</p>
+              </div>
+              <div>
+                <Label className="text-slate-500">Location</Label>
+                <p className="font-medium text-slate-900">{selectedClaim.location}</p>
+              </div>
+              <div>
+                <Label className="text-slate-500">Claim Status</Label>
+                <p className="font-medium text-slate-900 capitalize">{selectedClaim.claimStatus}</p>
+              </div>
+              <div>
+                <Label className="text-slate-500">Verified</Label>
+                <p className="font-medium text-slate-900">{selectedClaim.verified ? 'Yes' : 'No'}</p>
+              </div>
+              <div>
+                <Label className="text-slate-500">Plan Type</Label>
+                <p className="font-medium text-slate-900 capitalize">{selectedClaim.planType}</p>
+              </div>
+              <div>
+                <Label className="text-slate-500">Profile Completeness</Label>
+                <p className="font-medium text-slate-900">{selectedClaim.profileCompleteness}%</p>
+              </div>
+              <div>
+                <Label className="text-slate-500">GMB Imported</Label>
+                <p className="font-medium text-slate-900">{selectedClaim.gmbImported ? 'Yes' : 'No'}</p>
+              </div>
+              <div>
+                <Label className="text-slate-500">Last Activity</Label>
+                <p className="font-medium text-slate-900">
+                  {selectedClaim.lastActivity ? new Date(selectedClaim.lastActivity).toLocaleDateString() : 'N/A'}
+                </p>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

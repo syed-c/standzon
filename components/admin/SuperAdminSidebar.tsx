@@ -40,22 +40,15 @@ const sections: NavSection[] = [
     items: [
       { label: "Command Center", href: "/admin/dashboard", icon: "dashboard" },
       { label: "Builders & Partners", href: "/admin/builders", icon: "corporate_fare" },
-      { label: "Add Builder", href: "/admin/add-builder", icon: "add_business" },
       { label: "Featured Builders", href: "/admin/featured-builders", icon: "star" },
-      { label: "Smart Builders", href: "/admin/smart-builders", icon: "psychology" },
-      { label: "Registrations", href: "/admin/registrations", icon: "how_to_reg" },
       { label: "Profile Claims", href: "/admin/profile-claims", icon: "verified_user" },
     ],
   },
-  {
+    {
     title: "Content & CMS",
     items: [
-      { label: "CMS & Content", href: "/admin/content-management", icon: "description" },
       { label: "Pages Editor", href: "/admin/pages-editor", icon: "edit_document" },
-      { label: "Global Pages", href: "/admin/global-pages", icon: "language" },
       { label: "Tradeshows", href: "/admin/tradeshows", icon: "event" },
-      { label: "Venues", href: "/admin/venue-management-summary", icon: "location_city" },
-      { label: "Locations", href: "/admin/location-kks", icon: "pin_drop" },
       { label: "Portfolio", href: "/admin/portfolio", icon: "photo_library" },
     ],
   },

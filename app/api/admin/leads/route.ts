@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       count: leads.length,
-      data: leads
+      leads: leads
     });
     
   } catch (error: any) {
