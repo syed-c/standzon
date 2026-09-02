@@ -293,8 +293,8 @@ export default async function ServerCountryCityPage({
                 <BuildersLoadMore
                   builders={builders}
                   location={city || country}
-                  initialCount={2}
-                  incrementBy={2}
+                  initialCount={6}
+                  incrementBy={3}
                 />
               ) : (
                 <div className="bg-white rounded-2xl border border-slate-200 p-16 text-center">

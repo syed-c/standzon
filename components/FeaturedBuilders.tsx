@@ -224,7 +224,7 @@ export default function FeaturedBuilders() {
               {builders.map((builder, index) => (
                 <Link
                   key={builder.slug}
-                  href={`/companies/${builder.slug}`}
+                  href={`/builders/${builder.slug}`}
                   className="group"
                 >
                   <Card className={`h-full hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1 bg-gradient-to-br from-white to-pink-50/30 border-pink-100 hover:border-pink-300 ${builder.featured ? 'ring-2 ring-pink-600 bg-gradient-to-br from-pink-50 to-white' : ''}`}>
