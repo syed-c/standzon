@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { FiMenu, FiX, FiChevronDown, FiUser, FiZap } from 'react-icons/fi';
 import Link from 'next/link';
 import Image from 'next/image';
-import logoImg from '@/components/zonelogo2.png';
+import logoImg from '@/components/logo-standszone.png';
 import LogoutButton from '@/components/LogoutButton';
 
 // Add null checks for icons to prevent runtime errors

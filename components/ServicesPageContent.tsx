@@ -25,7 +25,7 @@ const services = [
   {
     id: 'custom-design',
     title: 'Custom Stand Design',
-    description: 'Bespoke exhibition stand designs tailored to your brand and objectives',
+    description: 'Stands designed from scratch around your brand, products and stand space',
     icon: Palette,
     features: ['3D Visualization', 'Brand Integration', 'Space Optimization', 'Interactive Elements'],
     priceRange: '$200-800/sqm',
@@ -35,12 +35,12 @@ const services = [
   {
     id: 'construction',
     title: 'Stand Construction',
-    description: 'Professional construction and fabrication of exhibition stands',
+    description: 'Workshop fabrication and finishing to the approved design and drawings',
     icon: Hammer,
     features: ['Quality Materials', 'Expert Craftsmanship', 'On-time Delivery', 'Safety Compliance'],
     priceRange: '$150-600/sqm',
     popular: true,
-    href: '/booth-rental'
+    href: '/custom-booth'
   },
   {
     id: 'installation',
@@ -88,31 +88,31 @@ const benefits = [
   {
     icon: Globe,
     title: 'Global Network',
-    description: 'Access to verified builders in 22+ countries worldwide'
+    description: 'Vetted stand builders across 60+ countries, matched to your show'
   },
   {
     icon: Clock,
     title: 'Fast Turnaround',
-    description: 'Quick quotes and efficient project delivery timelines'
+    description: 'Most quote requests are answered within 24 hours'
   },
   {
     icon: Shield,
     title: 'Quality Assured',
-    description: 'All builders are verified and quality-checked'
+    description: 'Profiles, project history and client feedback are reviewed before listing'
   },
   {
     icon: Star,
     title: 'Expert Support',
-    description: '24/7 customer support throughout your project'
+    description: 'A real person to help from first brief through to build day'
   }
 ];
 
 export default function ServicesPageContent() {
   return (
-    <ClientPageWithBreadcrumbs className="min-h-screen bg-gray-50">
+    <ClientPageWithBreadcrumbs className="min-h-screen bg-[#F5F6F7]">
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 mt-16">
+      <section className="bg-[#252525] text-white py-20 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-3xl md:text-4xl font-bold mb-6">
@@ -125,7 +125,7 @@ export default function ServicesPageContent() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/quote">
-                <Button size="lg" className="bg-white text-blue-600">
+                <Button size="lg" className="bg-white text-[#E03A3A]">
                   Get Free Quote
                 </Button>
               </Link>
@@ -143,10 +143,10 @@ export default function ServicesPageContent() {
         {/* Services Grid */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#252525] mb-4">
               Full-Service Exhibition Stand Solutions
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-[#5B5C5D] max-w-2xl mx-auto">
               From concept to carpet: design, build, graphics, AV, logistics and on-site support for exhibitions in any market.
             </p>
           </div>
@@ -155,30 +155,30 @@ export default function ServicesPageContent() {
             {services.map((service) => (
               <Card key={service.id} className="hover:shadow-lg transition-shadow relative">
                 {service.popular && (
-                  <Badge className="absolute -top-2 -right-2 bg-orange-500 text-white">
+                  <Badge className="absolute -top-2 -right-2 bg-[#E03A3A] text-white">
                     Popular
                   </Badge>
                 )}
                 <CardHeader>
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                    <service.icon className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-[#FDE3E3] rounded-lg flex items-center justify-center mb-4">
+                    <service.icon className="w-6 h-6 text-[#E03A3A]" />
                   </div>
                   <CardTitle className="text-xl mb-2">{service.title}</CardTitle>
-                  <CardDescription className="text-gray-600">
+                  <CardDescription className="text-[#5B5C5D]">
                     {service.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">Starting from</span>
-                      <span className="font-semibold text-blue-600">{service.priceRange}</span>
+                      <span className="text-sm text-[#828384]">Starting from</span>
+                      <span className="font-semibold text-[#E03A3A]">{service.priceRange}</span>
                     </div>
                     
                     <ul className="space-y-2">
                       {service.features.map((feature, index) => (
-                        <li key={index} className="flex items-center text-sm text-gray-600">
-                          <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                        <li key={index} className="flex items-center text-sm text-[#5B5C5D]">
+                          <CheckCircle className="w-4 h-4 text-emerald-600 mr-2 flex-shrink-0" />
                           {feature}
                         </li>
                       ))}
@@ -200,24 +200,24 @@ export default function ServicesPageContent() {
         {/* Benefits Section */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#252525] mb-4">
               Why Exhibitors Choose StandsZone
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              We connect you with the best exhibition stand builders worldwide
+            <p className="text-lg text-[#5B5C5D] max-w-2xl mx-auto">
+              A single brief gets you matched with vetted builders, then real quotes you can compare side by side.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {benefits.map((benefit, index) => (
               <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <benefit.icon className="w-8 h-8 text-blue-600" />
+                <div className="w-16 h-16 bg-[#FDE3E3] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <benefit.icon className="w-8 h-8 text-[#E03A3A]" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-[#252525] mb-2">
                   {benefit.title}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-[#5B5C5D]">
                   {benefit.description}
                 </p>
               </div>
@@ -228,10 +228,10 @@ export default function ServicesPageContent() {
         {/* Process Section */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#252525] mb-4">
               How to Get Your Exhibition Stand Built
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-[#5B5C5D] max-w-2xl mx-auto">
               Four simple steps from brief to a stand that is built and installed on time.
             </p>
           </div>
@@ -244,17 +244,17 @@ export default function ServicesPageContent() {
               { step: '04', title: 'Project Delivery', description: 'Your stand is designed, built, and installed on time' }
             ].map((item, index) => (
               <div key={index} className="text-center relative">
-                <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                <div className="w-16 h-16 bg-[#E03A3A] text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                   {item.step}
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-[#252525] mb-2">
                   {item.title}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-[#5B5C5D]">
                   {item.description}
                 </p>
                 {index < 3 && (
-                  <ArrowRight className="hidden md:block absolute top-8 -right-4 w-6 h-6 text-gray-400" />
+                  <ArrowRight className="hidden md:block absolute top-8 -right-4 w-6 h-6 text-[#B4B5B6]" />
                 )}
               </div>
             ))}
@@ -262,16 +262,16 @@ export default function ServicesPageContent() {
         </section>
 
         {/* CTA Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 md:p-12 text-white text-center">
+        <section className="bg-[#E03A3A] rounded-2xl p-8 md:p-12 text-white text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Get Matched With Verified Exhibition Stand Builders
           </h2>
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            Get free quotes from verified exhibition stand builders in your location
+            Send one brief and receive quotes from vetted builders who work at your show.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/quote">
-              <Button size="lg" className="bg-white text-blue-600">
+              <Button size="lg" className="bg-white text-[#E03A3A]">
                 Get Free Quote
               </Button>
             </Link>

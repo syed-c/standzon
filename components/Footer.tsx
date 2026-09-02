@@ -3,7 +3,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import logoImg from '@/components/zonelogo2.png';
+import logoImg from '@/components/logo-standszone.png';
 import { FiPhone, FiMail, FiMapPin, FiLinkedin, FiTwitter, FiInstagram, FiFacebook, FiExternalLink } from 'react-icons/fi';
 
 export default function Footer() {
@@ -99,7 +99,7 @@ export default function Footer() {
           {/* Company Info */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-8">
-              <Image src={logoImg} alt="StandsZone" width={120} height={36} className="h-8 w-auto" style={{ height: 'auto' }} priority />
+              <Image src={logoImg} alt="StandsZone" width={120} height={36} className="h-8 w-auto brightness-0 invert" style={{ height: 'auto' }} priority />
             </div>
             <p className="text-xs leading-loose uppercase tracking-widest opacity-60 mb-6">
               {footerData?.paragraph || siteData.pages?.footerText || fallbackData.pages.footerText}

@@ -20,8 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
         const seo = content.seo || {};
         
         cmsMetadata = {
-          title: seo.metaTitle || 'Exhibition Stand Services - Custom Design & Construction | StandsZone',
-          description: seo.metaDescription || 'Professional exhibition stand services including custom design, construction, installation, and project management. Get quotes from verified builders worldwide.',
+          title: seo.metaTitle || 'Exhibition Stand Services | Design, Build, Graphics and Install',
+          description: seo.metaDescription || 'Design, construction, 3D visuals, graphics and print, installation and dismantle, and project management for trade show stands. Get matched with vetted builders and compare quotes in 24 hours.',
         };
       }
     }
@@ -30,8 +30,8 @@ export async function generateMetadata(): Promise<Metadata> {
   }
   
   // Use CMS metadata if available, otherwise fall back to default
-  const title = cmsMetadata?.title || 'Exhibition Stand Services - Custom Design & Construction | StandsZone';
-  const description = cmsMetadata?.description || 'Professional exhibition stand services including custom design, construction, installation, and project management. Get quotes from verified builders worldwide.';
+  const title = cmsMetadata?.title || 'Exhibition Stand Services | Design, Build, Graphics and Install';
+  const description = cmsMetadata?.description || 'Design, construction, 3D visuals, graphics and print, installation and dismantle, and project management for trade show stands. Get matched with vetted builders and compare quotes in 24 hours.';
   
   return {
     title,

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import logoImg from '@/components/zonelogo2.png';
+import logoImg from '@/components/logo-standszone.png';
 
 // Static header with only essential navigation links
 export default function StaticNavigationHeader() {

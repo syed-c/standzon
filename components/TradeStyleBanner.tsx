@@ -32,18 +32,18 @@ export default function TradeStyleBanner({
 	searchPlaceholder = 'Search by show name, city, industry, or venue...'
 }: TradeStyleBannerProps) {
 	return (
-		<section className="pt-20 pb-16 bg-gradient-to-b from-[#1a2b45] to-[#204e80] text-white">
+		<section className="pt-20 pb-16 bg-[#252525] text-white">
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="text-center">
-					<div className="inline-flex items-center px-4 py-2 bg-[#2c3e55] rounded-full text-sm font-medium mb-6">
+					<div className="inline-flex items-center px-4 py-2 bg-white/10 border border-white/15 rounded-full text-sm font-medium mb-6 uppercase tracking-widest text-white/80">
 						{badgeText}
 					</div>
 					<h1 className="text-3xl md:text-4xl font-bold mb-6">
 						{mainHeading}
-						<span className="block" style={{ color: '#CC2E2E' }}>{highlightHeading}</span>
+						<span className="block text-[#EC6A6A]">{highlightHeading}</span>
 					</h1>
                     <p
-                        className="text-lg md:text-xl text-[#cfd8e3] mb-8 max-w-3xl mx-auto"
+                        className="text-lg md:text-xl text-white/70 mb-8 max-w-3xl mx-auto"
                         dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
                     />
 
@@ -68,7 +68,7 @@ export default function TradeStyleBanner({
 								<Input
 									type="text"
 									placeholder={searchPlaceholder}
-									className="pl-12 pr-4 py-4 text-lg bg-white/95 backdrop-blur-sm border-0 text-[#1a2b45] placeholder-gray-500 shadow-lg"
+									className="pl-12 pr-4 py-4 text-lg bg-white/95 backdrop-blur-sm border-0 text-[#252525] placeholder-gray-500 shadow-lg"
 								/>
 							</div>
 						</div>
@@ -87,9 +87,9 @@ function renderIcon(icon: StatItem['icon'], color?: string) {
 		case 'map-pin':
 			return <FiMapPin className={cls} style={{ color: color || '#059669' }} />;
 		case 'users':
-			return <FiUsers className={cls} style={{ color: color || '#f4a261' }} />;
+			return <FiUsers className={cls} style={{ color: color || '#E03A3A' }} />;
 		case 'chart-line':
-			return <FiTrendingUp className={cls} style={{ color: color || '#a06cd5' }} />;
+			return <FiTrendingUp className={cls} style={{ color: color || '#252525' }} />;
 		default:
 			return null;
 	}
