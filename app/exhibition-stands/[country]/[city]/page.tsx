@@ -301,7 +301,7 @@ function formatCmsContent(cmsContent: any, countrySlug: string, citySlug: string
       conclusion: citySpecificContent?.content?.conclusion || `Conclusion for ${cityName}`,
     },
     design: {
-      primaryColor: citySpecificContent?.design?.primaryColor || "#ec4899",
+      primaryColor: citySpecificContent?.design?.primaryColor || "#E03A3A",
       accentColor: citySpecificContent?.design?.accentColor || "#f97316",
       layout: citySpecificContent?.design?.layout || "modern",
       showStats: citySpecificContent?.design?.showStats !== undefined ? citySpecificContent?.design?.showStats : true,
@@ -486,7 +486,7 @@ export default async function CityPage({ params, searchParams }: CityPageProps) 
       country: countryName,
       city: cityName,
       page: currentPageNum,
-      itemsPerPage: 6
+      itemsPerPage: 12
     });
 
     builders = result.builders;

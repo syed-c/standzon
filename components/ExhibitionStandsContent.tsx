@@ -197,8 +197,8 @@ export default function ExhibitionStandsContent() {
         highlightHeading="& Builders by Location"
         description={`Professional builders across ${totalCountries} countries and ${totalCities}+ cities worldwide. $${totalMarketSize}B+ market coverage.`}
         stats={[
-          { icon: 'calendar', value: totalBuilders.toLocaleString(), label: 'Expert Builders', color: '#2ec4b6' },
-          { icon: 'map-pin', value: String(totalCountries), label: 'Countries', color: '#3dd598' },
+          { icon: 'calendar', value: totalBuilders.toLocaleString(), label: 'Expert Builders', color: '#CC2E2E' },
+          { icon: 'map-pin', value: String(totalCountries), label: 'Countries', color: '#059669' },
           { icon: 'users', value: String(totalCities), label: 'Major Cities', color: '#f4a261' },
           { icon: 'chart-line', value: String(activeCountries), label: 'Active Markets', color: '#a06cd5' }
         ]}

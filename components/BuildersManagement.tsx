@@ -208,7 +208,7 @@ export default function BuildersManagement({
             <span className="material-symbols-outlined mr-2">download</span>
             Export
           </Button>
-          <Button className="bg-[#1e3886] hover:bg-[#1e3886]/90">
+          <Button className="bg-[#E03A3A] hover:bg-[#E03A3A]/90">
             <span className="material-symbols-outlined mr-2">add_business</span>
             Add Builder
           </Button>
@@ -319,7 +319,7 @@ export default function BuildersManagement({
                           {builder.logo ? (
                             <AvatarImage src={builder.logo} alt={builder.company_name} />
                           ) : (
-                            <AvatarFallback className="bg-[#1e3886]/10 text-[#1e3886]">
+                            <AvatarFallback className="bg-[#E03A3A]/10 text-[#E03A3A]">
                               {builder.company_name?.charAt(0) || 'B'}
                             </AvatarFallback>
                           )}
@@ -424,7 +424,7 @@ export default function BuildersManagement({
                       onClick={() => setCurrentPage(pageNum)}
                       className={
                         currentPage === pageNum 
-                          ? "bg-[#1e3886] border-[#1e3886] text-white" 
+                          ? "bg-[#E03A3A] border-[#E03A3A] text-white" 
                           : "border-slate-300 text-slate-600 hover:bg-slate-50"
                       }
                     >
@@ -461,8 +461,8 @@ export default function BuildersManagement({
             {selectedBuilder && (
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-2 bg-slate-100">
-                  <TabsTrigger value="overview" className="text-slate-600 data-[state=active]:bg-[#1e3886]">Overview</TabsTrigger>
-                  <TabsTrigger value="activity" className="text-slate-600 data-[state=active]:bg-[#1e3886]">Activity</TabsTrigger>
+                  <TabsTrigger value="overview" className="text-slate-600 data-[state=active]:bg-[#E03A3A]">Overview</TabsTrigger>
+                  <TabsTrigger value="activity" className="text-slate-600 data-[state=active]:bg-[#E03A3A]">Activity</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="overview" className="space-y-6 mt-4">
@@ -503,7 +503,7 @@ export default function BuildersManagement({
                         {selectedBuilder.website && (
                           <div className="flex justify-between">
                             <span className="text-slate-500">Website</span>
-                            <a href={selectedBuilder.website} target="_blank" rel="noopener noreferrer" className="text-[#1e3886] hover:underline text-sm">
+                            <a href={selectedBuilder.website} target="_blank" rel="noopener noreferrer" className="text-[#E03A3A] hover:underline text-sm">
                               {selectedBuilder.website}
                             </a>
                           </div>

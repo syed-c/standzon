@@ -425,8 +425,8 @@ export function BuilderAnalytics({ builderPerformance, analytics }: {
 
   const planDistribution = [
     { name: 'Free', value: builderPerformance.filter(b => b.planStatus === 'free').length, color: '#94a3b8' },
-    { name: 'Professional', value: builderPerformance.filter(b => b.planStatus === 'professional').length, color: '#3b82f6' },
-    { name: 'Enterprise', value: builderPerformance.filter(b => b.planStatus === 'enterprise').length, color: '#8b5cf6' }
+    { name: 'Professional', value: builderPerformance.filter(b => b.planStatus === 'professional').length, color: '#E03A3A' },
+    { name: 'Enterprise', value: builderPerformance.filter(b => b.planStatus === 'enterprise').length, color: '#E03A3A' }
   ];
 
   return (
@@ -470,7 +470,7 @@ export function BuilderAnalytics({ builderPerformance, analytics }: {
                 <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="performance" fill="#3b82f6" />
+                <Bar dataKey="performance" fill="#E03A3A" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

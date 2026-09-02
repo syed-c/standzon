@@ -367,7 +367,7 @@ export default function BuilderSignupForm() {
           slug: spec.toLowerCase().replace(/[^a-z0-9]/g, '-'),
           description: spec,
           subcategories: [],
-          color: '#3B82F6',
+          color: '#E03A3A',
           icon: '🏗️',
           annualGrowthRate: 8.5,
           averageBoothCost: 450,

@@ -134,7 +134,7 @@ async function handleBuilderMatching(quoteRequest: any, preferences: MatchingPre
           name: 'Technology',
           description: 'Technology and innovation industry',
           subcategories: ['Software', 'Hardware', 'AI'],
-          color: '#3B82F6',
+          color: '#E03A3A',
           exhibitorCount: 500,
           averageStandSize: 25,
           growthRate: 15.2,

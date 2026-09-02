@@ -176,7 +176,7 @@ async function sendEmailOTP(email: string, otp: string, builderId: string): Prom
       subject: 'Verify Your Business Profile - Action Required',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #AC2424 100%); padding: 30px; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 24px;">Business Profile Verification</h1>
           </div>
           

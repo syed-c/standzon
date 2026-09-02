@@ -119,7 +119,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
 
         {/* ✅ PWA: Add theme color for mobile browsers */}
-        <meta name="theme-color" content="#1e40af" />
+        <meta name="theme-color" content="#252525" />
 
         {/* ✅ PWA: Add mobile-web-app-capable meta tag */}
         <meta name="mobile-web-app-capable" content="yes" />
@@ -152,12 +152,12 @@ export default function RootLayout({
         <style>{`
             /* Critical hero styles */
             .hero-gradient {
-              background: linear-gradient(135deg, #1e293b 0%, #1e40af 50%, #1e293b 100%);
+              background: linear-gradient(135deg, #2B2B2B 0%, #8C1F1F 50%, #2B2B2B 100%);
             }
             
             /* Critical button styles */
             .btn-primary {
-              background: linear-gradient(90deg, #E11D74 0%, #F1558E 100%);
+              background: linear-gradient(90deg, #E03A3A 0%, #EC6A6A 100%);
             }
             
             /* Animation optimizations */
@@ -184,10 +184,10 @@ export default function RootLayout({
         <style>{`
             /* Critical CSS for header and navigation */
             .nav-container { display: flex; align-items: center; justify-content: space-between; }
-            .header-gradient { background: linear-gradient(135deg, #1e40af 0%, #1e293b 100%); }
+            .header-gradient { background: linear-gradient(135deg, #8C1F1F 0%, #2B2B2B 100%); }
             
             /* Critical typography */
-            .text-gradient { background: linear-gradient(90deg, #E11D74 0%, #F1558E 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            .text-gradient { background: linear-gradient(90deg, #E03A3A 0%, #EC6A6A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
             
             /* Critical layout */
             .page-container { min-height: 100vh; display: flex; flex-direction: column; }

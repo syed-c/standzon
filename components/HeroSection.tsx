@@ -13,7 +13,7 @@ export function HeroSection() {
       className="relative min-h-[80vh] h-auto flex items-center justify-center overflow-hidden py-20 pb-24"
       style={{
         background:
-          "linear-gradient(135deg, #7c2d92 0%, #db2777 50%, #ec4899 100%)",
+          "linear-gradient(135deg, #8C1F1F 0%, #E03A3A 50%, #E03A3A 100%)",
       }}
     >
       {/* Animated Background Elements */}

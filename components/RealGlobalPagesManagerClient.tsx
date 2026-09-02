@@ -292,7 +292,7 @@ export function RealGlobalPagesManagerClient({
         conclusion: `${page.location.name} presents excellent opportunities for exhibition success with its growing business environment.`
       },
       design: {
-        primaryColor: '#ec4899',
+        primaryColor: '#E03A3A',
         accentColor: '#f97316',
         layout: 'modern' as const,
         showStats: true,

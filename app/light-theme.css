@@ -11,7 +11,7 @@
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
   
-  --primary: 222.2 47.4% 11.2%;
+  --primary: 0 73% 55%;
   --primary-foreground: 210 40% 98%;
   
   --secondary: 210 40% 96%;
@@ -83,7 +83,7 @@
 }
 
 .light .admin-dashboard .button-primary {
-  @apply bg-[#6366F1] text-[#FFFFFF] font-medium rounded-lg px-4 py-2 transition-all duration-300 shadow-sm hover:shadow-md hover:brightness-110 hover:scale-[1.02] active:scale-[0.98];
+  @apply bg-[#E03A3A] text-[#FFFFFF] font-medium rounded-lg px-4 py-2 transition-all duration-300 shadow-sm hover:shadow-md hover:brightness-110 hover:scale-[1.02] active:scale-[0.98];
 }
 
 .light .admin-dashboard .button-secondary {
@@ -91,7 +91,7 @@
 }
 
 .light .admin-dashboard .input-field {
-  @apply bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#6366F1] focus:border-transparent transition-all duration-300;
+  @apply bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#E03A3A] focus:border-transparent transition-all duration-300;
 }
 
 .light .admin-dashboard .sidebar {
@@ -107,7 +107,7 @@
 }
 
 .light .admin-dashboard .sidebar-link.active {
-  @apply bg-[#6366F1]/20 text-[#6366F1] border-l-4 border-[#6366F1];
+  @apply bg-[#E03A3A]/20 text-[#E03A3A] border-l-4 border-[#E03A3A];
 }
 
 .light .admin-dashboard .topbar {
@@ -141,11 +141,11 @@
 }
 
 .light .premium-neon-border {
-  @apply border border-gray-300 hover:border-[#6366F1]/80 transition-all duration-300;
+  @apply border border-gray-300 hover:border-[#E03A3A]/80 transition-all duration-300;
 }
 
 .light .premium-gradient-button {
-  @apply bg-[#6366F1] text-[#FFFFFF] font-medium rounded-xl px-6 py-3 transition-all duration-300 shadow-sm hover:shadow-md hover:brightness-110 hover:scale-[1.02] active:scale-[0.98];
+  @apply bg-[#E03A3A] text-[#FFFFFF] font-medium rounded-xl px-6 py-3 transition-all duration-300 shadow-sm hover:shadow-md hover:brightness-110 hover:scale-[1.02] active:scale-[0.98];
 }
 
 .light .premium-icon-button {

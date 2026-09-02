@@ -449,7 +449,7 @@ export default async function ServerEnhancedLocationPage({
               })()}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 text-white">
-              <a href="/quote" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-white font-semibold border border-white/80 rounded-full bg-gradient-to-r from-[#E11D74] to-[#F1558E] active:from-[#C31860] active:to-[#E44080] transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300 w-full sm:w-auto min-w-[200px]">
+              <a href="/quote" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-white font-semibold border border-white/80 rounded-full bg-gradient-to-r from-[#E03A3A] to-[#EC6A6A] active:from-[#C31860] active:to-[#E44080] transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300 w-full sm:w-auto min-w-[200px]">
                 Get Quotes from {displayLocation} Builders
               </a>
               <Button

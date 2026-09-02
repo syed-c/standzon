@@ -14,6 +14,7 @@ import { getServerSupabase } from '@/lib/supabase';
 import { getAllBuilders } from '@/lib/supabase/builders';
 import { getServerPageContent } from '@/lib/data/serverPageContent';
 import { convertToProxyUrl } from '@/lib/utils/imageProxyUtils';
+import { placeholderFor, isMissingImage } from '@/lib/utils/placeholders';
 import Image from 'next/image';
 import HeroSearchFilter from '@/components/HeroSearchFilter';
 
@@ -334,64 +335,61 @@ export default async function ServerEnhancedLocationPage({
 
   // --- render ---
   return (
-    <div className="min-h-screen bg-[#f6f6f8] font-sans">
+    <div className="min-h-screen bg-[#F5F6F7] font-sans">
 
       {/* ── HERO ── */}
-      <section className="relative bg-[#0f172a] py-20 overflow-visible">
+      <section className="relative bg-[#252525] py-20 overflow-visible">
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1e3886]/30 via-transparent to-[#c0123d]/20" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#E03A3A]/30 via-transparent to-[#CC2E2E]/20" />
           <div className="absolute inset-0 opacity-[0.04]"
             style={{ backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`, backgroundSize: '32px 32px' }} />
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl">
-            <span className="inline-block px-3 py-1 bg-[#1e3886]/20 border border-[#1e3886]/40 text-white rounded-full text-xs font-black tracking-widest uppercase mb-5">
+            <span className="inline-block px-3 py-1 bg-[#E03A3A]/20 border border-[#E03A3A]/40 text-white rounded-full text-xs font-black tracking-widest uppercase mb-5">
               {isCity ? `${finalCountryName} Exhibition Hub` : 'World-Class Exhibition Logistics'}
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight mb-6 tracking-tight">
               {(() => {
-                // Try to find a custom title directly from the raw database content
-                // We avoid using pageContent.title as a first fallback because it contains the generated default
-                let headingRaw = 
-                  resolvedCmsBlock?.hero?.title || 
-                  resolvedCmsBlock?.hero?.heading || 
-                  resolvedCmsBlock?.title || 
+                const accent = "text-transparent bg-clip-text bg-gradient-to-r from-[#EC6A6A] to-[#E03A3A]";
+
+                // The CMS hero title is the SEO-managed H1 — use it.
+                let headingRaw =
+                  serverCmsContent?.hero?.title ||
+                  serverCmsContent?.hero?.heading ||
+                  resolvedCmsBlock?.hero?.title ||
+                  resolvedCmsBlock?.hero?.heading ||
+                  resolvedCmsBlock?.title ||
                   resolvedCmsBlock?.heroHeading ||
-                  serverCmsContent?.hero?.title || 
-                  serverCmsContent?.hero?.heading || 
                   serverCmsContent?.title;
 
                 if (!headingRaw && resolvedCmsBlock?.countryPages) {
                   for (const key of Object.keys(resolvedCmsBlock.countryPages)) {
-                    if (resolvedCmsBlock.countryPages[key]?.title) { 
-                      headingRaw = resolvedCmsBlock.countryPages[key].title; 
-                      break; 
+                    if (resolvedCmsBlock.countryPages[key]?.title) {
+                      headingRaw = resolvedCmsBlock.countryPages[key].title;
+                      break;
                     }
                   }
                 }
 
-                let customHeading = '';
-                if (typeof headingRaw === 'string') {
-                  customHeading = headingRaw;
-                } else if (typeof headingRaw === 'object' && headingRaw !== null) {
-                  customHeading = headingRaw.title || headingRaw.heading || '';
+                let heading = '';
+                if (typeof headingRaw === 'string') heading = headingRaw;
+                else if (headingRaw && typeof headingRaw === 'object') heading = headingRaw.title || headingRaw.heading || '';
+                heading = heading.trim();
+
+                // Location-specific fallback (never the generic "Global Directory…").
+                if (!heading) {
+                  heading = isCity
+                    ? `Exhibition Stand Builders in ${finalLocationName}, ${finalCountryName}`
+                    : `Exhibition Stand Builders in ${finalCountryName}`;
                 }
 
-                // Make sure we aren't just getting the default merge value
-                if (customHeading && !customHeading.includes('Exhibition Stand Builders in') && !customHeading.includes('Global Directory of')) {
-                  return customHeading;
+                // Style: put the trailing "in <Location>" part in the red accent.
+                const m = heading.match(/^(.*?\bin)\s+(.+?)\.?$/i);
+                if (m && /builders?|contractors?|companies|directory/i.test(m[1])) {
+                  return <>{m[1]} <span className={accent}>{m[2]}.</span></>;
                 }
-
-                // If DB explicitly has it OR we fallback to original beautifully styled defaults
-                if (customHeading && customHeading !== `Exhibition Stand Builders in ${displayLocation}` && customHeading !== `Exhibition Stand Builders in ${finalLocationName}, ${finalCountryName}`) {
-                  return customHeading;
-                }
-
-                return isCity ? (
-                  <>Exhibition Stand Builders <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">in {finalLocationName}.</span></>
-                ) : (
-                  <>Global Directory of <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">Verified Stand Builders.</span></>
-                );
+                return heading;
               })()}
             </h1>
             <p className="text-lg text-slate-300 mb-10 leading-relaxed max-w-2xl">
@@ -427,7 +425,7 @@ export default async function ServerEnhancedLocationPage({
             { val: '24h', label: 'Quote Response' }
           ].map((s, i) => (
             <div key={i} className="flex flex-col items-center md:items-start">
-              <span className="text-2xl md:text-3xl font-black text-[#0f172a]">{s.val}</span>
+              <span className="text-2xl md:text-3xl font-black text-[#252525]">{s.val}</span>
               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-0.5">{s.label}</span>
             </div>
           ))}
@@ -439,11 +437,11 @@ export default async function ServerEnhancedLocationPage({
 
       {/* ── VERIFIED BUILDERS LIST (internal, only when not suppressed) ── */}
       {!suppressBuilders && filteredBuilders.length > 0 && (
-        <section id="builders-grid" className="py-20 bg-[#f6f6f8]">
+        <section id="builders-grid" className="py-20 bg-[#F5F6F7]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
               <div>
-                <h2 className="text-2xl md:text-3xl font-black text-[#0f172a] uppercase tracking-tight mb-2">
+                <h2 className="text-2xl md:text-3xl font-black text-[#252525] uppercase tracking-tight mb-2">
                   {(() => {
                     let content = resolvedCmsBlock?.buildersHeading;
                     if (!content && resolvedCmsBlock?.countryPages) {
@@ -458,8 +456,8 @@ export default async function ServerEnhancedLocationPage({
                 <p className="text-slate-600 text-sm">Top-rated contractors with verified project history and client testimonials.</p>
               </div>
               <div className="flex gap-2 shrink-0">
-                <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold hover:border-[#1e3886] transition-colors">Filter by Rating</button>
-                <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold hover:border-[#1e3886] transition-colors">{isCity ? 'City Specialists' : 'Country Specialists'}</button>
+                <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold hover:border-[#E03A3A] transition-colors">Filter by Rating</button>
+                <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold hover:border-[#E03A3A] transition-colors">{isCity ? 'City Specialists' : 'Country Specialists'}</button>
               </div>
             </div>
 
@@ -479,7 +477,7 @@ export default async function ServerEnhancedLocationPage({
                 const projDone = b.projectsCompleted || b.projects_completed || 0;
                 const responseTime = b.responseTime || b.response_time || 'Within 24 hours';
                 const badgeLabel = idx === 0 ? 'Verified Platinum' : isPremium ? 'Recommended' : isVerified ? 'Verified' : '';
-                const badgeBg = idx === 0 ? 'bg-emerald-500' : 'bg-[#1e3886]';
+                const badgeBg = idx === 0 ? 'bg-emerald-500' : 'bg-[#E03A3A]';
 
                 return (
                   <div key={b.id || b.slug || idx} className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col lg:flex-row gap-6 hover:shadow-xl transition-shadow duration-300 group">
@@ -509,7 +507,7 @@ export default async function ServerEnhancedLocationPage({
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start mb-2 gap-4">
                         <div>
-                          <h3 className="text-lg font-black text-[#0f172a] group-hover:text-[#1e3886] transition-colors leading-tight">{b.companyName}</h3>
+                          <h3 className="text-lg font-black text-[#252525] group-hover:text-[#E03A3A] transition-colors leading-tight">{b.companyName}</h3>
                           <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
                             <MapPin className="w-3 h-3" /> {hq}{hqCountry && hqCountry !== hq ? `, ${hqCountry}` : ''}{estYear ? ` • Est. ${estYear}` : ''}
                           </p>
@@ -517,7 +515,7 @@ export default async function ServerEnhancedLocationPage({
                         <div className="text-right shrink-0">
                           <div className="flex items-center text-yellow-500">
                             <Star className="w-4 h-4 fill-current" />
-                            <span className="text-base font-black ml-1 text-[#0f172a]">{rating}</span>
+                            <span className="text-base font-black ml-1 text-[#252525]">{rating}</span>
                           </div>
                           {reviewCount > 0 && <span className="text-[10px] text-slate-400 uppercase font-bold">{reviewCount} Reviews</span>}
                         </div>
@@ -528,11 +526,11 @@ export default async function ServerEnhancedLocationPage({
                           { label: 'Projects Done', val: projDone > 0 ? `${projDone.toLocaleString()}+` : 'Available', color: '' },
                           { label: 'Response', val: responseTime, color: '' },
                           { label: 'Status', val: isVerified ? 'Verified' : 'Active', color: isVerified ? 'text-emerald-600' : '' },
-                          { label: 'Plan', val: (b.planType || 'Standard').charAt(0).toUpperCase() + (b.planType || 'Standard').slice(1), color: isPremium ? 'text-[#1e3886]' : '' }
+                          { label: 'Plan', val: (b.planType || 'Standard').charAt(0).toUpperCase() + (b.planType || 'Standard').slice(1), color: isPremium ? 'text-[#E03A3A]' : '' }
                         ].map((stat, si) => (
                           <div key={si} className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
                             <span className="block text-[9px] uppercase font-black text-slate-400 mb-0.5">{stat.label}</span>
-                            <span className={`text-xs font-black text-[#0f172a] ${stat.color}`}>{stat.val}</span>
+                            <span className={`text-xs font-black text-[#252525] ${stat.color}`}>{stat.val}</span>
                           </div>
                         ))}
                       </div>
@@ -542,7 +540,7 @@ export default async function ServerEnhancedLocationPage({
                     <div className="lg:w-40 flex flex-col justify-center gap-3 border-t lg:border-t-0 lg:border-l border-slate-100 pt-4 lg:pt-0 lg:pl-6 shrink-0">
                       <a
                         href={`/builders/${b.slug || b.id}`}
-                        className="w-full bg-[#0f172a] text-white text-xs font-black py-2.5 px-3 rounded-lg hover:bg-[#1e3886] transition-all text-center"
+                        className="w-full bg-[#252525] text-white text-xs font-black py-2.5 px-3 rounded-lg hover:bg-[#E03A3A] transition-all text-center"
                       >
                         View Portfolio
                       </a>
@@ -550,7 +548,7 @@ export default async function ServerEnhancedLocationPage({
                         location={displayLocation}
                         builderId={b.id}
                         buttonText="Request Quote"
-                        className="w-full bg-white border border-slate-200 text-[#0f172a] text-xs font-black py-2.5 px-3 h-auto rounded-lg hover:border-[#1e3886] transition-all"
+                        className="w-full bg-white border border-slate-200 text-[#252525] text-xs font-black py-2.5 px-3 h-auto rounded-lg hover:border-[#E03A3A] transition-all"
                         size="sm"
                       />
                     </div>
@@ -563,7 +561,7 @@ export default async function ServerEnhancedLocationPage({
               <PublicQuoteRequest
                 location={displayLocation}
                 buttonText={`Get Free Quotes from All ${displayLocation} Builders`}
-                className="px-8 py-3 bg-white border border-slate-200 text-[#0f172a] font-black rounded-lg hover:border-[#1e3886] transition-all"
+                className="px-8 py-3 bg-white border border-slate-200 text-[#252525] font-black rounded-lg hover:border-[#E03A3A] transition-all"
               />
             </div>
           </div>
@@ -572,20 +570,20 @@ export default async function ServerEnhancedLocationPage({
 
       {/* No builders state */}
       {!suppressBuilders && filteredBuilders.length === 0 && (
-        <section className="py-20 bg-[#f6f6f8]">
+        <section className="py-20 bg-[#F5F6F7]">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <div className="bg-white rounded-2xl border border-slate-200 p-16">
               <Building className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <h2 className="text-2xl font-black text-[#0f172a] mb-2">No Builders Listed Yet</h2>
+              <h2 className="text-2xl font-black text-[#252525] mb-2">No Builders Listed Yet</h2>
               <p className="text-slate-500 mb-8">We're expanding our directory for {displayLocation}. Get notified when builders are added.</p>
-              <PublicQuoteRequest location={displayLocation} buttonText="Request Builders for This Location" className="bg-[#1e3886] text-white font-black px-8 py-3 h-auto rounded-lg hover:bg-[#c0123d] transition-all border-0" />
+              <PublicQuoteRequest location={displayLocation} buttonText="Request Builders for This Location" className="bg-[#E03A3A] text-white font-black px-8 py-3 h-auto rounded-lg hover:bg-[#CC2E2E] transition-all border-0" />
             </div>
           </div>
         </section>
       )}
 
       {/* ── WHY CHOOSE LOCAL (dark section) ── */}
-      <section className="py-20 bg-[#0f172a] text-white">
+      <section className="py-20 bg-[#252525] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -627,13 +625,13 @@ export default async function ServerEnhancedLocationPage({
                     }
                   }
                   const defaultCards = [
-                    { icon: 'shield', color: 'bg-[#1e3886]/20 border-[#1e3886]/40 text-blue-400', title: 'Strict Quality Audits', text: `Every builder undergoes a 25-point verification including financial stability checks specific to ${displayLocation}.` },
-                    { icon: 'quote', color: 'bg-[#c0123d]/20 border-[#c0123d]/40 text-red-400', title: 'Competitive Tender System', text: 'Receive up to 5 detailed quotes within 24 hours from builders specialized in your industry.' },
+                    { icon: 'shield', color: 'bg-[#E03A3A]/20 border-[#E03A3A]/40 text-blue-400', title: 'Strict Quality Audits', text: `Every builder undergoes a 25-point verification including financial stability checks specific to ${displayLocation}.` },
+                    { icon: 'quote', color: 'bg-[#CC2E2E]/20 border-[#CC2E2E]/40 text-red-400', title: 'Competitive Tender System', text: 'Receive up to 5 detailed quotes within 24 hours from builders specialized in your industry.' },
                     { icon: 'hub', color: 'bg-blue-500/20 border-blue-500/40 text-blue-300', title: 'Dedicated Hub Support', text: `Local experts on the ground in ${displayLocation} to oversee your project delivery.` }
                   ];
                   const cards = Array.isArray(infoCards) ? infoCards.map((c: any) => ({
                     icon: 'shield',
-                    color: 'bg-[#1e3886]/20 border-[#1e3886]/40 text-blue-400',
+                    color: 'bg-[#E03A3A]/20 border-[#E03A3A]/40 text-blue-400',
                     title: typeof c.title === 'object' ? c.title?.heading || c.title?.title || '' : c.title || '',
                     text: typeof c.text === 'object' ? c.text?.description || c.text?.text || '' : c.text || ''
                   })) : defaultCards;
@@ -644,8 +642,8 @@ export default async function ServerEnhancedLocationPage({
                     <Globe key="g" className="w-5 h-5" />
                   ];
                   const colorClasses = [
-                    'bg-[#1e3886]/20 border border-[#1e3886]/40 text-blue-400',
-                    'bg-[#c0123d]/20 border border-[#c0123d]/40 text-red-400',
+                    'bg-[#E03A3A]/20 border border-[#E03A3A]/40 text-blue-400',
+                    'bg-[#CC2E2E]/20 border border-[#CC2E2E]/40 text-red-400',
                     'bg-blue-500/20 border border-blue-500/40 text-blue-300'
                   ];
 
@@ -706,13 +704,12 @@ export default async function ServerEnhancedLocationPage({
                   // Prefer the 2nd overall image to prevent overlap with the gallery's 1st image
                   let imgSrc = allValidImages.length > 1 ? allValidImages[1] : allValidImages[0];
 
-                  if (imgSrc) {
-                    return <Image src={convertToProxyUrl(imgSrc)} alt="Exhibition stand" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover opacity-80" />;
+                  if (imgSrc && !isMissingImage(imgSrc)) {
+                    return <Image src={convertToProxyUrl(imgSrc)} alt={`Exhibition stand project in ${displayLocation}`} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover opacity-90" />;
                   }
                   return (
-                    <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
-                      <Building2 className="w-24 h-24 text-slate-600" />
-                    </div>
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={placeholderFor('gallery')} alt="" className="w-full h-full object-cover" />
                   );
                 })()}
               </div>
@@ -725,9 +722,9 @@ export default async function ServerEnhancedLocationPage({
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-slate-50 border border-slate-200 rounded-3xl p-8 md:p-12 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#1e3886]/5 to-transparent hidden lg:block" />
+            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#E03A3A]/5 to-transparent hidden lg:block" />
             <div className="max-w-2xl relative z-10">
-              <h2 className="text-2xl md:text-3xl font-black text-[#0f172a] mb-3">Ready to Build Your Presence in {displayLocation}?</h2>
+              <h2 className="text-2xl md:text-3xl font-black text-[#252525] mb-3">Ready to Build Your Presence in {displayLocation}?</h2>
               <p className="text-slate-600 mb-8 text-sm leading-relaxed">
                 {(() => {
                   let content = resolvedCmsBlock?.quotesParagraph;
@@ -741,15 +738,15 @@ export default async function ServerEnhancedLocationPage({
                 })()}
               </p>
               <div className="grid md:grid-cols-2 gap-4">
-                <input className="bg-white border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#1e3886] text-sm" placeholder="Full Name" type="text" />
-                <input className="bg-white border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#1e3886] text-sm" placeholder="Company Email" type="email" />
-                <select className="bg-white border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#1e3886] text-sm text-slate-700">
+                <input className="bg-white border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#E03A3A] text-sm" placeholder="Full Name" type="text" />
+                <input className="bg-white border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#E03A3A] text-sm" placeholder="Company Email" type="email" />
+                <select className="bg-white border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#E03A3A] text-sm text-slate-700">
                   <option>Expected Stand Size</option>
                   <option>9 – 36 sqm</option>
                   <option>36 – 100 sqm</option>
                   <option>100+ sqm</option>
                 </select>
-                <select className="bg-white border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#1e3886] text-sm text-slate-700">
+                <select className="bg-white border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#E03A3A] text-sm text-slate-700">
                   <option>Budget Range</option>
                   <option>$10k – $25k</option>
                   <option>$25k – $50k</option>
@@ -760,7 +757,7 @@ export default async function ServerEnhancedLocationPage({
                   <PublicQuoteRequest
                     location={displayLocation}
                     buttonText="Submit for Quotes"
-                    className="w-full bg-[#c0123d] hover:bg-[#a01030] text-white font-black py-4 h-auto rounded-lg text-base border-0 uppercase tracking-widest shadow-xl shadow-red-900/10 transition-all"
+                    className="w-full bg-[#CC2E2E] hover:bg-[#AC2424] text-white font-black py-4 h-auto rounded-lg text-base border-0 uppercase tracking-widest shadow-xl shadow-red-900/10 transition-all"
                   />
                 </div>
               </div>
@@ -770,11 +767,11 @@ export default async function ServerEnhancedLocationPage({
       </section>
 
       {/* ── GALLERY ── */}
-      <section className="py-20 bg-[#f6f6f8]">
+      <section className="py-20 bg-[#F5F6F7]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-black text-[#0f172a] uppercase tracking-tighter">Design Inspiration Gallery</h2>
-            <div className="w-14 h-1 bg-[#c0123d] mx-auto mt-4 rounded-full" />
+            <h2 className="text-2xl md:text-3xl font-black text-[#252525] uppercase tracking-tighter">Design Inspiration Gallery</h2>
+            <div className="w-14 h-1 bg-[#CC2E2E] mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {(() => {
@@ -796,11 +793,18 @@ export default async function ServerEnhancedLocationPage({
                   }
                 });
               }
+              portfolioImages = portfolioImages.filter((u) => !isMissingImage(typeof u === 'string' ? u : (u as any)?.image || (u as any)?.url));
               const labels = ['Custom Pavilion', 'Eco-Flow Modular', 'Double Decker Hub', 'Healthcare Booth', 'Tech Showcase', 'Automotive Stand', 'Retail Activation', 'Government Pavilion'];
               const sectors = ['Custom Design', 'Sustainable Tech', 'Enterprise IT', 'Healthcare', 'Technology', 'Automotive', 'Retail', 'Government'];
               if (portfolioImages.length === 0) {
                 return Array.from({ length: 4 }, (_, i) => (
-                  <div key={i} className={`aspect-[3/4] rounded-xl overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300 ${i % 2 === 1 ? 'md:mt-8' : ''}`} />
+                  <div
+                    key={i}
+                    className={`aspect-[3/4] rounded-xl overflow-hidden border border-[#E4E6E8] ${i % 2 === 1 ? 'md:mt-8' : ''}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={placeholderFor('gallery')} alt="" className="w-full h-full object-cover" />
+                  </div>
                 ));
               }
               return portfolioImages.slice(0, 4).map((img, i) => (
@@ -827,7 +831,7 @@ export default async function ServerEnhancedLocationPage({
       {Array.isArray(upcomingEvents) && upcomingEvents.length > 0 && (
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-black text-[#0f172a] uppercase tracking-tighter mb-10">Upcoming Exhibitions in {displayLocation}</h2>
+            <h2 className="text-2xl font-black text-[#252525] uppercase tracking-tighter mb-10">Upcoming Exhibitions in {displayLocation}</h2>
             <div className="grid md:grid-cols-3 gap-8">
               {upcomingEvents.slice(0, 3).map((ev: any, i: number) => (
                 <div key={i} className="group cursor-pointer">
@@ -839,8 +843,8 @@ export default async function ServerEnhancedLocationPage({
                     </div>
                   </div>
                   <ul className="space-y-2 text-sm font-medium text-slate-600">
-                    {ev.venue && <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-[#1e3886]" />{ev.venue}</li>}
-                    <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-[#1e3886]" />Fast-track builder matching</li>
+                    {ev.venue && <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-[#E03A3A]" />{ev.venue}</li>}
+                    <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-[#E03A3A]" />Fast-track builder matching</li>
                   </ul>
                 </div>
               ))}
@@ -851,14 +855,14 @@ export default async function ServerEnhancedLocationPage({
 
       {/* ── CONTENT + SIDEBAR ── */}
       {!suppressPostBuildersContent && (
-        <section className="py-20 bg-[#f6f6f8] border-y border-slate-200">
+        <section className="py-20 bg-[#F5F6F7] border-y border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-3 gap-12">
               {/* Main article */}
               <div className="lg:col-span-2">
-                <h2 className="text-2xl md:text-3xl font-black text-[#0f172a] mb-8 uppercase tracking-tighter">Professional Exhibition Insights</h2>
+                <h2 className="text-2xl md:text-3xl font-black text-[#252525] mb-8 uppercase tracking-tighter">Professional Exhibition Insights</h2>
                 <article className="bg-white rounded-xl p-8 border border-slate-200 mb-8">
-                  <h3 className="text-xl font-black text-[#0f172a] mb-4">
+                  <h3 className="text-xl font-black text-[#252525] mb-4">
                     {(() => {
                       let content = resolvedCmsBlock?.servicesHeading;
                       if (!content && resolvedCmsBlock?.countryPages) {
@@ -870,7 +874,7 @@ export default async function ServerEnhancedLocationPage({
                       return content || `Navigating the ${displayLocation} Exhibition Landscape in 2024`;
                     })()}
                   </h3>
-                  <div className="prose max-w-none text-slate-600 prose-p:text-slate-600 prose-p:leading-relaxed prose-p:mb-4 prose-headings:text-[#0f172a] prose-li:text-slate-600 prose-strong:text-[#0f172a] text-sm" dangerouslySetInnerHTML={{
+                  <div className="prose max-w-none text-slate-600 prose-p:text-slate-600 prose-p:leading-relaxed prose-p:mb-4 prose-headings:text-[#252525] prose-li:text-slate-600 prose-strong:text-[#252525] text-sm" dangerouslySetInnerHTML={{
                     __html: sanitizeHtml((() => {
                       let content = resolvedCmsBlock?.servicesParagraph;
                       if (!content && resolvedCmsBlock?.countryPages) {
@@ -882,7 +886,7 @@ export default async function ServerEnhancedLocationPage({
                       return content || `<p>${displayLocation} has cemented its status as a world-leading exhibition hub. With major events reaching record attendance, the demand for high-quality stand construction is at an all-time high. Successful exhibiting in ${displayLocation} requires more than just a good design — it requires a builder who understands local regulations, venue specifics, and cultural nuances.</p>`;
                     })())
                   }} />
-                  <a href="#builders-grid" className="text-[#1e3886] font-black inline-flex items-center gap-2 hover:gap-4 transition-all text-sm mt-4">
+                  <a href="#builders-grid" className="text-[#E03A3A] font-black inline-flex items-center gap-2 hover:gap-4 transition-all text-sm mt-4">
                     Browse All Builders <ArrowRight className="w-4 h-4" />
                   </a>
                 </article>
@@ -890,7 +894,7 @@ export default async function ServerEnhancedLocationPage({
 
               {/* Sidebar */}
               <div>
-                <h2 className="text-lg font-black text-[#0f172a] mb-6 uppercase tracking-tighter">Directory Stats</h2>
+                <h2 className="text-lg font-black text-[#252525] mb-6 uppercase tracking-tighter">Directory Stats</h2>
                 <div className="space-y-3 mb-6">
                   {[
                     { label: `Active ${displayLocation} Builders`, val: stats.totalBuilders || 0 },
@@ -899,14 +903,14 @@ export default async function ServerEnhancedLocationPage({
                   ].map((s, i) => (
                     <div key={i} className="flex justify-between items-center p-4 bg-white border border-slate-200 rounded-lg">
                       <span className="text-sm font-semibold text-slate-500">{s.label}</span>
-                      <span className={`text-lg font-black ${s.highlight ? 'text-emerald-600' : 'text-[#0f172a]'}`}>{typeof s.val === 'number' ? s.val.toLocaleString() : s.val}{s.highlight ? '/5' : ''}</span>
+                      <span className={`text-lg font-black ${s.highlight ? 'text-emerald-600' : 'text-[#252525]'}`}>{typeof s.val === 'number' ? s.val.toLocaleString() : s.val}{s.highlight ? '/5' : ''}</span>
                     </div>
                   ))}
                 </div>
-                <div className="p-6 bg-[#1e3886]/10 rounded-xl border border-[#1e3886]/20">
-                  <h4 className="font-black text-[#1e3886] mb-2 text-sm">Need Help Choosing?</h4>
+                <div className="p-6 bg-[#E03A3A]/10 rounded-xl border border-[#E03A3A]/20">
+                  <h4 className="font-black text-[#E03A3A] mb-2 text-sm">Need Help Choosing?</h4>
                   <p className="text-xs text-slate-600 mb-4 leading-relaxed">Our consultants can provide a shortlist of builders matching your specific technical requirements.</p>
-                  <PublicQuoteRequest location={displayLocation} buttonText="Get Expert Consultation" className="text-xs font-black uppercase text-[#1e3886] p-0 h-auto bg-transparent border-0 hover:bg-transparent shadow-none" size="sm" />
+                  <PublicQuoteRequest location={displayLocation} buttonText="Get Expert Consultation" className="text-xs font-black uppercase text-[#E03A3A] p-0 h-auto bg-transparent border-0 hover:bg-transparent shadow-none" size="sm" />
                 </div>
               </div>
             </div>
@@ -915,7 +919,7 @@ export default async function ServerEnhancedLocationPage({
       )}
 
       {/* ── FINAL CTA (bold red) ── */}
-      {/* <section className="py-20 bg-[#c0123d] text-white relative overflow-hidden">
+      {/* <section className="py-20 bg-[#CC2E2E] text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 to-transparent" />
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <h2 className="text-3xl md:text-5xl font-black mb-6 uppercase tracking-tighter leading-tight">
@@ -946,7 +950,7 @@ export default async function ServerEnhancedLocationPage({
             <PublicQuoteRequest
               location={displayLocation}
               buttonText="Browse Full Directory"
-              className="bg-white text-[#c0123d] px-10 py-4 h-auto rounded-lg font-black text-base hover:shadow-2xl transition-all uppercase tracking-widest border-0"
+              className="bg-white text-[#CC2E2E] px-10 py-4 h-auto rounded-lg font-black text-base hover:shadow-2xl transition-all uppercase tracking-widest border-0"
             />
             <PublicQuoteRequest
               location={displayLocation}

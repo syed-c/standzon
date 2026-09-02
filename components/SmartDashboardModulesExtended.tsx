@@ -144,7 +144,7 @@ export function EventIntelligence({
                 <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="leadsGenerated" fill="#4f46e5" />
+                <Bar dataKey="leadsGenerated" fill="#CC2E2E" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -588,7 +588,7 @@ export function PlatformIntelligenceTab({
                 <YAxis />
                 <Tooltip />
                 <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} />
-                <Line type="monotone" dataKey="users" stroke="#3b82f6" strokeWidth={2} />
+                <Line type="monotone" dataKey="users" stroke="#E03A3A" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -609,7 +609,7 @@ export function PlatformIntelligenceTab({
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
-                <Area type="monotone" dataKey="engagement" stroke="#6366f1" fill="#6366f1" fillOpacity={0.3} />
+                <Area type="monotone" dataKey="engagement" stroke="#E03A3A" fill="#E03A3A" fillOpacity={0.3} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>

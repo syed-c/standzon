@@ -4,8 +4,8 @@
   "description": "Find and connect with professional exhibition stand builders worldwide",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#1e40af",
+  "background_color": "#F5F6F7",
+  "theme_color": "#252525",
   "orientation": "portrait-primary",
   "prefer_related_applications": false,
   "icons": [

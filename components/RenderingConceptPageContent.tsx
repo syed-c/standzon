@@ -103,22 +103,22 @@ export default function RenderingConceptPageContent() {
 
       {/* Hero Section */}
       <TradeStyleBanner
-        badgeText="Professional Trade Show Database"
+        badgeText="3D Stand Visualisation"
         mainHeading={saved?.sections?.renderingConcept?.hero?.heading || "3D Rendering & Concept Development"}
-        highlightHeading="& Visual Design"
-        description={saved?.sections?.renderingConcept?.hero?.description || "Photorealistic 3D visuals and rapid concept iterations to align stakeholders and accelerate approvals."}
+        highlightHeading="See Your Stand Before You Build It"
+        description={saved?.sections?.renderingConcept?.hero?.description || "Photoreal 3D visuals to approve layout, branding and lighting and align stakeholders before any budget is committed. Get concept and rendering quotes from exhibition design studios."}
         stats={[
           {
             icon: "calendar",
             value: "24h",
             label: "Turnaround",
-            color: "#2ec4b6",
+            color: "#CC2E2E",
           },
           {
             icon: "map-pin",
             value: "Global",
             label: "Coverage",
-            color: "#3dd598",
+            color: "#059669",
           },
           {
             icon: "users",

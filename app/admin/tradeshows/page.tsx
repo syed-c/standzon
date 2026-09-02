@@ -242,7 +242,7 @@ export default function AdminTradeshowsPage() {
           {loading ? (
             <div className="flex items-center justify-center h-32">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e3886] mx-auto"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E03A3A] mx-auto"></div>
                 <p className="mt-2 text-slate-500">Loading tradeshows...</p>
               </div>
             </div>
@@ -361,7 +361,7 @@ export default function AdminTradeshowsPage() {
                           onClick={() => setCurrentPage(pageNum)}
                           className={
                             currentPage === pageNum 
-                              ? "bg-[#1e3886] border-[#1e3886] text-white" 
+                              ? "bg-[#E03A3A] border-[#E03A3A] text-white" 
                               : "border-slate-300 text-slate-600 hover:bg-slate-50"
                           }
                         >
@@ -473,7 +473,7 @@ export default function AdminTradeshowsPage() {
                 <Button 
                   onClick={handleSaveShow}
                   disabled={isSaving}
-                  className="bg-[#1e3886]"
+                  className="bg-[#E03A3A]"
                 >
                   {isSaving ? 'Saving...' : 'Save Changes'}
                 </Button>

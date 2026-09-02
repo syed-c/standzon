@@ -31,7 +31,7 @@ export default function UltraFastHero({
   const headingFontClass = headingFont ? getFontClass(headingFont as any) : undefined;
 
   return (
-    <section className="relative min-h-[85vh] w-full overflow-hidden bg-[#0f172a]">
+    <section className="relative min-h-[85vh] w-full overflow-hidden bg-[#252525]">
       {/* Background image */}
       {bgImage && (
         <div className="absolute inset-0 z-0">
@@ -61,13 +61,13 @@ export default function UltraFastHero({
 
       {/* Fallback gradient when no bgImage */}
       {!bgImage && (
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#0f172a] via-[#1e3886] to-[#0f172a]" />
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#252525] via-[#E03A3A] to-[#252525]" />
       )}
 
       {/* Content — Left-aligned */}
       <div className="relative z-10 h-full min-h-[60vh] max-w-7xl mx-auto px-6 flex flex-col justify-center py-20">
         {/* Accent label */}
-        <span className="inline-block text-[#c0123d] font-bold uppercase tracking-[0.3em] mb-4 text-sm">
+        <span className="inline-block text-[#CC2E2E] font-bold uppercase tracking-[0.3em] mb-4 text-sm">
           Premier B2B Directory
         </span>
 
@@ -133,7 +133,7 @@ export default function UltraFastHero({
                   prefetch={true}
                   className={
                     index === 0
-                      ? "bg-[#c0123d] hover:bg-[#a0102f] text-white px-10 py-4 font-bold uppercase tracking-widest transition-all text-center text-sm"
+                      ? "bg-[#CC2E2E] hover:bg-[#AC2424] text-white px-10 py-4 font-bold uppercase tracking-widest transition-all text-center text-sm"
                       : "border border-white/30 hover:border-white text-white px-10 py-4 font-bold uppercase tracking-widest transition-all text-center text-sm hover:bg-white/10"
                   }
                 >
@@ -148,10 +148,10 @@ export default function UltraFastHero({
       {/* Live activity banner at bottom */}
       <div className="relative z-10 bg-slate-50 border-y border-slate-200 py-4 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 flex items-center gap-8 whitespace-nowrap overflow-hidden">
-          <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#c0123d] shrink-0">
+          <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#CC2E2E] shrink-0">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c0123d] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#c0123d]"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#CC2E2E] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#CC2E2E]"></span>
             </span>
             Live Activity
           </span>

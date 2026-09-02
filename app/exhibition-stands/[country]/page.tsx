@@ -242,7 +242,7 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
     const result = await getFilteredBuilders({
       country: countryInfo.name,
       page: currentPageNum,
-      itemsPerPage: 6
+      itemsPerPage: 12
     });
 
     builders = result.builders;

@@ -40,7 +40,7 @@ export default function TradeStyleBanner({
 					</div>
 					<h1 className="text-3xl md:text-4xl font-bold mb-6">
 						{mainHeading}
-						<span className="block" style={{ color: '#2ec4b6' }}>{highlightHeading}</span>
+						<span className="block" style={{ color: '#CC2E2E' }}>{highlightHeading}</span>
 					</h1>
                     <p
                         className="text-lg md:text-xl text-[#cfd8e3] mb-8 max-w-3xl mx-auto"
@@ -51,7 +51,7 @@ export default function TradeStyleBanner({
 						<div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-lg mb-8">
 							{stats.map((s, idx) => (
 								<div key={idx} className="flex flex-col items-center space-y-2">
-									<div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: (s.color || '#2ec4b6') + '20' }}>
+									<div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: (s.color || '#CC2E2E') + '20' }}>
 										{renderIcon(s.icon, s.color)}
 									</div>
 									<span className="font-semibold">{s.value}</span>
@@ -83,9 +83,9 @@ function renderIcon(icon: StatItem['icon'], color?: string) {
 	const cls = `w-6 h-6`;
 	switch (icon) {
 		case 'calendar':
-			return <FiCalendar className={cls} style={{ color: color || '#2ec4b6' }} />;
+			return <FiCalendar className={cls} style={{ color: color || '#CC2E2E' }} />;
 		case 'map-pin':
-			return <FiMapPin className={cls} style={{ color: color || '#3dd598' }} />;
+			return <FiMapPin className={cls} style={{ color: color || '#059669' }} />;
 		case 'users':
 			return <FiUsers className={cls} style={{ color: color || '#f4a261' }} />;
 		case 'chart-line':

@@ -1287,7 +1287,7 @@ function transformGMBToBuilder(listing: any) {
           name: category,
           slug: category.toLowerCase().replace(/\s+/g, "-"),
           description: `${category} services`,
-          color: "#3B82F6",
+          color: "#E03A3A",
           icon: "🏗️",
           subcategories: [],
           annualGrowthRate: 0,
@@ -1402,7 +1402,7 @@ function transformGMBToEventPlanner(listing: any) {
           name: "Corporate Events",
           slug: "corporate-events",
           description: "Professional corporate event planning",
-          color: "#3B82F6",
+          color: "#E03A3A",
           icon: "🏢",
         });
       }
@@ -1413,7 +1413,7 @@ function transformGMBToEventPlanner(listing: any) {
           name: "Weddings",
           slug: "weddings",
           description: "Wedding planning and coordination",
-          color: "#EC4899",
+          color: "#E03A3A",
           icon: "💒",
         });
       }
@@ -1424,7 +1424,7 @@ function transformGMBToEventPlanner(listing: any) {
         name: "General Events",
         slug: "general-events",
         description: "Comprehensive event planning services",
-        color: "#8B5CF6",
+        color: "#E03A3A",
         icon: "🎉",
       });
 
@@ -1788,7 +1788,7 @@ function generateDubaiBuilders(count: number): any[] {
           name: "Exhibition Stand Builder",
           slug: "exhibition-stand-builder",
           description: "Exhibition Stand Builder services",
-          color: "#3B82F6",
+          color: "#E03A3A",
           icon: "🏗️",
           subcategories: [],
           annualGrowthRate: 0,

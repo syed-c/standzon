@@ -92,7 +92,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[#0f172a] text-slate-500 pt-20 pb-10 px-6 border-t border-white/5 w-full">
+    <footer className="bg-[#252525] text-slate-500 pt-20 pb-10 px-6 border-t border-white/5 w-full">
       <div className="max-w-7xl mx-auto">
         {/* Main columns */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
@@ -151,7 +151,7 @@ export default function Footer() {
             <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
               {services.map((service: any, index: number) => (
                 <li key={index}>
-                  <a href={service.href || '#'} className="hover:text-[#c0123d] transition-colors touch-active no-tap-highlight">
+                  <a href={service.href || '#'} className="hover:text-[#CC2E2E] transition-colors touch-active no-tap-highlight">
                     {service.label || service}
                   </a>
                 </li>
@@ -167,7 +167,7 @@ export default function Footer() {
             <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
               {locations.map((location: any, index: number) => (
                 <li key={index}>
-                  <a href={location.href || '#'} className="hover:text-[#c0123d] transition-colors touch-active no-tap-highlight">
+                  <a href={location.href || '#'} className="hover:text-[#CC2E2E] transition-colors touch-active no-tap-highlight">
                     {location.label || location}
                   </a>
                 </li>
@@ -183,7 +183,7 @@ export default function Footer() {
             <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
               {resources.map((resource: any, index: number) => (
                 <li key={index}>
-                  <a href={resource.href || '#'} className="hover:text-[#c0123d] transition-colors touch-active no-tap-highlight">
+                  <a href={resource.href || '#'} className="hover:text-[#CC2E2E] transition-colors touch-active no-tap-highlight">
                     {resource.label || resource}
                   </a>
                 </li>

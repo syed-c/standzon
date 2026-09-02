@@ -92,12 +92,12 @@ import { toast } from "sonner";
 
 // Colors for pie chart
 const COLORS = [
-  "#3B82F6",
+  "#E03A3A",
   "#10B981",
   "#F59E0B",
   "#EF4444",
-  "#8B5CF6",
-  "#06B6D4",
+  "#E03A3A",
+  "#CC2E2E",
 ];
 import SimpleSmartBuilders from "@/components/SimpleSmartBuilders";
 import AdminClaimsManager from "@/components/AdminClaimsManager";
@@ -917,18 +917,18 @@ export default function SuperAdminDashboard({
                         <YAxis stroke={theme === 'dark' ? '#9CA3AF' : '#6B7280'} />
                         <Tooltip 
                           contentStyle={{ 
-                            backgroundColor: theme === 'dark' ? '#1F2937' : '#FFFFFF', 
+                            backgroundColor: theme === 'dark' ? '#2B2B2B' : '#FFFFFF', 
                             borderColor: theme === 'dark' ? '#374151' : '#D1D5DB', 
                             borderRadius: '0.5rem',
-                            color: theme === 'dark' ? '#F9FAFB' : '#111827'
+                            color: theme === 'dark' ? '#F5F6F7' : '#252525'
                           }} 
                         />
                         <Area
                           type="monotone"
                           dataKey="visitors"
                           stackId="1"
-                          stroke="#3B82F6"
-                          fill="#3B82F6"
+                          stroke="#E03A3A"
+                          fill="#E03A3A"
                           fillOpacity={0.2}
                         />
                         <Area
@@ -976,10 +976,10 @@ export default function SuperAdminDashboard({
                         </Pie>
                         <Tooltip 
                           contentStyle={{ 
-                            backgroundColor: theme === 'dark' ? '#1F2937' : '#FFFFFF', 
+                            backgroundColor: theme === 'dark' ? '#2B2B2B' : '#FFFFFF', 
                             borderColor: theme === 'dark' ? '#374151' : '#D1D5DB', 
                             borderRadius: '0.5rem',
-                            color: theme === 'dark' ? '#F9FAFB' : '#111827'
+                            color: theme === 'dark' ? '#F5F6F7' : '#252525'
                           }} 
                         />
                         <Legend />
@@ -1065,19 +1065,19 @@ export default function SuperAdminDashboard({
                         <YAxis stroke="#9CA3AF" />
                         <Tooltip 
                           contentStyle={{ 
-                            backgroundColor: '#1F2937', 
+                            backgroundColor: '#2B2B2B', 
                             borderColor: '#374151', 
                             borderRadius: '0.5rem',
-                            color: '#F9FAFB'
+                            color: '#F5F6F7'
                           }} 
                         />
                         <Legend />
                         <Line
                           type="monotone"
                           dataKey="visitors"
-                          stroke="#3B82F6"
+                          stroke="#E03A3A"
                           strokeWidth={2}
-                          dot={{ fill: '#3B82F6' }}
+                          dot={{ fill: '#E03A3A' }}
                         />
                         <Line
                           type="monotone"

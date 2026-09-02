@@ -128,7 +128,7 @@ export default function WebsiteCustomization({ onSave }: WebsiteCustomizationPro
           { icon: '⚡', title: 'Fast Response', description: '24-hour quote delivery' }
         ],
         image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87',
-        backgroundColor: '#f8fafc'
+        backgroundColor: '#F5F6F7'
       },
       lastModified: new Date().toISOString()
     },

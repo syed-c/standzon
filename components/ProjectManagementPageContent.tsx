@@ -103,22 +103,22 @@ export default function ProjectManagementPageContent() {
 
       {/* Hero Section */}
       <TradeStyleBanner
-        badgeText="Professional Trade Show Database"
+        badgeText="Exhibition Project Management"
         mainHeading={saved?.sections?.projectManagement?.hero?.heading || "Trade Show Project Management"}
-        highlightHeading="& Professional Coordination"
-        description={saved?.sections?.projectManagement?.hero?.description || "End-to-end PM including vendor coordination, timelines, and on-site supervision."}
+        highlightHeading="One Point of Contact, Zero Surprises"
+        description={saved?.sections?.projectManagement?.hero?.description || "A dedicated exhibition project manager owns your timeline, budget, vendors and on-site logistics. Get matched with experienced trade show project managers today."}
         stats={[
           {
             icon: "calendar",
             value: "100%",
             label: "On Time",
-            color: "#2ec4b6",
+            color: "#CC2E2E",
           },
           {
             icon: "map-pin",
             value: "Global",
             label: "Coverage",
-            color: "#3dd598",
+            color: "#059669",
           },
           {
             icon: "users",

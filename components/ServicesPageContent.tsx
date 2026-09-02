@@ -116,11 +116,12 @@ export default function ServicesPageContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-3xl md:text-4xl font-bold mb-6">
-              Exhibition Stand Services
+              Exhibition Stand Services: Design, Build, Graphics &amp; Installation
             </h1>
             <p className="text-lg md:text-xl mb-8 opacity-90 max-w-3xl mx-auto">
-              Professional exhibition stand services from design to installation. 
-              Connect with verified builders worldwide for your next trade show.
+              Everything your trade show stand needs, in one place: custom design, construction,
+              3D visualisation, graphics &amp; printing, installation &amp; dismantle, and full project
+              management. Get matched with verified builders worldwide and compare quotes in 24 hours.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/quote">
@@ -143,10 +144,10 @@ export default function ServicesPageContent() {
         <section className="mb-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Our Services
+              Full-Service Exhibition Stand Solutions
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Comprehensive exhibition stand services to make your trade show presence unforgettable
+              From concept to carpet: design, build, graphics, AV, logistics and on-site support for exhibitions in any market.
             </p>
           </div>
 
@@ -200,7 +201,7 @@ export default function ServicesPageContent() {
         <section className="mb-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose StandsZone?
+              Why Exhibitors Choose StandsZone
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               We connect you with the best exhibition stand builders worldwide
@@ -228,10 +229,10 @@ export default function ServicesPageContent() {
         <section className="mb-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              How It Works
+              How to Get Your Exhibition Stand Built
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Simple steps to get your exhibition stand built
+              Four simple steps from brief to a stand that is built and installed on time.
             </p>
           </div>
 
@@ -263,7 +264,7 @@ export default function ServicesPageContent() {
         {/* CTA Section */}
         <section className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 md:p-12 text-white text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Get Started?
+            Get Matched With Verified Exhibition Stand Builders
           </h2>
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
             Get free quotes from verified exhibition stand builders in your location

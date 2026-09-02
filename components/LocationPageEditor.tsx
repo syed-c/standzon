@@ -93,7 +93,7 @@ export function LocationPageEditor({ pageData, isVisible, onClose, onSave }: Loc
       conclusion: pageData?.content?.conclusion || ''
     },
     design: {
-      primaryColor: pageData?.design?.primaryColor || '#ec4899',
+      primaryColor: pageData?.design?.primaryColor || '#E03A3A',
       accentColor: pageData?.design?.accentColor || '#f97316',
       layout: pageData?.design?.layout || 'modern',
       showStats: pageData?.design?.showStats ?? true,

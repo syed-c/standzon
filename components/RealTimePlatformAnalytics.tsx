@@ -113,7 +113,7 @@ export default function RealTimePlatformAnalytics() {
   const regionalData = analytics?.performanceMetrics?.topPerformingRegions || [];
 
   // Color schemes for charts
-  const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+  const colors = ['#E03A3A', '#10b981', '#f59e0b', '#ef4444', '#E03A3A'];
 
   if (loading) {
     return (
@@ -309,7 +309,7 @@ export default function RealTimePlatformAnalytics() {
                     <XAxis dataKey="time" />
                     <YAxis />
                     <Tooltip />
-                    <Area type="monotone" dataKey="quotes" stackId="1" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
+                    <Area type="monotone" dataKey="quotes" stackId="1" stroke="#E03A3A" fill="#E03A3A" fillOpacity={0.3} />
                     <Area type="monotone" dataKey="matches" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -368,8 +368,8 @@ export default function RealTimePlatformAnalytics() {
                   <XAxis dataKey="criteria" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="score" fill="#8b5cf6" />
-                  <Bar dataKey="efficiency" fill="#06b6d4" />
+                  <Bar dataKey="score" fill="#E03A3A" />
+                  <Bar dataKey="efficiency" fill="#CC2E2E" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>

@@ -168,7 +168,7 @@ export default function BuilderProfileClient({ slug, initialBuilder }: BuilderPr
                     slug: 'general',
                     description: gmbBuilder.description || 'Professional services',
                     subcategories: [],
-                    color: '#3B82F6',
+                    color: '#E03A3A',
                     icon: '🏗️',
                     annualGrowthRate: 8.5,
                     averageBoothCost: 450,

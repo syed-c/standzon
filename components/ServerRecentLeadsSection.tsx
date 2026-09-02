@@ -75,12 +75,12 @@ export default async function ServerRecentLeadsSection({
       {/* Section header */}
       <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
         <div>
-          <span className="text-[#c0123d] font-black text-xs uppercase tracking-widest">Real-time Activity</span>
-          <h3 className="text-3xl font-black text-[#0f172a] tracking-tight mt-2 uppercase">RECENT LEADS &amp; QUOTES</h3>
+          <span className="text-[#CC2E2E] font-black text-xs uppercase tracking-widest">Real-time Activity</span>
+          <h3 className="text-3xl font-black text-[#252525] tracking-tight mt-2 uppercase">RECENT LEADS &amp; QUOTES</h3>
         </div>
         <Link
           href="/builders"
-          className="text-[#1e3886] font-bold uppercase text-xs tracking-widest flex items-center gap-2 border-b-2 border-[#1e3886] pb-1 hover:text-[#c0123d] hover:border-[#c0123d] transition-colors"
+          className="text-[#E03A3A] font-bold uppercase text-xs tracking-widest flex items-center gap-2 border-b-2 border-[#E03A3A] pb-1 hover:text-[#CC2E2E] hover:border-[#CC2E2E] transition-colors"
         >
           View Live Feed
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,7 +93,7 @@ export default async function ServerRecentLeadsSection({
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-[#0f172a] text-white uppercase text-[10px] tracking-widest">
+            <tr className="bg-[#252525] text-white uppercase text-[10px] tracking-widest">
               <th className="p-4">Event Name</th>
               <th className="p-4">Stand Size</th>
               <th className="p-4">Estimated Budget</th>
@@ -104,9 +104,9 @@ export default async function ServerRecentLeadsSection({
           <tbody className="divide-y divide-slate-100 text-sm">
             {leads.slice(0, 10).map((lead, index) => (
               <tr key={`${lead.id}-${index}`} className="hover:bg-slate-50 transition-colors">
-                <td className="p-4 font-bold text-[#0f172a]">{lead.exhibitionName || 'Event Not Specified'}</td>
+                <td className="p-4 font-bold text-[#252525]">{lead.exhibitionName || 'Event Not Specified'}</td>
                 <td className="p-4 font-medium text-slate-700">{lead.standSize || 'N/A'}</td>
-                <td className="p-4 font-bold text-[#1e3886]">{lead.budget || 'Budget not specified'}</td>
+                <td className="p-4 font-bold text-[#E03A3A]">{lead.budget || 'Budget not specified'}</td>
                 <td className="p-4 text-slate-500">{formatDate(new Date(lead.submittedAt))}</td>
                 <td className="p-4">
                   {lead.status && (
@@ -122,7 +122,7 @@ export default async function ServerRecentLeadsSection({
       </div>
 
       {/* CTA */}
-      <div className="mt-12 py-16 bg-[#c0123d] text-white overflow-hidden relative">
+      <div className="mt-12 py-16 bg-[#CC2E2E] text-white overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
             <h3 className="text-3xl font-black tracking-tighter uppercase italic">
@@ -146,8 +146,8 @@ export default async function ServerRecentLeadsSection({
                 prefetch={true}
                 className={
                   i === 0
-                    ? "bg-white text-[#c0123d] hover:bg-slate-100 font-black uppercase tracking-widest px-10 py-5 transition-all shadow-xl whitespace-nowrap text-center text-sm"
-                    : "border-2 border-white text-white hover:bg-white hover:text-[#c0123d] font-black uppercase tracking-widest px-10 py-5 transition-all whitespace-nowrap text-center text-sm"
+                    ? "bg-white text-[#CC2E2E] hover:bg-slate-100 font-black uppercase tracking-widest px-10 py-5 transition-all shadow-xl whitespace-nowrap text-center text-sm"
+                    : "border-2 border-white text-white hover:bg-white hover:text-[#CC2E2E] font-black uppercase tracking-widest px-10 py-5 transition-all whitespace-nowrap text-center text-sm"
                 }
               >
                 {b.text || (i === 0 ? "Join as Builder" : "Learn More")}
@@ -160,11 +160,11 @@ export default async function ServerRecentLeadsSection({
       {/* Stats */}
       <div className="grid grid-cols-2 gap-0 mt-0 border border-slate-200 divide-x divide-slate-200">
         <div className="text-center p-6 bg-white">
-          <div className="text-2xl font-black text-[#1e3886]">150+</div>
+          <div className="text-2xl font-black text-[#E03A3A]">150+</div>
           <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Leads This Month</div>
         </div>
         <div className="text-center p-6 bg-white">
-          <div className="text-2xl font-black text-[#1e3886]">$2.5M+</div>
+          <div className="text-2xl font-black text-[#E03A3A]">$2.5M+</div>
           <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Total Project Value</div>
         </div>
       </div>

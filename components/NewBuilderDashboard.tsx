@@ -1172,23 +1172,23 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
         <Card>
           <CardContent className="p-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-6 bg-[#0f152a] rounded-lg gap-2">
+              <TabsList className="grid w-full grid-cols-6 bg-[#252525] rounded-lg gap-2">
                 <TabsTrigger 
                   value="profile" 
                   className={`data-[state=active]:font-medium ${activeTab !== 'profile' ? 'text-white' : ''}`}
                   style={{ 
                     color: activeTab === 'profile' ? '#000000' : undefined,
-                    backgroundColor: activeTab === 'profile' ? '#f9fafb' : undefined
+                    backgroundColor: activeTab === 'profile' ? '#F5F6F7' : undefined
                   }}
                   onMouseEnter={(e) => {
                     if (activeTab !== 'profile') {
-                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.backgroundColor = '#F5F6F7';
                       e.currentTarget.style.color = '#000000';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (activeTab !== 'profile') {
-                      e.currentTarget.style.backgroundColor = '#0f152a';
+                      e.currentTarget.style.backgroundColor = '#252525';
                       e.currentTarget.style.color = '#ffffff';
                     }
                   }}
@@ -1200,17 +1200,17 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                   className={`data-[state=active]:font-medium ${activeTab !== 'services' ? 'text-white' : ''}`}
                   style={{ 
                     color: activeTab === 'services' ? '#000000' : undefined,
-                    backgroundColor: activeTab === 'services' ? '#f9fafb' : undefined
+                    backgroundColor: activeTab === 'services' ? '#F5F6F7' : undefined
                   }}
                   onMouseEnter={(e) => {
                     if (activeTab !== 'services') {
-                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.backgroundColor = '#F5F6F7';
                       e.currentTarget.style.color = '#000000';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (activeTab !== 'services') {
-                      e.currentTarget.style.backgroundColor = '#0f152a';
+                      e.currentTarget.style.backgroundColor = '#252525';
                       e.currentTarget.style.color = '#ffffff';
                     }
                   }}
@@ -1222,17 +1222,17 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                   className={`data-[state=active]:font-medium ${activeTab !== 'locations' ? 'text-white' : ''}`}
                   style={{ 
                     color: activeTab === 'locations' ? '#000000' : undefined,
-                    backgroundColor: activeTab === 'locations' ? '#f9fafb' : undefined
+                    backgroundColor: activeTab === 'locations' ? '#F5F6F7' : undefined
                   }}
                   onMouseEnter={(e) => {
                     if (activeTab !== 'locations') {
-                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.backgroundColor = '#F5F6F7';
                       e.currentTarget.style.color = '#000000';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (activeTab !== 'locations') {
-                      e.currentTarget.style.backgroundColor = '#0f152a';
+                      e.currentTarget.style.backgroundColor = '#252525';
                       e.currentTarget.style.color = '#ffffff';
                     }
                   }}
@@ -1244,17 +1244,17 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                   className={`data-[state=active]:font-medium ${activeTab !== 'portfolio' ? 'text-white' : ''}`}
                   style={{ 
                     color: activeTab === 'portfolio' ? '#000000' : undefined,
-                    backgroundColor: activeTab === 'portfolio' ? '#f9fafb' : undefined
+                    backgroundColor: activeTab === 'portfolio' ? '#F5F6F7' : undefined
                   }}
                   onMouseEnter={(e) => {
                     if (activeTab !== 'portfolio') {
-                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.backgroundColor = '#F5F6F7';
                       e.currentTarget.style.color = '#000000';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (activeTab !== 'portfolio') {
-                      e.currentTarget.style.backgroundColor = '#0f152a';
+                      e.currentTarget.style.backgroundColor = '#252525';
                       e.currentTarget.style.color = '#ffffff';
                     }
                   }}
@@ -1266,17 +1266,17 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                   className={`data-[state=active]:font-medium ${activeTab !== 'leads' ? 'text-white' : ''}`}
                   style={{ 
                     color: activeTab === 'leads' ? '#000000' : undefined,
-                    backgroundColor: activeTab === 'leads' ? '#f9fafb' : undefined
+                    backgroundColor: activeTab === 'leads' ? '#F5F6F7' : undefined
                   }}
                   onMouseEnter={(e) => {
                     if (activeTab !== 'leads') {
-                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.backgroundColor = '#F5F6F7';
                       e.currentTarget.style.color = '#000000';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (activeTab !== 'leads') {
-                      e.currentTarget.style.backgroundColor = '#0f152a';
+                      e.currentTarget.style.backgroundColor = '#252525';
                       e.currentTarget.style.color = '#ffffff';
                     }
                   }}
@@ -1288,17 +1288,17 @@ export default function NewBuilderDashboard({ builderId }: NewBuilderDashboardPr
                   className={`data-[state=active]:font-medium ${activeTab !== 'subscription' ? 'text-white' : ''}`}
                   style={{ 
                     color: activeTab === 'subscription' ? '#000000' : undefined,
-                    backgroundColor: activeTab === 'subscription' ? '#f9fafb' : undefined
+                    backgroundColor: activeTab === 'subscription' ? '#F5F6F7' : undefined
                   }}
                   onMouseEnter={(e) => {
                     if (activeTab !== 'subscription') {
-                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.backgroundColor = '#F5F6F7';
                       e.currentTarget.style.color = '#000000';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (activeTab !== 'subscription') {
-                      e.currentTarget.style.backgroundColor = '#0f152a';
+                      e.currentTarget.style.backgroundColor = '#252525';
                       e.currentTarget.style.color = '#ffffff';
                     }
                   }}

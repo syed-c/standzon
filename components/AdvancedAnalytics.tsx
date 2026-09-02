@@ -131,7 +131,7 @@ export default function AdvancedAnalytics({
     return ((current - previous) / previous * 100).toFixed(1);
   };
 
-  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
+  const COLORS = ['#E03A3A', '#10B981', '#F59E0B', '#EF4444', '#E03A3A', '#E03A3A'];
 
   const kpis = [
     {
@@ -272,7 +272,7 @@ export default function AdvancedAnalytics({
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Area type="monotone" dataKey="searches" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.6} />
+                    <Area type="monotone" dataKey="searches" stackId="1" stroke="#E03A3A" fill="#E03A3A" fillOpacity={0.6} />
                     <Area type="monotone" dataKey="bookings" stackId="2" stroke="#10B981" fill="#10B981" fillOpacity={0.6} />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -328,7 +328,7 @@ export default function AdvancedAnalytics({
                   <YAxis yAxisId="right" orientation="right" />
                   <Tooltip />
                   <Legend />
-                  <Bar yAxisId="left" dataKey="revenue" fill="#3B82F6" name="Revenue ($)" />
+                  <Bar yAxisId="left" dataKey="revenue" fill="#E03A3A" name="Revenue ($)" />
                   <Line yAxisId="right" type="monotone" dataKey="conversion" stroke="#EF4444" strokeWidth={3} name="Conversion Rate (%)" />
                 </ComposedChart>
               </ResponsiveContainer>
@@ -350,7 +350,7 @@ export default function AdvancedAnalytics({
                     <XAxis dataKey="month" />
                     <YAxis />
                     <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
-                    <Line type="monotone" dataKey="revenue" stroke="#3B82F6" strokeWidth={3} />
+                    <Line type="monotone" dataKey="revenue" stroke="#E03A3A" strokeWidth={3} />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>

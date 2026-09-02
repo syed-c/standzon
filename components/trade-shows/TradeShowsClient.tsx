@@ -315,9 +315,9 @@ export default function TradeShowsClient({ initialTradeShows, industries }: Trad
                                                 <Badge
                                                     variant="secondary"
                                                     style={{
-                                                        backgroundColor: (show.industries[0]?.color || "#3B82F6") + "15",
-                                                        color: show.industries[0]?.color || "#3B82F6",
-                                                        border: `1px solid ${show.industries[0]?.color || "#3B82F6"}30`,
+                                                        backgroundColor: (show.industries[0]?.color || "#E03A3A") + "15",
+                                                        color: show.industries[0]?.color || "#E03A3A",
+                                                        border: `1px solid ${show.industries[0]?.color || "#E03A3A"}30`,
                                                     }}
                                                     className="font-medium"
                                                 >

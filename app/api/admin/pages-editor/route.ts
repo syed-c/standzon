@@ -600,7 +600,7 @@ export async function PUT(request: NextRequest) {
       seo: { metaTitle: '', metaDescription: '', keywords: [], canonicalUrl: `https://standszone.com${path}` },
       hero: { title: '', subtitle: '', description: '', ctaText: 'Get Free Quote' },
       content: { introduction: '', whyChooseSection: '', industryOverview: '', venueInformation: '', builderAdvantages: '', conclusion: '' },
-      design: { primaryColor: '#2563eb', accentColor: '#f97316', layout: 'modern', showStats: true, showMap: false },
+      design: { primaryColor: '#CC2E2E', accentColor: '#f97316', layout: 'modern', showStats: true, showMap: false },
       lastModified: new Date().toISOString(),
     };
 

@@ -89,10 +89,10 @@ export default function TestimonialsCarousel() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <h3 className="text-3xl font-black text-[#0f172a] tracking-tight mb-4 uppercase">
+          <h3 className="text-3xl font-black text-[#252525] tracking-tight mb-4 uppercase">
             TRUSTED BY EXHIBITORS WORLDWIDE
           </h3>
-          <div className="w-20 h-1 bg-[#1e3886] mx-auto"></div>
+          <div className="w-20 h-1 bg-[#E03A3A] mx-auto"></div>
         </div>
 
         {/* Testimonials grid — show 3 at a time on desktop */}
@@ -114,7 +114,7 @@ export default function TestimonialsCarousel() {
                     <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
                   </div>
                   <div>
-                    <p className="font-black text-[#0f172a] text-sm">{t.name}</p>
+                    <p className="font-black text-[#252525] text-sm">{t.name}</p>
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t.role}, {t.company}</p>
                   </div>
                 </div>
@@ -127,7 +127,7 @@ export default function TestimonialsCarousel() {
         <div className="flex items-center justify-center mt-12 gap-6">
           <button
             onClick={prevTestimonial}
-            className="w-10 h-10 flex items-center justify-center border border-slate-200 hover:border-[#1e3886] transition-colors"
+            className="w-10 h-10 flex items-center justify-center border border-slate-200 hover:border-[#E03A3A] transition-colors"
           >
             <FiChevronLeft className="w-4 h-4" />
           </button>
@@ -139,7 +139,7 @@ export default function TestimonialsCarousel() {
                 onClick={() => goToSlide(index)}
                 className={`w-2 h-2 transition-all duration-300 ${
                   index === currentIndex
-                    ? 'bg-[#1e3886] scale-150'
+                    ? 'bg-[#E03A3A] scale-150'
                     : 'bg-slate-300 hover:bg-slate-400'
                 }`}
               />
@@ -148,7 +148,7 @@ export default function TestimonialsCarousel() {
 
           <button
             onClick={nextTestimonial}
-            className="w-10 h-10 flex items-center justify-center border border-slate-200 hover:border-[#1e3886] transition-colors"
+            className="w-10 h-10 flex items-center justify-center border border-slate-200 hover:border-[#E03A3A] transition-colors"
           >
             <FiChevronRight className="w-4 h-4" />
           </button>

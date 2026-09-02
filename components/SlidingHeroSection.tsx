@@ -32,7 +32,7 @@ export function SlidingHeroSection({
   description,
   stats,
   buttons = [],
-  backgroundGradient = 'linear-gradient(135deg, #7c2d92 0%, #db2777 50%, #ec4899 100%)',
+  backgroundGradient = 'linear-gradient(135deg, #8C1F1F 0%, #E03A3A 50%, #E03A3A 100%)',
   location,
   className = ''
 }: SlidingHeroSectionProps) {

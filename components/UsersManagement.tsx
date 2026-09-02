@@ -350,14 +350,14 @@ import { Users,
 
 // Colors for charts
 const COLORS = [
-  "#3B82F6",
+  "#E03A3A",
   "#10B981",
   "#F59E0B",
   "#EF4444",
-  "#8B5CF6",
-  "#06B6D4",
-  "#EC4899",
-  "#8B5CF6",
+  "#E03A3A",
+  "#CC2E2E",
+  "#E03A3A",
+  "#E03A3A",
   "#F97316",
   "#14B8A6",
 ];

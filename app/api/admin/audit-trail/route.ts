@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
         const timeAgo = getTimeAgo(lead.created_at);
         auditTrail.push({
           icon: "lead",
-          iconBg: "bg-[#1e3886]/10 text-[#1e3886]",
+          iconBg: "bg-[#E03A3A]/10 text-[#E03A3A]",
           title: "New Lead Received:",
           description: `${lead.company_name} - ${lead.status} inquiry from ${lead.contact_name}.`,
           time: `${timeAgo} • Website`

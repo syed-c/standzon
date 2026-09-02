@@ -103,22 +103,22 @@ export default function InstallationDismantlePageContent() {
 
       {/* Hero Section */}
       <TradeStyleBanner
-        badgeText="Professional Trade Show Database"
+        badgeText="Exhibition Stand I&D"
         mainHeading={saved?.sections?.installationDismantle?.hero?.heading || "Trade Show Installation & Dismantle"}
-        highlightHeading="& Professional Services"
-        description={saved?.sections?.installationDismantle?.hero?.description || "End-to-end I&D services for a flawless show experience, from logistics to on-site execution."}
+        highlightHeading="On-Time Build, Stress-Free Teardown"
+        description={saved?.sections?.installationDismantle?.hero?.description || "Certified I&D crews that know venue rules, load-in windows and labour requirements, so your stand is ready before the doors open. Get matched with vetted crews and itemised quotes."}
         stats={[
           {
             icon: "calendar",
             value: "24h",
             label: "Response Time",
-            color: "#2ec4b6",
+            color: "#CC2E2E",
           },
           {
             icon: "map-pin",
             value: "Global",
             label: "Coverage",
-            color: "#3dd598",
+            color: "#059669",
           },
           {
             icon: "users",

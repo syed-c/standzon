@@ -132,7 +132,7 @@ export default function HomePageContent() {
                 return (cards.length > 0 ? cards.slice(0,4) : fallback).map((c, i) => (
                   <div key={i} className="bg-white rounded-2xl shadow p-6 border">
                     <div className="w-10 h-10 rounded-full flex items-center justify-center mb-4 text-white"
-                         style={{ background: i===0 ? '#3b82f6' : i===1 ? '#10b981' : i===2 ? '#8b5cf6' : '#f59e0b' }}>
+                         style={{ background: i===0 ? '#E03A3A' : i===1 ? '#10b981' : i===2 ? '#E03A3A' : '#f59e0b' }}>
                       <span className="font-semibold">{i+1}</span>
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{c.title || ''}</h3>

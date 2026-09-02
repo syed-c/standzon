@@ -113,22 +113,22 @@ export default function CustomBoothPageContent() {
 
       {/* Hero Section */}
       <TradeStyleBanner
-        badgeText="Professional Trade Show Database"
-        mainHeading={saved?.sections?.hero?.heading || "Custom Exhibition Booths"}
-        highlightHeading="& Bespoke Stand Design"
-        description={saved?.sections?.hero?.description || "Bespoke trade show stands designed to capture attention, engage visitors, and drive results for your business."}
+        badgeText="Bespoke Exhibition Stands"
+        mainHeading={saved?.sections?.hero?.heading || "Custom Exhibition Stand Design"}
+        highlightHeading="Built Around Your Brand"
+        description={saved?.sections?.hero?.description || "Custom-built exhibition stands engineered around your brand story, product demos and visitor flow. Get matched with verified custom stand builders and compare quotes in 24 hours."}
         stats={[
           {
             icon: "calendar",
             value: "15+",
             label: "Design Services",
-            color: "#2ec4b6",
+            color: "#CC2E2E",
           },
           {
             icon: "map-pin",
             value: "Global",
             label: "Coverage",
-            color: "#3dd598",
+            color: "#059669",
           },
           {
             icon: "users",

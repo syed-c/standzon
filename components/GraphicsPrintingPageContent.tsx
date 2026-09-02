@@ -103,22 +103,22 @@ export default function GraphicsPrintingPageContent() {
 
       {/* Hero Section */}
       <TradeStyleBanner
-        badgeText="Professional Trade Show Database"
+        badgeText="Large-Format Exhibition Graphics"
         mainHeading={saved?.sections?.graphicsPrinting?.hero?.heading || "Trade Show Graphics & Printing"}
-        highlightHeading="& Professional Branding"
-        description={saved?.sections?.graphicsPrinting?.hero?.description || "High-quality large-format prints, branding, and wayfinding tailored for exhibitions."}
+        highlightHeading="Large-Format Branding That Converts"
+        description={saved?.sections?.graphicsPrinting?.hero?.description || "Colour-accurate large-format graphics, fabric backwalls, stand wraps and wayfinding for exhibitions. Get quotes from exhibition print specialists with 48-hour turnaround."}
         stats={[
           {
             icon: "calendar",
             value: "48h",
             label: "Turnaround",
-            color: "#2ec4b6",
+            color: "#CC2E2E",
           },
           {
             icon: "map-pin",
             value: "Global",
             label: "Coverage",
-            color: "#3dd598",
+            color: "#059669",
           },
           {
             icon: "users",

@@ -161,7 +161,7 @@ export default function HeroSearchFilter({ defaultCountrySlug, defaultCitySlug }
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <input
-            className="w-full border-none focus:ring-0 text-[#0f172a] text-sm font-medium placeholder:text-slate-400 bg-transparent outline-none"
+            className="w-full border-none focus:ring-0 text-[#252525] text-sm font-medium placeholder:text-slate-400 bg-transparent outline-none"
             placeholder="Select Country..."
             type="text"
             value={countryQuery}
@@ -201,10 +201,10 @@ export default function HeroSearchFilter({ defaultCountrySlug, defaultCitySlug }
                 className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center justify-between gap-3 border-b border-slate-50 last:border-b-0"
               >
                 <div>
-                  <span className="text-sm font-bold text-[#0f172a]">{country.name}</span>
+                  <span className="text-sm font-bold text-[#252525]">{country.name}</span>
                   <span className="text-[10px] text-slate-400 ml-2 uppercase tracking-widest">{country.region}</span>
                 </div>
-                <span className="text-[10px] font-bold text-[#1e3886] uppercase tracking-widest whitespace-nowrap">{country.builderCount} builders</span>
+                <span className="text-[10px] font-bold text-[#E03A3A] uppercase tracking-widest whitespace-nowrap">{country.builderCount} builders</span>
               </button>
             ))}
           </div>
@@ -219,7 +219,7 @@ export default function HeroSearchFilter({ defaultCountrySlug, defaultCitySlug }
           </svg>
           <input
             className={`w-full border-none focus:ring-0 text-sm font-medium bg-transparent outline-none ${
-              selectedCountry ? 'text-[#0f172a] placeholder:text-slate-400' : 'text-slate-300 placeholder:text-slate-300 cursor-not-allowed'
+              selectedCountry ? 'text-[#252525] placeholder:text-slate-400' : 'text-slate-300 placeholder:text-slate-300 cursor-not-allowed'
             }`}
             placeholder={selectedCountry ? `Search cities in ${selectedCountry.name}...` : 'Select a country first...'}
             type="text"
@@ -269,10 +269,10 @@ export default function HeroSearchFilter({ defaultCountrySlug, defaultCitySlug }
                 className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors flex items-center justify-between gap-3 border-b border-slate-50 last:border-b-0"
               >
                 <div>
-                  <span className="text-sm font-bold text-[#0f172a]">{city.name}</span>
+                  <span className="text-sm font-bold text-[#252525]">{city.name}</span>
                   <span className="text-[10px] text-slate-400 ml-2 uppercase tracking-widest">{city.region}</span>
                 </div>
-                <span className="text-[10px] font-bold text-[#1e3886] uppercase tracking-widest whitespace-nowrap">{city.builderCount} builders</span>
+                <span className="text-[10px] font-bold text-[#E03A3A] uppercase tracking-widest whitespace-nowrap">{city.builderCount} builders</span>
               </button>
             ))}
           </div>
@@ -285,7 +285,7 @@ export default function HeroSearchFilter({ defaultCountrySlug, defaultCitySlug }
         disabled={!selectedCountry}
         className={`px-10 py-4 font-bold uppercase tracking-widest transition-colors text-center text-sm ${
           selectedCountry
-            ? 'bg-[#c0123d] hover:bg-[#0f172a] text-white cursor-pointer'
+            ? 'bg-[#CC2E2E] hover:bg-[#252525] text-white cursor-pointer'
             : 'bg-slate-200 text-slate-400 cursor-not-allowed'
         }`}
       >

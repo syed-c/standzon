@@ -30,7 +30,7 @@ export default async function HomeRest() {
     return (
         <>
             {/* Ready to Get Started (CTA mid) — Crimson style */}
-            {/* <section className="py-16 bg-[#c0123d] text-white overflow-hidden relative">
+            {/* <section className="py-16 bg-[#CC2E2E] text-white overflow-hidden relative">
                 <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div>
                         <h3 className={["text-3xl font-black tracking-tighter uppercase italic", getFontClass(readyLeadsFont as any)].join(' ')}>
@@ -46,8 +46,8 @@ export default async function HomeRest() {
                                     href={b.href || "#"}
                                     prefetch={true}
                                     className={i === 0
-                                        ? "bg-white text-[#c0123d] hover:bg-slate-100 font-black uppercase tracking-widest px-10 py-5 transition-all shadow-xl whitespace-nowrap text-center text-sm"
-                                        : "border-2 border-white text-white hover:bg-white hover:text-[#c0123d] font-black uppercase tracking-widest px-10 py-5 transition-all whitespace-nowrap text-center text-sm"
+                                        ? "bg-white text-[#CC2E2E] hover:bg-slate-100 font-black uppercase tracking-widest px-10 py-5 transition-all shadow-xl whitespace-nowrap text-center text-sm"
+                                        : "border-2 border-white text-white hover:bg-white hover:text-[#CC2E2E] font-black uppercase tracking-widest px-10 py-5 transition-all whitespace-nowrap text-center text-sm"
                                     }
                                 >
                                     {b.text || (i === 0 ? "Get Free Quotes Now" : "Learn More")}
@@ -57,11 +57,11 @@ export default async function HomeRest() {
                             <>
                                 <PublicQuoteRequest
                                     buttonText="Get Free Quotes Now"
-                                    className="bg-white text-[#c0123d] hover:bg-slate-100 font-black uppercase tracking-widest px-10 py-5 transition-all shadow-xl whitespace-nowrap text-sm rounded-none"
+                                    className="bg-white text-[#CC2E2E] hover:bg-slate-100 font-black uppercase tracking-widest px-10 py-5 transition-all shadow-xl whitespace-nowrap text-sm rounded-none"
                                 />
                                 <PublicQuoteRequest
                                     buttonText="Find Local Builders"
-                                    className="border-2 border-white text-white hover:bg-white hover:text-[#c0123d] font-black uppercase tracking-widest px-10 py-5 transition-all whitespace-nowrap text-sm rounded-none"
+                                    className="border-2 border-white text-white hover:bg-white hover:text-[#CC2E2E] font-black uppercase tracking-widest px-10 py-5 transition-all whitespace-nowrap text-sm rounded-none"
                                 />
                             </>
                         )}
@@ -75,11 +75,11 @@ export default async function HomeRest() {
                     <div className="max-w-7xl mx-auto">
                         <div className="text-center mb-16">
                             {saved?.sections?.clientSay?.heading && (
-                                <h3 className={["text-3xl font-black text-[#0f172a] tracking-tight mb-4 uppercase", getFontClass(leadsIntroFont as any)].join(' ')}>
+                                <h3 className={["text-3xl font-black text-[#252525] tracking-tight mb-4 uppercase", getFontClass(leadsIntroFont as any)].join(' ')}>
                                     {saved!.sections!.clientSay!.heading}
                                 </h3>
                             )}
-                            <div className="w-20 h-1 bg-[#1e3886] mx-auto mb-6"></div>
+                            <div className="w-20 h-1 bg-[#E03A3A] mx-auto mb-6"></div>
                             {saved?.sections?.clientSay?.paragraph && (
                                 <p className="text-lg text-slate-500 max-w-3xl mx-auto" dangerouslySetInnerHTML={{ __html: saved!.sections!.clientSay!.paragraph }} />
                             )}
@@ -92,7 +92,7 @@ export default async function HomeRest() {
                                         <div className="flex items-center gap-4 mb-4 mt-4">
                                             {/* <Image src={convertToProxyUrl(r.image || "https://via.placeholder.com/80x80")} alt={r.name || "Reviewer"} width={48} height={48} className="w-12 h-12 rounded-full object-cover" /> */}
                                             <div>
-                                                <div className="font-black text-[#0f172a] text-sm">{r.name || "Anonymous"}</div>
+                                                <div className="font-black text-[#252525] text-sm">{r.name || "Anonymous"}</div>
                                                 <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{r.role || ""}</div>
                                             </div>
                                         </div>
@@ -119,8 +119,8 @@ export default async function HomeRest() {
             </Suspense>
 
             {/* Final CTA — Navy with crimson accent */}
-            <section className="relative py-32 bg-[#0f172a] overflow-hidden">
-                <div className="absolute inset-0 bg-[#0f172a]/80 z-[1]"></div>
+            <section className="relative py-32 bg-[#252525] overflow-hidden">
+                <div className="absolute inset-0 bg-[#252525]/80 z-[1]"></div>
                 <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
                     <h2 className={["text-5xl md:text-6xl font-black text-white uppercase tracking-tighter mb-8 leading-none", finalCtaFont ? `font-${finalCtaFont}` : ''].join(' ')}>
                         {(() => {
@@ -133,7 +133,7 @@ export default async function HomeRest() {
                                     <>
                                         {words.slice(0, midStart).join(' ')}{' '}
                                         <br />
-                                        <span className="text-[#c0123d]">{words.slice(midStart, midStart + 2).join(' ')}</span>{' '}
+                                        <span className="text-[#CC2E2E]">{words.slice(midStart, midStart + 2).join(' ')}</span>{' '}
                                         {words.slice(midStart + 2).join(' ')}
                                     </>
                                 );
@@ -149,8 +149,8 @@ export default async function HomeRest() {
                                 href={b.href || "#"}
                                 prefetch={true}
                                 className={i === 0
-                                    ? "bg-[#c0123d] text-white px-12 py-5 font-bold uppercase tracking-widest hover:bg-white hover:text-[#0f172a] transition-all text-sm"
-                                    : "bg-[#1e3886] text-white px-12 py-5 font-bold uppercase tracking-widest hover:bg-white hover:text-[#0f172a] transition-all text-sm"
+                                    ? "bg-[#CC2E2E] text-white px-12 py-5 font-bold uppercase tracking-widest hover:bg-white hover:text-[#252525] transition-all text-sm"
+                                    : "bg-[#E03A3A] text-white px-12 py-5 font-bold uppercase tracking-widest hover:bg-white hover:text-[#252525] transition-all text-sm"
                                 }
                             >
                                 {b.text || (i === 0 ? "Get Free Quotes Now" : "Learn More")}

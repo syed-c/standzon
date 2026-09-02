@@ -233,7 +233,7 @@ export default function FeaturedBuildersManager() {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e3886] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E03A3A] mx-auto"></div>
           <p className="mt-4 text-slate-500">Loading featured builders...</p>
         </div>
       </div>
@@ -564,7 +564,7 @@ export default function FeaturedBuildersManager() {
                       onClick={() => setCurrentPage(pageNum)}
                       className={
                         currentPage === pageNum 
-                          ? "bg-[#1e3886] border-[#1e3886] text-white" 
+                          ? "bg-[#E03A3A] border-[#E03A3A] text-white" 
                           : "border-slate-300 text-slate-600 hover:bg-slate-50"
                       }
                     >

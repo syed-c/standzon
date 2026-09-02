@@ -64,7 +64,7 @@ export function EnhancedHeroWithQuote({
   heroData,
   stats,
   exhibitions = [],
-  primaryColor = '#ec4899',
+  primaryColor = '#E03A3A',
   accentColor = '#f97316',
   backgroundImage
 }: EnhancedHeroWithQuoteProps) {

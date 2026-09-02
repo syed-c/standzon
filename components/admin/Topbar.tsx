@@ -59,7 +59,7 @@ export default function Topbar() {
     <div className="w-full flex items-center justify-between">
       {/* Left side: page title + status */}
       <div className="flex items-center gap-6">
-        <h2 className="text-xl font-bold tracking-tight text-[#0f172a]">{getPageTitle()}</h2>
+        <h2 className="text-xl font-bold tracking-tight text-[#252525]">{getPageTitle()}</h2>
         <div className="h-6 w-px bg-slate-200 hidden sm:block" />
         <div className="hidden sm:flex items-center gap-2">
           <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20" />
@@ -75,7 +75,7 @@ export default function Topbar() {
           <input
             type="text"
             placeholder="Global search..."
-            className="bg-slate-100 border-none rounded-lg py-2 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-[#1e3886] focus:outline-none transition-all text-slate-800 placeholder:text-slate-400"
+            className="bg-slate-100 border-none rounded-lg py-2 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-[#E03A3A] focus:outline-none transition-all text-slate-800 placeholder:text-slate-400"
           />
         </div>
 
@@ -91,14 +91,14 @@ export default function Topbar() {
             }}
           >
             <span className="material-symbols-outlined text-[20px]">notifications</span>
-            <span className="absolute top-2 right-2 size-2 bg-[#c0123d] rounded-full border-2 border-white" />
+            <span className="absolute top-2 right-2 size-2 bg-[#CC2E2E] rounded-full border-2 border-white" />
           </button>
 
           {/* Notifications Dropdown */}
           {isNotificationsOpen && (
             <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-lg z-50">
               <div className="p-4 border-b border-slate-100">
-                <h3 className="font-bold text-[#0f172a]">Notifications</h3>
+                <h3 className="font-bold text-[#252525]">Notifications</h3>
               </div>
               <div className="max-h-64 overflow-y-auto">
                 {[
@@ -122,7 +122,7 @@ export default function Topbar() {
                 ))}
               </div>
               <div className="p-3 bg-slate-50 text-center rounded-b-xl">
-                <button className="text-xs font-bold text-[#1e3886] hover:text-[#0f172a] transition-colors uppercase tracking-widest">
+                <button className="text-xs font-bold text-[#E03A3A] hover:text-[#252525] transition-colors uppercase tracking-widest">
                   View All Notifications
                 </button>
               </div>
@@ -154,13 +154,13 @@ export default function Topbar() {
                     <span className="material-symbols-outlined text-slate-400">person</span>
                   </div>
                   <div>
-                    <p className="font-bold text-[#0f172a]">Super Admin</p>
+                    <p className="font-bold text-[#252525]">Super Admin</p>
                     <p className="text-sm text-slate-500">admin@standzon.com</p>
                   </div>
                 </div>
               </div>
               <div className="py-1">
-                <a href="/admin/settings" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#0f172a] transition-colors">
+                <a href="/admin/settings" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-[#252525] transition-colors">
                   <span className="material-symbols-outlined text-[18px]">settings</span>
                   Settings
                 </a>
@@ -168,7 +168,7 @@ export default function Topbar() {
               <div className="border-t border-slate-100 py-1">
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-[#c0123d] hover:bg-red-50 transition-colors"
+                  className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-[#CC2E2E] hover:bg-red-50 transition-colors"
                 >
                   <span className="material-symbols-outlined text-[18px]">logout</span>
                   Logout

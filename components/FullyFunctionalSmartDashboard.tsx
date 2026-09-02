@@ -1052,7 +1052,7 @@ function BuilderIntelligenceModule({ builders, analytics, onRefresh }: any) {
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="leads" stroke="#3b82f6" strokeWidth={2} />
+                <Line type="monotone" dataKey="leads" stroke="#E03A3A" strokeWidth={2} />
                 <Line type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
@@ -1406,7 +1406,7 @@ function BuilderAnalyticsModule({ builders, analytics, onRefresh }: any) {
                   name.charAt(0).toUpperCase() + name.slice(1)
                 ]} />
                 <Area type="monotone" dataKey="revenue" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
-                <Area type="monotone" dataKey="leads" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
+                <Area type="monotone" dataKey="leads" stroke="#E03A3A" fill="#E03A3A" fillOpacity={0.3} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -2550,8 +2550,8 @@ function PlatformIntelligenceModule({ platformData, analytics, onRefresh }: any)
                   name === 'users' ? `${value} users` : `${value}% load`,
                   name.charAt(0).toUpperCase() + name.slice(1)
                 ]} />
-                <Area type="monotone" dataKey="users" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
-                <Area type="monotone" dataKey="load" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} />
+                <Area type="monotone" dataKey="users" stroke="#E03A3A" fill="#E03A3A" fillOpacity={0.3} />
+                <Area type="monotone" dataKey="load" stroke="#E03A3A" fill="#E03A3A" fillOpacity={0.3} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>

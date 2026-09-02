@@ -103,22 +103,22 @@ export default function BoothRentalPageContent() {
 
       {/* Hero Section */}
       <TradeStyleBanner
-        badgeText="Professional Trade Show Database"
-        mainHeading={saved?.sections?.boothRental?.hero?.heading || "Booth Rental Services"}
-        highlightHeading="& Exhibition Solutions"
-        description={saved?.sections?.boothRental?.hero?.description || "Flexible, cost-effective exhibition booth rental solutions with full setup and support."}
+        badgeText="Exhibition Stand Rental"
+        mainHeading={saved?.sections?.boothRental?.hero?.heading || "Exhibition Booth Rental"}
+        highlightHeading="Flexible, Cost-Effective Stands"
+        description={saved?.sections?.boothRental?.hero?.description || "Rent a branded, professional exhibition stand without the upfront cost, storage or logistics. Compare booth rental quotes from verified suppliers in your show city."}
         stats={[
           {
             icon: "calendar",
             value: "10+",
             label: "Rental Options",
-            color: "#2ec4b6",
+            color: "#CC2E2E",
           },
           {
             icon: "map-pin",
             value: "Global",
             label: "Coverage",
-            color: "#3dd598",
+            color: "#059669",
           },
           {
             icon: "users",

@@ -68,12 +68,12 @@ export default function LocationsSection({
   return (
     <>
       {/* Global Network Section — Navy background */}
-      <section className="py-24 bg-[#0f172a] text-white px-6">
+      <section className="py-24 bg-[#252525] text-white px-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col lg:flex-row gap-16 items-start mb-16">
             <div className="lg:w-1/2">
-              <span className="text-[#c0123d] font-black text-xs uppercase tracking-widest">Global Reach</span>
+              <span className="text-[#CC2E2E] font-black text-xs uppercase tracking-widest">Global Reach</span>
               <h3 className="text-4xl font-black mt-4 mb-8 leading-tight uppercase tracking-tighter">
                 {globalPresence?.heading || 'YOUR GLOBAL NETWORK FOR LOCAL EXHIBITION SUCCESS'}
               </h3>
@@ -85,7 +85,7 @@ export default function LocationsSection({
               <div className="grid grid-cols-4 gap-8">
                 {Object.entries(continents).map(([continent, data]) => (
                   <div key={continent}>
-                    <h5 className="font-black text-[#c0123d] mb-2 uppercase tracking-tighter text-sm">{continent}</h5>
+                    <h5 className="font-black text-[#CC2E2E] mb-2 uppercase tracking-tighter text-sm">{continent}</h5>
                     <ul className="text-sm text-slate-400 space-y-1">
                       {data.countries.slice(0, 2).map(c => (
                         <li key={c.name}>{c.name}</li>
@@ -99,7 +99,7 @@ export default function LocationsSection({
             {/* Map placeholder */}
             <div className="lg:w-1/2 w-full h-[400px] bg-slate-800 relative overflow-hidden flex items-center justify-center">
               <FiGlobe className="w-32 h-32 text-slate-700 opacity-50" />
-              <div className="absolute bottom-8 right-8 bg-[#c0123d] p-4 shadow-xl">
+              <div className="absolute bottom-8 right-8 bg-[#CC2E2E] p-4 shadow-xl">
                 <p className="text-[10px] font-black uppercase tracking-widest">Currently Active</p>
                 <p className="text-2xl font-black">214 Projects</p>
               </div>
@@ -113,7 +113,7 @@ export default function LocationsSection({
                 key={continent}
                 onClick={() => setActiveTab(continent)}
                 className={`flex items-center space-x-2 px-6 py-3 font-bold uppercase text-xs tracking-widest transition-all touch-active no-tap-highlight ${activeTab === continent
-                  ? 'bg-white text-[#0f172a]'
+                  ? 'bg-white text-[#252525]'
                   : 'border border-white/20 hover:border-white text-white'
                   }`}
               >
@@ -156,7 +156,7 @@ export default function LocationsSection({
                 </div>
                 <Link
                   href={country.href}
-                  className="bg-white text-[#0f172a] px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#c0123d] hover:text-white transition-all whitespace-nowrap"
+                  className="bg-white text-[#252525] px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#CC2E2E] hover:text-white transition-all whitespace-nowrap"
                 >
                   View Builders
                 </Link>
@@ -170,7 +170,7 @@ export default function LocationsSection({
       <section className="py-24 bg-slate-50 border-t border-slate-200 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-6 mb-16">
-            <h2 className="text-3xl font-black uppercase tracking-tighter shrink-0 text-[#0f172a]">
+            <h2 className="text-3xl font-black uppercase tracking-tighter shrink-0 text-[#252525]">
               {(moreCountries?.heading ? (moreCountries.heading as string) : 'More Countries in {country}').replace(/\{country\}/ig, activeTab)}
             </h2>
             <div className="h-px bg-slate-200 w-full"></div>
@@ -186,11 +186,11 @@ export default function LocationsSection({
                 href={`/exhibition-stands/${country.toLowerCase().replace(/\s+/g, '-')}`}
                 className="group"
               >
-                <div className="bg-white border border-slate-200 hover:border-[#1e3886] p-4 text-center transition-all hover:shadow-md">
-                  <div className="text-sm font-bold text-[#0f172a] group-hover:text-[#1e3886] mb-1 uppercase tracking-tight">
+                <div className="bg-white border border-slate-200 hover:border-[#E03A3A] p-4 text-center transition-all hover:shadow-md">
+                  <div className="text-sm font-bold text-[#252525] group-hover:text-[#E03A3A] mb-1 uppercase tracking-tight">
                     {country}
                   </div>
-                  <FiExternalLink className="w-3 h-3 text-slate-400 group-hover:text-[#1e3886] transition-colors mx-auto" />
+                  <FiExternalLink className="w-3 h-3 text-slate-400 group-hover:text-[#E03A3A] transition-colors mx-auto" />
                 </div>
               </Link>
             ))}
@@ -199,7 +199,7 @@ export default function LocationsSection({
           <div className="text-center">
             <Link
               href="/exhibition-stands"
-              className="inline-flex items-center gap-2 bg-[#1e3886] hover:bg-[#0f172a] text-white px-10 py-4 font-bold uppercase tracking-widest transition-all text-sm"
+              className="inline-flex items-center gap-2 bg-[#E03A3A] hover:bg-[#252525] text-white px-10 py-4 font-bold uppercase tracking-widest transition-all text-sm"
             >
               Browse All Locations
               <FiArrowRight className="w-4 h-4" />
@@ -209,7 +209,7 @@ export default function LocationsSection({
       </section>
 
       {/* Expanding Markets CTA */}
-      <section className="py-16 bg-[#c0123d] text-white overflow-hidden relative px-6">
+      <section className="py-16 bg-[#CC2E2E] text-white overflow-hidden relative px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
             <h3 className="text-3xl font-black tracking-tighter uppercase italic">
@@ -221,7 +221,7 @@ export default function LocationsSection({
           </div>
           <Link
             href="/quote"
-            className="bg-white text-[#c0123d] hover:bg-slate-100 font-black uppercase tracking-widest px-10 py-5 transition-all shadow-xl whitespace-nowrap text-sm"
+            className="bg-white text-[#CC2E2E] hover:bg-slate-100 font-black uppercase tracking-widest px-10 py-5 transition-all shadow-xl whitespace-nowrap text-sm"
           >
             Contact Global Team
           </Link>

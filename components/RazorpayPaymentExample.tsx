@@ -97,7 +97,7 @@ export default function RazorpayPaymentExample({
           email: customerEmail,
         },
         theme: {
-          color: '#3B82F6'
+          color: '#E03A3A'
         },
         modal: {
           ondismiss: () => {

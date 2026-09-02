@@ -213,7 +213,7 @@ export async function PUT(request: NextRequest) {
               }
             },
             design: {
-              primaryColor: content.design?.primaryColor || '#ec4899',
+              primaryColor: content.design?.primaryColor || '#E03A3A',
               accentColor: content.design?.accentColor || '#f97316',
               layout: content.design?.layout || 'modern',
               showStats: content.design?.showStats ?? true,

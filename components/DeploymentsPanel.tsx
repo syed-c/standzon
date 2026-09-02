@@ -467,7 +467,7 @@ const DeploymentsPanel = () => {
                   {[
                     { name: 'Success', value: deploymentStats.succeeded, color: '#10B981' },
                     { name: 'Failed', value: deploymentStats.failed, color: '#EF4444' },
-                    { name: 'Running', value: deploymentStats.running, color: '#3B82F6' },
+                    { name: 'Running', value: deploymentStats.running, color: '#E03A3A' },
                     { name: 'Queued', value: deploymentStats.queued, color: '#6B7280' },
                   ].map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />

@@ -190,11 +190,11 @@ export default function Sidebar() {
   const { theme } = useTheme();
 
   return (
-    <div className="flex flex-col h-full p-4 gap-6 bg-[#0D1424]">
+    <div className="flex flex-col h-full p-4 gap-6 bg-[#252525]">
       {/* Sidebar Header */}
       <div className="px-3 pb-4 border-b border-[rgba(255,255,255,0.12)]">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-[#4F46E5] rounded-xl flex items-center justify-center shadow-lg">
+          <div className="w-10 h-10 bg-[#CC2E2E] rounded-xl flex items-center justify-center shadow-lg">
             <Zap className="h-6 w-6 text-[#FFFFFF]" />
           </div>
           <div>
@@ -205,10 +205,10 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation Sections */}
-      <div className="flex-1 overflow-y-auto space-y-6 scrollbar-thin scrollbar-thumb-[#202A40] scrollbar-track-[#0D1424] rounded-lg">
+      <div className="flex-1 overflow-y-auto space-y-6 scrollbar-thin scrollbar-thumb-[#202A40] scrollbar-track-[#252525] rounded-lg">
         {sections.map((section) => (
           <div key={section.title}>
-            <div className="px-3 pb-2 text-xs tracking-wide font-semibold text-[#E2E8F0] uppercase flex items-center gap-2">
+            <div className="px-3 pb-2 text-xs tracking-wide font-semibold text-[#E4E6E8] uppercase flex items-center gap-2">
               {sectionIcons[section.title] || <div className="w-4 h-4" />}
               {section.title}
             </div>
@@ -221,8 +221,8 @@ export default function Sidebar() {
                     href={item.href}
                     className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-all duration-300 ${
                       active 
-                        ? 'bg-[#29344D] text-[#FFFFFF] border-l-4 border-[#3C4A6B] shadow-lg' 
-                        : 'text-[#E2E8F0] hover:bg-[#29344D] hover:text-[#FFFFFF] hover:shadow-md'
+                        ? 'bg-[#3A3A3A] text-[#FFFFFF] border-l-4 border-[#3C4A6B] shadow-lg' 
+                        : 'text-[#E4E6E8] hover:bg-[#3A3A3A] hover:text-[#FFFFFF] hover:shadow-md'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -232,12 +232,12 @@ export default function Sidebar() {
                     {item.badge && (
                       <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium transition-all duration-300 ${
                         item.badge === 'CSV' 
-                          ? 'bg-[#6366F1] text-[#FFFFFF] border border-[rgba(255,255,255,0.12)] shadow-md' 
+                          ? 'bg-[#E03A3A] text-[#FFFFFF] border border-[rgba(255,255,255,0.12)] shadow-md' 
                           : item.badge === 'FIX' 
                             ? 'bg-[#FFB020] text-[#FFFFFF] border border-[rgba(255,255,255,0.12)] shadow-md' 
                             : item.badge === 'API' 
-                              ? 'bg-[#6366F1] text-[#FFFFFF] border border-[rgba(255,255,255,0.12)] shadow-md' 
-                              : 'bg-[#1E293B] text-[#FFFFFF] border border-[rgba(255,255,255,0.12)] shadow-md'
+                              ? 'bg-[#E03A3A] text-[#FFFFFF] border border-[rgba(255,255,255,0.12)] shadow-md' 
+                              : 'bg-[#2B2B2B] text-[#FFFFFF] border border-[rgba(255,255,255,0.12)] shadow-md'
                       }`}>
                         {item.badge}
                       </span>

@@ -734,7 +734,7 @@ export default function SmartAdminDashboard({
                               className="w-4 h-4 rounded-full"
                               style={{
                                 backgroundColor: [
-                                  "#3B82F6",
+                                  "#E03A3A",
                                   "#10B981",
                                   "#F59E0B",
                                   "#EF4444",
@@ -1781,7 +1781,7 @@ export default function SmartAdminDashboard({
                               className="w-4 h-4 rounded"
                               style={{
                                 backgroundColor: [
-                                  "#3B82F6",
+                                  "#E03A3A",
                                   "#10B981",
                                   "#F59E0B",
                                   "#EF4444",

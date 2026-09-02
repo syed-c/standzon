@@ -20,7 +20,7 @@ export default function SuperAdminLayout({
   const [open, setOpen] = React.useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f6f6f8] font-inter admin-dashboard">
+    <div className="flex h-screen overflow-hidden bg-[#F5F6F7] font-inter admin-dashboard">
       {/* Sidebar – fixed left column */}
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody />

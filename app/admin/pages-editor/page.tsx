@@ -984,8 +984,8 @@ export default function AdminPagesEditor() {
               <h1 className="text-3xl font-bold text-white">Pages Editor</h1>
               <p className="text-gray-600 text-black">View and edit SEO and headings for site pages.</p>
               {cmsSource && (
-                <div className="mt-2 inline-flex items-center gap-2 text-xs px-2 py-1 rounded-full border" style={{ borderColor: cmsSource==='supabase' ? '#10b981' : '#60a5fa', color: cmsSource==='supabase' ? '#065f46' : '#1e3a8a', background: cmsSource==='supabase' ? '#ecfdf5' : '#eff6ff' }}>
-                  <span className="w-2 h-2 rounded-full" style={{ background: cmsSource==='supabase' ? '#10b981' : '#3b82f6' }}></span>
+                <div className="mt-2 inline-flex items-center gap-2 text-xs px-2 py-1 rounded-full border" style={{ borderColor: cmsSource==='supabase' ? '#10b981' : '#EC6A6A', color: cmsSource==='supabase' ? '#065f46' : '#741C1C', background: cmsSource==='supabase' ? '#ecfdf5' : '#FEF2F2' }}>
+                  <span className="w-2 h-2 rounded-full" style={{ background: cmsSource==='supabase' ? '#10b981' : '#E03A3A' }}></span>
                   <span>CMS source: {cmsSource}</span>
                 </div>
               )}
@@ -1048,7 +1048,7 @@ export default function AdminPagesEditor() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Button variant="outline" onClick={() => window.open(p.path, '_blank')}><Eye className="w-4 h-4 mr-1" /> View</Button>
-                        <Button onClick={() => openEditor(p.path)} className="bg-[#1e3886] text-white"><Edit className="w-4 h-4 mr-1" /> Edit</Button>
+                        <Button onClick={() => openEditor(p.path)} className="bg-[#E03A3A] text-white"><Edit className="w-4 h-4 mr-1" /> Edit</Button>
                       </div>
                     </div>
                   ))}

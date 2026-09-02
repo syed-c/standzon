@@ -250,7 +250,7 @@ export default function SuperAdminCommandCenter({
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1e3886] mx-auto" />
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#E03A3A] mx-auto" />
           <p className="mt-4 text-slate-400 text-sm">Loading dashboard...</p>
         </div>
       </div>
@@ -267,7 +267,7 @@ export default function SuperAdminCommandCenter({
             className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm"
           >
             <div className="flex justify-between items-start mb-4">
-              <div className="p-3 bg-[#1e3886]/10 text-[#1e3886] rounded-lg">
+              <div className="p-3 bg-[#E03A3A]/10 text-[#E03A3A] rounded-lg">
                 <span className="material-symbols-outlined text-2xl">
                   {stat.icon}
                 </span>
@@ -276,14 +276,14 @@ export default function SuperAdminCommandCenter({
                 className={`text-xs font-bold px-2 py-1 rounded ${
                   stat.positive
                     ? "text-emerald-500 bg-emerald-500/10"
-                    : "text-[#c0123d] bg-[#c0123d]/10"
+                    : "text-[#CC2E2E] bg-[#CC2E2E]/10"
                 }`}
               >
                 {stat.change}
               </span>
             </div>
             <p className="text-slate-500 text-sm font-medium">{stat.label}</p>
-            <h3 className="text-3xl font-extrabold text-[#0f172a] mt-1">
+            <h3 className="text-3xl font-extrabold text-[#252525] mt-1">
               {stat.value}
             </h3>
           </div>
@@ -297,8 +297,8 @@ export default function SuperAdminCommandCenter({
           {/* Global Network Status */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-              <h4 className="font-bold text-[#0f172a] flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#1e3886]">
+              <h4 className="font-bold text-[#252525] flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#E03A3A]">
                   public
                 </span>
                 Global Network Status
@@ -314,7 +314,7 @@ export default function SuperAdminCommandCenter({
             </div>
             <div className="h-96 relative bg-slate-100 flex items-center justify-center">
               {/* Abstract radial glow */}
-              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,_#1e3886_0%,_transparent_100%)]" />
+              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,_#E03A3A_0%,_transparent_100%)]" />
               <div className="text-slate-400 flex flex-col items-center">
                 <span className="material-symbols-outlined text-6xl mb-2 opacity-30">
                   map
@@ -327,11 +327,11 @@ export default function SuperAdminCommandCenter({
               <div className="absolute top-20 left-1/4 size-4 bg-emerald-500/40 rounded-full animate-pulse flex items-center justify-center">
                 <div className="size-2 bg-emerald-500 rounded-full" />
               </div>
-              <div className="absolute bottom-1/3 right-1/3 size-4 bg-[#1e3886]/40 rounded-full flex items-center justify-center">
-                <div className="size-2 bg-[#1e3886] rounded-full" />
+              <div className="absolute bottom-1/3 right-1/3 size-4 bg-[#E03A3A]/40 rounded-full flex items-center justify-center">
+                <div className="size-2 bg-[#E03A3A] rounded-full" />
               </div>
-              <div className="absolute top-1/2 right-1/4 size-4 bg-[#c0123d]/40 rounded-full flex items-center justify-center">
-                <div className="size-2 bg-[#c0123d] rounded-full" />
+              <div className="absolute top-1/2 right-1/4 size-4 bg-[#CC2E2E]/40 rounded-full flex items-center justify-center">
+                <div className="size-2 bg-[#CC2E2E] rounded-full" />
               </div>
             </div>
           </div>
@@ -339,7 +339,7 @@ export default function SuperAdminCommandCenter({
           {/* System Audit Trail */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-slate-100">
-              <h4 className="font-bold text-[#0f172a] uppercase tracking-wider text-sm">
+              <h4 className="font-bold text-[#252525] uppercase tracking-wider text-sm">
                 System Audit Trail
               </h4>
             </div>
@@ -371,7 +371,7 @@ export default function SuperAdminCommandCenter({
             <div className="p-4 bg-slate-50 text-center">
               <Link
                 href="/admin/data-audit"
-                className="text-xs font-bold text-[#1e3886] hover:text-[#0f172a] transition-colors uppercase tracking-widest"
+                className="text-xs font-bold text-[#E03A3A] hover:text-[#252525] transition-colors uppercase tracking-widest"
               >
                 View Full Audit Log
               </Link>
@@ -382,7 +382,7 @@ export default function SuperAdminCommandCenter({
         {/* ── Right Column (1/3) ────────────────────────────── */}
         <div className="space-y-8">
           {/* Control Panel */}
-          <div className="bg-[#0f172a] text-white p-8 rounded-xl shadow-xl space-y-6">
+          <div className="bg-[#252525] text-white p-8 rounded-xl shadow-xl space-y-6">
             <h4 className="font-bold text-sm uppercase tracking-[0.2em] opacity-60">
               Control Panel
             </h4>
@@ -394,7 +394,7 @@ export default function SuperAdminCommandCenter({
                 className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all group disabled:opacity-50"
               >
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-[#1e3886] group-hover:text-white transition-colors">
+                  <span className="material-symbols-outlined text-[#E03A3A] group-hover:text-white transition-colors">
                     cached
                   </span>
                   <span className="text-sm font-semibold">
@@ -444,8 +444,8 @@ export default function SuperAdminCommandCenter({
               </Link>
 
               {/* Emergency Broadcast */}
-              <button className="w-full flex items-center justify-between p-4 bg-[#c0123d]/10 hover:bg-[#c0123d] rounded-lg border border-[#c0123d]/20 transition-all group">
-                <div className="flex items-center gap-3 text-[#c0123d] group-hover:text-white">
+              <button className="w-full flex items-center justify-between p-4 bg-[#CC2E2E]/10 hover:bg-[#CC2E2E] rounded-lg border border-[#CC2E2E]/20 transition-all group">
+                <div className="flex items-center gap-3 text-[#CC2E2E] group-hover:text-white">
                   <span className="material-symbols-outlined">warning</span>
                   <span className="text-sm font-semibold">
                     Emergency Broadcast
@@ -460,7 +460,7 @@ export default function SuperAdminCommandCenter({
 
           {/* Partner Requests */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-            <h4 className="font-bold text-[#0f172a] uppercase tracking-wider text-sm mb-6">
+            <h4 className="font-bold text-[#252525] uppercase tracking-wider text-sm mb-6">
               Partner Requests
             </h4>
             <div className="space-y-6">
@@ -470,7 +470,7 @@ export default function SuperAdminCommandCenter({
                     {partner.initials}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-bold text-[#0f172a]">
+                    <p className="text-sm font-bold text-[#252525]">
                       {partner.name}
                     </p>
                     <p className="text-xs text-slate-500 uppercase font-medium">
@@ -483,7 +483,7 @@ export default function SuperAdminCommandCenter({
                         check
                       </span>
                     </button>
-                    <button className="size-8 rounded-lg border border-slate-200 flex items-center justify-center text-[#c0123d] hover:bg-rose-50 transition-colors">
+                    <button className="size-8 rounded-lg border border-slate-200 flex items-center justify-center text-[#CC2E2E] hover:bg-rose-50 transition-colors">
                       <span className="material-symbols-outlined text-lg">
                         close
                       </span>

@@ -310,7 +310,7 @@ export default function Navigation() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="bg-transparent text-[#0f172a] border-[#0f172a] text-xs px-2 py-1 rounded-lg hover:bg-gray-50 transition-all duration-300"
+                    className="bg-transparent text-[#252525] border-[#252525] text-xs px-2 py-1 rounded-lg hover:bg-gray-50 transition-all duration-300"
                   >
                     <SafeIcon IconComponent={FiUser} className="w-3 h-3 mr-1 flex-shrink-0" />
                     <span className="hidden xl:inline">Builder Login</span>
@@ -322,7 +322,7 @@ export default function Navigation() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="bg-transparent text-[#0f172a] border-[#0f172a] text-xs px-2 py-1 rounded-lg hover:bg-gray-50 transition-all duration-300"
+                    className="bg-transparent text-[#252525] border-[#252525] text-xs px-2 py-1 rounded-lg hover:bg-gray-50 transition-all duration-300"
                   >
                     <span className="hidden xl:inline">Join as Builder</span>
                     <span className="xl:hidden">Join</span>
@@ -387,7 +387,7 @@ export default function Navigation() {
 
             {/* Get Free Quote CTA Button */}
             <Link href="/quote">
-              <Button className="bg-[#c0123d] hover:bg-[#a0102f] text-white px-3 py-1.5 text-xs rounded-lg shadow-md transition-all duration-200 whitespace-nowrap hover:shadow-lg">
+              <Button className="bg-[#CC2E2E] hover:bg-[#AC2424] text-white px-3 py-1.5 text-xs rounded-lg shadow-md transition-all duration-200 whitespace-nowrap hover:shadow-lg">
                 <SafeIcon IconComponent={FiZap} className="w-3 h-3 mr-1 flex-shrink-0" />
                 <span className="truncate hidden xl:inline">Get Free Quote</span>
                 <span className="xl:hidden">Quote</span>
@@ -398,7 +398,7 @@ export default function Navigation() {
           {/* Mobile menu button - Right */}
           <div className="lg:hidden flex items-center space-x-2">
             <Link href="/quote">
-              <Button size="sm" className="bg-[#c0123d] hover:bg-[#a0102f] text-white px-3 py-1.5 rounded-lg shadow text-xs font-medium min-h-[44px]">
+              <Button size="sm" className="bg-[#CC2E2E] hover:bg-[#AC2424] text-white px-3 py-1.5 rounded-lg shadow text-xs font-medium min-h-[44px]">
                 <SafeIcon IconComponent={FiZap} className="w-3 h-3 mr-1 flex-shrink-0" />
                 <span className="truncate">Quote</span>
               </Button>
@@ -442,7 +442,7 @@ export default function Navigation() {
             {/* Mobile Get Quote at Top */}
             <div className="mb-4">
               <Link href="/quote" onClick={() => setIsOpen(false)}>
-                <Button className="w-full bg-[#c0123d] hover:bg-[#a0102f] text-white py-2.5 rounded-lg shadow-lg font-medium text-sm min-h-[44px]">
+                <Button className="w-full bg-[#CC2E2E] hover:bg-[#AC2424] text-white py-2.5 rounded-lg shadow-lg font-medium text-sm min-h-[44px]">
                   <SafeIcon IconComponent={FiZap} className="w-4 h-4 mr-2 flex-shrink-0" />
                   <span className="truncate">Get Free Quote</span>
                 </Button>

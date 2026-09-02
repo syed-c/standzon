@@ -354,7 +354,7 @@ export default function EnhancedBulkUploadPage() {
           slug: 'general', 
           description: '', 
           subcategories: [], 
-          color: '#3B82F6', 
+          color: '#E03A3A', 
           icon: '🏢', 
           annualGrowthRate: 8.5, 
           averageBoothCost: 350, 

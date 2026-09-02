@@ -16,7 +16,7 @@ export default function AdminLayout({ sidebar, topbar, children }: AdminLayoutPr
   return (
     <div className="min-h-screen premium-dark-bg font-inter overflow-x-hidden admin-dashboard dark">
       {/* Topbar */}
-      <div className="sticky top-0 z-40 bg-[#0D1424] backdrop-blur-lg h-16 border-b border-[rgba(255,255,255,0.12)] shadow-lg">
+      <div className="sticky top-0 z-40 bg-[#252525] backdrop-blur-lg h-16 border-b border-[rgba(255,255,255,0.12)] shadow-lg">
         {topbar}
       </div>
 

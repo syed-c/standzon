@@ -15,15 +15,15 @@ export default async function HomeLeads() {
                 {/* Section header */}
                 <div className="text-center mb-16">
                     {leadsHeading ? (
-                        <h3 className={["text-3xl font-black text-[#0f172a] tracking-tight mb-4 uppercase", getFontClass(leadsIntroFont as any)].join(' ')}>
+                        <h3 className={["text-3xl font-black text-[#252525] tracking-tight mb-4 uppercase", getFontClass(leadsIntroFont as any)].join(' ')}>
                             {leadsHeading}
                         </h3>
                     ) : (
-                        <h3 className="text-3xl font-black text-[#0f172a] tracking-tight mb-4 uppercase">
+                        <h3 className="text-3xl font-black text-[#252525] tracking-tight mb-4 uppercase">
                             GET 3-5 FREE QUOTES IN 4 STEPS
                         </h3>
                     )}
-                    <div className="w-20 h-1 bg-[#c0123d] mx-auto mb-6"></div>
+                    <div className="w-20 h-1 bg-[#CC2E2E] mx-auto mb-6"></div>
                     {leadsParagraph && (
                         <p className="text-lg text-slate-500 max-w-3xl mx-auto" dangerouslySetInnerHTML={{ __html: leadsParagraph }} />
                     )}
@@ -41,9 +41,9 @@ export default async function HomeLeads() {
                         ];
                         const icons = ['📋', '🤝', '⚖️', '🏗️'];
                         return (cards.length > 0 ? cards.slice(0, 4) : fallback).map((c, i) => (
-                            <div key={i} className="bg-white p-8 border-t-4 border-[#1e3886] shadow-sm">
+                            <div key={i} className="bg-white p-8 border-t-4 border-[#E03A3A] shadow-sm">
                                 <div className="text-4xl mb-6">{icons[i] || '📌'}</div>
-                                <h4 className="font-bold text-lg mb-2 uppercase tracking-tight text-[#0f172a]">
+                                <h4 className="font-bold text-lg mb-2 uppercase tracking-tight text-[#252525]">
                                     {c.title || ''}
                                 </h4>
                                 <p className="text-slate-500 text-sm leading-relaxed">{c.text || ''}</p>
@@ -56,19 +56,19 @@ export default async function HomeLeads() {
                 <div className="bg-white border-b border-slate-100 mb-16">
                     <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-100">
                         <div className="py-10 text-center">
-                            <p className="text-4xl font-black text-[#1e3886]">120+</p>
+                            <p className="text-4xl font-black text-[#E03A3A]">120+</p>
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Countries</p>
                         </div>
                         <div className="py-10 text-center">
-                            <p className="text-4xl font-black text-[#1e3886]">55+</p>
+                            <p className="text-4xl font-black text-[#E03A3A]">55+</p>
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Major Cities</p>
                         </div>
                         <div className="py-10 text-center">
-                            <p className="text-4xl font-black text-[#1e3886]">1500+</p>
+                            <p className="text-4xl font-black text-[#E03A3A]">1500+</p>
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Expert Builders</p>
                         </div>
                         <div className="py-10 text-center">
-                            <p className="text-4xl font-black text-[#1e3886]">8.2k</p>
+                            <p className="text-4xl font-black text-[#E03A3A]">8.2k</p>
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Completed Projects</p>
                         </div>
                     </div>

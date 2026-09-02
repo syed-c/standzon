@@ -42,7 +42,7 @@ export default function AnimatedBackground() {
           speedX: (Math.random() - 0.5) * 0.5,
           speedY: (Math.random() - 0.5) * 0.5,
           opacity: Math.random() * 0.3 + 0.1,
-          color: Math.random() > 0.5 ? '#0EA5E9' : '#F59E0B'
+          color: Math.random() > 0.5 ? '#E03A3A' : '#F59E0B'
         });
       }
       

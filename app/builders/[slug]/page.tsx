@@ -302,7 +302,7 @@ export default async function BuilderProfilePage({
             services: services,
             portfolio: portfolio,
             specializations: [
-              { id: 'general', name: 'Exhibition Builder', icon: '🏗️', color: '#3B82F6' }
+              { id: 'general', name: 'Exhibition Builder', icon: '🏗️', color: '#E03A3A' }
             ],
             companyDescription: (() => {
               let desc = supabaseBuilder.company_description || '';
@@ -391,7 +391,7 @@ export default async function BuilderProfilePage({
               services: [],
               portfolio: [],
               specializations: [
-                { id: 'general', name: 'Exhibition Builder', icon: '🏗️', color: '#3B82F6' }
+                { id: 'general', name: 'Exhibition Builder', icon: '🏗️', color: '#E03A3A' }
               ],
               companyDescription: buildersTableData.company_description || 'Professional exhibition services provider',
               keyStrengths: ["Professional Service", "Quality Work", "Local Expertise"],

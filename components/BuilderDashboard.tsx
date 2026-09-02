@@ -661,7 +661,7 @@ ExhibitBay Team
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="quotes" stroke="#3B82F6" strokeWidth={2} />
+                    <Line type="monotone" dataKey="quotes" stroke="#E03A3A" strokeWidth={2} />
                     <Line type="monotone" dataKey="conversions" stroke="#10B981" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
@@ -854,7 +854,7 @@ ExhibitBay Team
                     <XAxis dataKey="month" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="revenue" fill="#3B82F6" />
+                    <Bar dataKey="revenue" fill="#E03A3A" />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
