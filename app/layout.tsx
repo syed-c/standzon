@@ -132,8 +132,9 @@ export default function RootLayout({
         {/* ✅ RESPONSIVE: Add viewport meta tag for responsive design */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 
-        {/* ✅ SEO: Add robots meta tag */}
-        <meta name="robots" content="index, follow, max-image-preview:large, max-video-preview:-1, max-snippet:-1" />
+        {/* robots is emitted by the Metadata API (root `metadata.robots` +
+            per-page generateMetadata overrides). A hardcoded tag here would
+            double up and fight the per-page noindex on thin / paginated pages. */}
 
         {/* ✅ PERFORMANCE: Critical resource optimization */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
