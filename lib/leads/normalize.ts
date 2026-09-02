@@ -145,8 +145,9 @@ export function normalizeLead(raw: any, ctx?: { referrer?: string | null }): Nor
     targeted_builder_id: isGeneral ? null : targetedBuilderId,
     targeted_builder_name: isGeneral ? null : targetedBuilderName,
     is_general_inquiry: isGeneral,
-    search_location_city: first(b.cityName, loc.city) || null,
-    search_location_country: first(b.countryName, loc.country) || null,
+    // Mirror the resolved city/country so the builder dashboard's location match works.
+    search_location_city: city !== NA ? city : null,
+    search_location_country: country !== NA ? country : null,
     search_location_country_code: countryCode,
     has_design_files: Boolean(b.hasDesign || b.has_design_files || b.hasDesignFiles),
     uploaded_files_count: toNumber(first(b.uploadedFilesCount, b.uploaded_files_count)),
