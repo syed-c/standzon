@@ -3,140 +3,68 @@ import { supabaseAdmin, supabase as anonSupabase } from '@/lib/supabase/client';
 
 const supabase = supabaseAdmin || anonSupabase;
 
+/**
+ * Leads visible to a builder = anything assigned to them (lead_assignments),
+ * plus inquiries sent to their profile directly, plus leads they have accepted.
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const builderId = searchParams.get('builderId');
-
     if (!builderId) {
-      return NextResponse.json(
-        { success: false, error: 'Builder ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Builder ID is required' }, { status: 400 });
     }
 
-    // Get leads for this builder (with error handling)
-    let leads = [];
-    try {
-      // First try the direct builder_id approach (from 003_builder_dashboard_tables.sql)
-      const { data: leadsData, error } = await supabase
-        .from('leads')
-        .select('*')
-        .eq('builder_id', builderId)
-        .order('created_at', { ascending: false });
+    const byId = new Map<string, any>();
 
-      if (error) {
-        console.error('Error fetching leads with builder_id:', error);
-        
-        // If that fails, try the lead_assignments approach (from 001_initial_schema.sql)
-        const { data: assignmentsData, error: assignmentsError } = await supabase
-          .from('lead_assignments')
-          .select(`
-            *,
-            leads (*)
-          `)
-          .eq('builder_id', builderId);
-
-        if (assignmentsError) {
-          console.error('Error fetching leads via assignments:', assignmentsError);
-          leads = [];
-        } else {
-          leads = assignmentsData?.map(assignment => assignment.leads).filter(Boolean) || [];
-        }
-      } else {
-        leads = leadsData || [];
-      }
-    } catch (error) {
-      console.log('Leads table not found, using empty array');
-      leads = [];
+    // 1. Assigned via matching
+    const { data: assignments } = await supabase
+      .from('lead_assignments')
+      .select('status, assigned_at, leads(*)')
+      .eq('builder_id', builderId);
+    for (const a of assignments || []) {
+      const l = (a as any).leads;
+      if (l?.id) byId.set(l.id, { ...l, assignmentStatus: (a as any).status, assignedAt: (a as any).assigned_at });
     }
 
-    return NextResponse.json({
-      success: true,
-      data: leads || []
-    });
+    // 2. Sent to this builder's profile directly / accepted by this builder
+    const { data: direct } = await supabase
+      .from('leads')
+      .select('*')
+      .or(`targeted_builder_id.eq.${builderId},accepted_by_builder_id.eq.${builderId}`)
+      .order('created_at', { ascending: false });
+    for (const l of direct || []) if (l?.id && !byId.has(l.id)) byId.set(l.id, l);
 
-  } catch (error) {
-    console.error('Error in leads API:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
+    const leads = Array.from(byId.values()).sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
+
+    return NextResponse.json({ success: true, data: leads });
+  } catch (error) {
+    console.error('Error in builder leads API:', error);
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
     const { leadId, status } = await request.json();
-
     if (!leadId || !status) {
-      return NextResponse.json(
-        { success: false, error: 'Lead ID and status are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'Lead ID and status are required' }, { status: 400 });
     }
-
-    // Try to update lead status directly first
-    let { data, error } = await supabase
+    const { data, error } = await supabase
       .from('leads')
-      .update({ 
-        status,
-        updated_at: new Date().toISOString()
-      })
+      .update({ status, updated_at: new Date().toISOString() })
       .eq('id', leadId)
       .select()
       .single();
-
     if (error) {
-      console.error('Error updating lead directly:', error);
-      
-      // If direct update fails, try updating via lead_assignments
-      const { data: assignmentData, error: assignmentError } = await supabase
-        .from('lead_assignments')
-        .select('lead_id')
-        .eq('lead_id', leadId)
-        .single();
-
-      if (assignmentError) {
-        console.error('Error finding lead assignment:', assignmentError);
-        return NextResponse.json(
-          { success: false, error: 'Failed to update lead' },
-          { status: 500 }
-        );
-      }
-
-      // Update the lead via assignment
-      const { data: updatedLead, error: updateError } = await supabase
-        .from('leads')
-        .update({ 
-          status,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', leadId)
-        .select()
-        .single();
-
-      if (updateError) {
-        console.error('Error updating lead via assignment:', updateError);
-        return NextResponse.json(
-          { success: false, error: 'Failed to update lead' },
-          { status: 500 }
-        );
-      }
-
-      data = updatedLead;
+      console.error('Error updating lead:', error);
+      return NextResponse.json({ success: false, error: 'Failed to update lead' }, { status: 500 });
     }
-
-    return NextResponse.json({
-      success: true,
-      data
-    });
-
+    return NextResponse.json({ success: true, data });
   } catch (error) {
     console.error('Error in leads update API:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

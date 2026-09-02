@@ -110,29 +110,59 @@ export default function ContactPageContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.company.trim() || !formData.email.trim()) {
+      toast({
+        title: "Missing details",
+        description: "Please add your company name and email address.",
+        variant: "destructive",
+      });
+      return;
+    }
     setIsSubmitting(true);
-    // TODO: Wire actual submit endpoint
-    setIsSubmitting(false);
-    toast({
-      title: "Request submitted",
-      description: "Thank you. We'll get back to you shortly.",
-    });
+    try {
+      const res = await fetch("/api/leads/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, source: "contact_form" }),
+      });
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to submit");
+      }
+      toast({
+        title: "Request submitted",
+        description: "Thank you. Our team will be in touch within one business day.",
+      });
+      setFormData({
+        firstName: "", lastName: "", email: "", phone: "", company: "", website: "",
+        eventName: "", eventLocation: "", eventDates: "", standSize: "", budget: "",
+        services: [], industry: "", message: "", urgency: "normal",
+      });
+    } catch (err) {
+      toast({
+        title: "Submission failed",
+        description: "Something went wrong. Please try again or email us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <ClientPageWithBreadcrumbs className="font-inter min-h-screen">
 
       {/* Hero Section */}
-      <section className="pt-20 pb-16 bg-gradient-to-br from-navy-900 via-navy-800 to-blue-dark text-white">
+      <section className="pt-20 pb-16 bg-[#252525] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               Get Your Free
-              <span className="block text-blue-primary">
+              <span className="block text-[#EC6A6A]">
                 Exhibition Stand Quote
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto">
+            <p className="text-xl md:text-2xl text-white/80 mb-8 max-w-4xl mx-auto">
               Connect with up to 5 pre-vetted exhibition stand contractors. Free
               quotes, expert advice, and guaranteed quality.
             </p>
@@ -163,10 +193,10 @@ export default function ContactPageContent() {
               <Card className="shadow-xl">
                 <CardContent className="p-8">
                   <div className="mb-8">
-                    <h2 className="text-3xl font-bold text-navy-900 mb-4">
+                    <h2 className="text-3xl font-bold text-[#252525] mb-4">
                       Request Your Quote
                     </h2>
-                    <p className="text-gray-600">
+                    <p className="text-[#5B5C5D]">
                       Fill out the form below and we'll connect you with the
                       best exhibition stand contractors for your specific needs
                       and location.
@@ -177,7 +207,7 @@ export default function ContactPageContent() {
                     {/* Personal Information */}
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                           First Name *
                         </label>
                         <Input
@@ -190,7 +220,7 @@ export default function ContactPageContent() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                           Last Name *
                         </label>
                         <Input
@@ -206,7 +236,7 @@ export default function ContactPageContent() {
 
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                           Email Address *
                         </label>
                         <Input
@@ -220,7 +250,7 @@ export default function ContactPageContent() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                           Phone Number
                         </label>
                         <Input
@@ -235,7 +265,7 @@ export default function ContactPageContent() {
 
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                           Company Name *
                         </label>
                         <Input
@@ -248,7 +278,7 @@ export default function ContactPageContent() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                           Website
                         </label>
                         <Input
@@ -263,13 +293,13 @@ export default function ContactPageContent() {
 
                     {/* Event Information */}
                     <div className="border-t pt-6">
-                      <h3 className="text-xl font-semibold text-navy-900 mb-4">
+                      <h3 className="text-xl font-semibold text-[#252525] mb-4">
                         Event Information
                       </h3>
 
                       <div className="grid md:grid-cols-2 gap-6">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                             Event/Trade Show Name *
                           </label>
                           <Input
@@ -282,7 +312,7 @@ export default function ContactPageContent() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                             Event Location *
                           </label>
                           <Input
@@ -297,7 +327,7 @@ export default function ContactPageContent() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                           Event Dates
                         </label>
                         <Input
@@ -312,13 +342,13 @@ export default function ContactPageContent() {
 
                     {/* Stand Requirements */}
                     <div className="border-t pt-6">
-                      <h3 className="text-xl font-semibold text-navy-900 mb-4">
+                      <h3 className="text-xl font-semibold text-[#252525] mb-4">
                         Stand Requirements
                       </h3>
 
                       <div className="grid md:grid-cols-2 gap-6">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                             Stand Size
                           </label>
                           <Select
@@ -340,7 +370,7 @@ export default function ContactPageContent() {
                           </Select>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                             Budget Range
                           </label>
                           <Select
@@ -364,7 +394,7 @@ export default function ContactPageContent() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                           Industry
                         </label>
                         <Select
@@ -387,7 +417,7 @@ export default function ContactPageContent() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                        <label className="block text-sm font-medium text-[#5B5C5D] mb-3">
                           Required Services (Select all that apply)
                         </label>
                         <div className="grid md:grid-cols-2 gap-3">
@@ -400,9 +430,9 @@ export default function ContactPageContent() {
                                 type="checkbox"
                                 checked={formData.services.includes(service)}
                                 onChange={() => handleServiceToggle(service)}
-                                className="rounded border-gray-300 text-blue-primary focus:ring-blue-primary"
+                                className="rounded border-[#E4E6E8] text-[#EC6A6A] focus:ring-[#E03A3A]"
                               />
-                              <span className="text-sm text-gray-700">
+                              <span className="text-sm text-[#5B5C5D]">
                                 {service}
                               </span>
                             </label>
@@ -414,7 +444,7 @@ export default function ContactPageContent() {
                     {/* Additional Information */}
                     <div className="border-t pt-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                           Additional Requirements or Message
                         </label>
                         <Textarea
@@ -428,7 +458,7 @@ export default function ContactPageContent() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-[#5B5C5D] mb-2">
                           Project Urgency
                         </label>
                         <Select
@@ -458,7 +488,7 @@ export default function ContactPageContent() {
                     <Button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-blue-primary hover:bg-blue-dark text-white py-4 text-lg"
+                      className="w-full bg-[#E03A3A] hover:bg-[#CC2E2E] text-white py-4 text-lg"
                     >
                       {isSubmitting ? (
                         "Submitting Request..."
@@ -487,11 +517,11 @@ export default function ContactPageContent() {
                       <div className="flex items-start space-x-4">
                         <div className="flex-shrink-0">{info.icon}</div>
                         <div className="flex-1">
-                          <h3 className="font-semibold text-navy-900 mb-2">
+                          <h3 className="font-semibold text-[#252525] mb-2">
                             {info.title}
                           </h3>
                           {info.details.map((detail, idx) => (
-                            <div key={idx} className="text-gray-600 mb-1">
+                            <div key={idx} className="text-[#5B5C5D] mb-1">
                               {detail}
                             </div>
                           ))}
@@ -507,43 +537,43 @@ export default function ContactPageContent() {
                 ))}
 
                 {/* Process Overview */}
-                <Card className="bg-blue-primary text-white">
+                <Card className="bg-[#E03A3A] text-white">
                   <CardContent className="p-6">
                     <h3 className="text-xl font-bold mb-4">
                       What Happens Next?
                     </h3>
                     <div className="space-y-4">
                       <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-white text-blue-primary rounded-full flex items-center justify-center text-sm font-bold">
+                        <div className="w-6 h-6 bg-white text-[#EC6A6A] rounded-full flex items-center justify-center text-sm font-bold">
                           1
                         </div>
                         <div className="text-sm">
                           <div className="font-semibold">
                             Instant Confirmation
                           </div>
-                          <div className="text-blue-100">
+                          <div className="text-white/80">
                             You'll receive confirmation of your request
                           </div>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-white text-blue-primary rounded-full flex items-center justify-center text-sm font-bold">
+                        <div className="w-6 h-6 bg-white text-[#EC6A6A] rounded-full flex items-center justify-center text-sm font-bold">
                           2
                         </div>
                         <div className="text-sm">
                           <div className="font-semibold">Review</div>
-                          <div className="text-blue-100">
+                          <div className="text-white/80">
                             We review your request and contact you
                           </div>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3">
-                        <div className="w-6 h-6 bg-white text-blue-primary rounded-full flex items-center justify-center text-sm font-bold">
+                        <div className="w-6 h-6 bg-white text-[#EC6A6A] rounded-full flex items-center justify-center text-sm font-bold">
                           3
                         </div>
                         <div className="text-sm">
                           <div className="font-semibold">Next Steps</div>
-                          <div className="text-blue-100">
+                          <div className="text-white/80">
                             We'll outline the next steps and timeline
                           </div>
                         </div>

@@ -281,8 +281,8 @@ export default function QuoteRequestContent() {
         priority: 'Standard'
       };
 
-      // Submit to API
-      const response = await fetch('/api/quote-requests', {
+      // Submit to the unified lead endpoint (saves + matches + notifies builders)
+      const response = await fetch('/api/leads/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -336,45 +336,6 @@ export default function QuoteRequestContent() {
       toast.error(error instanceof Error ? error.message : 'Failed to submit quote request. Please try again.');
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  // Test function for debugging
-  const handleTestSubmit = async () => {
-    console.log('🧪 Testing lead submission with sample data...');
-    
-    const testData = {
-      companyName: 'Test Company Ltd',
-      fullName: 'John Test',
-      email: 'test@example.com',
-      phone: '+1234567890',
-      exhibitionName: 'Test Exhibition',
-      city: 'Dubai',
-      country: 'United Arab Emirates',
-      boothSize: 50,
-      projectBudget: '25k-50k',
-      message: 'Test submission from location page',
-      source: 'location_page_test'
-    };
-
-    try {
-      const response = await fetch('/api/leads/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(testData)
-      });
-      
-      const result = await response.json();
-      console.log('🧪 Test submission result:', result);
-      
-      if (result.success) {
-        alert(`✅ Test successful! ${result.data.matchingBuilders} builders found for ${testData.city}, ${testData.country}`);
-      } else {
-        alert(`❌ Test failed: ${result.error}`);
-      }
-    } catch (error) {
-      console.error('❌ Test submission error:', error);
-      alert('Test submission failed');
     }
   };
 
