@@ -252,6 +252,28 @@ const nextConfig = {
       },
     ];
   },
+  // ✅ SEO: consolidate legacy URL patterns onto the canonical routes with a
+  // real 308 (handled at the routing layer — more reliable than page-level
+  // permanentRedirect()).
+  async redirects() {
+    return [
+      {
+        source: '/companies/:slug',
+        destination: '/builders/:slug',
+        permanent: true,
+      },
+      {
+        source: '/locations/:country',
+        destination: '/exhibition-stands/:country',
+        permanent: true,
+      },
+      {
+        source: '/locations/:country/:city',
+        destination: '/exhibition-stands/:country/:city',
+        permanent: true,
+      },
+    ];
+  },
   // ✅ PERFORMANCE: Optimize CSS preloading
   async rewrites() {
     return [

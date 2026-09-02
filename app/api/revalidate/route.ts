@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 
     if (!paths.length) {
       // If no paths specified, revalidate Italy cities data by default
-      revalidatePath('/locations/italy');
+      revalidatePath('/exhibition-stands/italy');
       revalidatePath('/admin');
       revalidatePath('/');
       return NextResponse.json({ 

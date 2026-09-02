@@ -46,3 +46,4 @@ server.log
 # Ensure backup directories are never committed
 **/backup_*
 **/*_recovery_log.json
+.env*
