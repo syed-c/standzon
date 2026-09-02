@@ -1,24 +1,13 @@
-"use client";
-
-import { useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 import { normalizeCountrySlug } from '@/lib/utils/slugUtils';
 
-export default function CountryPage({ params }: { params: Promise<{ country: string }> }) {
-  const router = useRouter();
-  const { country } = use(params);
-  
-  useEffect(() => {
-    // Redirect to the exhibition-stands route with the same country parameter
-    router.replace(`/exhibition-stands/${normalizeCountrySlug(country)}`);
-  }, [country, router]);
-
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold mb-4">Redirecting...</h1>
-        <p>Please wait while we redirect you to the country page.</p>
-      </div>
-    </div>
-  );
+// This legacy path is a permanent (308) server-side redirect to the canonical
+// /exhibition-stands/... route so search engines consolidate signals correctly.
+export default async function CountryPage({
+  params,
+}: {
+  params: Promise<{ country: string }>;
+}) {
+  const { country } = await params;
+  permanentRedirect(`/exhibition-stands/${normalizeCountrySlug(country)}`);
 }

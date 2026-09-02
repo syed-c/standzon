@@ -1,17 +1,24 @@
 import { Metadata } from "next";
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import ServerCountryCityPage from "@/components/ServerCountryCityPage";
 import CountryPageClientWrapper from "@/components/CountryPageClientWrapper";
 import { GLOBAL_EXHIBITION_DATA } from "@/lib/data/globalCities";
-import { getServerSupabase } from "@/lib/supabase";
 import { getCountryCodeByName } from "@/lib/utils/countryUtils";
 import { getCitiesByCountry } from "@/lib/supabase/client";
 // Import the global database function
 import { getCitiesByCountry as getGlobalCitiesByCountry } from "@/lib/data/globalExhibitionDatabase";
 import ServerPageWithBreadcrumbs from "@/components/ServerPageWithBreadcrumbs";
+import { getServerPageContent } from "@/lib/data/serverPageContent";
+import JsonLd from "@/components/JsonLd";
+import { getLocationSchema, getBreadcrumbSchema } from "@/lib/seo/structuredData";
 
-// ✅ FIX #1: Force dynamic rendering to prevent build-time evaluation
-export const dynamic = 'force-dynamic';
+// ✅ ISR: cache rendered country pages for 1 hour (was force-dynamic, which
+// re-rendered on every crawl and hurt TTFB / crawl budget). No generateStaticParams,
+// so pages are still built on-demand — just cached afterwards.
+export const revalidate = 3600;
+
+const SITE_URL = "https://standszone.com";
 
 // Create a map for easy lookup
 const COUNTRY_DATA: Record<string, any> = {};
@@ -32,38 +39,36 @@ interface CountryPageProps {
   }>;
 }
 
-// Fetch CMS content for the country page
+// Fetch CMS content for the country page (cached + deduped via getServerPageContent).
 async function getCountryPageContent(countrySlug: string) {
   try {
-    const sb = getServerSupabase();
-    if (sb) {
-      console.log("🔍 Server-side: Fetching CMS data for country:", countrySlug);
-
-
-
-      const result = await sb
-        .from("page_contents")
-        .select("content")
-        .eq("id", countrySlug)
-        .single();
-
-      if (result.error) {
-        console.log("❌ Server-side: Supabase error:", result.error);
-        return null;
-      }
-
-      if (result.data?.content) {
-        console.log("✅ Server-side: Found CMS data for country:", countrySlug);
-        return result.data.content;
-      }
-    }
-
-    return null;
+    return (await getServerPageContent(countrySlug)) || null;
   } catch (error) {
     console.error("❌ Error fetching country page content:", error);
     return null;
   }
 }
+
+/**
+ * Shared, error-aware "does this country page have real content?" check.
+ * Cached per request so generateMetadata and the page body share the same work.
+ * `errored: true` means "unknown" — never treat it as "empty" (avoids deindexing
+ * a live page on a transient DB blip).
+ */
+const loadCountrySignals = cache(async (countrySlug: string, countryName: string) => {
+  let builderTotal = 0;
+  let errored = false;
+  try {
+    const { getFilteredBuilders } = await import("@/lib/supabase/builders");
+    const r = await getFilteredBuilders({ country: countryName, page: 1, itemsPerPage: 1 });
+    builderTotal = r.total || 0;
+  } catch (e) {
+    errored = true;
+    console.log("⚠️ loadCountrySignals: builder check failed:", e);
+  }
+  const cms = await getCountryPageContent(countrySlug);
+  return { builderTotal, cms, errored };
+});
 
 export async function generateMetadata({ params, searchParams }: { params: Promise<{ country: string }>; searchParams: Promise<{ page?: string }> }): Promise<Metadata> {
   const { country: countrySlug } = await params;
@@ -93,42 +98,31 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
     };
   }
 
-  // Try to fetch CMS content for metadata
+  // Cached, error-aware signals (shared with the page body).
+  const { builderTotal, cms, errored } = await loadCountrySignals(countrySlug, countryInfo.name);
+
   let cmsMetadata = null;
-  try {
-    const sb = getServerSupabase();
-    if (sb) {
-      const result = await sb
-        .from('page_contents')
-        .select('content')
-        .eq('id', countrySlug)
-        .single();
-
-
-
-      if (!result.error && result.data?.content) {
-        const content = result.data.content;
-        const seo = content.seo || {};
-        const hero = content.hero || {};
-
-
-
-        cmsMetadata = {
-          title: seo.metaTitle || hero.title || `Exhibition Stand Builders in ${countryInfo.name} | Professional Trade Show Displays`,
-          description: seo.metaDescription || `Find professional exhibition stand builders across ${countryInfo.name}. Custom trade show displays, booth design, and comprehensive exhibition services.`,
-          keywords: seo.keywords || [`exhibition stands ${countryInfo.name}`, `booth builders ${countryInfo.name}`, `trade show displays ${countryInfo.name}`, `${countryInfo.name} exhibition builders`, `${countryInfo.name} booth design`, `${countryInfo.name} exhibition stands`],
-        };
-      }
-    }
-  } catch (error) {
-    console.error('❌ Error fetching CMS metadata:', error);
-    // Continue with fallback metadata even if CMS fails
+  if (cms) {
+    const seo = cms.seo || {};
+    const hero = cms.hero || {};
+    cmsMetadata = {
+      title: seo.metaTitle || hero.title || `Exhibition Stand Builders in ${countryInfo.name} | Professional Trade Show Displays`,
+      description: seo.metaDescription || `Find professional exhibition stand builders across ${countryInfo.name}. Custom trade show displays, booth design, and comprehensive exhibition services.`,
+      keywords: seo.keywords || [`exhibition stands ${countryInfo.name}`, `booth builders ${countryInfo.name}`, `trade show displays ${countryInfo.name}`, `${countryInfo.name} exhibition builders`, `${countryInfo.name} booth design`, `${countryInfo.name} exhibition stands`],
+    };
   }
 
   // Handle pagination for SEO: canonical and robots tags
   const isPaginated = currentPageNum > 1;
   const canonicalUrl = `https://standszone.com/exhibition-stands/${countrySlug}`;
-  
+
+  // Thin-content guard: a country hub with zero matching builders is thin
+  // (templated boilerplate only) — keep it out of the index for now. Still
+  // crawlable/followed; recovers automatically once builders serve the country.
+  // If the check errored we don't know the count, so we stay indexable.
+  const thin = !errored && builderTotal === 0;
+  const indexable = !isPaginated && !thin;
+
   // Use CMS metadata if available, otherwise fall back to default
   const title = cmsMetadata?.title || `Exhibition Stand Builders in ${countryInfo.name} | Professional Trade Show Displays`;
   const description = cmsMetadata?.description || `Find professional exhibition stand builders across ${countryInfo.name}. Custom trade show displays, booth design, and comprehensive exhibition services.`;
@@ -139,16 +133,10 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
     description,
     keywords,
     robots: {
-      index: !isPaginated, // Don't index paginated pages
-      follow: true,        // But allow following links
-      googleBot: isPaginated ? {
-        index: false,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      } : {
-        index: true,
+      index: indexable,
+      follow: true,
+      googleBot: {
+        index: indexable,
         follow: true,
         'max-video-preview': -1,
         'max-image-preview': 'large',
@@ -160,11 +148,14 @@ export async function generateMetadata({ params, searchParams }: { params: Promi
       description,
       type: 'website',
       locale: 'en_US',
+      url: canonicalUrl,
+      images: ['/og-image.png'],
     },
     twitter: {
       card: 'summary_large_image',
       title: isPaginated ? `${title} - Page ${currentPageNum}` : title,
       description,
+      images: ['/og-image.png'],
     },
     alternates: {
       canonical: canonicalUrl,
@@ -186,7 +177,8 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
 
   console.log(`${countryInfo.flag} Loading ${countryInfo.name} page with modern UI...`);
 
-  const cmsContent = await getCountryPageContent(countrySlug);
+  const countrySignals = await loadCountrySignals(countrySlug, countryInfo.name);
+  const cmsContent = countrySignals.cms;
 
   // Get country code for fetching cities
   const countryCode = getCountryCodeByName(countryInfo.name);
@@ -305,27 +297,30 @@ export default async function CountryPage({ params, searchParams }: CountryPageP
     ...(countryBlock || {})
   };
 
-  // ✅ FIX: Enhanced Soft 404 prevention - stricter validation
-  const hasMeaningfulContent = totalBuilders > 0 || (cmsContent && cmsContent.content);
-  const hasValidMetadata = cmsContent?.seo?.metaTitle && cmsContent?.seo?.metaDescription;
-  
-  // Return 404 for pages with no real value
-  if (!hasMeaningfulContent) {
+  // Soft-404 prevention: only 404 when we are CONFIRMED to have no content.
+  // If the content lookups errored (transient DB issue), render rather than 404 —
+  // deindexing a live page over a blip is far more costly than serving one thin page.
+  const hasMeaningfulContent = totalBuilders > 0 || (cmsContent && (cmsContent as any).content);
+  if (!hasMeaningfulContent && !countrySignals.errored) {
     console.warn(`⚠️ Soft 404: No meaningful content for ${countryInfo.name}. Builders: ${totalBuilders}, CMS: ${!!cmsContent}`);
     notFound();
   }
-  
-  // Additional validation: if we have CMS content but it's minimal/placeholder
-  if (cmsContent && !hasValidMetadata) {
-    const contentLength = JSON.stringify(cmsContent).length;
-    if (contentLength < 500) { // Arbitrary threshold for meaningful content
-      console.warn(`⚠️ Soft 404: CMS content too minimal (${contentLength} chars) for ${countryInfo.name}`);
-      notFound();
-    }
-  }
+
+  const jsonLd = [
+    getBreadcrumbSchema([
+      { name: "Home", url: `${SITE_URL}/` },
+      { name: "Exhibition Stands", url: `${SITE_URL}/exhibition-stands` },
+      { name: countryInfo.name, url: `${SITE_URL}/exhibition-stands/${countrySlug}` },
+    ]),
+    getLocationSchema(countryInfo.name, undefined, builders, {
+      totalBuilders,
+      verifiedBuilders: builders.filter((b: any) => b.verified).length,
+    }),
+  ];
 
   return (
     <ServerPageWithBreadcrumbs pathname={`/exhibition-stands/${countrySlug}`}>
+      <JsonLd data={jsonLd} />
       <div className="font-inter">
         <CountryPageClientWrapper>
           <ServerCountryCityPage

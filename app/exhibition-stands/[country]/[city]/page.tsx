@@ -16,9 +16,53 @@ import { getCitiesByCountry } from "@/lib/supabase/client";
 // Import the global database function
 import { getCitiesByCountry as getGlobalCitiesByCountry } from "@/lib/data/globalExhibitionDatabase";
 import ServerPageWithBreadcrumbs from "@/components/ServerPageWithBreadcrumbs";
+import { cache } from "react";
+import JsonLd from "@/components/JsonLd";
+import { getLocationSchema, getBreadcrumbSchema } from "@/lib/seo/structuredData";
 
 // ✅ PERFORMANCE: Use ISR with 1-hour revalidation
 export const revalidate = 3600;
+
+const SITE_URL = "https://standszone.com";
+
+/**
+ * Single source of truth for "does this city page have real content?".
+ * Cached per-request (React cache) so generateMetadata and the page body share
+ * one set of DB calls instead of each running the checks independently.
+ *
+ * Returns `errored: true` when a lookup threw unexpectedly — callers must treat
+ * that as "unknown", NOT as "empty", so a transient DB blip never turns a live,
+ * ranking page into a 404.
+ */
+const loadCitySignals = cache(async (
+  countrySlug: string,
+  citySlug: string,
+  countryName: string,
+  cityName: string,
+) => {
+  let builderTotal = 0;
+  let cms: any = null;
+  let errored = false;
+
+  try {
+    const { getFilteredBuilders } = await import("@/lib/supabase/builders");
+    const r = await getFilteredBuilders({ country: countryName, city: cityName, page: 1, itemsPerPage: 1 });
+    builderTotal = r.total || 0;
+  } catch (e) {
+    errored = true;
+    console.log("⚠️ loadCitySignals: builder check failed:", e);
+  }
+
+  try {
+    const { getServerPageContent } = await import("@/lib/data/serverPageContent");
+    cms = await getServerPageContent(`${countrySlug}-${citySlug}`);
+  } catch (e) {
+    errored = true;
+    console.log("⚠️ loadCitySignals: CMS check failed:", e);
+  }
+
+  return { builderTotal, cms, errored, hasMeaningfulData: builderTotal > 0 || !!cms };
+});
 
 interface CityPageProps {
   params: Promise<{
@@ -55,11 +99,15 @@ const getDefaultCityContent = (cityName: string, countryName: string) => ({
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ country: string; city: string }>;
+  searchParams?: Promise<{ page?: string }>;
 }): Promise<Metadata> {
   try {
     const { country, city } = await params;
+    const { page: pageParam } = (await searchParams) || {};
+    const isPaginated = parseInt(pageParam || "1", 10) > 1;
     const normalize = (s: string) =>
       s
         .toLowerCase()
@@ -96,94 +144,56 @@ export async function generateMetadata({
     const cityName = ('name' in cityData) ? cityData.name : cityData.cityName;
     const countryName = toTitle(countrySlug);
 
-    // ✅ FIX #3: Validate that we can fetch meaningful data before generating metadata
-    let hasMeaningfulData = false;
+    // ✅ Shared, error-aware content check (see loadCitySignals).
+    const { hasMeaningfulData, errored, builderTotal, cms } = await loadCitySignals(
+      countrySlug,
+      citySlug,
+      countryName,
+      cityName,
+    );
 
-    // Check if we can get builders for this city
-    try {
-      const { getFilteredBuilders } = await import('@/lib/supabase/builders');
-      const builderResult = await getFilteredBuilders({
-        country: countryName,
-        city: cityName,
-        page: 1,
-        itemsPerPage: 1
-      });
-
-      if (builderResult.total > 0) {
-        hasMeaningfulData = true;
-      }
-    } catch (error) {
-      console.log("⚠️ Could not verify builder data for metadata:", error);
-    }
-
-    // Check if CMS content exists
-    try {
-      const sb = getServerSupabase();
-      if (sb) {
-        const cityPageId = `${countrySlug}-${citySlug}`;
-        const result = await sb
-          .from("page_contents")
-          .select("content")
-          .eq("id", cityPageId)
-          .single();
-
-        if (!result.error && result.data?.content) {
-          hasMeaningfulData = true;
-        }
-      }
-    } catch (error) {
-      console.log("⚠️ Could not verify CMS data for metadata:", error);
-    }
-
-    // ✅ FIX #4: If no meaningful data, don't generate metadata - trigger 404 instead
-    if (!hasMeaningfulData) {
+    // Only 404 when we are CONFIRMED to have no content. If the lookups errored we
+    // stay lenient and render — a transient DB blip must not deindex a live page.
+    if (!hasMeaningfulData && !errored) {
       console.warn(`⚠️ Soft 404 metadata: No meaningful data for ${cityName}, ${countryName}`);
       notFound();
     }
 
-    // Try to fetch CMS content for metadata
-    let cmsMetadata = null;
-    try {
-      const sb = getServerSupabase();
-      if (sb) {
-        const cityPageId = `${countrySlug}-${citySlug}`;
+    const seo = cms?.seo || {};
+    const hero = cms?.hero || {};
+    const baseTitle =
+      seo.metaTitle ||
+      hero.title ||
+      `Exhibition Stand Builders in ${cityName}, ${countryName}`;
+    const description =
+      seo.metaDescription ||
+      `Find professional exhibition stand builders in ${cityName}, ${countryName}. Custom trade show displays, booth design, and comprehensive exhibition services.`;
+    const keywords = seo.keywords || [
+      `exhibition stands ${cityName}`,
+      `${cityName} trade show builders`,
+      `${cityName} booth design`,
+      `${countryName} ${cityName} exhibition services`,
+    ];
 
-        const result = await sb
-          .from("page_contents")
-          .select("content")
-          .eq("id", cityPageId)
-          .single();
+    const title = isPaginated ? `${baseTitle} – Page ${parseInt(pageParam || "1", 10)}` : baseTitle;
 
-        if (!result.error && result.data?.content) {
-          const content = result.data.content;
-          const seo = content.seo || {};
-          const hero = content.hero || {};
-
-          cmsMetadata = {
-            title: seo.metaTitle || hero.title || `Exhibition Stand Builders in ${cityName}, ${countryName} | Professional Trade Show Displays`,
-            description: seo.metaDescription || `Find professional exhibition stand builders in ${cityName}, ${countryName}. Custom trade show displays, booth design, and comprehensive exhibition services.`,
-            keywords: seo.keywords || [`exhibition stands ${cityName}`, `${cityName} trade show builders`, `${cityName} booth design`, `${countryName} ${cityName} exhibition services`],
-          };
-        }
-      }
-    } catch (error) {
-      console.error("❌ Error fetching CMS metadata:", error);
-    }
-
-    // Use CMS metadata if available, otherwise fall back to default
-    const title = cmsMetadata?.title || `Exhibition Stand Builders in ${cityName}, ${countryName} | Professional Trade Show Displays`;
-    const description = cmsMetadata?.description || `Find professional exhibition stand builders in ${cityName}, ${countryName}. Custom trade show displays, booth design, and comprehensive exhibition services.`;
-    const keywords = cmsMetadata?.keywords || [`exhibition stands ${cityName}`, `${cityName} trade show builders`, `${cityName} booth design`, `${countryName} ${cityName} exhibition services`];
+    // Thin-content guard: on a builder-directory site, a city page with zero
+    // matching builders is thin by definition (templated boilerplate only), so
+    // keep it out of the index for now. It stays crawlable (follow) and becomes
+    // indexable automatically once builders serve that city. If the lookup errored
+    // we don't know the real count, so we stay indexable.
+    const thin = !errored && builderTotal === 0;
+    const indexable = !isPaginated && !thin;
 
     return {
       title,
       description,
       keywords,
       robots: {
-        index: true,
+        index: indexable,
         follow: true,
         googleBot: {
-          index: true,
+          index: indexable,
           follow: true,
           'max-video-preview': -1,
           'max-image-preview': 'large',
@@ -194,12 +204,16 @@ export async function generateMetadata({
         title,
         description,
         type: "website",
+        url: `${SITE_URL}/exhibition-stands/${countrySlug}/${citySlug}`,
+        images: ["/og-image.png"],
       },
       alternates: {
-        canonical: `https://standszone.com/exhibition-stands/${countrySlug}/${citySlug}`,
+        canonical: `${SITE_URL}/exhibition-stands/${countrySlug}/${citySlug}`,
       },
     };
   } catch (error) {
+    // Re-throw Next's control-flow signals (notFound / redirect) untouched.
+    if (error && typeof (error as any).digest === "string") throw error;
     console.error("❌ generateMetadata error:", error);
     notFound();
   }
@@ -395,53 +409,17 @@ export default async function CityPage({ params, searchParams }: CityPageProps) 
   const cityName = ('name' in cityData) ? cityData.name : cityData.cityName;
   const countryName = toTitle(countrySlug);
 
-  // ✅ FIX #7: Validate that we can fetch meaningful data before rendering page
-  let hasMeaningfulData = false;
+  // ✅ Shared, error-aware content check (deduped with generateMetadata via React cache).
+  const signals = await loadCitySignals(countrySlug, citySlug, countryName, cityName);
 
-  // Check if we can get builders for this city
-  try {
-    const { getFilteredBuilders } = await import('@/lib/supabase/builders');
-    const builderResult = await getFilteredBuilders({
-      country: countryName,
-      city: cityName,
-      page: 1,
-      itemsPerPage: 1
-    });
-
-    if (builderResult.total > 0) {
-      hasMeaningfulData = true;
-    }
-  } catch (error) {
-    console.log("⚠️ Could not verify builder data for page:", error);
-  }
-
-  // Check if CMS content exists
-  try {
-    const sb = getServerSupabase();
-    if (sb) {
-      const cityPageId = `${countrySlug}-${citySlug}`;
-      const result = await sb
-        .from("page_contents")
-        .select("content")
-        .eq("id", cityPageId)
-        .single();
-
-      if (!result.error && result.data?.content) {
-        hasMeaningfulData = true;
-      }
-    }
-  } catch (error) {
-    console.log("⚠️ Could not verify CMS data for page:", error);
-  }
-
-  // ✅ FIX #8: If no meaningful data, don't render page - trigger 404 instead
-  if (!hasMeaningfulData) {
+  // Only 404 on a CONFIRMED-empty page. If lookups errored, render anyway so a
+  // transient DB blip can't turn a live, ranking page into a 404.
+  if (!signals.hasMeaningfulData && !signals.errored) {
     console.warn(`⚠️ Soft 404 page: No meaningful data for ${cityName}, ${countryName}`);
     notFound();
   }
 
-  // ✅ FIX #9: Try to get CMS content (only after validation passes)
-  const cmsContent = await getCityPageContent(countrySlug, citySlug);
+  const cmsContent = signals.cms ?? (await getCityPageContent(countrySlug, citySlug));
 
   // Get country code for fetching cities (same as country pages)
   const countryCode = getCountryCodeByName(countryName);
@@ -573,8 +551,26 @@ export default async function CityPage({ params, searchParams }: CityPageProps) 
 
     
 
+  const jsonLd = [
+    getBreadcrumbSchema([
+      { name: "Home", url: `${SITE_URL}/` },
+      { name: "Exhibition Stands", url: `${SITE_URL}/exhibition-stands` },
+      { name: countryName, url: `${SITE_URL}/exhibition-stands/${countrySlug}` },
+      { name: cityName, url: `${SITE_URL}/exhibition-stands/${countrySlug}/${citySlug}` },
+    ]),
+    getLocationSchema(countryName, cityName, builders, {
+      totalBuilders,
+      verifiedBuilders: builders.filter((b: any) => b.verified).length,
+      averageRating:
+        builders.length > 0
+          ? Math.round((builders.reduce((s: number, b: any) => s + (b.rating || 0), 0) / builders.length) * 10) / 10
+          : undefined,
+    }),
+  ];
+
   return (
     <ServerPageWithBreadcrumbs pathname={`/exhibition-stands/${countrySlug}/${citySlug}`}>
+      <JsonLd data={jsonLd} />
       <div className="font-inter">
         <ServerCountryCityPage
           country={countryName}

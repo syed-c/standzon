@@ -322,7 +322,7 @@ export function HomepageStyleLocationPage({
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {topFeaturedBuilders.map((builder, index) => (
-                <Link key={`featured-${builder.id}-${index}`} href={`/companies/${builder.slug}`} className="group">
+                <Link key={`featured-${builder.id}-${index}`} href={`/builders/${builder.slug}`} className="group">
                   <Card className={`h-full hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1 bg-gradient-to-br from-white to-pink-50/30 border-pink-100 hover:border-pink-300 ${builder.adminFeatured || builder.featured ? 'ring-2 ring-pink-600 bg-gradient-to-br from-pink-50 to-white' : ''}`}>
                     <CardContent className="p-6">
                       {(builder.adminFeatured || builder.featured) && (
@@ -518,7 +518,7 @@ export function HomepageStyleLocationPage({
           {/* Builders Grid/List */}
           <div className={viewMode === 'grid' ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
             {currentBuilders.map((builder, index) => (
-              <Link key={`${builder.id}-${index}`} href={`/companies/${builder.slug}`} className="group">
+              <Link key={`${builder.id}-${index}`} href={`/builders/${builder.slug}`} className="group">
                 <Card className={`h-full hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1 ${viewMode === 'list' ? 'flex' : ''}`}>
                   <CardContent className={`p-6 ${viewMode === 'list' ? 'flex items-center space-x-6 w-full' : ''}`}>
                     <div className={viewMode === 'list' ? 'flex-1' : ''}>

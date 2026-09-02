@@ -301,23 +301,62 @@ export async function getFilteredBuilders(options: {
     return { builders: [], total: 0, totalPages: 0 };
   }
 
+  const countryVariations = (c: string) => {
+    const n = c.toLowerCase().trim();
+    const v = [n];
+    if (n.includes('united arab emirates')) v.push('uae');
+    else if (n === 'uae') v.push('united arab emirates');
+    return v;
+  };
+
+  // Step 1: find builders that SERVE this location via builder_service_locations
+  // (not just those headquartered there). This is what makes non-US/UAE country
+  // and city pages show real builders instead of an empty list.
+  let serviceBuilderIds: string[] = [];
+  if (country || city) {
+    try {
+      let slq = client.from('builder_service_locations').select('builder_id');
+      if (city) {
+        slq = slq.ilike('city', `%${city.toLowerCase()}%`);
+        if (country) {
+          slq = slq.or(countryVariations(country).map(v => `country.ilike.%${v}%`).join(','));
+        }
+      } else if (country) {
+        slq = slq.or(countryVariations(country).map(v => `country.ilike.%${v}%`).join(','));
+      }
+      const { data: slRows, error: slErr } = await slq.limit(3000);
+      if (slErr) throw slErr;
+      serviceBuilderIds = Array.from(
+        new Set((slRows || []).map((r: any) => r.builder_id).filter(Boolean))
+      ).slice(0, 200); // cap: big markets are already covered by HQ matching
+    } catch (err) {
+      console.warn('⚠️ builder_service_locations lookup failed (continuing with HQ match only):', err);
+    }
+  }
+
   const tryTable = async (tableName: string) => {
     try {
       let query = client.from(tableName).select('*', { count: 'exact' });
 
-      if (country) {
-        const normalizedCountry = country.toLowerCase();
-        const variations = [normalizedCountry];
-        if (normalizedCountry.includes('united arab emirates') || normalizedCountry === 'uae') {
-          variations.push(normalizedCountry === 'uae' ? 'united arab emirates' : 'uae');
-        }
-        
-        const conditions = variations.map(v => `headquarters_country.ilike.%${v}%`).join(',');
-        query = query.or(conditions);
-      }
-
+      const orParts: string[] = [];
       if (city) {
-        query = query.ilike('headquarters_city', `%${city.toLowerCase()}%`);
+        const cityCond = `headquarters_city.ilike.%${city.toLowerCase()}%`;
+        if (country) {
+          const cOr = countryVariations(country).map(v => `headquarters_country.ilike.%${v}%`).join(',');
+          orParts.push(`and(or(${cOr}),${cityCond})`);
+        } else {
+          orParts.push(cityCond);
+        }
+      } else if (country) {
+        for (const v of countryVariations(country)) {
+          orParts.push(`headquarters_country.ilike.%${v}%`);
+        }
+      }
+      if (serviceBuilderIds.length > 0) {
+        orParts.push(`id.in.(${serviceBuilderIds.join(',')})`);
+      }
+      if (orParts.length > 0) {
+        query = query.or(orParts.join(','));
       }
 
       const { data, count, error } = await query
@@ -333,18 +372,17 @@ export async function getFilteredBuilders(options: {
   };
 
   try {
-    // Try 'builders' table first
-    let { data, count } = await tryTable('builders');
+    // 'builder_profiles' holds all real data; try it first, fall back to legacy 'builders'.
+    let { data, count } = await tryTable('builder_profiles');
 
-    // If no results or error, try 'builder_profiles'
     if (!data || data.length === 0) {
-      console.log('⚠️ No results in builders table, trying builder_profiles...');
-      const fallback = await tryTable('builder_profiles');
+      console.log('⚠️ No results in builder_profiles, trying legacy builders table...');
+      const fallback = await tryTable('builders');
       data = fallback.data;
       count = fallback.count;
     }
 
-    if (!data || data.length === 0) {
+    if (!data) {
       console.log('⚠️ No builders found in either table');
       return { builders: [], total: 0, totalPages: 0 };
     }

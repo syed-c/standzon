@@ -11,6 +11,8 @@ import DeferredMonitoring from '@/components/DeferredMonitoring';
 import NonCriticalScripts from '@/components/NonCriticalScripts';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import AppWrapper from '@/components/AppWrapper';
+import JsonLd from '@/components/JsonLd';
+import { getOrganizationSchema, getWebsiteSchema } from '@/lib/seo/structuredData';
 // GlobalTypography temporarily disabled due to dev chunk issue
 
 // Font optimization: Match DOCTYPE html.html exactly
@@ -59,8 +61,11 @@ const redHatDisplay = Red_Hat_Display({
 
 
 // Use centralized metadata for the root layout
+const homeMeta: any = siteMetadata['/'];
 export const metadata: Metadata = {
-  ...siteMetadata['/'],
+  ...homeMeta,
+  // Resolves relative OG/canonical URLs and silences the metadataBase warning.
+  metadataBase: new URL('https://standszone.com'),
   // ✅ SEO: Add robots meta tag
   robots: {
     index: true,
@@ -72,6 +77,21 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+  },
+  // Default social preview image for every page that doesn't set its own.
+  openGraph: {
+    type: 'website',
+    siteName: 'StandsZone',
+    url: 'https://standszone.com',
+    title: homeMeta?.title,
+    description: homeMeta?.description,
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'StandsZone' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: homeMeta?.title,
+    description: homeMeta?.description,
+    images: ['/og-image.png'],
   },
   // ✅ PERFORMANCE: Add performance hints
   other: {
@@ -182,6 +202,7 @@ export default function RootLayout({
         {/* Note: Removed preload links that were causing warnings in development */}
       </head>
       <body className={`${inter.variable} ${poppins.variable} ${roboto.variable} ${montserrat.variable} ${redHatDisplay.variable} ${inter.className} font-sans h-full m-0 p-0`} suppressHydrationWarning>
+        <JsonLd data={[getOrganizationSchema(), getWebsiteSchema()]} />
         <ThemeProvider>
           <CriticalResourcePreloader />
           {/* <GlobalTypography /> */}

@@ -1,21 +1,119 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { unifiedPlatformAPI } from "@/lib/data/unifiedPlatformData";
 import BuilderProfileClient from "./BuilderProfileClient";
+import JsonLd from "@/components/JsonLd";
+import { getBreadcrumbSchema } from "@/lib/seo/structuredData";
 import { getServerSupabase } from '@/lib/supabase';
 import type { Metadata } from 'next';
 
+const SITE_URL = "https://standszone.com";
+
+// Lightweight cached lookup used by generateMetadata (deduped with the page render
+// within the same request via React cache()).
+const loadBuilderMeta = cache(async (slug: string) => {
+  try {
+    const sb = getServerSupabase();
+    if (!sb) return null;
+    const { data } = await sb
+      .from('builder_profiles')
+      .select('company_name, slug, headquarters_city, headquarters_country, company_description, logo, rating, review_count, verified')
+      .eq('slug', slug)
+      .maybeSingle();
+    return data || null;
+  } catch {
+    return null;
+  }
+});
+
+// Builds LocalBusiness JSON-LD from the profile object shape used on this page.
+function buildBuilderJsonLd(builder: any, slug: string) {
+  const city = builder?.headquarters?.city && builder.headquarters.city !== "Unknown" ? builder.headquarters.city : undefined;
+  const country = builder?.headquarters?.country && builder.headquarters.country !== "Unknown" ? builder.headquarters.country : undefined;
+  const schema: any = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: builder?.companyName,
+    description: builder?.companyDescription || `Exhibition stand builder providing custom trade show displays and booth construction${city ? ` in ${city}` : ""}.`,
+    url: `${SITE_URL}/builders/${slug}`,
+  };
+  if (builder?.contactInfo?.phone || builder?.phone) schema.telephone = builder.contactInfo?.phone || builder.phone;
+  if (builder?.logo && !String(builder.logo).includes("default-logo")) schema.image = builder.logo;
+  if (city || country) {
+    schema.address = { "@type": "PostalAddress", addressLocality: city, addressCountry: country };
+  }
+  const rating = Number(builder?.rating) || 0;
+  const reviews = Number(builder?.reviewCount ?? builder?.review_count) || 0;
+  if (rating > 0 && reviews > 0) {
+    schema.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: rating,
+      reviewCount: reviews,
+      bestRating: 5,
+      worstRating: 1,
+    };
+  }
+  return schema;
+}
+
+function ProfileWithSchema({ slug, builder }: { slug: string; builder: any }) {
+  const breadcrumb = getBreadcrumbSchema([
+    { name: "Home", url: `${SITE_URL}/` },
+    { name: "Exhibition Stand Builders", url: `${SITE_URL}/builders` },
+    { name: builder?.companyName || slug, url: `${SITE_URL}/builders/${slug}` },
+  ]);
+  return (
+    <>
+      <JsonLd data={[buildBuilderJsonLd(builder, slug), breadcrumb]} />
+      <BuilderProfileClient slug={slug} initialBuilder={builder} />
+    </>
+  );
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
+  const b = await loadBuilderMeta(slug);
+
+  const prettySlug = slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const name = b?.company_name || prettySlug;
+  const loc = [b?.headquarters_city, b?.headquarters_country].filter(Boolean).join(", ");
+  const title = loc
+    ? `${name} — Exhibition Stand Builder in ${loc}`
+    : `${name} — Exhibition Stand Builder`;
+  const cleanDesc = (b?.company_description || "")
+    .replace(/SERVICE_LOCATIONS:\[[\s\S]*?\]/g, "")
+    .trim();
+  const description = cleanDesc.slice(0, 160) ||
+    `${name} builds custom exhibition stands and trade show displays${loc ? ` in ${loc}` : ""}. View services, portfolio and request a quote.`;
+
+  // Quality gate: only expose profiles with real, substantive content to search
+  // engines. Thin/auto-imported stubs stay noindex (still crawlable/followed) and
+  // automatically become indexable once they gain a proper description or get verified.
+  const indexable = !!(b && (b.verified || cleanDesc.length >= 120));
+
   return {
+    title,
+    description,
+    alternates: { canonical: `${SITE_URL}/builders/${slug}` },
     robots: {
-      index: false,
+      index: indexable,
       follow: true,
-      nocache: true,
       googleBot: {
-        index: false,
+        index: indexable,
         follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
       },
     },
+    openGraph: {
+      title,
+      description,
+      type: 'profile',
+      url: `${SITE_URL}/builders/${slug}`,
+      images: [b?.logo && !String(b.logo).includes('default-logo') ? b.logo : '/og-image.png'],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: ['/og-image.png'] },
   };
 }
 
@@ -45,7 +143,7 @@ export default async function BuilderProfilePage({
       if (builder) {
         console.log("✅ Server: Found builder in unified platform:", builder.companyName);
         return (
-          <BuilderProfileClient slug={slug} initialBuilder={builder} />
+          <ProfileWithSchema slug={slug} builder={builder} />
         );
       }
     } catch (error) {
@@ -246,7 +344,7 @@ export default async function BuilderProfilePage({
 
           console.log("✅ Server: Found builder in Supabase:", builder.companyName);
           return (
-            <BuilderProfileClient slug={slug} initialBuilder={builder} />
+            <ProfileWithSchema slug={slug} builder={builder} />
           );
         } else {
           // Try the 'builders' table as fallback with error handling
@@ -311,7 +409,7 @@ export default async function BuilderProfilePage({
 
             console.log("✅ Server: Found builder in builders table:", builder.companyName);
             return (
-              <BuilderProfileClient slug={slug} initialBuilder={builder} />
+              <ProfileWithSchema slug={slug} builder={builder} />
             );
           }
         }
@@ -350,7 +448,7 @@ export default async function BuilderProfilePage({
 
     console.log("✅ Server: Found builder:", builder.companyName);
     return (
-      <BuilderProfileClient slug={slug} initialBuilder={builder} />
+      <ProfileWithSchema slug={slug} builder={builder} />
     );
   } catch (error) {
     console.error("❌ BuilderProfilePage SSR error:", error);
