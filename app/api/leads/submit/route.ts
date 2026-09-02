@@ -96,14 +96,18 @@ export async function POST(request: NextRequest) {
         else console.error('⚠️ notifications insert failed:', nErr.message);
       }
 
-      emailsSent = await sendBuilderEmails(targets, lead, leadId).catch(() => 0);
+      // Only email builders who can actually act on the lead (claimed account or
+      // verified). Unclaimed scraped profiles still get the assignment so they
+      // see the backlog if/when they claim, but we don't cold-email them.
+      const emailTargets = targets.filter((b) => b.user_id || b.verified).slice(0, 8);
+      emailsSent = await sendBuilderEmails(emailTargets, lead, leadId).catch(() => 0);
     }
 
     return NextResponse.json({
       success: true,
       message:
         matched.length > 0
-          ? `Request received. ${matched.length} matching builder${matched.length === 1 ? '' : 's'} notified.`
+          ? `Request received. We matched ${matched.length} builder${matched.length === 1 ? '' : 's'} in your area.`
           : 'Request received. Our team will match you with builders shortly.',
       data: {
         leadId,
@@ -139,7 +143,7 @@ async function matchBuilders(lead: {
   if (lead.targeted_builder_id) {
     const { data } = await supabase
       .from('builder_profiles')
-      .select('id, company_name, primary_email, contact_person, user_id, headquarters_city, headquarters_country')
+      .select('id, company_name, primary_email, contact_person, user_id, verified, headquarters_city, headquarters_country')
       .eq('id', lead.targeted_builder_id)
       .limit(1);
     return data || [];
@@ -150,7 +154,7 @@ async function matchBuilders(lead: {
   if (!hasCity && !hasCountry) return [];
 
   const select =
-    'id, company_name, primary_email, contact_person, user_id, headquarters_city, headquarters_country';
+    'id, company_name, primary_email, contact_person, user_id, verified, headquarters_city, headquarters_country';
 
   // Builders that serve this location via builder_service_locations
   let serviceIds: string[] = [];
