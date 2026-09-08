@@ -244,6 +244,13 @@ export default async function ServerCountryCityPage({
 
   const servicesContent = getServicesContent();
 
+  // Show the Google Business Profile block only on the Dubai city page.
+  const isDubai =
+    !!city &&
+    normalizeCitySlug(city) === "dubai" &&
+    ["united-arab-emirates", "uae"].includes(normalizeCountrySlug(country));
+  const DUBAI_GBP_URL = "https://maps.app.goo.gl/3DP9s2j6gDKm2V6V6";
+
   // Location stats
   const locationStats = {
     totalBuilders: builders.length,
@@ -314,6 +321,92 @@ export default async function ServerCountryCityPage({
         }
       />
 
+
+      {/* ── GOOGLE BUSINESS PROFILE (Dubai only) ── */}
+      {isDubai && (
+        <section className="py-20 bg-white border-t border-slate-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-black !text-[#252525] uppercase tracking-tighter mb-2">
+                  Our Google Business Profile in Dubai
+                </h2>
+                <p className="!text-slate-600 text-sm max-w-2xl leading-relaxed">
+                  Stands Zone is an established exhibition stand builder based in Dubai. See our
+                  reviews, project photos and workshop location on Google, or get directions.
+                </p>
+              </div>
+              <a
+                href={DUBAI_GBP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-[#E03A3A] text-white font-black text-sm rounded-lg hover:bg-[#CC2E2E] transition-colors uppercase tracking-wide"
+              >
+                <MapPin className="w-4 h-4" /> View on Google Maps
+              </a>
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8 items-stretch">
+              {/* Profile summary */}
+              <div className="lg:col-span-1 bg-[#F5F6F7] rounded-2xl border border-slate-200 p-8 flex flex-col">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shrink-0">
+                    <Building2 className="w-5 h-5 !text-[#E03A3A]" />
+                  </div>
+                  <span className="text-xs font-black uppercase tracking-widest !text-slate-500">
+                    Google Business Profile
+                  </span>
+                </div>
+                <h3 className="text-xl font-black !text-[#252525] mb-3">
+                  Stands Zone Exhibition Stand Builders Dubai
+                </h3>
+                <div className="flex items-center gap-1 mb-5">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
+                  ))}
+                  <span className="text-sm font-semibold !text-slate-600 ml-1">
+                    Reviewed by verified clients
+                  </span>
+                </div>
+                <ul className="space-y-3 text-sm !text-slate-600 mb-6">
+                  <li className="flex items-start gap-2">
+                    <MapPin className="w-4 h-4 !text-[#E03A3A] shrink-0 mt-0.5" />
+                    Serving every major Dubai venue — DWTC, Dubai Exhibition Centre and Expo City.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 !text-[#E03A3A] shrink-0 mt-0.5" />
+                    Custom design, fabrication, graphics and on-site installation.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 !text-[#E03A3A] shrink-0 mt-0.5" />
+                    In-house project management from concept to dismantle.
+                  </li>
+                </ul>
+                <a
+                  href={DUBAI_GBP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-auto !text-[#E03A3A] font-black inline-flex items-center gap-2 hover:gap-4 transition-all text-sm"
+                >
+                  Read Reviews &amp; Get Directions <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+
+              {/* Map embed */}
+              <div className="lg:col-span-2 rounded-2xl overflow-hidden border border-slate-200 bg-[#F5F6F7]">
+                <iframe
+                  title="Stands Zone Exhibition Stand Builders Dubai on Google Maps"
+                  src="https://maps.google.com/maps?q=Stands%20Zone%20Exhibition%20Stand%20Builders%20Dubai&z=14&ie=UTF8&iwloc=B&output=embed"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full h-full min-h-[380px] border-0"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── STRATEGIC HUBS / CITIES ── */}
       {cities && cities.length > 0 && !hideCitiesSection && !city &&
