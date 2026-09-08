@@ -92,7 +92,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[#252525] text-slate-500 pt-20 pb-10 px-6 border-t border-white/5 w-full">
+    <footer className="bg-[#252525] text-white pt-20 pb-10 px-6 border-t border-white/5 w-full">
       <div className="max-w-7xl mx-auto">
         {/* Main columns */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
@@ -101,40 +101,40 @@ export default function Footer() {
             <div className="flex items-center gap-2 mb-8">
               <Image src={logoImg} alt="StandsZone" width={120} height={36} className="h-8 w-auto brightness-0 invert" style={{ height: 'auto' }} priority />
             </div>
-            <p className="text-xs leading-loose uppercase tracking-widest opacity-60 mb-6">
+            <p className="text-xs leading-loose uppercase tracking-widest text-white mb-6">
               {footerData?.paragraph || siteData.pages?.footerText || fallbackData.pages.footerText}
             </p>
 
             {/* Contact info */}
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <FiPhone className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                <FiPhone className="w-3 h-3 text-white flex-shrink-0" />
                 {footerData?.contact?.phoneLink ? (
-                  <a href={footerData.contact.phoneLink} className="text-xs font-bold uppercase tracking-widest hover:text-white transition-colors flex items-center">
+                  <a href={footerData.contact.phoneLink} className="text-xs font-bold uppercase tracking-widest text-white hover:text-[#CC2E2E] transition-colors flex items-center">
                     {footerData.contact.phone}
-                    <FiExternalLink className="w-3 h-3 ml-1 opacity-60 flex-shrink-0" />
+                    <FiExternalLink className="w-3 h-3 ml-1 opacity-90 flex-shrink-0" />
                   </a>
                 ) : (
                   <span className="text-xs font-bold uppercase tracking-widest">{footerData?.contact?.phone || siteData.contact?.phone || fallbackData.contact.phone}</span>
                 )}
               </div>
               <div className="flex items-center gap-3">
-                <FiMail className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                <FiMail className="w-3 h-3 text-white flex-shrink-0" />
                 {footerData?.contact?.emailLink ? (
-                  <a href={footerData.contact.emailLink} className="text-xs font-bold uppercase tracking-widest hover:text-white transition-colors flex items-center">
+                  <a href={footerData.contact.emailLink} className="text-xs font-bold uppercase tracking-widest text-white hover:text-[#CC2E2E] transition-colors flex items-center">
                     {footerData.contact.email}
-                    <FiExternalLink className="w-3 h-3 ml-1 opacity-60 flex-shrink-0" />
+                    <FiExternalLink className="w-3 h-3 ml-1 opacity-90 flex-shrink-0" />
                   </a>
                 ) : (
                   <span className="text-xs font-bold uppercase tracking-widest">{footerData?.contact?.email || siteData.contact?.email || fallbackData.contact.email}</span>
                 )}
               </div>
               <div className="flex items-center gap-3">
-                <FiMapPin className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                <FiMapPin className="w-3 h-3 text-white flex-shrink-0" />
                 {footerData?.contact?.addressLink ? (
-                  <a href={footerData.contact.addressLink} className="text-xs font-bold uppercase tracking-widest hover:text-white transition-colors flex items-center">
+                  <a href={footerData.contact.addressLink} className="text-xs font-bold uppercase tracking-widest text-white hover:text-[#CC2E2E] transition-colors flex items-center">
                     {footerData.contact.address}
-                    <FiExternalLink className="w-3 h-3 ml-1 opacity-60 flex-shrink-0" />
+                    <FiExternalLink className="w-3 h-3 ml-1 opacity-90 flex-shrink-0" />
                   </a>
                 ) : (
                   <span className="text-xs font-bold uppercase tracking-widest">{footerData?.contact?.address || siteData.contact?.address || fallbackData.contact.address}</span>
@@ -204,7 +204,7 @@ export default function Footer() {
                 { label: 'Terms of Service', href: '/legal/terms-of-service' },
                 { label: 'Sitemap', href: 'https://standszone.com/sitemap.xml' },
               ]).map((l: any, i: number) => (
-                <a key={i} href={l.href} className="hover:text-white transition-colors touch-active no-tap-highlight whitespace-nowrap">
+                <a key={i} href={l.href} className="text-white hover:text-[#CC2E2E] transition-colors touch-active no-tap-highlight whitespace-nowrap">
                   {l.label}
                 </a>
               ))}
@@ -218,7 +218,7 @@ export default function Footer() {
                 key={index}
                 href={social.href}
                 aria-label={social.label}
-                className="text-slate-500 hover:text-white transition-colors touch-active no-tap-highlight"
+                className="text-white hover:text-[#CC2E2E] transition-colors touch-active no-tap-highlight"
               >
                 {social.icon === 'linkedin' ? <FiLinkedin className="w-4 h-4" />
                   : social.icon === 'twitter' ? <FiTwitter className="w-4 h-4" />
