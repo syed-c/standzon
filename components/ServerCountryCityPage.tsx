@@ -329,7 +329,7 @@ export default async function ServerCountryCityPage({
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
               <div>
                 <h2 className="text-2xl md:text-3xl font-black !text-[#252525] uppercase tracking-tighter mb-2">
-                  Our Google Business Profile in Dubai
+                  Our Dubai Office
                 </h2>
                 <p className="!text-slate-600 text-sm max-w-2xl leading-relaxed">
                   Stands Zone is an established exhibition stand builder based in Dubai. See our
