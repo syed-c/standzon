@@ -392,11 +392,12 @@ export default async function ServerCountryCityPage({
                 </a>
               </div>
 
-              {/* Map embed */}
+              {/* Map embed — cid 3677615878677558449 is the exact place behind
+                  DUBAI_GBP_URL (maps.app.goo.gl/3DP9s2j6gDKm2V6V6). */}
               <div className="lg:col-span-2 rounded-2xl overflow-hidden border border-slate-200 bg-[#F5F6F7]">
                 <iframe
                   title="Stands Zone Exhibition Stand Builders Dubai on Google Maps"
-                  src="https://maps.google.com/maps?q=Stands%20Zone%20Exhibition%20Stand%20Builders%20Dubai&z=14&ie=UTF8&iwloc=B&output=embed"
+                  src="https://www.google.com/maps?cid=3677615878677558449&output=embed"
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   className="w-full h-full min-h-[380px] border-0"
